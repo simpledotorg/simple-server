@@ -170,8 +170,8 @@ namespace :dell_demo do
     end
   end
 
-  desc "Import CPHC Facilities"
-  task :import_cphc_facilities, [:filename, :sheet, :district_id] => :environment do |_t, args|
+  desc "Import CPHC PHCs and Subcenters"
+  task :import_cphc_phc_and_subcenter, [:filename, :sheet, :district_id] => :environment do |_t, args|
     xlsx = Roo::Spreadsheet.open(args[:filename])
 
     sheet = xlsx.sheet(args[:sheet])
@@ -201,28 +201,72 @@ namespace :dell_demo do
       end
     end
 
-    puts "Finished importing facilities"
+    puts "Finished importing PHCs and Subcenters"
   end
 
-  desc "Map CPHC Facilities"
-  task :map_cphc_facilities, [:district] => :environment do |_t, args|
-    district = args[:district]
-    Facility.where(district: district)
+  desc "Import CPHC CHCs and DHs"
+  task :import_cphc_chc_and_dh, [:filename] => :environment do |_t, args|
+    xlsx = Roo::Spreadsheet.open(args[:filename])
+
+    sheet = xlsx.sheet(0)
+
+    headers = {
+      cphc_facility_id: "hospital_id",
+      cphc_facility_name: "hospital_name",
+      cphc_facility_type_id: "facilityTypeId",
+      cphc_state_id: "State ID",
+      cphc_state_name: "State Name",
+      cphc_district_id: "district_id",
+      cphc_district_name: "District Name",
+      cphc_taluka_id: "Taluk ID",
+      cphc_taluka_name: "Taluk Name",
+      cphc_phc_id: "PHC ID",
+      cphc_phc_name: "PHC Name",
+      cphc_subcenter_id: "SC ID",
+      cphc_subcenter_name: "SC Name",
+      cphc_village_id: "Village ID",
+      cphc_village_name: "Village Name"
+    }
+
+    sheet.each(headers) do |row|
+      if row[:cphc_facility_type_id].to_i == OneOff::CphcEnrollment::FACILITY_TYPE_ID["CHC"]
+        CphcFacility.create_chc_from_row(row)
+      elsif row[:cphc_facility_type_id].to_i == OneOff::CphcEnrollment::FACILITY_TYPE_ID["DH"]
+        CphcFacility.create_dh_from_row(row)
+      end
+    end
+
+    puts "Finished importing CHC and DHs"
+  end
+
+  desc "Map CPHC facilities of a given size"
+  task :map_cphc_facilities, [:state, :facility_size] => :environment do |_t, args|
+    facility_types = {
+      community: "SUBCENTER",
+      small: "PHC",
+      medium: "CHC",
+      large: "DH"
+    }.with_indifferent_access
+
+    state = args[:state]
+    facility_size = args[:facility_size]
+
+    Facility.where(state: state)
       .left_outer_joins(:cphc_facility)
       .where(cphc_facilities: {cphc_facility_id: nil})
+      .where(facility_size: facility_size)
       .order(:name)
-      .reject { |facility| facility.name.starts_with?(/CHC|SC|HSC|HWC|UCHC|DH |SDH|PHC HWC/i) }
       .each do |facility|
       potential_mappings =
         CphcFacility
           .search_by_facility_name(facility.name)
-          .where(cphc_facility_type: "PHC")
-          .search_by_region(district)
+          .where(cphc_facility_type: facility_types[facility_size])
+          .search_by_region(state)
           .where(facility_id: nil)
 
       next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
 
-      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
+      puts "Potential Mappings | Block: #{facility.block} | Type: #{facility.facility_type} | Facility: #{facility.name}".green
 
       puts "\n"
       tp potential_mappings,
@@ -253,66 +297,74 @@ namespace :dell_demo do
           break
         end
 
-        if input.to_i != 0
+        if input.size == 36
           jump_to_id = input.to_i
         end
       end
     end
   end
 
-  desc "Map CPHC Subcenters"
-  task :map_cphc_subcenters, [:district] => :environment do |_t, args|
-    district = args[:district]
-    Facility.where(district: district)
-      .left_outer_joins(:cphc_facility)
-      .where(cphc_facilities: {cphc_facility_id: nil})
-      .order(:name)
-      .reject { |facility| facility.name.starts_with?(/CHC|PHC|UPHC|UCHC|DH /i) }
-      .each do |facility|
-      potential_mappings =
-        CphcFacility
-          .search_by_facility_name(facility.name)
-          .where(cphc_facility_type: "SUBCENTER")
-          .search_by_region(district)
-          .where(facility_id: nil)
+  desc "Import manually mapped facilties"
+  task :import_manually_mapped_facilities, [:cphc_facility_mappings, :simple_to_cphc_mapping] => :environment do |_t, args|
+    cphc_facility_mappings = Roo::Spreadsheet.open(args[:cphc_facility_mappings]).sheet(0)
+    simple_to_cphc_mapping = Roo::Spreadsheet.open(args[:simple_to_cphc_mapping]).sheet(0)
 
-      next puts("No Mappings | Block: #{facility.block} | Facility: #{facility.name} \n".red) if potential_mappings.empty?
-
-      puts "Potential Mappings | Block: #{facility.block} | Facility: #{facility.name}".green
-
-      puts "\n"
-      tp potential_mappings,
-        {id: {width: 37}},
-        :cphc_district_name,
-        :cphc_taluka_name,
-        :cphc_facility_name
-
-      puts "\n"
-      jump_to_id = nil
-      potential_mappings.each do |mapping|
-        if jump_to_id.present? && mapping.id != jump_to_id
-          next
-        end
-        jump_to_id = nil
-
-        print "Map #{facility.name} to #{mapping.cphc_facility_name}? [(y)es, (n)o, (a)ll (s)kip, (id)jump] "
-        input = $stdin.gets.strip
-        puts "\n"
-
-        if input == "s"
-          break
-        end
-
-        if input == "y"
-          mapping.update!(facility_id: facility.id)
-          CphcCreateUserJob.perform_async(facility.id)
-          break
-        end
-
-        if input.to_i != 0
-          jump_to_id = input.to_i
-        end
+    cphc_facility_mappings.each({
+      cphc_state_id: "state_id",
+      cphc_state_name: "state_name",
+      cphc_district_id: "district_id",
+      cphc_district_name: "district_name",
+      cphc_taluka_id: "taluka_id",
+      cphc_taluka_name: "taluka_name",
+      cphc_phc_id: "phc_id",
+      cphc_phc_name: "phc_name",
+      cphc_subcenter_id: "subcenter_id",
+      cphc_subcenter_name: "subcenter_name",
+      cphc_village_id: "village_id",
+      cphc_village_name: "village_name"
+    }) do |row|
+      mapping = CphcFacilityMapping.create(row)
+      if mapping.present?
+        CphcFacility.create_phc_from_mapping(mapping)
+        CphcFacility.create_subcenter_from_mapping(mapping)
       end
     end
+
+    simple_to_cphc_mapping.each({
+      state_name: "state_name",
+      district_name: "district_name",
+      block_name: "block_name",
+      facility_name: "facility_name",
+      facility_size: "facility_size",
+      cphc_facility_id: "CPHC Facility ID"
+    }) do |row|
+      next if ["medium", "large"].include? row[:facility_size]
+
+      facility = Facility.find_by(state: row[:state_name], district: row[:district_name], name: row[:facility_name])
+      mapping = CphcFacility.find_by(cphc_facility_id: row[:cphc_facility_id])
+
+      unless facility.present?
+        puts "Couldn't find facility"
+        puts({state: row[:state_name], district: row[:district_name], name: row[:facility_name]})
+        next
+      end
+
+      unless mapping.present?
+        puts "Couldn't find cphc facility"
+        puts({cphc_facility_id: row[:cphc_facility_id]})
+        next
+      end
+
+      if mapping.facility_id.present?
+        puts "CPHC facility #{mapping.cphc_facility_id} #{mapping.cphc_facility_name} is already mapped to #{mapping.facility.name}"
+      elsif facility.cphc_facility.present?
+        puts "Facility #{facility.name} is already mapped to #{facility.cphc_facility.cphc_facility_name}"
+      else
+        mapping.update!(facility_id: facility.id)
+        CphcCreateUserJob.perform_async(facility.id)
+      end
+    end
+
+    puts "Finished importing manually mapped facilities"
   end
 end

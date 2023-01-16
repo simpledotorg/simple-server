@@ -3,14 +3,38 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated 22-Sep-2022. For feedback, email us: help@simple.org
+    <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
+      Last updated 23-Nov-2022. For feedback, email us: help@simple.org
+    <% else %>
+      Last updated 12-Dec-2022. For feedback, email us: help@simple.org
+    <% end %>
   </p>
+  <section class="update">
+    <div class="update-date">
+      <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
+        Nov <b class="d-block">2022</b>
+      <% else %>
+        Dec <b class="d-block">2022</b>
+      <% end %>
+    </div>
+    <p>
+      <b>Simple app:</b> Progress tab has been updated with a new design and includes several new reports:
+      <ul>
+        <li>Daily, monthly and yearly reports - showing activity at your facility</li>
+        <li>Hypertension report - overview of hypertension control at your facility</li>
+        <li>New facility achievements - 'calls made to overdue patients'</li>
+      </ul>
+    </p>
+    <p class="d-block bg-grey-lightest br-4px" style="margin-top: 8px; padding: 6px 10px;">
+      Please use this <a href="https://drive.google.com/file/d/1l5Mqyv-FzmRHVA-jsZFvIBZ44Q6gHRI2/view?usp=share_link">one pager</a> to train your users.
+    </p>
+  </section>
   <section class="update">
     <div class="update-date">
       Oct <b class="d-block">2022</b>
     </div>
     <p>
-      <b>Simple Dashboard:</b>
+      <b>Simple dashboard:</b>
       <ul>
         <li>Diabetes drug stock tracking is now live!</li>
         <li>The graphs on the reports dashboard have been improved making it easier to view detailed information.</li>
@@ -43,7 +67,7 @@
       Jun <b class="d-block">2022</b>
     </div>
     <p>
-      <b>Dashboard:</b> Diabetes reports are now available for dashboard users in regions where blood sugar measures are being taken. Users can view DM registrations, follow-ups, missed visits and lost to follow-up for patients with diabetes. If your region does not use the diabetes feature, please talk to your leadership team and Simple team about enabling it.
+      <b>Simple dashboard:</b> Diabetes reports are now available for dashboard users in regions where blood sugar measures are being taken. Users can view DM registrations, follow-ups, missed visits and lost to follow-up for patients with diabetes. If your region does not use the diabetes feature, please talk to your leadership team and Simple team about enabling it.
     </p>
   </section>
   <section class="update">
@@ -55,25 +79,6 @@
     </p>
     <p>
       <b>BP Passports PDFs</b> can now be created using a special application on your PC. You can create BP Passport cards or stickers and send them to your local printing company. <a href="/resources#card-bp-passport-creator">Get the app in Resources</a>.
-    </p>
-  </section>
-  <section class="update">
-    <div class="update-date">
-      Apr <b class="d-block">2022</b>
-    </div>
-    <p>
-      <b>Definition change:</b> "Inactive facilities" are facilities where 0 BPs were recorded in the last month. The old definition was &gt;10 BPs recorded per month.
-    </p>
-    <% if CountryConfig.current[:name] == "India" %>
-      <p>
-        <b>SMS Patient reminders:</b> Simple is again sending text messages to all patients with upcoming appointments to remind them to return to care &#8212; patients receive a message 1 day before, day of, and 3 days after their appointment, if they don't come. We are also messaging patients who are late for their visits to see if we can reduced Missed Visit rates.
-      </p>
-    <% end %>
-    <p>
-      <b>Bug fix:</b> When you print reports, the charts no longer go over the edge of the cards.
-    </p>
-    <p>
-      The <b>Dashboard</b> now defines lost-to-follow-up patients more accurately. Previously a patient was LTFU if they did not have a BP measure in &gt;1 year. Now a patient is LTFU if they didn't have a BP measure, a blood sugar measure, a medication refill, or a new appointment scheduled in &gt;1 year.
     </p>
   </section>
 </div>

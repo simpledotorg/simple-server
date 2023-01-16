@@ -3,6 +3,7 @@
 class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
   include AssetsHelper
   include ProgressTabHelper
+  include Memery
 
   # We use 29 here because we also show today, so its 30 days including today
   DAYS_AGO = 29
@@ -20,12 +21,12 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
     @subtitle = subtitle
   end
 
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2)
+  memoize def last_30_days
+    (@start..@now).to_a.reverse.map { |date| display_date(date) }
   end
 
-  def last_30_days
-    (@start..@now).to_a.reverse.map { |date| display_date(date) }
+  def data_available?(date:)
+    daily_registrations_breakdown[date.to_date].present?
   end
 
   def display_date(date)
@@ -41,4 +42,10 @@ class ProgressTab::DailyProgressComponentV2 < ApplicationComponent
   end
 
   delegate :daily_follow_ups_breakdown, :daily_registrations_breakdown, to: :service
+
+  private
+
+  memoize def data_available_for_dates
+    daily_registrations_breakdown.keys
+  end
 end

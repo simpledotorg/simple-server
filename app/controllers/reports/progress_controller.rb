@@ -13,15 +13,6 @@ class Reports::ProgressController < AdminController
     @user_analytics = UserAnalyticsPresenter.new(@region)
     @service = Reports::FacilityProgressService.new(current_facility, @period, current_user: @current_user)
 
-    @date_format = ApplicationHelper::STANDARD_DATE_DISPLAY_FORMAT
-    @time_format = ApplicationHelper::STANDARD_TIME_DISPLAY_FORMAT
-
-    # TODO: Delete `@total_follow_ups` and `@total_registrations`
-    # https://app.shortcut.com/simpledotorg/story/9263/clean-up
-    @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
-    @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service, current_user: @current_user).total_count
-    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service, current_user: @current_user).total_count
     @is_diabetes_enabled = current_facility.diabetes_enabled?
 
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
@@ -31,17 +22,7 @@ class Reports::ProgressController < AdminController
       @drugs_by_category = @drug_stocks_query.protocol_drugs_by_category
     end
 
-    @period_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).period_reports
-    @hypertension_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).hypertension_reports
-    @diabetes_reports_data = Reports::ReportsFakeFacilityProgressService.new(@current_facility.name).diabetes_reports
-
-    if Flipper.enabled?(:new_progress_tab_v2, @current_user) || Flipper.enabled?(:new_progress_tab_v2)
-      render "api/v3/analytics/user_analytics/show_v2"
-    elsif Flipper.enabled?(:new_progress_tab_v1, @current_user) || Flipper.enabled?(:new_progress_tab_v1)
-      render "api/v3/analytics/user_analytics/show_v1"
-    else
-      render "api/v3/analytics/user_analytics/show"
-    end
+    render "api/v3/analytics/user_analytics/show"
   end
 
   helper_method :current_facility, :current_user, :current_facility_group

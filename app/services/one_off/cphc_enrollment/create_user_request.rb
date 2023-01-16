@@ -37,7 +37,7 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def path
-    "#{ENV["CPHC_BASE_URL"]}/adminOperations/locationType/PHC/locationId/#{location_id}/createUser"
+    "#{ENV["CPHC_BASE_URL"]}/adminOperations/locationType/#{location_type}/locationId/#{location_id}/createUser"
   end
 
   def headers
@@ -45,19 +45,26 @@ class OneOff::CphcEnrollment::CreateUserRequest
   end
 
   def payload
-    [
-      {
-        username: username,
-        mobileNumber: mobile_number,
-        locationId: location_id,
-        userType: CPHC_USER_TYPE,
-        locationType: "PHC"
-      }
-    ]
+    user = {
+      username: username,
+      mobileNumber: mobile_number,
+      locationId: location_id,
+      userType: CPHC_USER_TYPE,
+      locationType: location_type
+    }
+
+    if ["CHC", "DH"].include? hospital_type
+      user[:hospitalId] = hospital_id
+      user[:hospitalType] = hospital_type
+    end
+
+    [user]
   end
 
   def username
-    "deo_ihci_phc_#{location_id}"
+    return "deo_ihci_phc_#{location_id}" if hospital_type == "PHC"
+
+    "deo_h_#{location_id}_ihci"
   end
 
   def mobile_number
@@ -68,7 +75,23 @@ class OneOff::CphcEnrollment::CreateUserRequest
     cphc_facility.cphc_state_id
   end
 
+  def location_type
+    return "PHC" if hospital_type == "PHC"
+
+    "DISTRICT"
+  end
+
   def location_id
+    return hospital_id if hospital_type == "PHC"
+
+    cphc_facility.cphc_district_id
+  end
+
+  def hospital_type
+    cphc_facility.cphc_facility_type
+  end
+
+  def hospital_id
     cphc_facility.cphc_facility_id
   end
 

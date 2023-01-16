@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+bundle exec whenever --update-crontab
+
+/usr/sbin/cron -f # Start cron service

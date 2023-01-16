@@ -447,7 +447,8 @@ CREATE TABLE public.cphc_facilities (
     cphc_user_details json,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    cphc_location_details json
 );
 
 
@@ -1546,6 +1547,22 @@ CREATE TABLE public.protocols (
     follow_up_days integer,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone
+);
+
+
+--
+-- Name: questionnaires; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.questionnaires (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    questionnaire_type character varying NOT NULL,
+    dsl_version integer NOT NULL,
+    is_active boolean NOT NULL,
+    layout jsonb NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
 
@@ -4928,6 +4945,14 @@ ALTER TABLE ONLY public.protocols
 
 
 --
+-- Name: questionnaires questionnaires_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.questionnaires
+    ADD CONSTRAINT questionnaires_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: regions regions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5018,6 +5043,13 @@ CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_fac
 --
 
 CREATE INDEX facility_monthly_fr_facility_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
+
+
+--
+-- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
 
 
 --
@@ -5284,6 +5316,13 @@ CREATE UNIQUE INDEX index_bsnl_delivery_details_message_id ON public.bsnl_delive
 --
 
 CREATE INDEX index_call_results_deleted_at ON public.call_results USING btree (deleted_at);
+
+
+--
+-- Name: index_call_results_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_call_results_on_facility_id ON public.call_results USING btree (facility_id);
 
 
 --
@@ -5935,6 +5974,13 @@ CREATE INDEX index_qfs_facility_id ON public.reporting_quarterly_facility_states
 --
 
 CREATE UNIQUE INDEX index_qfs_quarter_string_region_id ON public.reporting_quarterly_facility_states USING btree (quarter_string, facility_region_id);
+
+
+--
+-- Name: index_questionnaires_uniqueness; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_questionnaires_uniqueness ON public.questionnaires USING btree (questionnaire_type, dsl_version, is_active) WHERE (is_active = true);
 
 
 --
@@ -6620,6 +6666,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221013131043'),
 ('20221024071410'),
 ('20221024071710'),
-('20221104075303');
+('20221104075303'),
+('20221121063116'),
+('20221122081032'),
+('20221212061852'),
+('20221216093905'),
+('20230103063720'),
+('20230104104248');
 
 
