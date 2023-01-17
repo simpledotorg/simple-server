@@ -1106,13 +1106,14 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             prescription_drugs.frequency,
             prescription_drugs.duration_in_days,
             prescription_drugs.teleconsultation_id,
-            rank() OVER (PARTITION BY bp.id ORDER BY prescription_drugs.is_deleted DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS rank
+            rank() OVER (PARTITION BY bp.id ORDER BY prescription_drugs.is_protocol_drug DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS rank
            FROM (public.blood_pressures bp
              LEFT JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (prescription_drugs.device_created_at < (date(bp.recorded_at) + '1 day'::interval)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (prescription_drugs.updated_at >= (date(bp.recorded_at) + '1 day'::interval)))))))
           WHERE ((bp.deleted_at IS NULL) AND (prescription_drugs.deleted_at IS NULL))
         ), other_medications AS (
          SELECT ranked_prescription_drugs.bp_id,
-            string_agg((((ranked_prescription_drugs.name)::text || ' '::text) || (ranked_prescription_drugs.dosage)::text), ','::text) FILTER (WHERE (ranked_prescription_drugs.rank > 5)) AS other_prescription_drugs
+            string_agg((((ranked_prescription_drugs.name)::text || '-'::text) || (ranked_prescription_drugs.dosage)::text), ', '::text) FILTER (WHERE (ranked_prescription_drugs.rank > 5)) AS other_prescription_drugs,
+            string_agg((((ranked_prescription_drugs.name)::text || '-'::text) || (ranked_prescription_drugs.dosage)::text), ', '::text ORDER BY ranked_prescription_drugs.rank) AS all_prescription_drugs
            FROM ranked_prescription_drugs
           GROUP BY ranked_prescription_drugs.bp_id
         ), ranked_blood_pressures AS (
@@ -1127,7 +1128,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             f.state,
             follow_up_facility.name AS follow_up_facility_name,
             a.scheduled_date AS follow_up_date,
-            GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at))) AS follow_up_days,
+            (GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - date_trunc('day'::text, a.device_created_at)))))::integer AS follow_up_days,
             pd_1.name AS prescription_drug_1_name,
             pd_1.dosage AS prescription_drug_1_dosage,
             pd_2.name AS prescription_drug_2_name,
@@ -1139,10 +1140,11 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             pd_5.name AS prescription_drug_5_name,
             pd_5.dosage AS prescription_drug_5_dosage,
             other_medications.other_prescription_drugs,
+            other_medications.all_prescription_drugs,
             rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC) AS rank
            FROM (((((((((public.blood_pressures bp
              LEFT JOIN public.facilities f ON ((bp.facility_id = f.id)))
-             LEFT JOIN public.appointments a ON (((a.patient_id = bp.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bp.device_created_at)))))
+             LEFT JOIN public.appointments a ON (((a.patient_id = bp.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bp.recorded_at)))))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
              LEFT JOIN ranked_prescription_drugs pd_1 ON (((bp.id = pd_1.bp_id) AND (pd_1.rank = 1))))
              LEFT JOIN ranked_prescription_drugs pd_2 ON (((bp.id = pd_2.bp_id) AND (pd_2.rank = 2))))
@@ -1164,6 +1166,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_pressure_1.follow_up_facility_name AS latest_blood_pressure_1_follow_up_facility_name,
             latest_blood_pressure_1.follow_up_date AS latest_blood_pressure_1_follow_up_date,
             latest_blood_pressure_1.follow_up_days AS latest_blood_pressure_1_follow_up_days,
+            (latest_blood_pressure_1.all_prescription_drugs <> latest_blood_pressure_2.all_prescription_drugs) AS latest_blood_pressure_1_medication_updated,
             latest_blood_pressure_1.prescription_drug_1_name AS latest_blood_pressure_1_prescription_drug_1_name,
             latest_blood_pressure_1.prescription_drug_1_dosage AS latest_blood_pressure_1_prescription_drug_1_dosage,
             latest_blood_pressure_1.prescription_drug_2_name AS latest_blood_pressure_1_prescription_drug_2_name,
@@ -1186,6 +1189,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_pressure_2.follow_up_facility_name AS latest_blood_pressure_2_follow_up_facility_name,
             latest_blood_pressure_2.follow_up_date AS latest_blood_pressure_2_follow_up_date,
             latest_blood_pressure_2.follow_up_days AS latest_blood_pressure_2_follow_up_days,
+            (latest_blood_pressure_2.all_prescription_drugs <> latest_blood_pressure_3.all_prescription_drugs) AS latest_blood_pressure_2_medication_updated,
             latest_blood_pressure_2.prescription_drug_1_name AS latest_blood_pressure_2_prescription_drug_1_name,
             latest_blood_pressure_2.prescription_drug_1_dosage AS latest_blood_pressure_2_prescription_drug_1_dosage,
             latest_blood_pressure_2.prescription_drug_2_name AS latest_blood_pressure_2_prescription_drug_2_name,
@@ -1208,6 +1212,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_pressure_3.follow_up_facility_name AS latest_blood_pressure_3_follow_up_facility_name,
             latest_blood_pressure_3.follow_up_date AS latest_blood_pressure_3_follow_up_date,
             latest_blood_pressure_3.follow_up_days AS latest_blood_pressure_3_follow_up_days,
+            (latest_blood_pressure_3.all_prescription_drugs <> latest_blood_pressure_4.all_prescription_drugs) AS latest_blood_pressure_3_medication_updated,
             latest_blood_pressure_3.prescription_drug_1_name AS latest_blood_pressure_3_prescription_drug_1_name,
             latest_blood_pressure_3.prescription_drug_1_dosage AS latest_blood_pressure_3_prescription_drug_1_dosage,
             latest_blood_pressure_3.prescription_drug_2_name AS latest_blood_pressure_3_prescription_drug_2_name,
@@ -1219,9 +1224,10 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_pressure_3.prescription_drug_5_name AS latest_blood_pressure_3_prescription_drug_5_name,
             latest_blood_pressure_3.prescription_drug_5_dosage AS latest_blood_pressure_3_prescription_drug_5_dosage,
             latest_blood_pressure_3.other_prescription_drugs AS latest_blood_pressure_3_other_prescription_drugs
-           FROM ((ranked_blood_pressures latest_blood_pressure_1
+           FROM (((ranked_blood_pressures latest_blood_pressure_1
              LEFT JOIN ranked_blood_pressures latest_blood_pressure_2 ON (((latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_2.rank = 2))))
              LEFT JOIN ranked_blood_pressures latest_blood_pressure_3 ON (((latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_3.rank = 3))))
+             LEFT JOIN ranked_blood_pressures latest_blood_pressure_4 ON (((latest_blood_pressure_4.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_4.rank = 4))))
           WHERE (latest_blood_pressure_1.rank = 1)
         ), ranked_blood_sugars AS (
          SELECT bs.id,
@@ -1235,11 +1241,11 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             f.state,
             follow_up_facility.name AS follow_up_facility_name,
             a.scheduled_date AS follow_up_date,
-            GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - a.device_created_at))) AS follow_up_days,
+            (GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - date_trunc('day'::text, a.device_created_at)))))::integer AS follow_up_days,
             rank() OVER (PARTITION BY bs.patient_id ORDER BY bs.recorded_at DESC) AS rank
            FROM (((public.blood_sugars bs
              LEFT JOIN public.facilities f ON ((bs.facility_id = f.id)))
-             LEFT JOIN public.appointments a ON (((a.patient_id = bs.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bs.device_created_at)))))
+             LEFT JOIN public.appointments a ON (((a.patient_id = bs.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bs.recorded_at)))))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
           WHERE ((bs.deleted_at IS NULL) AND (a.deleted_at IS NULL))
         ), latest_blood_sugars AS (
@@ -1310,19 +1316,18 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
         )
  SELECT p.id,
     p.recorded_at,
-    concat(date_part('year'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))), ' Q', EXTRACT(quarter FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AS registration_quarter,
     p.full_name,
     latest_bp_passport.id AS latest_bp_passport_id,
     latest_bp_passport.identifier AS latest_bp_passport_identifier,
     EXTRACT(year FROM COALESCE(age((p.date_of_birth)::timestamp with time zone), (make_interval(years => p.age) + age(p.age_updated_at)))) AS current_age,
     p.gender,
     p.status,
-    latest_phone_number.number,
+    latest_phone_number.number AS latest_phone_number,
     addresses.village_or_colony,
     addresses.street_address,
     addresses.district,
-    addresses.state,
     addresses.zone,
+    addresses.state,
     assigned_facility.name AS assigned_facility_name,
     assigned_facility.facility_type AS assigned_facility_type,
     assigned_facility.state AS assigned_facility_state,
@@ -1354,6 +1359,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressures.latest_blood_pressure_1_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_1_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_1_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_1_medication_updated,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_2_name,
@@ -1376,6 +1382,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressures.latest_blood_pressure_2_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_2_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_2_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_2_medication_updated,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_2_name,
@@ -1398,6 +1405,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_pressures.latest_blood_pressure_3_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_3_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_3_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_3_medication_updated,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_2_name,

@@ -112,22 +112,7 @@ class PatientsWithHistoryExporter
   end
 
   def csv_fields(patient_summary)
-    latest_bps = patient_summary
-      .latest_blood_pressures
-      .first(display_blood_pressures + 1)
-
-    latest_blood_sugars = patient_summary
-      .latest_blood_sugars
-      .first(display_blood_sugars + 1)
-
-    all_medications = fetch_medication_history(patient_summary, latest_bps.map(&:recorded_at))
-    zone_column_index = csv_headers.index(zone_column)
-
-    patient_appointments = patient_summary
-      .appointments
-      .sort_by(&:device_created_at)
-
-    csv_fields = [
+    [
       registration_date(patient_summary),
       registration_quarter(patient_summary),
       patient_summary.id,
@@ -140,6 +125,7 @@ class PatientsWithHistoryExporter
       patient_summary.street_address,
       patient_summary.village_or_colony,
       patient_summary.district,
+      (patient_summary.zone if Rails.application.config.country[:patient_line_list_show_zone]),
       patient_summary.state,
       patient_summary.assigned_facility_name,
       patient_summary.assigned_facility_type,
@@ -147,22 +133,21 @@ class PatientsWithHistoryExporter
       patient_summary.assigned_facility_state,
       patient_summary.registration_facility_name,
       patient_summary.registration_facility_type,
-      patient_summary.registration_district,
-      patient_summary.registration_state,
+      patient_summary.registration_facility_district,
+      patient_summary.registration_facility_state,
       patient_summary.hypertension,
       patient_summary.diabetes,
       ("High" if patient_summary.risk_level > 0),
       patient_summary.days_overdue.to_i,
-      (1..display_blood_pressures).map { |i| bp_fields(latest_bps, i, patient_appointments: patient_appointments, all_medications: all_medications) },
-      display_blood_sugars == 0 ?
-        [latest_blood_sugar_date(patient_summary),
-          patient_summary.latest_blood_sugar.to_s,
-          latest_blood_sugar_type(patient_summary)] :
-        (1..display_blood_sugars).map { |i| blood_sugar_fields(latest_blood_sugars, i, patient_appointments: patient_appointments) }
-    ].flatten
 
-    csv_fields.insert(zone_column_index, patient_summary.block) if zone_column_index
-    csv_fields
+      blood_pressure_fields(patient_summary, 1),
+      blood_pressure_fields(patient_summary, 2),
+      blood_pressure_fields(patient_summary, 3),
+
+      blood_sugar_fields(patient_summary, 1),
+      blood_sugar_fields(patient_summary, 2),
+      blood_sugar_fields(patient_summary, 3)
+    ].compact.flatten
   end
 
   private
@@ -211,41 +196,44 @@ class PatientsWithHistoryExporter
     ]
   end
 
-  def bp_fields(latest_bps, i, patient_appointments:, all_medications:)
-    bp = latest_bps[i - 1]
-    previous_bp = latest_bps[i]
-    appointment = appointment_created_on(patient_appointments, bp&.recorded_at)
-
-    [bp&.recorded_at.presence && I18n.l(bp&.recorded_at&.to_date),
-      bp&.recorded_at.presence && quarter_string(bp&.recorded_at&.to_date),
-      bp&.systolic,
-      bp&.diastolic,
-      bp&.facility&.name,
-      bp&.facility&.facility_type,
-      bp&.facility&.district,
-      bp&.facility&.state,
-      appointment&.facility&.name,
-      appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
-      appointment&.follow_up_days,
-      medication_updated?(all_medications, bp&.recorded_at, previous_bp&.recorded_at),
-      *formatted_medications(all_medications, bp&.recorded_at)]
+  def blood_pressure_fields(patient_summary, i)
+    [I18n.l(patient_summary.send("latest_blood_pressure_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.send("latest_blood_pressure_#{i}_recorded_at").to_date),
+      patient_summary.send("latest_blood_pressure_#{i}_systolic"),
+      patient_summary.send("latest_blood_pressure_#{i}_diastolic"),
+      patient_summary.send("latest_blood_pressure_#{i}_facility_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_facility_type"),
+      patient_summary.send("latest_blood_pressure_#{i}_district"),
+      patient_summary.send("latest_blood_pressure_#{i}_state"),
+      patient_summary.send("latest_blood_pressure_#{i}_follow_up_facility_name"),
+      I18n.l(patient_summary.send("latest_blood_pressure_#{i}_follow_up_date")),
+      patient_summary.send("latest_blood_pressure_#{i}_follow_up_days"),
+      patient_summary.send("latest_blood_pressure_#{i}_medication_updated") ? 'Yes' : 'No',
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_dosage"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_2_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_2_dosage"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_3_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_3_dosage"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_4_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_4_dosage"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_5_name"),
+      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_5_dosage"),
+      patient_summary.send("latest_blood_pressure_#{i}_other_prescription_drugs")]
   end
 
-  def blood_sugar_fields(latest_blood_sugars, i, patient_appointments:)
-    blood_sugar = latest_blood_sugars[i - 1]
-    appointment = appointment_created_on(patient_appointments, blood_sugar&.recorded_at)
-
-    [blood_sugar&.recorded_at.presence && I18n.l(blood_sugar&.recorded_at&.to_date),
-      blood_sugar&.recorded_at.presence && quarter_string(blood_sugar&.recorded_at&.to_date),
-      blood_sugar&.blood_sugar_type,
-      blood_sugar&.blood_sugar_value,
-      blood_sugar&.facility&.name,
-      blood_sugar&.facility&.facility_type,
-      blood_sugar&.facility&.district,
-      blood_sugar&.facility&.state,
-      appointment&.facility&.name,
-      appointment&.scheduled_date.presence && I18n.l(appointment&.scheduled_date&.to_date),
-      appointment&.follow_up_days]
+  def blood_sugar_fields(patient_summary, i)
+    [I18n.l(patient_summary.send("latest_blood_sugar_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.send("latest_blood_sugar_#{i}_recorded_at").to_date),
+      patient_summary.send("latest_blood_sugar_#{i}_blood_sugar_type"),
+      patient_summary.send("latest_blood_sugar_#{i}_blood_sugar_value"),
+      patient_summary.send("latest_blood_sugar_#{i}_facility_name"),
+      patient_summary.send("latest_blood_sugar_#{i}_facility_type"),
+      patient_summary.send("latest_blood_sugar_#{i}_district"),
+      patient_summary.send("latest_blood_sugar_#{i}_state"),
+      patient_summary.send("latest_blood_sugar_#{i}_follow_up_facility_name"),
+      I18n.l(patient_summary.send("latest_blood_sugar_#{i}_follow_up_date")),
+      patient_summary.send("latest_blood_sugar_#{i}_follow_up_days")]
   end
 
   def zone_column

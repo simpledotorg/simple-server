@@ -85,10 +85,6 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.recorded_at).to eq(old_date)
     end
 
-    it "calculates registration quarter" do
-      expect(patient_summary.registration_quarter).to eq(old_quarter)
-    end
-
     it "includes registration facility details", :aggregate_failures do
       expect(patient_summary.registration_facility_name).to eq(patient.registration_facility.name)
       expect(patient_summary.registration_facility_type).to eq(patient.registration_facility.facility_type)

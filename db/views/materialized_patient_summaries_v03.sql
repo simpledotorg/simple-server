@@ -14,7 +14,7 @@ with latest_bp_passport as (
     select
         bp.id as bp_id,
         prescription_drugs.*,
-        rank() over (partition by bp.id order by prescription_drugs.is_deleted desc, prescription_drugs.name, prescription_drugs.device_created_at desc) rank
+        rank() over (partition by bp.id order by prescription_drugs.is_protocol_drug desc, prescription_drugs.name, prescription_drugs.device_created_at desc) rank
     from blood_pressures bp
     left outer join prescription_drugs
         on prescription_drugs.patient_id = bp.patient_id
@@ -24,7 +24,8 @@ with latest_bp_passport as (
 ), other_medications as (
     select
         bp_id,
-        string_agg (name || ' ' || dosage, ',') filter (where rank > 5) as other_prescription_drugs
+        string_agg (name || '-' || dosage, ', ') filter (where rank > 5) as other_prescription_drugs,
+        string_agg (name || '-' || dosage, ', ' order by rank) as all_prescription_drugs
     from ranked_prescription_drugs
     group by bp_id
 ), ranked_blood_pressures as (
@@ -40,7 +41,7 @@ with latest_bp_passport as (
         f.state,
         follow_up_facility.name as follow_up_facility_name,
         a.scheduled_date as follow_up_date,
-        greatest(0, date_part('day', a.scheduled_date - a.device_created_at)) as follow_up_days,
+        greatest(0, date_part('day', a.scheduled_date - date_trunc('day', a.device_created_at)))::int as follow_up_days,
 
         pd_1.name as prescription_drug_1_name,
         pd_1.dosage as prescription_drug_1_dosage,
@@ -58,12 +59,13 @@ with latest_bp_passport as (
         pd_5.dosage as prescription_drug_5_dosage,
 
         other_medications.other_prescription_drugs,
+        other_medications.all_prescription_drugs,
 
         rank() over (partition by bp.patient_id order by bp.recorded_at desc) rank
     from blood_pressures bp
-    left join facilities f on bp.facility_id = f.id
-    left join appointments a on a.patient_id = bp.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bp.device_created_at)
-    left join facilities follow_up_facility on follow_up_facility.id = a.facility_id
+    left outer join facilities f on bp.facility_id = f.id
+    left outer join appointments a on a.patient_id = bp.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bp.recorded_at)
+    left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     left outer join ranked_prescription_drugs pd_1 on bp.id = pd_1.bp_id and pd_1.rank = 1
     left outer join ranked_prescription_drugs pd_2 on bp.id = pd_2.bp_id and pd_2.rank = 2
     left outer join ranked_prescription_drugs pd_3 on bp.id = pd_3.bp_id and pd_3.rank = 3
@@ -86,6 +88,7 @@ with latest_bp_passport as (
         latest_blood_pressure_1.follow_up_facility_name as latest_blood_pressure_1_follow_up_facility_name,
         latest_blood_pressure_1.follow_up_date as latest_blood_pressure_1_follow_up_date,
         latest_blood_pressure_1.follow_up_days as latest_blood_pressure_1_follow_up_days,
+        latest_blood_pressure_1.all_prescription_drugs != latest_blood_pressure_2.all_prescription_drugs as latest_blood_pressure_1_medication_updated,
         latest_blood_pressure_1.prescription_drug_1_name as latest_blood_pressure_1_prescription_drug_1_name,
         latest_blood_pressure_1.prescription_drug_1_dosage as latest_blood_pressure_1_prescription_drug_1_dosage,
         latest_blood_pressure_1.prescription_drug_2_name as latest_blood_pressure_1_prescription_drug_2_name,
@@ -109,6 +112,7 @@ with latest_bp_passport as (
         latest_blood_pressure_2.follow_up_facility_name as latest_blood_pressure_2_follow_up_facility_name,
         latest_blood_pressure_2.follow_up_date as latest_blood_pressure_2_follow_up_date,
         latest_blood_pressure_2.follow_up_days as latest_blood_pressure_2_follow_up_days,
+        latest_blood_pressure_2.all_prescription_drugs != latest_blood_pressure_3.all_prescription_drugs as latest_blood_pressure_2_medication_updated,
         latest_blood_pressure_2.prescription_drug_1_name as latest_blood_pressure_2_prescription_drug_1_name,
         latest_blood_pressure_2.prescription_drug_1_dosage as latest_blood_pressure_2_prescription_drug_1_dosage,
         latest_blood_pressure_2.prescription_drug_2_name as latest_blood_pressure_2_prescription_drug_2_name,
@@ -132,6 +136,7 @@ with latest_bp_passport as (
         latest_blood_pressure_3.follow_up_facility_name as latest_blood_pressure_3_follow_up_facility_name,
         latest_blood_pressure_3.follow_up_date as latest_blood_pressure_3_follow_up_date,
         latest_blood_pressure_3.follow_up_days as latest_blood_pressure_3_follow_up_days,
+        latest_blood_pressure_3.all_prescription_drugs != latest_blood_pressure_4.all_prescription_drugs as latest_blood_pressure_3_medication_updated,
         latest_blood_pressure_3.prescription_drug_1_name as latest_blood_pressure_3_prescription_drug_1_name,
         latest_blood_pressure_3.prescription_drug_1_dosage as latest_blood_pressure_3_prescription_drug_1_dosage,
         latest_blood_pressure_3.prescription_drug_2_name as latest_blood_pressure_3_prescription_drug_2_name,
@@ -162,12 +167,12 @@ with latest_bp_passport as (
         f.state,
         follow_up_facility.name as follow_up_facility_name,
         a.scheduled_date as follow_up_date,
-        greatest(0, date_part('day', a.scheduled_date - a.device_created_at)) as follow_up_days,
+        greatest(0, date_part('day', a.scheduled_date -  date_trunc('day',a.device_created_at)))::int as follow_up_days,
         rank() over (partition by bs.patient_id order by bs.recorded_at desc) rank
     from blood_sugars bs
-    left join facilities f on bs.facility_id = f.id
-    left join appointments a on a.patient_id = bs.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bs.device_created_at)
-    left join facilities follow_up_facility on follow_up_facility.id = a.facility_id
+    left outer join facilities f on bs.facility_id = f.id
+    left outer join appointments a on a.patient_id = bs.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bs.recorded_at)
+    left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     where bs.deleted_at is null and a.deleted_at is null
 ), latest_blood_sugars as (
     select
@@ -230,12 +235,6 @@ with latest_bp_passport as (
 select
     p.id,
     p.recorded_at,
-    CONCAT(date_part(
-        'year',
-        p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))),
-        ' Q',
-        EXTRACT(QUARTER FROM p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))
-    )) AS registration_quarter,
     p.full_name as full_name,
     latest_bp_passport.id as latest_bp_passport_id,
     latest_bp_passport.identifier as latest_bp_passport_identifier,
@@ -245,12 +244,12 @@ select
     )) as current_age,
     p.gender,
     p.status,
-    latest_phone_number.number,
+    latest_phone_number.number as latest_phone_number,
     addresses.village_or_colony,
     addresses.street_address,
     addresses.district,
-    addresses.state,
     addresses.zone,
+    addresses.state,
 
     assigned_facility.name as assigned_facility_name,
     assigned_facility.facility_type as assigned_facility_type,
@@ -287,6 +286,7 @@ select
     latest_blood_pressures.latest_blood_pressure_1_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_1_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_1_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_1_medication_updated,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_1_prescription_drug_2_name,
@@ -310,6 +310,7 @@ select
     latest_blood_pressures.latest_blood_pressure_2_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_2_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_2_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_2_medication_updated,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_2_prescription_drug_2_name,
@@ -333,6 +334,7 @@ select
     latest_blood_pressures.latest_blood_pressure_3_follow_up_facility_name,
     latest_blood_pressures.latest_blood_pressure_3_follow_up_date,
     latest_blood_pressures.latest_blood_pressure_3_follow_up_days,
+    latest_blood_pressures.latest_blood_pressure_3_medication_updated,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_name,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_1_dosage,
     latest_blood_pressures.latest_blood_pressure_3_prescription_drug_2_name,
