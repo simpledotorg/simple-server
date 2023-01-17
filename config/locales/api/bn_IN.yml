@@ -1,4 +1,4 @@
-bn-IN:
+bn_IN:
   date:
     month_names: [~, "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"]
     abbr_month_names: [~, "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"]
@@ -330,6 +330,9 @@ bn-IN:
     no_data_card:
       title: "এই রিপোর্টটি শীঘ্রই আসছে"
       subtitle: "আপনি এখনও আগের রিপোর্ট দেখতে দেখতে পারেন"
+    update_required_card:
+      title: "আপডেট করতে হবে"
+      subtitle: "এই রিপোর্ট দেখতে অ্যাপটি আপডেট করুন"
     diagnoses:
       all: "সমস্ত উচ্চ রক্তচাপ এবং ডায়াবেটিস"
       hypertension: "উচ্চ রক্তচাপ"
@@ -442,3 +445,29 @@ bn-IN:
         cohort_title: "%{period}-এ শেষবারের ভিজিট থেকে ফলাফল"
         cohort_subtitle: "%{registration_period}-এ রেজিস্টার করা %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} থাকা %{total_patients} %{patient_or_patients}"
+  monthly_screening_reports:
+    male: "পুরুষ"
+    female: "মহিলা"
+    transgender: "ট্রান্সজেন্ডার"
+    monthly_opd_visits_gt_30: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >30 বছর বয়েস"
+    monthly_opd_visits_gt_18: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >18 বছর বয়েস"
+    outpatient_department_visits: "বাইরের রোগীদের দেখানো জন্য"
+    htn_and_dm_screening: "HTN এবং DM স্ক্রিনিং"
+    total_bp_checks: "মোট বিপি চেক করা হয়ে গেছে"
+    total_blood_sugar_checks: "মোট ব্লাড সুগার চেক করা হয়ে গেছে"
+    new_suspected_individuals: "নতুন শনাক্ত করা ব্যাক্তিগণ"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (উভয়ই)"
+    diagnosed_cases_on_follow_up: "ডায়াগনিস্টিক কেস ফলো আপ করা হচ্ছে"
+    diagnosed_cases_on_follow_up_htn: "HTN রোগীদের ফলো-আপ করার জন্য দেখাতে আসা"
+    diagnosed_cases_on_follow_up_dm: "DM রোগীদের ফলো-আপ করার জন্য দেখাতে আসা"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM (উভয়ই) রোগীদের ফলো-আপ করার জন্য দেখাতে আসা"
+    cancer_screening: "ক্যান্সারের স্ক্রিনিং"
+    total_cancer_screening_oral: "মোট মুখের ক্যান্সারের চেক করা হয়ে গেছে"
+    total_cancer_screening_breast: "মোট ব্রেস্ট ক্যান্সারের চেক করা হয়ে গেছে"
+    total_cancer_screening_cervical: "মোট কারভিক্যাল ক্যান্সারের চেক করা হয়ে গেছে"
+    oral_cancer: "মুখের ক্যান্সার"
+    breast_cancer: "ব্রেস্ট ক্যান্সার"
+    cervical_cancer: "কারভিক্যাল ক্যান্সার"
+
