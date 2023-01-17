@@ -1,4 +1,4 @@
-ta-IN:
+ta_IN:
   date:
     month_names: [~, "ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"]
     abbr_month_names: [~, "ஜன", "பிப்", "மார்ச்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"]
@@ -330,6 +330,9 @@ ta-IN:
     no_data_card:
       title: "இந்த அறிக்கை விரைவில் கிடைக்கும்"
       subtitle: "நீங்கள் இப்போதும் முந்தைய அறிக்கைகளைப் பார்க்கலாம்"
+    update_required_card:
+      title: "அப்டேட் தேவைப்படுகிறது"
+      subtitle: "இந்த அறிக்கையைப் பார்ப்பதற்குச் செயலியை அப்டேட் செய்யவும்"
     diagnoses:
       all: "அனைத்து உயர் இரத்த அழுத்தம் மற்றும் நீரிழிவு நோயாளிகள்"
       hypertension: "உயர் இரத்த அழுத்தம்"
@@ -442,3 +445,29 @@ ta-IN:
         cohort_title: "%{period}-இல் கடந்த வருகை முதலான முடிவு"
         cohort_subtitle: "%{registration_period}-இல் %{number_of_patients} %{patient_or_patients} பதிவுசெய்துள்ளனர்"
         cohort_bar_tooltip: "%{threshold} உடனான %{total_patients} %{patient_or_patients}"
+  monthly_screening_reports:
+    male: "ஆண்"
+    female: "பெண்"
+    transgender: "திருநங்கை"
+    monthly_opd_visits_gt_30: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >30 வயது"
+    monthly_opd_visits_gt_18: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >18 வயது"
+    outpatient_department_visits: "வெளிநோயாளிகள் துறை வருகைகள்"
+    htn_and_dm_screening: "HTN மற்றும் DM ஸ்க்ரீனிங்"
+    total_bp_checks: "செய்யப்பட்டுள்ள மொத்த இரத்த அழுத்தச் சரிபார்ப்புகள்"
+    total_blood_sugar_checks: "செய்யப்பட்டுள்ள மொத்த இரத்தச் சர்க்கரை சரிபார்ப்புகள்"
+    new_suspected_individuals: "புதிதாகச் சந்தேகிக்கப்படப்பட்டுள்ள தனிநபர்கள்"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (இரண்டும்)"
+    diagnosed_cases_on_follow_up: "பின்தொடர்வில் நோயறுதி செய்யப்பட்ட நோயாளிகள்"
+    diagnosed_cases_on_follow_up_htn: "பின்தொடர்வு வருகையுடன் HTN நோயாளிகள்"
+    diagnosed_cases_on_follow_up_dm: "பின்தொடர்வு வருகையுடன் DM நோயாளிகள்"
+    diagnosed_cases_on_follow_up_htn_and_dm: "பின்தொடர்வு வருகையுடன் HTN+DM (இரண்டும்) நோயாளிகள்"
+    cancer_screening: "புற்றுநோய் ஸ்க்ரீனிங்"
+    total_cancer_screening_oral: "செய்யப்பட்டுள்ள மொத்த வாய் புற்றுநோய் சரிபார்ப்புகள்"
+    total_cancer_screening_breast: "செய்யப்பட்டுள்ள மொத்த மார்பகப் புற்றுநோய் சரிபார்ப்புகள்"
+    total_cancer_screening_cervical: "செய்யப்பட்டுள்ள மொத்த கர்ப்பப்பை புற்றுநோய் சரிபார்ப்புகள்"
+    oral_cancer: "வாய் புற்றுநோய்"
+    breast_cancer: "மார்பகப் புற்றுநோய்"
+    cervical_cancer: "கர்பப்பை புற்றுநோய்"
+
