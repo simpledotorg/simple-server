@@ -1,4 +1,4 @@
-pa-Guru-IN:
+pa:
   date:
     month_names: [~, "ਜਨਵਰੀ", "ਫ਼ਰਵਰੀ", "ਮਾਰਚ", "ਅਪ੍ਰੈਲ", "ਮਈ", "ਜੂਨ", "ਜੁਲਾਈ", "ਅਗਸਤ", "ਸਤੰਬਰ", "ਅਕਤੂਬਰ", "ਨਵੰਬਰ", "ਦਸੰਬਰ"]
     abbr_month_names: [~, "ਜਨਵਰੀ", "ਫਰਵਰੀ", "ਮਾਰਚ", "ਅਪ੍ਰੈਲ", "ਮਈ", "ਜੂਨ", "ਜੁਲਾਈ", "ਅਗਸਤ", "ਸਤੰਬਰ", "ਅਕਤੂਬਰ", "ਨਵੰਬਰ", "ਦਸੰਬਰ"]
@@ -330,6 +330,9 @@ pa-Guru-IN:
     no_data_card:
       title: "ਇਹ ਰਿਪੋਰਟ ਜਲਦ ਆ ਰਹੀ ਹੈ"
       subtitle: "ਤੁਸੀਂ ਅਜੇ ਵੀ ਪਿਛਲੀਆਂ ਰਿਪੋਰਟਾਂ ਦੇਖ ਸਕਦੇ ਹੋ"
+    update_required_card:
+      title: "ਅੱਪਡੇਟ ਲੋੜੀਂਦਾ ਹੈ"
+      subtitle: "ਇਸ ਰਿਪੋਰਟ ਨੂੰ ਵੇਖਣ ਵਾਸਤੇ ਐਪ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ"
     diagnoses:
       all: "ਸਾਰੇ ਹਾਈਪਰਟੈਨਸ਼ਨ ਅਤੇ ਸ਼ੂਗਰ"
       hypertension: "ਹਾਈਪਰਟੈਂਸ਼ਨ"
@@ -376,7 +379,7 @@ pa-Guru-IN:
         subtitle: "%{facility_name} 'ਤੇ ਫਾਲੋ-ਅੱਪ ਵਿਜ਼ਿਟ ਰਿਕਾਰਡ ਕੀਤੇ ਗਏ। ਫਾਲੋ-ਅੱਪ ਉਹ ਵਿਜ਼ਿਟ ਹੁੰਦਾ ਹੈ ਜਦੋਂ ਮਰੀਜ਼ ਦਾ ਬੀਪੀ ਲਿਆ ਗਿਆ ਸੀ, ਬਲੱਡ ਸ਼ੂਗਰ ਲਿਆ ਗਿਆ ਸੀ, ਮੁਲਾਕਾਤ ਨਿਯਤ ਕੀਤੀ ਗਈ ਸੀ, ਜਾਂ ਦਵਾਈਆਂ ਨੂੰ ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ ਸੀ।"
       patients_initiated_on_treatment_card:
         title: '"ਇਲਾਜ ਸ਼ੁਰੂ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ" ਦਾ ਡੇਟਾ ਕਿੱਥੇ ਹੈ?'
-        main_text: '''''ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ'''' ਦੀ ਵਰਤੋਂ ਕਰੋ, ਇਹ Simple ''ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼ਾਂ ਲਈ ਹਮੇਸ਼ਾ "ਇਲਾਜ ਸ਼ੁਰੂ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ" ਦੇ ਬਰਾਬਰ ਹੋਵੇਗਾ।'
+        main_text: '''''ਰਜਿਸਟਰ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ'''' ਦੀ ਵਰਤੋਂ ਕਰੋ, ਇਹ ਸਿੰਪਲ ''ਤੇ ਰਜਿਸਟਰ ਕੀਤੇ ਮਰੀਜ਼ਾਂ ਲਈ ਹਮੇਸ਼ਾ "ਇਲਾਜ ਸ਼ੁਰੂ ਕੀਤੇ ਗਏ ਮਰੀਜ਼ਾਂ" ਦੇ ਬਰਾਬਰ ਹੋਵੇਗਾ।'
       more_patient_data_coming_soon_card:
         title: "ਮਰੀਜ਼ ਦਾ ਹੋਰ ਡੇਟਾ ਜਲਦੀ ਆ ਰਿਹਾ ਹੈ"
         main_text: "ਬਿਮਾਰੀ ਅਤੇ ਲਿੰਗ ਦੀ ਜਾਣਕਾਰੀ ਮੁਤਾਬਕ ਵੰਡਿਆ ਗਿਆ ਰੋਜ਼ਾਨਾ ਰਜਿਸਟ੍ਰੇਸ਼ਨ ਅਤੇ ਫਾਲੋ-ਅੱਪ ਡੇਟਾ ਜਲਦੀ ਹੀ ਜੋੜਿਆ ਜਾਵੇਗਾ।"
@@ -442,3 +445,29 @@ pa-Guru-IN:
         cohort_title: "%{period} ਵਿੱਚ ਪਿਛਲੀ ਵਿਜ਼ਿਟ ਦਾ ਨਤੀਜਾ"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} ਵਿੱਚ ਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ"
         cohort_bar_tooltip: "%{threshold} ਦੇ ਨਾਲ %{total_patients} %{patient_or_patients}"
+  monthly_screening_reports:
+    male: "ਮਰਦ"
+    female: "ਔਰਤ"
+    transgender: "ਦੁਲਿੰਗੀ"
+    monthly_opd_visits_gt_30: "30 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
+    monthly_opd_visits_gt_18: "18 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
+    outpatient_department_visits: "ਆਉਟਪੇਸ਼ੈਂਟ ਵਿਭਾਗ ਦੀਆਂ ਮੁਲਾਕਾਤਾਂ"
+    htn_and_dm_screening: "HTN ਅਤੇ DM ਸਕ੍ਰੀਨਿੰਗ"
+    total_bp_checks: "ਕੁੱਲ BP ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
+    total_blood_sugar_checks: "ਕੁੱਲ ਬਲੱਡ ਸ਼ੂਗਰ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
+    new_suspected_individuals: "ਕੁੱਝ ਸ਼ੱਕੀ ਵਿਅਕਤੀ"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ਦੋਵੇਂ)"
+    diagnosed_cases_on_follow_up: "ਫਾਲੋ ਅੱਪ 'ਤੇ ਨਿਦਾਨ ਕੀਤੇ ਗਏ ਮਾਮਲੇ"
+    diagnosed_cases_on_follow_up_htn: "ਫਾਲੋ ਅੱਪ ਮੁਲਾਕਾਤਾਂ ਵਾਲੇ HTN ਮਰੀਜ਼"
+    diagnosed_cases_on_follow_up_dm: "ਫਾਲੋ ਅੱਪ ਮੁਲਾਕਾਤਾਂ ਵਾਲੇ DM ਮਰੀਜ਼"
+    diagnosed_cases_on_follow_up_htn_and_dm: "ਫਾਲੋ ਅਪ ਮੁਲਾਕਾਤਾਂ ਵਾਲੇ HTN+DM (ਦੋਵੇਂ) ਮਰੀਜ਼"
+    cancer_screening: "ਕੈਂਸਰ ਸਕ੍ਰੀਨਿੰਗ"
+    total_cancer_screening_oral: "ਮੂੰਹ ਦੇ ਕੈਂਸਰ ਦੀਆਂ ਕੁੱਲ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
+    total_cancer_screening_breast: "ਛਾਤੀ ਦੇ ਕੈਂਸਰ ਦੀਆਂ ਕੁੱਲ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
+    total_cancer_screening_cervical: "ਸਰਵਾਈਕਲ ਕੈਂਸਰ ਦੀਆਂ ਕੁੱਲ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
+    oral_cancer: "ਮੂੰਹ ਦਾ ਕੈਂਸਰ"
+    breast_cancer: "ਛਾਤੀ ਦਾ ਕੈਂਸਰ"
+    cervical_cancer: "ਸਰਵਾਈਕਲ ਦਾ ਕੈਂਸਰ"
+
