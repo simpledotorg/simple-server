@@ -1,4 +1,4 @@
-ti-ET:
+ti:
   date:
     month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቕምቲ", "ሕዳር", "ታሕሳስ"]
     abbr_month_names: [~, "ጥሪ", "ለካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰነ", "ሓምለ", "ነሓሰ", "መስከረም", "ጥቅምቲ", "ሕዳር", "ታሕ"]
@@ -324,7 +324,15 @@ ti-ET:
     yearly_report_title: "ዓመታዊ"
     hypertension_report_title: "ልዑል ጸቕጢ ደም"
     diabetes_report_title: "ሕማም ሽኮር"
+    report: "ጸብጻብ"
     last_updated_at: "ሓበሬታ ንመወዳእታ ግዜ ዝተሓደሰሉ ዕለት ኣብ %{date} ኣብ %{time}"
+    coming_soon: "ኣብ መጻኢ"
+    no_data_card:
+      title: "እዚ ጸብጻብ ኣብ ቀረባ እዋን ይመጽእ ኣሎ።"
+      subtitle: "ሕጂ ውን ቅድሚ ሕጂ ዝቐረቡ ጸብጻባት ክትዕዘቡ ትኽእሉ ኢኹም።"
+    update_required_card:
+      title: "ምሕዳስ የድሊ"
+      subtitle: "ነዚ ጸብጻብ ንምርኣይ ነቲ ኣፕ ኣሐድሶ"
     diagnoses:
       all: "ኩሎም ጸቕጢ ደም ከምኡውን ሕማም ሽኮር"
       hypertension: "ልዑል ጸቕጢ ደም"
@@ -348,8 +356,17 @@ ti-ET:
     achievements_card:
       title: "ዓወታት"
       follow_up_visits_section_title: "ክትትል %{visit_or_visits} ተመዝጊቡ ኣሎ"
+      visit:
+        one: "ምብጻሓት"
+        other: "ምብጻሓት"
       overdue_patients_section_title: "%{call_or_calls} ንዝጽበዩ ዘለዉ ተሓከምቲ"
+      call:
+        one: "ደወላት"
+        other: "ደወላት"
       registered_patients_title: "ተመዝጊቡ%{patient_or_patients}"
+      patient:
+        one: "ተሓከምቲ"
+        other: "ተሓከምቲ"
     period_report:
       registered_patients_card:
         title: "ዝተመዝገቡ ተሓከምቲ"
@@ -428,3 +445,29 @@ ti-ET:
         cohort_title: "ካብ ዝሓለፈ ምብዛሕ ውጽኢት ኣብ %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ዝተመዝገቡ ኣብ %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} ምስ%{threshold}"
+  monthly_screening_reports:
+    male: "ወዲ-ተባዕታይ"
+    female: "ጓል-አነስተይቲ"
+    transgender: "ፆታ-ዝቐየረ"
+    monthly_opd_visits_gt_30: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >30 ዓመት"
+    monthly_opd_visits_gt_18: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >18 ዓመት"
+    outpatient_department_visits: "ናይ ደጋዊ ተሓካሚ ምጉብናያት"
+    htn_and_dm_screening: "ናይ HTNን DMን መርመራታት"
+    total_bp_checks: "ጠቕላላ ናይ BP ምርግጋፃት ተዛዚሞም እዮም"
+    total_blood_sugar_checks: "ጠቕላላ ናይ ደም ሽኮር ምርግጋፃት ተዛዚሞም እዮም"
+    new_suspected_individuals: "ሓደሽቲ ዝጥርጠሩ ውልቀ ሰባት"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ክልቲኡ)"
+    diagnosed_cases_on_follow_up: "ኣብ ክትትል ዘለዉ ዝተመርመሩ ጉዳያት"
+    diagnosed_cases_on_follow_up_htn: "HTN patients with a follow-up visit"
+    diagnosed_cases_on_follow_up_dm: "ናይ ክትትል ምጉብናይ ዘለዎም ሕሙማት DM"
+    diagnosed_cases_on_follow_up_htn_and_dm: "ናይ ክትትል ምጉብናይ ዘለዎም ሕሙማት HTN+DM (ክልቲኡ)"
+    cancer_screening: "መርመራ ካንሰር"
+    total_cancer_screening_oral: "ጠቕላላ ናይ ኣፍ ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    total_cancer_screening_breast: "ጠቕላላ ናይ ጡብ ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    total_cancer_screening_cervical: "ጠቕላላ ናይ ማህፀን ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    oral_cancer: "ናይ ኣፍ ካንሰር"
+    breast_cancer: "ናይ ጡብ ካንሰር"
+    cervical_cancer: "ናይ ማህፀን ካንሰር"
+
