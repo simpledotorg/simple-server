@@ -10,7 +10,6 @@ def without_transactional_fixtures(&block)
   end
 end
 
-
 RSpec.describe QuestionnaireResponse, type: :model do
   describe ".merge" do
     it "returns record with errors if invalid, and does not merge" do
@@ -51,7 +50,7 @@ RSpec.describe QuestionnaireResponse, type: :model do
       expect(QuestionnaireResponse.find(existing_questionnaire_response.id).attributes.with_int_timestamps.except("updated_at"))
         .to eq(updated_questionnaire_response.attributes.with_int_timestamps.except("updated_at"))
       expect(QuestionnaireResponse.count).to eq 1
-      expect(existing_questionnaire_response.reload.content).to eq({ "a" => "b", "c" => "c" })
+      expect(existing_questionnaire_response.reload.content).to eq({"a" => "b", "c" => "c"})
     end
 
     it "skips existing keys in content and merges new keys when input record is older" do

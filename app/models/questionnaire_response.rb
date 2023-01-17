@@ -3,7 +3,7 @@ class QuestionnaireResponse < ApplicationRecord
 
   belongs_to :questionnaire
   belongs_to :facility
-  belongs_to :user
+  belongs_to :user, optional: true
 
   scope :for_sync, -> { with_discarded }
 
@@ -30,7 +30,7 @@ class QuestionnaireResponse < ApplicationRecord
             update_existing_record(existing_record, attributes.merge("content" => new_content))
           when :old
             new_content = new_record.content.merge(existing_record.content)
-            update_existing_record(existing_record, { "content" => new_content })
+            update_existing_record(existing_record, {"content" => new_content})
         end
       end
     end

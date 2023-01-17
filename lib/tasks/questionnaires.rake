@@ -1,8 +1,8 @@
-require "tasks/scripts/seed_questionnaire_responses"
+require "tasks/scripts/pre_fill_monthly_screening_reports"
 
 namespace :questionnaires do
-  desc "Seed questionnaire responses with empty content"
-  task seed_questionnaire_responses: :environment do
-    SeedQuestionnaireResponses.call
+  desc "Pre-fill monthly screening reports responses with content"
+  task pre_fill_monthly_screening_reports: :environment do
+    PreFillMonthlyScreeningReports.call
   end
 end

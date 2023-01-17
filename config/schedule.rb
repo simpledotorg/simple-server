@@ -121,7 +121,7 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
-  rake "questionnaires:seed_questionnaire_responses"
+  rake "questionnaires:pre_fill_monthly_screening_reports"
 end
 
 every 1.month, at: local("07:00 am"), roles: [:cron] do
