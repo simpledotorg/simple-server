@@ -1,4 +1,4 @@
-te-IN:
+te_IN:
   date:
     month_names: [~, "జనవరి", "ఫిబ్రవరి", "మార్చి", "ఏప్రిల్", "మే", "జూన్", "జూలై", "ఆగస్టు", "సెప్టెంబర్", "అక్టోబర్", "నవంబర్", "డిసెంబర్"]
     abbr_month_names: [~, "జన", "ఫిబ్ర", "మార్చి", "ఏప్రిల్", "మే", "జూన్", "జూలై", "ఆగ", "సెప్టెం", "అక్టో", "నవం", "డిసెం"]
@@ -330,6 +330,9 @@ te-IN:
     no_data_card:
       title: "ఈ నివేదిక త్వరలో రాబోతుంది"
       subtitle: "మీరు ఇప్పకిటీ మునుపటి నివేదికలను వీక్షించగలరు"
+    update_required_card:
+      title: "అప్‌డేట్ అవసరం"
+      subtitle: "ఈ నివేదికను వీక్షించడానికి యాప్‌ని అప్‌డేట్ చేయండి"
     diagnoses:
       all: "అధిక రక్తపోటు మరియు మధుమేహం ఉన్న వారు అందరూ"
       hypertension: "అధిక రక్తపోటు"
@@ -442,3 +445,29 @@ te-IN:
         cohort_title: "%{period}లోని చివరి సందర్శన నుండి ఫలితం"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period}లో రిజిస్టర్ అయినవారు"
         cohort_bar_tooltip: "%{threshold} తో %{total_patients} %{patient_or_patients}"
+  monthly_screening_reports:
+    male: "పురుషుడు"
+    female: "మహిళ"
+    transgender: "ట్రాన్స్‌జండర్"
+    monthly_opd_visits_gt_30: ">30 సంవత్సరాల ఏళ్ళ వయస్సుగల వయోజనుల కోసం నెలవారీ OPD సందర్శనలు"
+    monthly_opd_visits_gt_18: "> 18 సంవత్సరాల వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
+    outpatient_department_visits: "అవుట్‌పేషంట్ డిపార్ట్‌మెంట్ సందర్శనలు"
+    htn_and_dm_screening: "HTN మరియు DM స్క్రీనింగ్"
+    total_bp_checks: "మొత్తం బిపి తనిఖీలు పూర్తయ్యాయి"
+    total_blood_sugar_checks: "మొత్తం బ్లడ్ షుగర్ తనిఖీలు పూర్తయ్యాయి"
+    new_suspected_individuals: "కొత్త అనుమానాస్పద వ్యక్తులు"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ఇద్దరు)"
+    diagnosed_cases_on_follow_up: "ఫాలో-అప్‌లో నిర్ధారణ చేసిన కేసులు"
+    diagnosed_cases_on_follow_up_htn: "ఫాలో-అప్ సందర్శనతో HTN పేషంట్‌లు"
+    diagnosed_cases_on_follow_up_dm: "ఫాలో-అప్ సందర్శనతో DM పేషంట్‌లు"
+    diagnosed_cases_on_follow_up_htn_and_dm: "ఫాలో-అప్ సందర్శనతో HTN+DM (ఇద్దరు) పేషంట్‌లు"
+    cancer_screening: "క్యాన్సర్ స్క్రీనింగ్"
+    total_cancer_screening_oral: "నోటి క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    total_cancer_screening_breast: "రొమ్ము క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    total_cancer_screening_cervical: "గర్భాశయ క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    oral_cancer: "నోటి క్యాన్సర్"
+    breast_cancer: "రొమ్ము క్యాన్సర్"
+    cervical_cancer: "గర్భాశయ క్యాన్సర్"
+
