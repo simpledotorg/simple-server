@@ -2,6 +2,7 @@ class Api::V4::QuestionnaireResponsePayloadValidator < Api::V3::PayloadValidator
   attr_accessor(
     :id,
     :questionnaire_id,
+    :questionnaire_type,
     :facility_id,
     :user_id,
     :content,
@@ -11,13 +12,8 @@ class Api::V4::QuestionnaireResponsePayloadValidator < Api::V3::PayloadValidator
   )
 
   validate :validate_schema
-  validate :belongs_to_current_facility
 
   def schema
     Api::V4::Models.questionnaire_response
-  end
-
-  def belongs_to_current_facility
-    # errors.add() if facility_id == current_facility.i
   end
 end

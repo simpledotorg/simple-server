@@ -7,9 +7,6 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
   let(:model) { QuestionnaireResponse }
   let(:build_payload) { -> { build_questionnaire_response_payload } }
   let(:build_invalid_payload) { -> { build_invalid_questionnaire_response_payload } }
-  # let(:invalid_record) { build_invalid_payload.call }
-  # let(:update_payload) { ->(blood_sugar) { updated_blood_sugar_payload(blood_sugar) } }
-  # let(:number_of_schema_errors_in_invalid_payload) { 2 }
 
   before do
     @questionnaire_types = stub_questionnaire_types
@@ -29,7 +26,72 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
   end
 
   it_behaves_like "a sync controller that authenticates user requests"
-  it_behaves_like "a sync controller that audits the data access"
+  it_behaves_like "a sync controller that audits the data access: sync_to_user"
+
+  describe "a sync controller that audits the data access: sync_from_user" do
+    include ActiveJob::TestHelper
+
+    before :each do
+      set_authentication_headers
+    end
+
+    let(:auditable_type) { model.to_s }
+    let(:request_key) { model.to_s.underscore.pluralize }
+    let(:model_class_sym) { model.to_s.underscore.to_sym }
+
+    describe "creates an audit log for data synced from user" do
+      let(:record) { build_payload.call }
+      let(:payload) { {request_key => [record]} }
+
+      it "creates an audit log for new data created by the user" do
+        Timecop.freeze do
+          expect(AuditLogger)
+            .to receive(:info).with({user: request_user.id,
+                                     auditable_type: auditable_type,
+                                     auditable_id: record[:id],
+                                     action: "create",
+                                     time: Time.current}.to_json)
+
+          post :sync_from_user, params: payload, as: :json
+        end
+      end
+
+      it "creates an audit log for data updated by the user" do
+        existing_record = create_record
+        record[:id] = existing_record.id
+        record[:facility_id] = existing_record.facility_id
+        payload[request_key] = [record]
+        Timecop.freeze do
+          expect(AuditLogger)
+            .to receive(:info).with({user: request_user.id,
+                                     auditable_type: auditable_type,
+                                     auditable_id: record[:id],
+                                     action: "update",
+                                     time: Time.current}.to_json)
+
+          post :sync_from_user, params: payload, as: :json
+        end
+      end
+
+      it "creates an audit log for data touched by the user" do
+        existing_record = create_record
+        record[:id] = existing_record.id
+        record[:facility_id] = existing_record.facility_id
+        record[:updated_at] = 3.days.ago
+        payload[request_key] = [record]
+        Timecop.freeze do
+          expect(AuditLogger)
+            .to receive(:info).with({user: request_user.id,
+                                     auditable_type: auditable_type,
+                                     auditable_id: record[:id],
+                                     action: "update",
+                                     time: Time.current}.to_json)
+
+          post :sync_from_user, params: payload, as: :json
+        end
+      end
+    end
+  end
 
   describe "GET sync: send data from server to device;" do
     it "Returns records only for the current facility" do

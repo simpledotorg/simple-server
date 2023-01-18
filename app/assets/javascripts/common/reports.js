@@ -693,73 +693,34 @@ Reports = function (withLtfu) {
       ? data.controlWithLtfuRate
       : data.controlRate;
 
-    const controlledGraphConfig = this.createBaseGraphConfig();
-    controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphRate),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: colors.lightGreen,
-          borderColor: colors.mediumGreen,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(controlledGraphRate),
-        },
-      ],
-    };
-    controlledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(controlledGraphRate),
+        datasets: [
+          {
+            label: "BP controlled",
+            backgroundColor: colors.lightGreen,
+            borderColor: colors.mediumGreen,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(controlledGraphRate),
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateControlledGraph(hoveredDatapoint[0].label);
+            else populateControlledGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    controlledGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateControlledGraph(hoveredDatapoint[0].label);
-        else populateControlledGraphDefault();
       },
     };
 
@@ -801,7 +762,10 @@ Reports = function (withLtfu) {
       "controlledPatientsTrend"
     );
     if (controlledGraphCanvas) {
-      new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
+      new Chart(
+        controlledGraphCanvas.getContext("2d"),
+        withBaseLineConfig(config)
+      );
       populateControlledGraphDefault();
     }
   };
@@ -815,74 +779,34 @@ Reports = function (withLtfu) {
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
-    const uncontrolledGraphConfig = this.createBaseGraphConfig();
-    uncontrolledGraphConfig.data = {
-      labels: Object.keys(uncontrolledGraphRate),
-      datasets: [
-        {
-          label: "BP uncontrolled",
-          backgroundColor: colors.lightRed,
-          borderColor: colors.mediumRed,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(uncontrolledGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(uncontrolledGraphRate),
+        datasets: [
+          {
+            label: "BP uncontrolled",
+            backgroundColor: colors.lightRed,
+            borderColor: colors.mediumRed,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(uncontrolledGraphRate),
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateUncontrolledGraph(hoveredDatapoint[0].label);
+            else populateUncontrolledGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateUncontrolledGraph(hoveredDatapoint[0].label);
-        else populateUncontrolledGraphDefault();
       },
     };
 
@@ -926,7 +850,7 @@ Reports = function (withLtfu) {
     if (uncontrolledGraphCanvas) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
-        uncontrolledGraphConfig
+        withBaseLineConfig(config)
       );
       populateUncontrolledGraphDefault();
     }
@@ -943,74 +867,34 @@ Reports = function (withLtfu) {
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
-    const missedVisitsConfig = this.createBaseGraphConfig();
-    missedVisitsConfig.data = {
-      labels: Object.keys(missedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: colors.lightBlue,
-          borderColor: colors.mediumBlue,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(missedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    missedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(missedVisitsGraphRate),
+        datasets: [
+          {
+            label: "Missed visits",
+            backgroundColor: colors.lightBlue,
+            borderColor: colors.mediumBlue,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(missedVisitsGraphRate),
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateMissedVisitsGraph(hoveredDatapoint[0].label);
+            else populateMissedVisitsGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    missedVisitsConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateMissedVisitsGraphDefault();
       },
     };
 
@@ -1051,7 +935,10 @@ Reports = function (withLtfu) {
     const missedVisitsGraphCanvas =
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
-      new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
+      new Chart(
+        missedVisitsGraphCanvas.getContext("2d"), 
+        withBaseLineConfig(config)
+      );
       populateMissedVisitsGraphDefault();
     }
   };
@@ -1064,117 +951,105 @@ Reports = function (withLtfu) {
       data.monthlyRegistrations
     );
 
-    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
-    cumulativeRegistrationsGraphConfig.type = "bar";
-    cumulativeRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: colors.transparent,
-          borderColor: colors.darkPurple,
-          borderWidth: 2,
-          pointBackgroundColor: colors.white,
-          hoverBackgroundColor: colors.white,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: colors.lightPurple,
-          hoverBackgroundColor: colors.darkPurple,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      type: "bar",
+      data: {
+        labels: Object.keys(data.cumulativeRegistrations),
+        datasets: [
+          {
+            yAxisID: "cumulativeRegistrations",
+            label: "cumulative registrations",
+            backgroundColor: colors.transparent,
+            borderColor: colors.darkPurple,
+            borderWidth: 2,
+            pointBackgroundColor: colors.white,
+            hoverBackgroundColor: colors.white,
+            hoverBorderWidth: 2,
+            data: Object.values(data.cumulativeRegistrations),
+            type: "line",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            yAxisID: "monthlyRegistrations",
+            label: "monthly registrations",
+            backgroundColor: colors.lightPurple,
+            hoverBackgroundColor: colors.darkPurple,
+            data: Object.values(data.monthlyRegistrations),
+            type: "bar",
+          },
+        ],
+      },
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
+            else populateCumulativeRegistrationsGraphDefault();
           },
         },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-            max: cumulativeRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
-            max: monthlyRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-        else populateCumulativeRegistrationsGraphDefault();
       },
     };
+
+    // Will comeback and dry this after upgrade
+    const cumulativeRegistrationsGraphConfig = withBaseLineConfig(
+      config
+    );
+
+    cumulativeRegistrationsGraphConfig.options.scales.yAxes = [
+      {
+        id: "cumulativeRegistrations",
+        position: "left",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: false,
+          drawBorder: false,
+        },
+        ticks: {
+          display: false,
+          autoSkip: false,
+          fontColor: colors.darkGrey,
+          fontSize: 10,
+          fontFamily: "Roboto",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: cumulativeRegistrationsYAxis.stepSize,
+          max: cumulativeRegistrationsYAxis.max,
+          callback: (label) => {
+            return this.formatNumberWithCommas(label);
+          },
+        },
+      },
+      {
+        id: "monthlyRegistrations",
+        position: "right",
+        stacked: true,
+        display: true,
+        gridLines: {
+          display: true,
+          drawBorder: false,
+        },
+        ticks: {
+          display: false,
+          autoSkip: false,
+          fontColor: colors.darkGrey,
+          fontSize: 10,
+          fontFamily: "Roboto",
+          padding: 8,
+          min: 0,
+          beginAtZero: true,
+          stepSize: monthlyRegistrationsYAxis.stepSize,
+          max: monthlyRegistrationsYAxis.max,
+          callback: (label) => {
+            return this.formatNumberWithCommas(label);
+          },
+        },
+      },
+    ];
 
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
