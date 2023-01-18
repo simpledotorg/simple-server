@@ -13,8 +13,14 @@ class Questionnaire < ApplicationRecord
   scope :active, -> { where(is_active: true) }
   scope :for_sync, -> { with_discarded.active }
 
+  before_save :generate_ids_for_layout
+
   def localized_layout
-    localize_layout(layout)
+    transform_layout { |l| localize_layout(l) }
+  end
+
+  def generate_ids_for_layout
+    transform_layout { |l| generate_layout_id(l) }
   end
 
   def layout_valid?
@@ -27,6 +33,10 @@ class Questionnaire < ApplicationRecord
     end
   end
 
+  def transform_layout(&blk)
+    apply_recursively_to_layout(layout, &blk)
+  end
+
   private
 
   def layout_schema
@@ -36,23 +46,23 @@ class Questionnaire < ApplicationRecord
     )
   end
 
-  def localize_layout(sub_layout)
-    sub_layout
-      .then { |l| localize_text(l) }
-      .then { |l| localize_items_recursively(l) }
+  def apply_recursively_to_layout(sub_layout, &blk)
+    new_sub_layout = blk.call(sub_layout)
+
+    items = new_sub_layout["item"]
+    return new_sub_layout unless items
+
+    new_sub_layout.merge({"item" => items.map { |item| apply_recursively_to_layout(item, &blk) }})
   end
 
-  def localize_text(sub_layout)
+  def localize_layout(sub_layout)
     text = sub_layout["text"]
     return sub_layout unless text
 
     sub_layout.merge({"text" => I18n.t!(text)})
   end
 
-  def localize_items_recursively(sub_layout)
-    items = sub_layout["item"]
-    return sub_layout unless items
-
-    sub_layout.merge({"item" => items.map { |item| localize_layout(item) }})
+  def generate_layout_id(sub_layout)
+    sub_layout.merge({"id" => SecureRandom.uuid})
   end
 end
