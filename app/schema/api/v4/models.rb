@@ -397,7 +397,7 @@ class Api::V4::Models
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          layout: {
            oneOf: [
-             {"$ref" => "#/definitions/questionnaire_layout_dsl_1"}
+             {"$ref" => "#/definitions/questionnaire_group_dsl_1"}
            ]
          }
        },

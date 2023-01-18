@@ -13,7 +13,7 @@ class Questionnaire < ApplicationRecord
   scope :active, -> { where(is_active: true) }
   scope :for_sync, -> { with_discarded.active }
 
-  before_save :generate_ids_for_layout
+  before_validation :generate_ids_for_layout
 
   def localized_layout
     transform_layout { |l| localize_layout(l) }
@@ -34,14 +34,14 @@ class Questionnaire < ApplicationRecord
   end
 
   def transform_layout(&blk)
-    apply_recursively_to_layout(layout, &blk)
+    self.layout = apply_recursively_to_layout(layout, &blk)
   end
 
   private
 
   def layout_schema
     # TODO: When dsl_version is incremented, insert a switch here.
-    Api::V4::Models::Questionnaires::Version1.layout.merge(
+    Api::V4::Models::Questionnaires::Version1.group.merge(
       definitions: Api::V4::Schema.all_definitions
     )
   end
@@ -63,6 +63,7 @@ class Questionnaire < ApplicationRecord
   end
 
   def generate_layout_id(sub_layout)
+    return sub_layout if sub_layout["id"]
     sub_layout.merge({"id" => SecureRandom.uuid})
   end
 end

@@ -7,7 +7,6 @@ FactoryBot.define do
     layout {
       {
         type: "group",
-        link_id: "an_example_group",
         view_type: "view_group",
         display_properties: {
           orientation: "vertical"
