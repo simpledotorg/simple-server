@@ -2908,6 +2908,9 @@
             "group"
           ]
         },
+        "link_id": {
+          "type": "string"
+        },
         "view_type": {
           "type": "string",
           "enum": [
@@ -2951,6 +2954,7 @@
       },
       "required": [
         "type",
+        "link_id",
         "view_type",
         "display_properties",
         "item"
@@ -2959,14 +2963,17 @@
     "questionnaire_display_dsl_1": {
       "type": "object",
       "properties": {
-        "text": {
-          "type": "string"
-        },
         "type": {
           "type": "string",
           "enum": [
             "display"
           ]
+        },
+        "link_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
         },
         "view_type": {
           "type": "string",
@@ -2977,8 +2984,9 @@
         }
       },
       "required": [
-        "text",
         "type",
+        "link_id",
+        "text",
         "view_type"
       ]
     },
@@ -2991,6 +2999,9 @@
             "display"
           ]
         },
+        "link_id": {
+          "type": "string"
+        },
         "view_type": {
           "type": "string",
           "enum": [
@@ -3001,23 +3012,24 @@
       },
       "required": [
         "type",
+        "link_id",
         "view_type"
       ]
     },
     "questionnaire_integer_input_dsl_1": {
       "type": "object",
       "properties": {
-        "link_id": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        },
         "type": {
           "type": "string",
           "enum": [
             "integer"
           ]
+        },
+        "link_id": {
+          "type": "string"
+        },
+        "text": {
+          "type": "string"
         },
         "view_type": {
           "type": "string",
@@ -3042,9 +3054,9 @@
         }
       },
       "required": [
+        "type",
         "link_id",
         "text",
-        "type",
         "view_type",
         "validations"
       ]

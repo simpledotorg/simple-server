@@ -20,6 +20,7 @@ class Api::V4::Models::Questionnaires::Version1
         example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout,
         properties: {
           type: {type: :string, enum: %w[group]},
+          link_id: {type: :string},
           view_type: {type: :string, enum: %w[view_group]},
           display_properties: {
             type: :object,
@@ -40,7 +41,7 @@ class Api::V4::Models::Questionnaires::Version1
             }
           }
         },
-        required: %w[type view_type display_properties item]
+        required: %w[type link_id view_type display_properties item]
       }
     end
 
@@ -49,9 +50,10 @@ class Api::V4::Models::Questionnaires::Version1
         type: :object,
         properties: {
           type: {type: :string, enum: %w[display]},
+          link_id: {type: :string},
           view_type: {type: :string, enum: %w[separator line_separator]}
         },
-        required: %w[type view_type]
+        required: %w[type link_id view_type]
       }
     end
 
@@ -59,11 +61,12 @@ class Api::V4::Models::Questionnaires::Version1
       {
         type: :object,
         properties: {
-          text: {type: :string},
           type: {type: :string, enum: %w[display]},
+          link_id: {type: :string},
+          text: {type: :string},
           view_type: {type: :string, enum: %w[header sub_header]}
         },
-        required: %w[text type view_type]
+        required: %w[type link_id text view_type]
       }
     end
 
@@ -71,9 +74,9 @@ class Api::V4::Models::Questionnaires::Version1
       {
         type: :object,
         properties: {
+          type: {type: :string, enum: %w[integer]},
           link_id: {type: :string},
           text: {type: :string},
-          type: {type: :string, enum: %w[integer]},
           view_type: {type: :string, enum: %w[input_field]},
           validations: {
             type: :object,
@@ -84,7 +87,7 @@ class Api::V4::Models::Questionnaires::Version1
             required: %w[min max]
           }
         },
-        required: %w[link_id text type view_type validations]
+        required: %w[type link_id text view_type validations]
       }
     end
   end
