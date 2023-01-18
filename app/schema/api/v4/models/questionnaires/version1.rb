@@ -2,16 +2,11 @@ class Api::V4::Models::Questionnaires::Version1
   class << self
     def definitions
       {
-        questionnaire_layout_dsl_1: layout,
         questionnaire_group_dsl_1: group,
         questionnaire_display_dsl_1: display,
         questionnaire_line_break_dsl_1: line_break,
         questionnaire_integer_input_dsl_1: integer_input
       }
-    end
-
-    def layout
-      {"$ref" => "#/definitions/questionnaire_group_dsl_1"}
     end
 
     def group
@@ -20,6 +15,7 @@ class Api::V4::Models::Questionnaires::Version1
         example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout,
         properties: {
           type: {type: :string, enum: %w[group]},
+          id: {"$ref" => "#/definitions/uuid"},
           view_type: {type: :string, enum: %w[view_group]},
           display_properties: {
             type: :object,
@@ -40,7 +36,7 @@ class Api::V4::Models::Questionnaires::Version1
             }
           }
         },
-        required: %w[type view_type display_properties item]
+        required: %w[type id view_type display_properties item]
       }
     end
 
@@ -49,9 +45,10 @@ class Api::V4::Models::Questionnaires::Version1
         type: :object,
         properties: {
           type: {type: :string, enum: %w[display]},
+          id: {"$ref" => "#/definitions/uuid"},
           view_type: {type: :string, enum: %w[separator line_separator]}
         },
-        required: %w[type view_type]
+        required: %w[type id view_type]
       }
     end
 
@@ -59,11 +56,12 @@ class Api::V4::Models::Questionnaires::Version1
       {
         type: :object,
         properties: {
-          text: {type: :string},
           type: {type: :string, enum: %w[display]},
+          id: {"$ref" => "#/definitions/uuid"},
+          text: {type: :string},
           view_type: {type: :string, enum: %w[header sub_header]}
         },
-        required: %w[text type view_type]
+        required: %w[type id text view_type]
       }
     end
 
@@ -71,9 +69,10 @@ class Api::V4::Models::Questionnaires::Version1
       {
         type: :object,
         properties: {
+          type: {type: :string, enum: %w[integer]},
+          id: {"$ref" => "#/definitions/uuid"},
           link_id: {type: :string},
           text: {type: :string},
-          type: {type: :string, enum: %w[integer]},
           view_type: {type: :string, enum: %w[input_field]},
           validations: {
             type: :object,
@@ -84,7 +83,7 @@ class Api::V4::Models::Questionnaires::Version1
             required: %w[min max]
           }
         },
-        required: %w[link_id text type view_type validations]
+        required: %w[type id link_id text view_type validations]
       }
     end
   end

@@ -25,9 +25,17 @@ RSpec.describe Questionnaire, type: :model do
 
     it "validates the layout using the swagger schema" do
       questionnaire = build(:questionnaire)
-      expect(questionnaire).to receive(:validate_layout)
+      expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!
+    end
+
+    it "ensures IDs are generated before validation" do
+      questionnaire = build(:questionnaire)
+      expect(questionnaire).to receive(:generate_ids_for_layout).and_call_original
+
+      questionnaire.save!
+      expect(Questionnaire.find(questionnaire.id).layout["id"]).to be_present
     end
   end
 
@@ -83,6 +91,10 @@ RSpec.describe Questionnaire, type: :model do
       invalid_questionnaire = build(:questionnaire, layout: {"broken" => "layout"})
       valid_questionnaire = build(:questionnaire)
 
+      # Run pre-validation callbacks manually.
+      invalid_questionnaire.generate_ids_for_layout
+      valid_questionnaire.generate_ids_for_layout
+
       invalid_questionnaire.validate_layout
       valid_questionnaire.validate_layout
 
@@ -95,6 +107,10 @@ RSpec.describe Questionnaire, type: :model do
     it "returns false if the layout schema is invalid" do
       invalid_questionnaire = build(:questionnaire, layout: {"broken" => "layout"})
       valid_questionnaire = build(:questionnaire)
+
+      # Run pre-validation callbacks manually.
+      invalid_questionnaire.generate_ids_for_layout
+      valid_questionnaire.generate_ids_for_layout
 
       expect(invalid_questionnaire.layout_valid?).to eq false
       expect(valid_questionnaire.layout_valid?).to eq true
