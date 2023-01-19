@@ -41,7 +41,7 @@ class PreFillMonthlyScreeningReports
     end
   end
 
-  private
+  private_class_method
 
   def self.prefilled_responses(month_string, facility_report)
     {
