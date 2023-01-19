@@ -208,7 +208,7 @@ class PatientsWithHistoryExporter
       patient_summary.send("latest_blood_pressure_#{i}_follow_up_facility_name"),
       I18n.l(patient_summary.send("latest_blood_pressure_#{i}_follow_up_date")),
       patient_summary.send("latest_blood_pressure_#{i}_follow_up_days"),
-      patient_summary.send("latest_blood_pressure_#{i}_medication_updated") ? 'Yes' : 'No',
+      patient_summary.send("latest_blood_pressure_#{i}_medication_updated") ? "Yes" : "No",
       patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_name"),
       patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_dosage"),
       patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_2_name"),
