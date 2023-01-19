@@ -2735,9 +2735,6 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "deleted_at": {
-          "$ref": "#/definitions/nullable_timestamp"
-        },
         "questionnaire_type": {
           "type": "string",
           "enum": [
@@ -2750,6 +2747,9 @@
               "$ref": "#/definitions/questionnaire_group_dsl_1"
             }
           ]
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         }
       },
       "required": [
@@ -2773,23 +2773,14 @@
         "id": {
           "$ref": "#/definitions/uuid"
         },
-        "deleted_at": {
-          "$ref": "#/definitions/nullable_timestamp"
-        },
-        "created_at": {
-          "$ref": "#/definitions/timestamp"
-        },
-        "updated_at": {
-          "$ref": "#/definitions/timestamp"
+        "questionnaire_id": {
+          "$ref": "#/definitions/uuid"
         },
         "questionnaire_type": {
           "type": "string",
           "enum": [
             "monthly_screening_reports"
           ]
-        },
-        "questionnaire_id": {
-          "$ref": "#/definitions/uuid"
         },
         "facility_id": {
           "$ref": "#/definitions/uuid"
@@ -2799,17 +2790,26 @@
         },
         "content": {
           "type": "object"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
         }
       },
       "required": [
         "id",
-        "created_at",
-        "updated_at",
-        "questionnaire_type",
         "questionnaire_id",
+        "questionnaire_type",
         "facility_id",
         "user_id",
-        "content"
+        "content",
+        "created_at",
+        "updated_at"
       ]
     },
     "questionnaire_responses": {

@@ -27,8 +27,7 @@ RSpec.describe "Questionnaires sync", type: :request do
     let(:resync_token) { "1" }
     let(:headers_with_resync_token) { headers.merge("HTTP_X_RESYNC_TOKEN" => resync_token) }
     let(:process_token_without_resync) do
-      make_process_token(current_facility_processed_since: Time.current,
-        other_facilities_processed_since: Time.current)
+      make_process_token(current_facility_processed_since: Time.current)
     end
 
     it "syncs all records from beginning if resync_token in process_token is nil" do
@@ -43,7 +42,6 @@ RSpec.describe "Questionnaires sync", type: :request do
       get sync_route,
         params: {
           process_token: make_process_token(current_facility_processed_since: Time.current,
-            other_facilities_processed_since: Time.current,
             resync_token: "2"),
           dsl_version: dsl_version
         },
@@ -76,8 +74,7 @@ RSpec.describe "Questionnaires sync", type: :request do
 
   context "resync_token in request headers is not present" do
     let(:process_token_without_resync) do
-      make_process_token(current_facility_processed_since: 1.year.ago,
-        other_facilities_processed_since: 1.year.ago)
+      make_process_token(current_facility_processed_since: 1.year.ago)
     end
 
     it "syncs normally" do
