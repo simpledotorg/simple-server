@@ -3,27 +3,14 @@ class PreFillMonthlyScreeningReports
     return unless Flipper.enabled?(:monthly_screening_reports)
 
     month_string = month_date.strftime("%Y-%m")
-    facility_reports =
-      Reports::FacilityMonthlyFollowUpAndRegistration.where(
-        month_date: month_date
-      ).select(
-        "facility_id",
-        "monthly_follow_ups_htn_male",
-        "monthly_follow_ups_htn_female",
-        "monthly_follow_ups_dm_male",
-        "monthly_follow_ups_dm_female",
-        "monthly_follow_ups_htn_and_dm_male",
-        "monthly_follow_ups_htn_and_dm_female"
-      ).load
+    facility_reports = monthly_followup_and_registration(month_date)
 
     monthly_screening_reports_clash = false
     questionnaire = Questionnaire.monthly_screening_reports.active.last
     facility_reports.each do |facility_report|
-      q = QuestionnaireResponse
-        .where(facility_id: facility_report.facility_id)
-        .where("content->>'month_string' = ?", month_string)
-
-      if q.empty?
+      if monthly_screening_report_exists?(facility_report.facility_id, month_string)
+        monthly_screening_reports_clash = true
+      else
         QuestionnaireResponse.create!(
           questionnaire_id: questionnaire.id,
           facility_id: facility_report.facility_id,
@@ -31,17 +18,38 @@ class PreFillMonthlyScreeningReports
           device_created_at: Time.now,
           device_updated_at: Time.now
         )
-      else
-        monthly_screening_reports_clash = true
       end
     end
 
     if monthly_screening_reports_clash
-      Rails.logger.error("Clashing monthly reports found during pre-fill task for month: %s" % month_string)
+      Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_string)
     end
   end
 
   private_class_method
+
+  def self.monthly_followup_and_registration(month_date)
+    Reports::FacilityMonthlyFollowUpAndRegistration.where(
+      month_date: month_date
+    ).select(
+      "facility_id",
+      "monthly_follow_ups_htn_male",
+      "monthly_follow_ups_htn_female",
+      "monthly_follow_ups_dm_male",
+      "monthly_follow_ups_dm_female",
+      "monthly_follow_ups_htn_and_dm_male",
+      "monthly_follow_ups_htn_and_dm_female"
+    ).load
+  end
+
+  def self.monthly_screening_report_exists?(facility_id, month_string)
+    QuestionnaireResponse
+      .where(facility_id: facility_id)
+      .merge(Questionnaire.monthly_screening_reports)
+      .joins(:questionnaire)
+      .where("content->>'month_string' = ?", month_string)
+      .any?
+  end
 
   def self.prefilled_responses(month_string, facility_report)
     {
