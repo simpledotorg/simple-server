@@ -55,7 +55,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
       it "Returns new records added since last sync" do
         expected_records = create_record_list(5, updated_at: 5.minutes.ago)
         get :sync_to_user, params: {
-          process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago),
+          process_token: make_process_token(current_facility_processed_since: 10.minutes.ago),
           dsl_version: dsl_version
         }
 
@@ -66,26 +66,26 @@ describe Api::V4::QuestionnairesController, type: :controller do
           .to eq(expected_records.map(&:id).to_set)
 
         response_process_token = parse_process_token(response_body)
-        expect(response_process_token[:other_facilities_processed_since].to_time.to_i)
+        expect(response_process_token[:current_facility_processed_since].to_time.to_i)
           .to eq(expected_records.map(&:updated_at).max.to_i)
       end
 
       it "Returns an empty list when there is nothing to sync" do
         sync_time = 10.minutes.ago
         get :sync_to_user, params: {
-          process_token: make_process_token(other_facilities_processed_since: sync_time),
+          process_token: make_process_token(current_facility_processed_since: sync_time),
           dsl_version: dsl_version
         }
         response_body = JSON(response.body)
         response_process_token = parse_process_token(response_body)
         expect(response_body[response_key].count).to eq 0
-        expect(response_process_token[:other_facilities_processed_since].to_time.to_i).to eq sync_time.to_i
+        expect(response_process_token[:current_facility_processed_since].to_time.to_i).to eq sync_time.to_i
       end
 
       describe "batching" do
         it "returns the number of records requested with limit" do
           get :sync_to_user, params: {
-            process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
+            process_token: make_process_token(current_facility_processed_since: 20.minutes.ago),
             limit: 2,
             dsl_version: dsl_version
           }
@@ -95,7 +95,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
 
         it "Returns all the records on server over multiple small batches" do
           get :sync_to_user, params: {
-            process_token: make_process_token(other_facilities_processed_since: 20.minutes.ago),
+            process_token: make_process_token(current_facility_processed_since: 20.minutes.ago),
             limit: 7,
             dsl_version: dsl_version
           }
@@ -231,7 +231,6 @@ describe Api::V4::QuestionnairesController, type: :controller do
                                        time: Time.current}.to_json)
           end
           get :sync_to_user, params: {
-            processed_since: 20.minutes.ago,
             limit: 5,
             dsl_version: dsl_version
           }, as: :json
