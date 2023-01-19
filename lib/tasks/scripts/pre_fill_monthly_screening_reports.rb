@@ -6,11 +6,11 @@ class PreFillMonthlyScreeningReports
     month_string = month_date.strftime("%Y-%m")
     facility_reports = monthly_followup_and_registration(month_date)
 
-    monthly_screening_reports_clash = false
+    reports_exist = false
     questionnaire = Questionnaire.monthly_screening_reports.active.order(:dsl_version).last
     facility_reports.each do |facility_report|
       if monthly_screening_report_exists?(facility_report.facility_id, month_string)
-        monthly_screening_reports_clash = true
+        reports_exist = true
       else
         QuestionnaireResponse.create!(
           questionnaire_id: questionnaire.id,
@@ -22,7 +22,7 @@ class PreFillMonthlyScreeningReports
       end
     end
 
-    if monthly_screening_reports_clash
+    if reports_exist
       Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_string)
     end
   end
