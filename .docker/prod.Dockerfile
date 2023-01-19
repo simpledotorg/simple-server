@@ -59,7 +59,7 @@ ENV RAILS_SERVE_STATIC_FILES true
 
 # Build
 RUN gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
-RUN bundle install
+RUN bundle install --without development test
 RUN yarn install
 RUN set -a && source .env.development && set +a && bundle exec rake assets:precompile
 RUN chown -R app:app /home/app
