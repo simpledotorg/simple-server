@@ -1,4 +1,4 @@
-mr-IN:
+mr:
   date:
     month_names: [~, "जानेवारी", "फेब्रुवारी", "मार्च", "एप्रिल", "मे", "जून", "जुलै", "ऑगस्ट", "सप्टेंबर", "ऑक्टोबर", "नोव्हेंबर", "डिसेंबर"]
     abbr_month_names: [~, "जाने", "फेब्रु", "मार्च", "एप्रि", "मे", "जून", "जुलै", "ऑग", "सप्टें", "ऑक्टो", "नोव्हें", "डिसें"]
@@ -330,6 +330,9 @@ mr-IN:
     no_data_card:
       title: "हा अहवाल लवकरच येत आहे"
       subtitle: "तुम्ही अजूनही आधीचे अहवाल पाहू शकता"
+    update_required_card:
+      title: "अद्यतन आवश्यक"
+      subtitle: "हा अहवाल पाहण्यासाठी ऍप अद्ययावत करा"
     diagnoses:
       all: "सर्व उच्च रक्तदाब आणि मधुमेह"
       hypertension: "उच्च रक्तदाब"
@@ -442,3 +445,29 @@ mr-IN:
         cohort_title: "%{period} मध्ये शेवटच्या भेटीचा परिणाम"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} मध्ये नोंदणीकृत आहेत"
         cohort_bar_tooltip: "%{threshold} सह %{total_patients} %{patient_or_patients}"
+  monthly_screening_reports:
+    male: "पुरुष"
+    female: "स्त्री"
+    transgender: "किन्नर"
+    monthly_opd_visits_gt_30: "30 वर्षांपेक्षा अधिक वयाच्या प्रौढासाठी मासिक OPD भेटी"
+    monthly_opd_visits_gt_18: "18 वर्षांपेक्षा अधिक वयाच्या प्रौढासाठी मासिक OPD भेटी"
+    outpatient_department_visits: "बाह्यरुग्ण विभाग भेटी"
+    htn_and_dm_screening: "HTN आणि DM चाचण्या"
+    total_bp_checks: "केलेल्या एकूण रक्तदाब तपासण्या"
+    total_blood_sugar_checks: "केलेल्या रक्तशर्करा तपासण्या"
+    new_suspected_individuals: "नवीन संशयित व्यक्ती"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (दोन्ही)"
+    diagnosed_cases_on_follow_up: "पाठपुराव्यानंतर निदान झालेली उदाहरणे"
+    diagnosed_cases_on_follow_up_htn: "पाठपुरावा भेटीसह HTN रुग्ण"
+    diagnosed_cases_on_follow_up_dm: "पाठपुरावा भेटीसह DM रुग्ण"
+    diagnosed_cases_on_follow_up_htn_and_dm: "पाठपुरावा भेटीसह HTN+DM (दोन्ही) रुग्ण"
+    cancer_screening: "कर्करोग चाचणी"
+    total_cancer_screening_oral: "केलेल्या एकूण मुख कर्करोग चाचण्या"
+    total_cancer_screening_breast: "केलेल्या एकूण स्तनाचा कर्करोग चाचण्या"
+    total_cancer_screening_cervical: "केलेल्या एकूण सर्व्हायकल कर्करोग चाचण्या"
+    oral_cancer: "मुख कर्करोग"
+    breast_cancer: "स्तनाचा कर्करोग"
+    cervical_cancer: "सर्व्हायकल कर्करोग"
+
