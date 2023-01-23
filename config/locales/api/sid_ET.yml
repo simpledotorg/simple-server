@@ -1,4 +1,4 @@
-sid-ET:
+sid:
   date:
     month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "birra", "Bocaasa ", "Sadaasa"]
     abbr_month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "Birra", "Bocaasa", "Sadaasa"]
@@ -126,15 +126,15 @@ sid-ET:
         video_link_subtitle_html: Hindete afoo Ingilezete afiinni cinaancho handaara
       film:
         heading_html: Simple filme
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Shota heeshsho giddo mitto barra"</a> hindete Punjab, India giddo noo nersite Mundeete xiiwo noonsa xiwamaasine xagisate shotuyi hiitoonni horonsidhannoro leellishanno filme'
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Simple heeshsho giddo mitto barra"</a> hindete Punjab, India giddo noo nersite Mundeete xiiwo noonsa xiwamaasine xagisate shotuyi hiitoonni horonsidhannoro leellishanno filme'
     start:
       heading_html: Hanafa
       getting_started_video:
         heading_html: Viidio lai
         contents_html: Ontu/5 dhiqqeessi giddo Simple qara coyibba affe
       who_to_record:
-        heading_html: "Shotate ayi hinkiili?"
-        contents_1_html: Borreessate Shota Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
+        heading_html: "Simple ayi hinkiili?"
+        contents_1_html: Borreessate Simple Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
         contents_2_html: Xagisiraanchu layirara higiro mittu gari xiwamaancho hasi nna haaro Mundeete xiiwo eessi.
       step_1:
         label_html: Deerra 1
@@ -324,7 +324,15 @@ sid-ET:
     yearly_report_title: "Diruy"
     hypertension_report_title: "Jawa Mundeete xiiwo"
     diabetes_report_title: "Sukaarete xibba"
+    report: "Ripoorte"
     last_updated_at: "Jeefote haroonsinoonni barra %{date} nni %{time}"
+    coming_soon: "Mulenni shiqqanno"
+    no_data_card:
+      title: "Tini ripoorte mulenni shiqqanno."
+      subtitle: "Albaanni saino ripoorteno la\"a dandiitinani"
+    update_required_card:
+      title: "haaroonsa hasiissino"
+      subtitle: "tenne ripoorte la\"ate appe haroonse"
     diagnoses:
       all: "Wo’manta jawa  Mundeete xiiwo nna sukkaare"
       hypertension: "Jawa Mundeete xiiwo"
@@ -348,8 +356,17 @@ sid-ET:
     achievements_card:
       title: "Guma/Loosu Gumulo"
       follow_up_visits_section_title: "maarekkinoonnita %{visit_or_visits}  harunsa "
+      visit:
+        one: "Toyaanyubba"
+        other: "Toyaanyubba"
       overdue_patients_section_title: "%{call_or_calls} xissamaanote barrisira"
+      call:
+        one: "Bilbilloonni kiiro"
+        other: "Bilbilloonni kiiro"
       registered_patients_title: "borreessamino/borreessantino %{patient_or_patients}"
+      patient:
+        one: "Xissamaano"
+        other: "Xissamaano"
     period_report:
       registered_patients_card:
         title: "Borreessantino Xagisiraano"
@@ -362,7 +379,7 @@ sid-ET:
         subtitle: "%{facility_name}. ra maareekkinoonni harunso assinanni toyanyubba. xissamaanote Jawa mundeete xiiwo haa'niro, mundeete sukkaare haa'niro, dinye qineessiniro, woy xagichonsa haroonsidhuro harunso toyaanyo ikkitanno. "
       patients_initiated_on_treatment_card:
         title: 'Taje "xissamaano xagisirate hasato leellishshinoti" mama no?'
-        main_text: '"Borreessantino xissamaano" horoonsiri, ayee woyteno "xagisirate hasatto leellishshino xissamaano"  nna borrreessantino xissamaano taaloho. '
+        main_text: '"Borreessantino xissamaano" horoonsiri, ayee woyteno "xagisirate hasatto leellishshino xissamaano" nna Simple giddo borrreessantino xissamaano taaloho.'
       more_patient_data_coming_soon_card:
         title: "Roore xissamaanote taje mulenni dagganno. "
         main_text: "Barru baali boreessonna harunso taje, xissote daninninna koo/tee tenni babbande mulenni lendanni  "
@@ -428,3 +445,29 @@ sid-ET:
         cohort_title: " %{period} ra jeefote towaanyo guma."
         cohort_subtitle: "%{number_of_patients} \n%{patient_or_patients} borreessantinori \n%{registration_period}"
         cohort_bar_tooltip: "%{total_patients} \n%{patient_or_patients} ledo \n%{threshold}"
+  monthly_screening_reports:
+    male: "Labbaaha"
+    female: "Meyaa beeetto"
+    transgender: "lamenka koo/te "
+    monthly_opd_visits_gt_30: "aganunita OPD laooshe wede'laho >30 diro. "
+    monthly_opd_visits_gt_18: "aganunita OPD laooshe wede'laho >18 diro."
+    outpatient_department_visits: "hare giganni xagisirano xiwamasine base laooshe"
+    htn_and_dm_screening: "HTN & DM buuxa"
+    total_bp_checks: "xa'pooma BP la'nooni"
+    total_blood_sugar_checks: "xa'pooma mundeete sukaare deerra lanooni"
+    new_suspected_individuals: "haarro huluulo noo mancho"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM(lamunku)"
+    diagnosed_cases_on_follow_up: "xinxalote anfooni coye harunsote aana"
+    diagnosed_cases_on_follow_up_htn: "HTN xiwamanch harunsote laooshi aana"
+    diagnosed_cases_on_follow_up_dm: "DM xiwamanchi harunisote laooshi aana"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM(lamunku) tiwamanchi harunsote laooshi aana"
+    cancer_screening: "kanserete xi'ba xiinxallo"
+    total_cancer_screening_oral: "xa'pooma afuunita kaanserete xi'ba lanooni"
+    total_cancer_screening_breast: "xa'pooma unuununita kaanserete xi'ba lanooni"
+    total_cancer_screening_cervical: "xa'pooma ur'chu bir'xe kaansere lanooni"
+    oral_cancer: "afuu kaansere"
+    breast_cancer: "unuunu kaansere"
+    cervical_cancer: "ur'chu bir'xe kaansere"
+
