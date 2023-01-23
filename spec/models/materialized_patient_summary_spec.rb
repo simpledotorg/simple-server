@@ -7,8 +7,9 @@ describe MaterializedPatientSummary, type: :model do
 
   subject(:patient_summary) { MaterializedPatientSummary.find(patient.id) }
 
-  let(:old_date) { DateTime.new(2019, 1, 1) }
-  let(:new_date) { DateTime.new(2019, 5, 1) }
+  let(:may_2019) { DateTime.new(2019, 5, 1) }
+  let(:feb_2019) { DateTime.new(2019, 2, 1) }
+  let(:jan_2019) { DateTime.new(2019, 1, 1) }
   let(:old_quarter) { "2019 Q1" }
   let(:new_quarter) { "2019 Q2" }
   let(:user) { create(:admin, :power_user) }
@@ -17,18 +18,21 @@ describe MaterializedPatientSummary, type: :model do
   # We create a bunch of related objects here to ensure the Materialized view properly rolls things up.
   # We _do not_ split things out into individual let blocks, because it makes detangling dependancies too difficult.
   let(:patient) do
-    patient = create(:patient, registration_facility: facility, recorded_at: old_date, registration_user: user)
-    _old_bp = create(:blood_pressure, patient: patient, facility: facility, recorded_at: old_date, user: user)
-    _old_phone = create(:patient_phone_number, patient: patient, device_created_at: old_date)
-    _new_phone = create(:patient_phone_number, patient: patient, device_created_at: new_date)
-    _old_passport = create(:patient_business_identifier, patient: patient, device_created_at: old_date)
-    @new_bp = create(:blood_pressure, patient: patient, facility: facility, recorded_at: new_date, user: user, systolic: 110, diastolic: 70)
-    @blood_sugar = create(:blood_sugar, patient: patient, facility: facility, recorded_at: new_date, user: user,
+    patient = create(:patient, registration_facility: facility, recorded_at: jan_2019, registration_user: user)
+    _old_phone = create(:patient_phone_number, patient: patient, device_created_at: jan_2019)
+    _new_phone = create(:patient_phone_number, patient: patient, device_created_at: may_2019)
+    _old_passport = create(:patient_business_identifier, patient: patient, device_created_at: jan_2019)
+    @latest_bp_1 = create(:blood_pressure, patient: patient, facility: facility, recorded_at: may_2019, user: user, systolic: 110, diastolic: 70)
+    @latest_bp_2 = create(:blood_pressure, patient: patient, facility: facility, recorded_at: feb_2019, user: user)
+    @latest_bp_3 = create(:blood_pressure, patient: patient, facility: facility, recorded_at: jan_2019, user: user)
+    @blood_sugar = create(:blood_sugar, patient: patient, facility: facility, recorded_at: may_2019, user: user,
                                         blood_sugar_type: "random", blood_sugar_value: 100)
     patient
   end
 
-  attr_reader :new_bp
+  attr_reader :latest_bp_1
+  attr_reader :latest_bp_2
+  attr_reader :latest_bp_3
   attr_reader :blood_sugar
 
   def refresh_view
@@ -82,7 +86,7 @@ describe MaterializedPatientSummary, type: :model do
     end
 
     it "includes registration date" do
-      expect(patient_summary.recorded_at).to eq(old_date)
+      expect(patient_summary.recorded_at).to eq(jan_2019)
     end
 
     it "includes registration facility details", :aggregate_failures do
@@ -92,20 +96,79 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.registration_facility_state).to eq(patient.registration_facility.state)
     end
 
-    it "includes latest BP measurements", :aggregate_failures do
-      expect(patient_summary.latest_blood_pressure_1_systolic).to eq(new_bp.systolic)
-      expect(patient_summary.latest_blood_pressure_1_diastolic).to eq(new_bp.diastolic)
+    it "includes latest BP details", :aggregate_failures do
+      upcoming_appointment = create(:appointment, patient: patient, device_created_at: latest_bp_1.recorded_at)
+      refresh_view
+      expect(patient_summary.latest_blood_pressure_1_systolic).to eq(latest_bp_1.systolic)
+      expect(patient_summary.latest_blood_pressure_1_diastolic).to eq(latest_bp_1.diastolic)
+      expect(patient_summary.latest_blood_pressure_1_recorded_at).to eq(latest_bp_1.recorded_at)
+      expect(patient_summary.latest_blood_pressure_1_facility_name).to eq(latest_bp_1.facility.name)
+      expect(patient_summary.latest_blood_pressure_1_facility_type).to eq(latest_bp_1.facility.facility_type)
+      expect(patient_summary.latest_blood_pressure_1_district).to eq(latest_bp_1.facility.district)
+      expect(patient_summary.latest_blood_pressure_1_state).to eq(latest_bp_1.facility.state)
+      expect(patient_summary.latest_blood_pressure_1_follow_up_facility_name).to eq(upcoming_appointment.facility.name)
+      expect(patient_summary.latest_blood_pressure_1_follow_up_date).to eq(upcoming_appointment.scheduled_date)
+      expect(patient_summary.latest_blood_pressure_1_follow_up_days).to eq(upcoming_appointment.follow_up_days)
     end
 
-    it "includes latest BP date" do
-      expect(patient_summary.latest_blood_pressure_1_recorded_at).to eq(new_bp.recorded_at)
+    it "includes second latest BP details", :aggregate_failures do
+      expect(patient_summary.latest_blood_pressure_2_systolic).to eq(latest_bp_2.systolic)
+      expect(patient_summary.latest_blood_pressure_2_diastolic).to eq(latest_bp_2.diastolic)
+      expect(patient_summary.latest_blood_pressure_2_recorded_at).to eq(latest_bp_2.recorded_at)
+      expect(patient_summary.latest_blood_pressure_2_facility_name).to eq(latest_bp_2.facility.name)
+      expect(patient_summary.latest_blood_pressure_2_facility_type).to eq(latest_bp_2.facility.facility_type)
+      expect(patient_summary.latest_blood_pressure_2_district).to eq(latest_bp_2.facility.district)
+      expect(patient_summary.latest_blood_pressure_2_state).to eq(latest_bp_2.facility.state)
     end
 
-    it "includes latest BP facility details", :aggregate_failures do
-      expect(patient_summary.latest_blood_pressure_1_facility_name).to eq(new_bp.facility.name)
-      expect(patient_summary.latest_blood_pressure_1_facility_type).to eq(new_bp.facility.facility_type)
-      expect(patient_summary.latest_blood_pressure_1_district).to eq(new_bp.facility.district)
-      expect(patient_summary.latest_blood_pressure_1_state).to eq(new_bp.facility.state)
+    it "includes third latest BP details", :aggregate_failures do
+      expect(patient_summary.latest_blood_pressure_3_systolic).to eq(latest_bp_3.systolic)
+      expect(patient_summary.latest_blood_pressure_3_diastolic).to eq(latest_bp_3.diastolic)
+      expect(patient_summary.latest_blood_pressure_3_recorded_at).to eq(latest_bp_3.recorded_at)
+      expect(patient_summary.latest_blood_pressure_3_facility_name).to eq(latest_bp_3.facility.name)
+      expect(patient_summary.latest_blood_pressure_3_facility_type).to eq(latest_bp_3.facility.facility_type)
+      expect(patient_summary.latest_blood_pressure_3_district).to eq(latest_bp_3.facility.district)
+      expect(patient_summary.latest_blood_pressure_3_state).to eq(latest_bp_3.facility.state)
+    end
+
+    it "includes latest drugs prescribed as of when a BP was recorded" do
+      bp_recorded_at = latest_bp_1.recorded_at
+
+      earliest_prescription_drug = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 3.months, name: "Drug A")
+      protocol_drug = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 2.months, is_protocol_drug: true, name: "Drug B")
+      protocol_drug_2 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 2.months, is_protocol_drug: true, name: "Drug C")
+      _drug_prescribed_after_bp_recorded = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at + 1.month, name: "Drug D")
+      _drug_deleted_before_bp_recorded = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at - 1.month, name: "Drug E")
+      drug_deleted_after_bp_recorded = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at + 1.month, name: "Drug F")
+      drug_deleted_after_bp_recorded_2 = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at + 2.months, name: "Drug G")
+      other_drug_1 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 15.days, name: "Drug H")
+      other_drug_2 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 15.days, name: "Drug I")
+      other_drugs_name = [other_drug_1, other_drug_2].map { |drug| "#{drug.name}-#{drug.dosage}" }.join(', ')
+
+      refresh_view
+
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_1_name).to eq(protocol_drug.name)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_1_dosage).to eq(protocol_drug.dosage)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_2_name).to eq(protocol_drug_2.name)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_2_dosage).to eq(protocol_drug_2.dosage)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_3_name).to eq(earliest_prescription_drug.name)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_3_dosage).to eq(earliest_prescription_drug.dosage)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_4_name).to eq(drug_deleted_after_bp_recorded.name)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_4_dosage).to eq(drug_deleted_after_bp_recorded.dosage)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_5_name).to eq(drug_deleted_after_bp_recorded_2.name)
+      expect(patient_summary.latest_blood_pressure_1_prescription_drug_5_dosage).to eq(drug_deleted_after_bp_recorded_2.dosage)
+      expect(patient_summary.latest_blood_pressure_1_other_prescription_drugs).to eq(other_drugs_name)
+    end
+
+    it "checks if prescription drugs have been changed since the last BP check" do
+      prescription_drug_1 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_3.recorded_at)
+      prescription_drug_2 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_1.recorded_at)
+
+      refresh_view
+
+      expect(patient_summary.latest_blood_pressure_1_medication_updated).to be true
+      expect(patient_summary.latest_blood_pressure_2_medication_updated).to be false
+      expect(patient_summary.latest_blood_pressure_3_medication_updated).to be nil
     end
 
     it "includes latest blood sugar measurements", :aggregate_failures do
