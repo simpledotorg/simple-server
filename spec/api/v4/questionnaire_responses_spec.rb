@@ -20,7 +20,6 @@ describe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
         let(:Authorization) { "Bearer #{request_user.access_token}" }
         let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_questionnaire_response_payload }} }
 
-        schema Api::V4::Schema.sync_from_user_errors
         run_test!
       end
 
@@ -51,7 +50,7 @@ describe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
         parameter param
       end
 
-      response "200", "Questionnaires Synced to user device" do
+      response "200", "questionnaire responses synced to user device" do
         let(:request_user) { create(:user) }
         let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
         let(:HTTP_X_USER_ID) { request_user.id }

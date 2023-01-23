@@ -810,7 +810,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Questionnaires Synced to user device",
+            "description": "questionnaire responses synced to user device",
             "schema": {
               "type": "object",
               "properties": {
