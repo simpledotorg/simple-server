@@ -1,4 +1,4 @@
-ti-ET:
+ti:
   notifications:
     set01:
       basic: "%{patient_name}፣ ብኽብረትኩም ይጎብንዩ %{facility_name} ኣብ %{appointment_date} ንBP ዓቐንን መድሓኒታትን።"
@@ -43,13 +43,13 @@ ti-ET:
       emotional_guilt: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። እንድሕር ዘይተሓኩምኩም፣ ልዑል BP ንኹሉ ማሕበረሰብኩም ልዑል ወጻኢ ኣለዎ። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
       professional_request: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። ዶክተርኩም BPኹም ክትዕቀኑ ከዘኻኽረኩም ይደሊ እዩ። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን።"
       response: "ንናይ BP ዓቐንኩም ደንጒኹም ኣለኹም። %{patient_name}፣ ብኽብረትኩም %{facility_name} ብቕልጡፍ ይጎብንዩ ንBP ዓቐንን መድሓኒታትን። እዛ መላገቢ ብምጥዋቕ ከም ትሳተፉ ኣፍሉጥና፡"
-      short: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP %{facility_name} %{patient_name} ምብጻሕ ግበር።"
-      short_medicines: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ %{patient_name} ናብ %{facility_name} ምብጻሕ ግበር።"
-      you_must: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP ኣብ %{facility_name} %{patient_name} ክትመጽእ ኣለካ።"
-      no_date: "ጸቕጢ ደም ንምዕቃን ሎሚ ናብ %{facility_name} ምጻእ, %{patient_name}።"
-      official_short: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ ናብ %{patient_name} %{facility_name} ምብጻሕ ግበር። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ።"
-      official_short_medicines: "ንBP ዘንጊዕኻ ኣለኻ። ብዝተኸኣለ መጠን ቀልጢፍካ %{patient_name} ናብ %{facility_name} ምብጻሕ ግበር ። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ።"
-      official_you_must: "ብዝተኸኣለካ መጠን ቀልጢፍካ ናብ BP %{patient_name} %{facility_name} ብጻሕ። ሓኪምካ ጽቡቕ ጥዕና ኺህልወካ ይደሊ እዩ ።"
-      official_no_date: "ጸቕጢ ደም ንምዕቃን ሎሚ ናብ %{facility_name}ምጻእ, %{patient_name}። ሓኪምካ ጥዕናኻ ክትረክብ እዩ ዝምነ።"
+      short: "ን BPኦም ዘንጊዖም እዮም። ንBPኦም ን%{facility_name} ብዝተኸኣሎም ፍጥነት ይጎብንዩ %{patient_name}። - IHCI"
+      short_medicines: "ንBPኦም ዘንጊዖም እዮም። ንBPኦም እና መድሓኒቶም ን%{facility_name} ብዝተኸኣሎም ፍጥነት ይጎብንዩ %{patient_name}። - IHCI"
+      you_must: "ንBP ብዝተኸኣሎም ፍጥነት ናብ %{facility_name} ክመፁ ኣለዎም %{patient_name}። - IHCI"
+      no_date: "BP ንክዕቀኑ ሎምዓንቲ ናብ %{facility_name} ይምፅኡ፤ %{patient_name}. - IHCI"
+      official_short: "ን BP ዘንጊዖም እዮም። ንBP ን%{facility_name} ብዝተኸኣሎም ፍጥነት ይጎብንዩ %{patient_name}። ዶክተሮም ፅቡቕ ጥዕና ይምነየሎም። - IHCI"
+      official_short_medicines: "ን BP ዘንጊዖም እዮም። ንBP እና መድሓኒቶም ን%{facility_name} ብዝተኸኣሎም ፍጥነት ይጎብንዩ %{patient_name}። ዶክተሮም ፅቡቕ ጥዕና ይምነየሎም። - IHCI"
+      official_you_must: "ንBP ብዝተኸኣሎም ፍጥነት ናብ %{facility_name} ክመፁ ኣለዎም %{patient_name}። ዶክተሮም ፅቡቕ ጥዕና ይምነየሎም። - IHCI"
+      official_no_date: "BP ንክዕቀኑ ሎምዓንቲ ናብ %{facility_name} ይምፅኡ፤ %{patient_name}። ዶክተሮም ፅቡቕ ጥዕና ይምነየሎም። - IHCI"
     covid:
-      medication_reminder: "ክቡር %{patient_name}፡ ኣብ %{facility_name} ዝርከቡ ሰራሕተኛታትና ኣብዚ ናይ ኮቪድ ህጹጽ ግዜ ብዛዕባኹምን ብዛዕባ ጥዕና ልብኹምን ይሓስቡ ኣለዉ እዮም። ናይ BP መድሓኒታትኩም ክትቅጽሉሉ ኣገዳሲ እዩ። ነጻ መድሓኒትኩም ካብ ቐረባ ንኡስ ማእኸል ወይ ማእኸል ድሕነት ጥዕና ከይድኩም ርኸቡ። ምስ ናትኩም ANM ወይ ASHA ተራኸቡ። "
+      medication_reminder: "ዝተኸበሩ/ራ %{patient_name}: ኣብ %{facility_name} ዘለዉ ሰራሕተኛታትና ኣብዚ ናይ ኮቪድ ህፁፅ ኩነታት እዚ ብዛዕብኦምን ብዛዕባ ጥዕና ልቦምን ይሓስቡ ኣለዉ ። መድሓኒት BP ምቕፃል ኣዝዩ ኣገዳሲ እዩ። ናይ ነፃ መድሓኒቶም ካብ ዝቐረበ ንኡስ ማእኸል ወይ ድማ ማእኸል ጥዕና ይኣክቡ። ምስ ANM ወይ ASHA ይራኸቡ። - IHCI"
