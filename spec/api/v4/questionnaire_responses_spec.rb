@@ -1,6 +1,6 @@
 require "swagger_helper"
 
-xdescribe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
+describe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
   path "/questionnaire_responses/sync" do
     post("Syncs Questionnaire Responses from Device to Server") do
       tags "Questionnaire Responses"
@@ -12,8 +12,28 @@ xdescribe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
 
       parameter name: :questionnaire_responses, in: :body, schema: Api::V4::Schema.questionnaire_responses_sync_from_user_request
 
-      response "200", "Questionnaire Responses created" do
+      let(:request_user) { create(:user) }
+      let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+      let(:HTTP_X_USER_ID) { request_user.id }
+      let(:HTTP_X_FACILITY_ID) { request_facility.id }
+      let(:Authorization) { "Bearer #{request_user.access_token}" }
+      let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_questionnaire_response_payload }} }
+
+      response "200", "questionnaire responses created" do
         schema Api::V4::Schema.sync_from_user_errors
+        run_test!
+      end
+
+      response "200", "some, or no errors were found" do
+        let(:request_user) { create(:user) }
+        let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+        let(:HTTP_X_USER_ID) { request_user.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
+        let(:Authorization) { "Bearer #{request_user.access_token}" }
+
+        schema Api::V4::Schema.sync_from_user_errors
+        let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_invalid_questionnaire_response_payload }} }
+
         run_test!
       end
 
@@ -33,7 +53,15 @@ xdescribe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
       end
 
       response "200", "Questionnaires Synced to user device" do
+        let(:request_user) { create(:user) }
+        let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+        let(:HTTP_X_USER_ID) { request_user.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
+        let(:Authorization) { "Bearer #{request_user.access_token}" }
+
         schema Api::V4::Schema.questionnaire_responses_sync_to_user_response
+        let(:process_token) { Base64.encode64({other_facilities_processed_since: 10.minutes.ago}.to_json) }
+        let(:limit) { 10 }
         run_test!
       end
 
