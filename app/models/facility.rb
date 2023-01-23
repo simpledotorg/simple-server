@@ -31,6 +31,7 @@ class Facility < ApplicationRecord
   has_many :teleconsultations
   has_many :drug_stocks
   has_many :call_results
+  has_many :questionnaire_responses
 
   has_many :registered_patients,
     class_name: "Patient",
