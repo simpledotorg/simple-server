@@ -1559,7 +1559,7 @@ CREATE TABLE public.questionnaire_responses (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_id uuid NOT NULL,
     facility_id uuid NOT NULL,
-    user_id uuid,
+    last_updated_by_user_id uuid,
     content jsonb DEFAULT '{}'::jsonb NOT NULL,
     device_created_at timestamp without time zone NOT NULL,
     device_updated_at timestamp without time zone NOT NULL,
@@ -6728,6 +6728,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20221216093905'),
 ('20230103063720'),
 ('20230104104248'),
-('20230105064908');
+('20230105064908'),
+('20230123125608');
 
 
