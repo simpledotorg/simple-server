@@ -750,7 +750,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Questionnaire Responses created",
+            "description": "some, or no errors were found",
             "schema": {
               "type": "object",
               "properties": {
@@ -810,7 +810,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Questionnaires Synced to user device",
+            "description": "questionnaire responses synced to user device",
             "schema": {
               "type": "object",
               "properties": {
@@ -869,6 +869,12 @@
             "type": "string"
           },
           {
+            "name": "dsl_version",
+            "in": "query",
+            "type": "string",
+            "required": true
+          },
+          {
             "name": "process_token",
             "type": "string",
             "format": "byte",
@@ -880,12 +886,6 @@
             "type": "integer",
             "description": "Number of record to retrieve (a.k.a batch-size)",
             "in": "query"
-          },
-          {
-            "name": "dsl_version",
-            "in": "query",
-            "type": "string",
-            "required": true
           }
         ],
         "responses": {
