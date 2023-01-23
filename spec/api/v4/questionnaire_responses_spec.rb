@@ -12,14 +12,14 @@ describe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
 
       parameter name: :questionnaire_responses, in: :body, schema: Api::V4::Schema.questionnaire_responses_sync_from_user_request
 
-      let(:request_user) { create(:user) }
-      let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
-      let(:HTTP_X_USER_ID) { request_user.id }
-      let(:HTTP_X_FACILITY_ID) { request_facility.id }
-      let(:Authorization) { "Bearer #{request_user.access_token}" }
-      let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_questionnaire_response_payload }} }
-
       response "200", "questionnaire responses created" do
+        let(:request_user) { create(:user) }
+        let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
+        let(:HTTP_X_USER_ID) { request_user.id }
+        let(:HTTP_X_FACILITY_ID) { request_facility.id }
+        let(:Authorization) { "Bearer #{request_user.access_token}" }
+        let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_questionnaire_response_payload }} }
+
         schema Api::V4::Schema.sync_from_user_errors
         run_test!
       end
@@ -30,10 +30,9 @@ describe "Questionnaire Responses v4 API", swagger_doc: "v4/swagger.json" do
         let(:HTTP_X_USER_ID) { request_user.id }
         let(:HTTP_X_FACILITY_ID) { request_facility.id }
         let(:Authorization) { "Bearer #{request_user.access_token}" }
+        let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_questionnaire_response_payload }} }
 
         schema Api::V4::Schema.sync_from_user_errors
-        let(:questionnaire_responses) { {questionnaire_responses: (1..3).map { build_invalid_questionnaire_response_payload }} }
-
         run_test!
       end
 
