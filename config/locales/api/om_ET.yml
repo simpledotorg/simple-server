@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -324,7 +324,15 @@ om-ET:
     yearly_report_title: "Waggaan"
     hypertension_report_title: "Dhiibbaa Dhiiga"
     diabetes_report_title: "Sukkaara"
+    report: "gabaasa"
     last_updated_at: "Xumuraaf kan fooyya'e %{date}sa'aatii %{time} irratti"
+    coming_soon: "Dhiyootti"
+    no_data_card:
+      title: "Gabaasni kuni dhiyootti dhufa"
+      subtitle: "Gabaasota darban ilaaluu ni dandeessa"
+    update_required_card:
+      title: "Haaromsa barbaachisa"
+      subtitle: "Gabaasa kana ilaaluf gabaasa haaromsi"
     diagnoses:
       all: "Dhiibbaa dhiigaa fi sukkaara hunda"
       hypertension: "Dhiibbaa Dhiiga"
@@ -348,8 +356,17 @@ om-ET:
     achievements_card:
       title: "Milkaa'inoota"
       follow_up_visits_section_title: "%{visit_or_visits}galmaa'eera hordofi"
+      visit:
+        one: "Daawwannaa"
+        other: "Daawwannaawwan"
       overdue_patients_section_title: "%{call_or_calls}dhukkubsatoota yeroon irra darbeef"
+      call:
+        one: "bilbila"
+        other: "bilbilawwan"
       registered_patients_title: "%{patient_or_patients} galmaa'eera"
+      patient:
+        one: "dhukkubsataa"
+        other: "dhukkubsatoota"
     period_report:
       registered_patients_card:
         title: "Dhukkubsatoota galmaa'an"
@@ -428,3 +445,29 @@ om-ET:
         cohort_title: "Bu'aa kan tarree  %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} kan %{registration_period} keessatti galmaa'an"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} kan %{threshold}"
+  monthly_screening_reports:
+    male: "Dhiira"
+    female: "Dubara"
+    transgender: "Saaldarbaa"
+    monthly_opd_visits_gt_30: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >30 "
+    monthly_opd_visits_gt_18: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >18"
+    outpatient_department_visits: "Daawwannaawwan muummee deddeebi'anii yaalamuu"
+    htn_and_dm_screening: "QORANNOO HTN & DM"
+    total_bp_checks: "Qorannoowwan BP taasifaman dimshaasha"
+    total_blood_sugar_checks: "Qorannoowwan sukkaaraa taasifaman dimshaasha"
+    new_suspected_individuals: "NAMOOTA HAARAA SHAKKAMAN"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM  (lamaanu)"
+    diagnosed_cases_on_follow_up: "RAKKOOWWAN QORANNOO IRRATTI ADDA BAAFAMAN"
+    diagnosed_cases_on_follow_up_htn: "Dhukkubsatoota HTN hordoffiirra jiran"
+    diagnosed_cases_on_follow_up_dm: "Dhukkubsatoota DM hordoffiirra jiran"
+    diagnosed_cases_on_follow_up_htn_and_dm: "Dhukkubsatoota HTN+DM (lamaanuu) hordoffiirra jiran"
+    cancer_screening: "QORANNOO KAANSARII"
+    total_cancer_screening_oral: "Qorannoowwan kaansarii afaanii taasifaman dimshaasha"
+    total_cancer_screening_breast: "Qorannoowwan kaansarii harmaa taasifaman dimshaasha"
+    total_cancer_screening_cervical: "Qorannoowwan kaansarii afaan gadaamessi taasifaman dimshaasha"
+    oral_cancer: "Kaansarii afaanii"
+    breast_cancer: "Kaansarii harmaa"
+    cervical_cancer: "Kaansarii afaan gadaamessaa"
+
