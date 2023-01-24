@@ -4,7 +4,7 @@ class Api::V4::QuestionnaireResponsePayloadValidator < Api::V3::PayloadValidator
     :questionnaire_id,
     :questionnaire_type,
     :facility_id,
-    :user_id,
+    :last_updated_by_user_id,
     :content,
     :created_at,
     :updated_at,

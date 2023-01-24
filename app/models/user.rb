@@ -65,7 +65,7 @@ class User < ApplicationRecord
     join_table: "facilities_teleconsultation_medical_officers"
   has_many :accesses, dependent: :destroy
   has_many :drug_stocks
-  has_many :questionnaire_responses
+  has_many :questionnaire_responses, foreign_key: "last_updated_by_user_id"
 
   pg_search_scope :search_by_name, against: [:full_name], using: {tsearch: {prefix: true, any_word: true}}
   pg_search_scope :search_by_teleconsultation_phone_number,
