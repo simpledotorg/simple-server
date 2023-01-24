@@ -1144,14 +1144,31 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC) AS rank
            FROM (((((((((public.blood_pressures bp
              LEFT JOIN public.facilities f ON ((bp.facility_id = f.id)))
-             LEFT JOIN public.appointments a ON (((a.patient_id = bp.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bp.recorded_at)))))
+             LEFT JOIN LATERAL ( SELECT DISTINCT ON (appointments.patient_id) appointments.id,
+                    appointments.patient_id,
+                    appointments.facility_id,
+                    appointments.scheduled_date,
+                    appointments.status,
+                    appointments.cancel_reason,
+                    appointments.device_created_at,
+                    appointments.device_updated_at,
+                    appointments.created_at,
+                    appointments.updated_at,
+                    appointments.remind_on,
+                    appointments.agreed_to_visit,
+                    appointments.deleted_at,
+                    appointments.appointment_type,
+                    appointments.user_id,
+                    appointments.creation_facility_id
+                   FROM public.appointments
+                  WHERE (date_trunc('day'::text, appointments.device_created_at) = date_trunc('day'::text, bp.recorded_at))) a ON ((a.patient_id = bp.patient_id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
              LEFT JOIN ranked_prescription_drugs pd_1 ON (((bp.id = pd_1.bp_id) AND (pd_1.rank = 1))))
              LEFT JOIN ranked_prescription_drugs pd_2 ON (((bp.id = pd_2.bp_id) AND (pd_2.rank = 2))))
              LEFT JOIN ranked_prescription_drugs pd_3 ON (((bp.id = pd_3.bp_id) AND (pd_3.rank = 3))))
              LEFT JOIN ranked_prescription_drugs pd_4 ON (((bp.id = pd_4.bp_id) AND (pd_4.rank = 4))))
              LEFT JOIN ranked_prescription_drugs pd_5 ON (((bp.id = pd_5.bp_id) AND (pd_5.rank = 5))))
-             LEFT JOIN other_medications ON ((pd_1.bp_id = other_medications.bp_id)))
+             LEFT JOIN other_medications ON ((bp.id = other_medications.bp_id)))
           WHERE ((bp.deleted_at IS NULL) AND (a.deleted_at IS NULL))
         ), latest_blood_pressures AS (
          SELECT latest_blood_pressure_1.patient_id,
@@ -1310,8 +1327,8 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             f.district AS appointment_district,
             f.state AS appointment_state
            FROM (public.appointments
-             LEFT JOIN public.facilities f ON ((f.id = appointments.facility_id)))
-          WHERE ((appointments.deleted_at IS NULL) AND ((appointments.status)::text = 'scheduled'::text))
+             LEFT JOIN public.facilities f ON (((f.id = appointments.facility_id) AND ((appointments.status)::text = 'scheduled'::text))))
+          WHERE (appointments.deleted_at IS NULL)
           ORDER BY appointments.patient_id, appointments.device_created_at DESC
         )
  SELECT p.id,
@@ -1449,15 +1466,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
     latest_blood_sugars.latest_blood_sugar_3_state,
     latest_blood_sugars.latest_blood_sugar_3_follow_up_facility_name,
     latest_blood_sugars.latest_blood_sugar_3_follow_up_date,
-    latest_blood_sugars.latest_blood_sugar_3_follow_up_days,
-        CASE
-            WHEN (next_scheduled_appointment.scheduled_date IS NULL) THEN 0
-            WHEN (next_scheduled_appointment.scheduled_date > date_trunc('day'::text, (now() - '30 days'::interval))) THEN 0
-            WHEN ((latest_blood_pressures.latest_blood_pressure_1_systolic >= 180) OR (latest_blood_pressures.latest_blood_pressure_1_diastolic >= 110)) THEN 1
-            WHEN (((mh.prior_heart_attack = 'yes'::text) OR (mh.prior_stroke = 'yes'::text)) AND ((latest_blood_pressures.latest_blood_pressure_1_systolic >= 140) OR (latest_blood_pressures.latest_blood_pressure_1_diastolic >= 90))) THEN 1
-            WHEN ((((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'random'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'post_prandial'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (300)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'fasting'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= (200)::numeric)) OR (((latest_blood_sugars.latest_blood_sugar_1_blood_sugar_type)::text = 'hba1c'::text) AND (latest_blood_sugars.latest_blood_sugar_1_blood_sugar_value >= 9.0))) THEN 1
-            ELSE 0
-        END AS risk_level
+    latest_blood_sugars.latest_blood_sugar_3_follow_up_days
    FROM (((((((((public.patients p
      LEFT JOIN latest_bp_passport ON ((latest_bp_passport.patient_id = p.id)))
      LEFT JOIN latest_phone_number ON ((latest_phone_number.patient_id = p.id)))

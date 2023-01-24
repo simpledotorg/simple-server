@@ -144,7 +144,7 @@ describe MaterializedPatientSummary, type: :model do
       drug_deleted_after_bp_recorded_2 = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at + 2.months, name: "Drug G")
       other_drug_1 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 15.days, name: "Drug H")
       other_drug_2 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 15.days, name: "Drug I")
-      other_drugs_name = [other_drug_1, other_drug_2].map { |drug| "#{drug.name}-#{drug.dosage}" }.join(', ')
+      other_drugs_name = [other_drug_1, other_drug_2].map { |drug| "#{drug.name}-#{drug.dosage}" }.join(", ")
 
       refresh_view
 
@@ -240,81 +240,6 @@ describe MaterializedPatientSummary, type: :model do
       refresh_view
 
       expect(patient_summary.reload.days_overdue).to eq(0)
-    end
-  end
-
-  describe "Risk level" do
-    it "returns 0 for patients recently overdue" do
-      create(:appointment, scheduled_date: 29.days.ago, status: :scheduled, patient: patient)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
-    end
-
-    it "returns 1 for patients overdue with critical bp" do
-      create(:blood_pressure, :critical, patient: patient)
-      create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(1)
-    end
-
-    it "returns 1 for hypertensive bp patients with medical history risks" do
-      patient.medical_history.delete
-      create(:medical_history, :prior_risk_history, patient: patient)
-      create(:blood_pressure, :hypertensive, patient: patient, facility: facility)
-      create(:appointment, :overdue, patient: patient, facility: facility)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(1)
-    end
-
-    it "returns 0 for patients overdue with only hypertensive bp" do
-      create(:blood_pressure, :hypertensive, patient: patient, facility: facility)
-      create(:appointment, :overdue, patient: patient, facility: facility)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
-    end
-
-    it "returns 0 for patients overdue with only medical risk history" do
-      create(:medical_history, :prior_risk_history, patient: patient)
-      create(:appointment, :overdue, patient: patient, facility: facility)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
-    end
-
-    it "returns 0 for patients overdue with hypertension" do
-      create(:blood_pressure, :hypertensive, patient: patient, user: user, facility: facility)
-      create(:appointment, :overdue, patient: patient, user: user, facility: facility)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
-    end
-
-    it "returns 0 for patients overdue with low risk" do
-      create(:blood_pressure, :under_control, patient: patient, facility: facility, user: user)
-      create(:appointment, scheduled_date: 2.years.ago, status: :scheduled, patient: patient, facility: facility, user: user)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
-    end
-
-    it "returns 1 for patients overdue with high blood sugar" do
-      create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 300, facility: facility, user: user)
-      create(:appointment, scheduled_date: 31.days.ago, status: :scheduled, patient: patient, facility: facility, user: user)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(1)
-    end
-
-    it "returns 'none' priority for patients overdue with normal blood sugar" do
-      create(:blood_sugar, patient: patient, blood_sugar_type: :random, blood_sugar_value: 150, facility: facility, user: user)
-      create(:appointment, :overdue, patient: patient, facility: facility, user: user)
-      refresh_view
-
-      expect(patient_summary.risk_level).to eq(0)
     end
   end
 

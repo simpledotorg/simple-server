@@ -77,7 +77,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       "Registration Facility State",
       "Diagnosed with Hypertension",
       "Diagnosed with Diabetes",
-      "Risk Level",
       "Days Overdue For Next Follow-up",
       "BP 1 Date",
       "BP 1 Quarter",
@@ -209,7 +208,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       registration_facility.state,
       "no",
       "yes",
-      "High",
       bp_1_follow_up.days_overdue,
       I18n.l(bp_1.recorded_at.to_date),
       quarter_string(bp_1.recorded_at.to_date),
@@ -334,7 +332,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
   end
 
   before do
-    allow(patient).to receive(:high_risk?).and_return(true)
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
     patient.medical_history.update!(hypertension: "no", diabetes: "yes")
     MaterializedPatientSummary.refresh

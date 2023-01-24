@@ -64,14 +64,16 @@ with latest_bp_passport as (
         rank() over (partition by bp.patient_id order by bp.recorded_at desc) rank
     from blood_pressures bp
     left outer join facilities f on bp.facility_id = f.id
-    left outer join appointments a on a.patient_id = bp.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bp.recorded_at)
+    left outer join lateral (
+        select distinct on(patient_id) * from appointments where date_trunc('day', device_created_at) = date_trunc('day', bp.recorded_at)
+    ) a on a.patient_id = bp.patient_id
     left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     left outer join ranked_prescription_drugs pd_1 on bp.id = pd_1.bp_id and pd_1.rank = 1
     left outer join ranked_prescription_drugs pd_2 on bp.id = pd_2.bp_id and pd_2.rank = 2
     left outer join ranked_prescription_drugs pd_3 on bp.id = pd_3.bp_id and pd_3.rank = 3
     left outer join ranked_prescription_drugs pd_4 on bp.id = pd_4.bp_id and pd_4.rank = 4
     left outer join ranked_prescription_drugs pd_5 on bp.id = pd_5.bp_id and pd_5.rank = 5
-    left outer join other_medications on pd_1.bp_id = other_medications.bp_id
+    left outer join other_medications on bp.id = other_medications.bp_id
     where bp.deleted_at is null and a.deleted_at is null
 ), latest_blood_pressures as (
     select
@@ -227,8 +229,8 @@ with latest_bp_passport as (
         f.district as appointment_district,
         f.state as appointment_state
     from appointments
-    left outer join facilities f on f.id = appointments.facility_id
-    where appointments.deleted_at is null and appointments.status = 'scheduled'
+    left outer join facilities f on f.id = appointments.facility_id and appointments.status = 'scheduled'
+    where appointments.deleted_at is null
     order by patient_id, device_created_at desc
 )
 
@@ -381,28 +383,7 @@ select
     latest_blood_sugars.latest_blood_sugar_3_state,
     latest_blood_sugars.latest_blood_sugar_3_follow_up_facility_name,
     latest_blood_sugars.latest_blood_sugar_3_follow_up_date,
-    latest_blood_sugars.latest_blood_sugar_3_follow_up_days,
-
-    (CASE
-         WHEN next_scheduled_appointment.scheduled_date IS NULL THEN 0
-         WHEN next_scheduled_appointment.scheduled_date > date_trunc('day', NOW() - interval '30 days') THEN 0
-         WHEN (latest_blood_pressure_1_systolic >= 180
-             OR latest_blood_pressure_1_diastolic >= 110) THEN 1
-         WHEN ((mh.prior_heart_attack = 'yes'
-             OR mh.prior_stroke = 'yes')
-             AND (latest_blood_pressure_1_systolic >= 140
-                 OR latest_blood_pressure_1_diastolic >= 90)) THEN 1
-         WHEN ((latest_blood_sugar_1_blood_sugar_type = 'random'
-             AND latest_blood_sugar_1_blood_sugar_value >= 300)
-             OR (latest_blood_sugar_1_blood_sugar_type = 'post_prandial'
-                 AND latest_blood_sugar_1_blood_sugar_value >= 300)
-             OR (latest_blood_sugar_1_blood_sugar_type = 'fasting'
-                 AND latest_blood_sugar_1_blood_sugar_value >= 200)
-             OR (latest_blood_sugar_1_blood_sugar_type = 'hba1c'
-                 AND latest_blood_sugar_1_blood_sugar_value >= 9.0)) THEN 1
-         ELSE 0
-        END) as risk_level
-
+    latest_blood_sugars.latest_blood_sugar_3_follow_up_days
 from patients p
 left outer join latest_bp_passport on latest_bp_passport.patient_id = p.id
 left outer join latest_phone_number on latest_phone_number.patient_id = p.id

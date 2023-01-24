@@ -27,14 +27,14 @@ class PatientsWithHistoryExporter
     hba1c: "HbA1c"
   }.with_indifferent_access.freeze
 
+  attr_reader :display_blood_sugars
+
   def self.csv(*args)
     new.csv(*args)
   end
 
   def csv(patients, display_blood_sugars: true)
-    @display_blood_pressures = display_blood_pressures
     @display_blood_sugars = display_blood_sugars
-    @display_medication_columns = display_medication_columns
     summary = MaterializedPatientSummary.where(patient: patients)
 
     CSV.generate(headers: true) do |csv|
@@ -83,9 +83,8 @@ class PatientsWithHistoryExporter
       "Registration Facility State",
       "Diagnosed with Hypertension",
       "Diagnosed with Diabetes",
-      "Risk Level",
       "Days Overdue For Next Follow-up",
-      (1..display_blood_pressures).map { |i| blood_pressure_headers(i) },
+      (1..BLOOD_PRESSURES_TO_DISPLAY).map { |i| blood_pressure_headers(i) },
       display_blood_sugars ?
         (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_headers(i) } :
         ["Latest Blood Sugar Date",
@@ -99,7 +98,7 @@ class PatientsWithHistoryExporter
     [
       25.times.map { nil }, # Non-measurement related headers
       (1..BLOOD_PRESSURES_TO_DISPLAY).map { |i| ["Blood Pressure #{i}"] + (blood_pressure_headers(0).length - 1).times.map { nil } },
-      (1..display_blood_sugars).map { |i| ["Blood Sugar #{i}"] + (blood_sugar_headers(0).length - 1).times.map { nil } }
+      (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| ["Blood Sugar #{i}"] + (blood_sugar_headers(0).length - 1).times.map { nil } }
     ].flatten
   end
 
@@ -135,7 +134,6 @@ class PatientsWithHistoryExporter
     treatment_history = [
       patient_summary.hypertension,
       patient_summary.diabetes,
-      ("High" if patient_summary.risk_level > 0),
       patient_summary.days_overdue.to_i
     ]
 
@@ -145,8 +143,8 @@ class PatientsWithHistoryExporter
       (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_fields(patient_summary, i) }.flatten
     else
       [I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date),
-        patient_summary.latest_blood_sugar_1_value,
-        patient_summary.latest_blood_sugar_1_type]
+        patient_summary.latest_blood_sugar_1_blood_sugar_value,
+        patient_summary.latest_blood_sugar_1_blood_sugar_type]
     end
 
     [patient_details,
@@ -203,43 +201,43 @@ class PatientsWithHistoryExporter
   end
 
   def blood_pressure_fields(patient_summary, i)
-    [I18n.l(patient_summary.send("latest_blood_pressure_#{i}_recorded_at").to_date),
-      quarter_string(patient_summary.send("latest_blood_pressure_#{i}_recorded_at").to_date),
-      patient_summary.send("latest_blood_pressure_#{i}_systolic"),
-      patient_summary.send("latest_blood_pressure_#{i}_diastolic"),
-      patient_summary.send("latest_blood_pressure_#{i}_facility_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_facility_type"),
-      patient_summary.send("latest_blood_pressure_#{i}_district"),
-      patient_summary.send("latest_blood_pressure_#{i}_state"),
-      patient_summary.send("latest_blood_pressure_#{i}_follow_up_facility_name"),
-      I18n.l(patient_summary.send("latest_blood_pressure_#{i}_follow_up_date")),
-      patient_summary.send("latest_blood_pressure_#{i}_follow_up_days"),
-      patient_summary.send("latest_blood_pressure_#{i}_medication_updated") ? "Yes" : "No",
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_1_dosage"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_2_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_2_dosage"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_3_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_3_dosage"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_4_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_4_dosage"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_5_name"),
-      patient_summary.send("latest_blood_pressure_#{i}_prescription_drug_5_dosage"),
-      patient_summary.send("latest_blood_pressure_#{i}_other_prescription_drugs")]
+    [I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at").to_date),
+      patient_summary.public_send("latest_blood_pressure_#{i}_systolic"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_diastolic"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_facility_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_facility_type"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_district"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_state"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_facility_name"),
+      I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_date")),
+      patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_days"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_medication_updated") ? "Yes" : "No",
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_1_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_1_dosage"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_2_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_2_dosage"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_3_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_3_dosage"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_4_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_4_dosage"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_5_name"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_5_dosage"),
+      patient_summary.public_send("latest_blood_pressure_#{i}_other_prescription_drugs")]
   end
 
   def blood_sugar_fields(patient_summary, i)
-    [I18n.l(patient_summary.send("latest_blood_sugar_#{i}_recorded_at").to_date),
-      quarter_string(patient_summary.send("latest_blood_sugar_#{i}_recorded_at").to_date),
-      patient_summary.send("latest_blood_sugar_#{i}_blood_sugar_type"),
-      patient_summary.send("latest_blood_sugar_#{i}_blood_sugar_value"),
-      patient_summary.send("latest_blood_sugar_#{i}_facility_name"),
-      patient_summary.send("latest_blood_sugar_#{i}_facility_type"),
-      patient_summary.send("latest_blood_sugar_#{i}_district"),
-      patient_summary.send("latest_blood_sugar_#{i}_state"),
-      patient_summary.send("latest_blood_sugar_#{i}_follow_up_facility_name"),
-      I18n.l(patient_summary.send("latest_blood_sugar_#{i}_follow_up_date")),
-      patient_summary.send("latest_blood_sugar_#{i}_follow_up_days")]
+    [I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at").to_date),
+      patient_summary.public_send("latest_blood_sugar_#{i}_blood_sugar_type"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_blood_sugar_value"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_facility_name"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_facility_type"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_district"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_state"),
+      patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_facility_name"),
+      I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_date")),
+      patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_days")]
   end
 
   def zone_column
