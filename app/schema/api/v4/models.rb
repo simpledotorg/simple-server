@@ -411,7 +411,7 @@ class Api::V4::Models
          questionnaire_id: {"$ref" => "#/definitions/uuid"},
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          facility_id: {"$ref" => "#/definitions/uuid"},
-         user_id: {"$ref" => "#/definitions/nullable_uuid"},
+         last_updated_by_user_id: {"$ref" => "#/definitions/nullable_uuid"},
          content: {type: :object},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"},
@@ -421,7 +421,7 @@ class Api::V4::Models
          questionnaire_id
          questionnaire_type
          facility_id
-         user_id
+         last_updated_by_user_id
          content
          created_at
          updated_at]}

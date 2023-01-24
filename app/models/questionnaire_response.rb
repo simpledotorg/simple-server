@@ -3,7 +3,7 @@ class QuestionnaireResponse < ApplicationRecord
 
   belongs_to :questionnaire
   belongs_to :facility
-  belongs_to :user
+  belongs_to :user, foreign_key: "last_updated_by_user_id", optional: true
 
   scope :for_sync, -> {
     with_discarded

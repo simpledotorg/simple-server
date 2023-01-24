@@ -18,12 +18,12 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
           {
             type: "integer",
             id: "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
-            link_id: "outpatient_department_visits",
+            link_id: "monthly_screening_reports.outpatient_department_visits",
             text: "Outpatient department visits",
             view_type: "input_field",
             validations: {
               min: 0,
-              max: 1000000
+              max: 1_000_000
             }
           },
           {
@@ -54,23 +54,23 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
               {
                 type: "integer",
                 id: "41c2c2fa-2bb2-4b0c-9a89-7d5c11bd4a9b",
-                link_id: "blood_pressure_checks_male",
+                link_id: "monthly_screening_reports.blood_pressure_checks_male",
                 text: "Male",
                 view_type: "input_field",
                 validations: {
                   min: 0,
-                  max: 1000000
+                  max: 1_000_000
                 }
               },
               {
                 type: "integer",
                 id: "1e999e55-5839-4f6b-9f5e-118b6c5f5728",
-                link_id: "blood_pressure_checks_female",
+                link_id: "monthly_screening_reports.blood_pressure_checks_female",
                 text: "Female",
                 view_type: "input_field",
                 validations: {
                   min: 0,
-                  max: 1000000
+                  max: 1_000_000
                 }
               }
             ]
