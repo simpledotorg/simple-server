@@ -25,26 +25,23 @@
     </tr>
     </thead>
     <tbody>
-    <% questionnaires.sort_by { |q| q.is_active.to_s + q.created_at.to_s }.reverse.each do |q| %>
+    <% questionnaires.sort_by(&:created_at).reverse.each do |q| %>
       <tr class="<%= q.is_active ? "bg-infogreen" : "text-muted" %>">
-        <td><a href="#"><%= q.id %></a></td>
+        <td><%= link_to q.id, admin_questionnaire_path(q.id) %></td>
         <td><%= q.questionnaire_type %></td>
         <td><%= q.dsl_version %></td>
         <td>
           <%= bootstrap_form_for(q, url: admin_questionnaire_url(q.id)) do |f| %>
-            <%= f.form_group :skill_level do %>
-              <div class="custom-control custom-switch">
                 <%= f.check_box :is_active,
-                                wrapper: false,
                                 class: "custom-control-input",
                                 id: "is-active-switch-#{q.id}",
                                 onChange: "this.form.submit()",
-                                hide_label: true
+                                custom: :switch,
+                                # This label contains an empty unicode charatcer
+                                # since the interface doesn't allow disabling the label and
+                                # using a switch at the same time.
+                                label: "⠀"
                 %>
-
-                <label class="custom-control-label" for="is-active-switch<%= q.id %>"></label>
-              </div>
-            <% end %>
           <% end %>
         </td>
         <td><%= I18n.l(q.created_at.to_date) %></td>

@@ -4,16 +4,7 @@ FactoryBot.define do
     questionnaire_type { "monthly_screening_reports" }
     dsl_version { 1 }
     is_active { false }
-    layout {
-      {
-        type: "group",
-        view_type: "view_group",
-        display_properties: {
-          orientation: "vertical"
-        },
-        item: []
-      }
-    }
+    layout { Questionnaire.default_layout }
 
     trait :active do
       is_active { true }

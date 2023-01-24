@@ -39,6 +39,17 @@ class Questionnaire < ApplicationRecord
     self.layout = apply_recursively_to_layout(layout, &blk)
   end
 
+  def self.default_layout
+    {
+      type: "group",
+      view_type: "view_group",
+      display_properties: {
+        orientation: "vertical"
+      },
+      item: []
+    }
+  end
+
   private
 
   def layout_schema

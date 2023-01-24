@@ -1,0 +1,22 @@
+
+<h1>
+  Questionnaire: <%= @questionnaire.questionnaire_type.humanize %>
+</h1>
+<h3>ID: <%= @questionnaire.id %></h3>
+<p>Created at: <%= I18n.l(@questionnaire.created_at) %> | Active: <%= @questionnaire.is_active ? "✅" : "❌" %></p>
+<div class="card">
+  <div class="row">
+    <div class="col-12">
+      <h3>Layout</h3>
+      <p>
+
+      </p>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-12">
+  <pre><%= JSON.pretty_generate(@questionnaire.layout) %></pre>
+    </div>
+  </div>
+</div>
