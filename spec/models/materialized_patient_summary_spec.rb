@@ -96,7 +96,7 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.registration_facility_state).to eq(patient.registration_facility.state)
     end
 
-    it "includes latest BP details", :aggregate_failures do
+    it "includes latest BP details" do
       upcoming_appointment = create(:appointment, patient: patient, device_created_at: latest_bp_1.recorded_at)
       refresh_view
       expect(patient_summary.latest_blood_pressure_1_systolic).to eq(latest_bp_1.systolic)
@@ -111,7 +111,7 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.latest_blood_pressure_1_follow_up_days).to eq(upcoming_appointment.follow_up_days)
     end
 
-    it "includes second latest BP details", :aggregate_failures do
+    it "includes second latest BP details" do
       expect(patient_summary.latest_blood_pressure_2_systolic).to eq(latest_bp_2.systolic)
       expect(patient_summary.latest_blood_pressure_2_diastolic).to eq(latest_bp_2.diastolic)
       expect(patient_summary.latest_blood_pressure_2_recorded_at).to eq(latest_bp_2.recorded_at)
@@ -121,7 +121,7 @@ describe MaterializedPatientSummary, type: :model do
       expect(patient_summary.latest_blood_pressure_2_state).to eq(latest_bp_2.facility.state)
     end
 
-    it "includes third latest BP details", :aggregate_failures do
+    it "includes third latest BP details" do
       expect(patient_summary.latest_blood_pressure_3_systolic).to eq(latest_bp_3.systolic)
       expect(patient_summary.latest_blood_pressure_3_diastolic).to eq(latest_bp_3.diastolic)
       expect(patient_summary.latest_blood_pressure_3_recorded_at).to eq(latest_bp_3.recorded_at)
@@ -137,6 +137,7 @@ describe MaterializedPatientSummary, type: :model do
       earliest_prescription_drug = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 3.months, name: "Drug A")
       protocol_drug = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 2.months, is_protocol_drug: true, name: "Drug B")
       protocol_drug_2 = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at - 2.months, is_protocol_drug: true, name: "Drug C")
+      # Drugs deleted before BP and those prescribed after BP should not show up in the list of prescribed drugs for a BP
       _drug_prescribed_after_bp_recorded = create(:prescription_drug, patient: patient, device_created_at: bp_recorded_at + 1.month, name: "Drug D")
       _drug_deleted_before_bp_recorded = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at - 1.month, name: "Drug E")
       drug_deleted_after_bp_recorded = create(:prescription_drug, patient: patient, is_deleted: true, device_created_at: bp_recorded_at - 2.months, device_updated_at: bp_recorded_at + 1.month, name: "Drug F")
@@ -147,6 +148,7 @@ describe MaterializedPatientSummary, type: :model do
 
       refresh_view
 
+      # Prescription drugs are sorted by whether they are protocol drugs, by name, and finally the date of prescription
       expect(patient_summary.latest_blood_pressure_1_prescription_drug_1_name).to eq(protocol_drug.name)
       expect(patient_summary.latest_blood_pressure_1_prescription_drug_1_dosage).to eq(protocol_drug.dosage)
       expect(patient_summary.latest_blood_pressure_1_prescription_drug_2_name).to eq(protocol_drug_2.name)
