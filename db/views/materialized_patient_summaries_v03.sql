@@ -65,7 +65,10 @@ with latest_bp_passport as (
     from blood_pressures bp
     left outer join facilities f on bp.facility_id = f.id
     left outer join lateral (
-        select distinct on(patient_id) * from appointments where date_trunc('day', device_created_at) = date_trunc('day', bp.recorded_at)
+        select distinct on(patient_id) *
+        from appointments
+        where date_trunc('day', device_created_at) = date_trunc('day', bp.recorded_at)
+        order by device_created_at desc
     ) a on a.patient_id = bp.patient_id
     left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     left outer join ranked_prescription_drugs pd_1 on bp.id = pd_1.bp_id and pd_1.rank = 1

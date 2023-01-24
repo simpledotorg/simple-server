@@ -750,7 +750,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Questionnaire Responses created",
+            "description": "some, or no errors were found",
             "schema": {
               "type": "object",
               "properties": {
@@ -810,7 +810,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Questionnaires Synced to user device",
+            "description": "questionnaire responses synced to user device",
             "schema": {
               "type": "object",
               "properties": {
@@ -869,6 +869,12 @@
             "type": "string"
           },
           {
+            "name": "dsl_version",
+            "in": "query",
+            "type": "string",
+            "required": true
+          },
+          {
             "name": "process_token",
             "type": "string",
             "format": "byte",
@@ -880,12 +886,6 @@
             "type": "integer",
             "description": "Number of record to retrieve (a.k.a batch-size)",
             "in": "query"
-          },
-          {
-            "name": "dsl_version",
-            "in": "query",
-            "type": "string",
-            "required": true
           }
         ],
         "responses": {
@@ -2785,7 +2785,7 @@
         "facility_id": {
           "$ref": "#/definitions/uuid"
         },
-        "user_id": {
+        "last_updated_by_user_id": {
           "$ref": "#/definitions/nullable_uuid"
         },
         "content": {
@@ -2806,7 +2806,7 @@
         "questionnaire_id",
         "questionnaire_type",
         "facility_id",
-        "user_id",
+        "last_updated_by_user_id",
         "content",
         "created_at",
         "updated_at"
@@ -2840,7 +2840,7 @@
           {
             "type": "integer",
             "id": "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
-            "link_id": "outpatient_department_visits",
+            "link_id": "monthly_screening_reports.outpatient_department_visits",
             "text": "Outpatient department visits",
             "view_type": "input_field",
             "validations": {
@@ -2876,7 +2876,7 @@
               {
                 "type": "integer",
                 "id": "41c2c2fa-2bb2-4b0c-9a89-7d5c11bd4a9b",
-                "link_id": "blood_pressure_checks_male",
+                "link_id": "monthly_screening_reports.blood_pressure_checks_male",
                 "text": "Male",
                 "view_type": "input_field",
                 "validations": {
@@ -2887,7 +2887,7 @@
               {
                 "type": "integer",
                 "id": "1e999e55-5839-4f6b-9f5e-118b6c5f5728",
-                "link_id": "blood_pressure_checks_female",
+                "link_id": "monthly_screening_reports.blood_pressure_checks_female",
                 "text": "Female",
                 "view_type": "input_field",
                 "validations": {
