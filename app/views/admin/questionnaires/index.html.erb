@@ -1,0 +1,55 @@
+<div class="page-header">
+  <h1 class="page-title">
+    Questionnaires
+  </h1>
+  <nav class="page-nav">
+    <% if current_admin.accessible_organizations(:manage).any? || current_admin.power_user? %>
+      <%= link_to new_admin_questionnaire_path, class: "btn btn-sm btn-success" do %>
+        <i class="fas fa-plus mr-1"></i> Questionnaire
+      <% end %>
+    <% end %>
+  </nav>
+</div>
+
+<!-- filters by: dsl_version, active -->
+<% @questionnaires.group_by(&:questionnaire_type).each do |questionnaire_type, questionnaires| %>
+  <h3><%= questionnaire_type.humanize %></h3>
+  <table class="mt-20px table table-responsive table-striped">
+    <thead>
+    <tr>
+      <th>Questionnaire ID</th>
+      <th>Questionnaire Type</th>
+      <th>DSL Version</th>
+      <th>Active</th>
+      <th>Created on</th>
+    </tr>
+    </thead>
+    <tbody>
+    <% questionnaires.sort_by { |q| q.is_active.to_s + q.created_at.to_s }.reverse.each do |q| %>
+      <tr class="<%= q.is_active ? "bg-infogreen" : "text-muted" %>">
+        <td><a href="#"><%= q.id %></a></td>
+        <td><%= q.questionnaire_type %></td>
+        <td><%= q.dsl_version %></td>
+        <td>
+          <%= bootstrap_form_for(q, url: admin_questionnaire_url(q.id)) do |f| %>
+            <%= f.form_group :skill_level do %>
+              <div class="custom-control custom-switch">
+                <%= f.check_box :is_active,
+                                wrapper: false,
+                                class: "custom-control-input",
+                                id: "is-active-switch-#{q.id}",
+                                onChange: "this.form.submit()",
+                                hide_label: true
+                %>
+
+                <label class="custom-control-label" for="is-active-switch<%= q.id %>"></label>
+              </div>
+            <% end %>
+          <% end %>
+        </td>
+        <td><%= I18n.l(q.created_at.to_date) %></td>
+      </tr>
+    <% end %>
+    </tbody>
+  </table>
+<% end %>

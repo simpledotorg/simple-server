@@ -265,6 +265,8 @@ Rails.application.routes.draw do
       put "enable_access", to: "users#enable_access"
     end
 
+    resources :questionnaires, only: [:new, :create, :index, :update, :destroy]
+
     # This is a temporary page to assist in clean up
     get "fix_zone_data", to: "fix_zone_data#show"
     post "update_zone", to: "fix_zone_data#update"
