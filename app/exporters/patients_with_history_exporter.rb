@@ -3,14 +3,22 @@ require "csv"
 class PatientsWithHistoryExporter
   include QuarterHelper
 
-  DEFAULT_DISPLAY_BLOOD_PRESSURES = 3
-  DEFAULT_DISPLAY_BLOOD_SUGARS = 3
-  DEFAULT_DISPLAY_MEDICATION_COLUMNS = 5
+  # Since we are populating this export using a materialized view,
+  # changing these values is not enough to add more fields to the export.
+  # We also need to update MaterializedPatientSummary to include columns for
+  # more blood pressures and blood sugars
+
+  BLOOD_PRESSURES_TO_DISPLAY = 3
+  BLOOD_SUGARS_TO_DISPLAY = 3
+
   BATCH_SIZE = 1000
-  PATIENT_STATUS_DESCRIPTIONS = {active: "Active",
-                                 migrated: "Transferred out",
-                                 dead: "Died",
-                                 ltfu: "Lost to follow-up"}.with_indifferent_access
+
+  PATIENT_STATUS_DESCRIPTIONS = {
+    active: "Active",
+    migrated: "Transferred out",
+    dead: "Died",
+    ltfu: "Lost to follow-up"
+  }.with_indifferent_access
 
   BLOOD_SUGAR_TYPES = {
     random: "Random",
@@ -23,12 +31,7 @@ class PatientsWithHistoryExporter
     new.csv(*args)
   end
 
-  def csv(
-    patients,
-    display_blood_pressures: DEFAULT_DISPLAY_BLOOD_PRESSURES,
-    display_blood_sugars: DEFAULT_DISPLAY_BLOOD_SUGARS,
-    display_medication_columns: DEFAULT_DISPLAY_MEDICATION_COLUMNS
-  )
+  def csv(patients, display_blood_sugars: true)
     @display_blood_pressures = display_blood_pressures
     @display_blood_sugars = display_blood_sugars
     @display_medication_columns = display_medication_columns
@@ -40,23 +43,11 @@ class PatientsWithHistoryExporter
       csv << csv_headers
 
       summary.in_batches(of: BATCH_SIZE).each do |batch|
-        load_batch(batch).each do |patient_summary|
+        batch.each do |patient_summary|
           csv << csv_fields(patient_summary)
         end
       end
     end
-  end
-
-  def load_batch(batch)
-    batch
-      .includes(
-        :current_prescription_drugs,
-        :latest_blood_sugar,
-        :latest_bp_passport,
-        {appointments: :facility},
-        {latest_blood_pressures: :facility},
-        {latest_blood_sugars: :facility}
-      )
   end
 
   def timestamp
@@ -95,25 +86,27 @@ class PatientsWithHistoryExporter
       "Risk Level",
       "Days Overdue For Next Follow-up",
       (1..display_blood_pressures).map { |i| blood_pressure_headers(i) },
-      display_blood_sugars == 0 ?
+      display_blood_sugars ?
+        (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_headers(i) } :
         ["Latest Blood Sugar Date",
           "Latest Blood Sugar Value",
-          "Latest Blood Sugar Type"] :
-        (1..display_blood_sugars).map { |i| blood_sugar_headers(i) }
+          "Latest Blood Sugar Type"]
+
     ].compact.flatten
   end
 
   def measurement_headers
     [
       25.times.map { nil }, # Non-measurement related headers
-      (1..display_blood_pressures).map { |i| ["Blood Pressure #{i}"] + (blood_pressure_headers(0).length - 1).times.map { nil } },
+      (1..BLOOD_PRESSURES_TO_DISPLAY).map { |i| ["Blood Pressure #{i}"] + (blood_pressure_headers(0).length - 1).times.map { nil } },
       (1..display_blood_sugars).map { |i| ["Blood Sugar #{i}"] + (blood_sugar_headers(0).length - 1).times.map { nil } }
     ].flatten
   end
 
   def csv_fields(patient_summary)
-    patient_details = [registration_date(patient_summary),
-      registration_quarter(patient_summary),
+    patient_details = [
+      I18n.l(patient_summary.recorded_at.to_date),
+      quarter_string(patient_summary.recorded_at),
       patient_summary.id,
       patient_summary.latest_bp_passport&.shortcode,
       patient_summary.full_name,
@@ -125,36 +118,42 @@ class PatientsWithHistoryExporter
       patient_summary.village_or_colony,
       patient_summary.district,
       (patient_summary.zone if Rails.application.config.country[:patient_line_list_show_zone]),
-      patient_summary.state].compact
+      patient_summary.state
+    ].compact
 
-    facility_details = [patient_summary.assigned_facility_name,
+    facility_details = [
+      patient_summary.assigned_facility_name,
       patient_summary.assigned_facility_type,
       patient_summary.assigned_facility_district,
       patient_summary.assigned_facility_state,
       patient_summary.registration_facility_name,
       patient_summary.registration_facility_type,
       patient_summary.registration_facility_district,
-      patient_summary.registration_facility_state]
+      patient_summary.registration_facility_state
+    ]
 
-    treatment_history = [patient_summary.hypertension,
+    treatment_history = [
+      patient_summary.hypertension,
       patient_summary.diabetes,
       ("High" if patient_summary.risk_level > 0),
-      patient_summary.days_overdue.to_i]
+      patient_summary.days_overdue.to_i
+    ]
 
-    blood_pressures = [blood_pressure_fields(patient_summary, 1),
-      blood_pressure_fields(patient_summary, 2),
-      blood_pressure_fields(patient_summary, 3)].flatten
+    blood_pressures = (1..BLOOD_PRESSURES_TO_DISPLAY).map { |i| blood_pressure_fields(patient_summary, i) }.flatten
 
-    blood_sugars = [blood_sugar_fields(patient_summary, 1),
-      blood_sugar_fields(patient_summary, 2),
-      blood_sugar_fields(patient_summary, 3)
-    ].flatten
+    blood_sugars = if display_blood_sugars
+      (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_fields(patient_summary, i) }.flatten
+    else
+      [I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date),
+        patient_summary.latest_blood_sugar_1_value,
+        patient_summary.latest_blood_sugar_1_type]
+    end
 
     [patient_details,
-     facility_details,
-     treatment_history,
-     blood_pressures,
-     blood_sugars].flatten
+      facility_details,
+      treatment_history,
+      blood_pressures,
+      blood_sugars].flatten
   end
 
   private
@@ -247,26 +246,6 @@ class PatientsWithHistoryExporter
     "Patient #{Address.human_attribute_name :zone}"
   end
 
-  def registration_date(patient_summary)
-    patient_summary.recorded_at.presence &&
-      I18n.l(patient_summary.recorded_at.to_date)
-  end
-
-  def registration_quarter(patient_summary)
-    patient_summary.recorded_at.presence &&
-      quarter_string(patient_summary.recorded_at)
-  end
-
-  def latest_blood_sugar_date(patient_summary)
-    patient_summary.latest_blood_sugar_recorded_at.presence &&
-      I18n.l(patient_summary.latest_blood_sugar_recorded_at.to_date)
-  end
-
-  def latest_blood_sugar_type(patient_summary)
-    patient_summary.latest_blood_sugar_type.presence &&
-      BLOOD_SUGAR_TYPES[patient_summary.latest_blood_sugar_type]
-  end
-
   def status(patient_summary)
     patient_status = if patient_summary.ltfu?
       :ltfu
@@ -275,58 +254,5 @@ class PatientsWithHistoryExporter
     end
 
     PATIENT_STATUS_DESCRIPTIONS[patient_status]
-  end
-
-  def display_blood_pressures
-    @display_blood_pressures || DEFAULT_DISPLAY_BLOOD_PRESSURES
-  end
-
-  def display_blood_sugars
-    @display_blood_sugars || DEFAULT_DISPLAY_BLOOD_SUGARS
-  end
-
-  def display_medication_columns
-    @display_medication_columns || DEFAULT_DISPLAY_MEDICATION_COLUMNS
-  end
-
-  def appointment_created_on(appointments, date)
-    date && appointments.find { |a| date.all_day.cover?(a.device_created_at) }
-  end
-
-  def fetch_medication_history(patient_summary, dates)
-    dates.each_with_object({}) { |date, cache|
-      cache[date] =
-        if date
-          patient_summary.prescribed_drugs(date: date).order(is_protocol_drug: :desc, name: :asc).load
-        else
-          PrescriptionDrug.none
-        end
-    }
-  end
-
-  def medication_updated?(all_medications, date, previous_date)
-    medications_on(all_medications, date) == medications_on(all_medications, previous_date) ? "No" : "Yes"
-  end
-
-  def formatted_medications(all_medications, date)
-    medications = medications_on(all_medications, date)
-
-    initial_medications =
-      (0...display_medication_columns).flat_map { |i| [medications[i]&.name, medications[i]&.dosage] }
-
-    other_medications =
-      medications[display_medication_columns..medications.length]
-        &.map { |medication| "#{medication.name}-#{medication.dosage}" }
-        &.join(", ")
-
-    initial_medications << other_medications
-  end
-
-  def medications_on(all_medications, date)
-    if date
-      all_medications[date]
-    else
-      PrescriptionDrug.none
-    end
   end
 end
