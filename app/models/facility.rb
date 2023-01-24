@@ -122,6 +122,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
+  validates :enable_monthly_screening_reports, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
   validates :short_name, presence: true
   validates :short_name, length: {minimum: 1, maximum: SHORT_NAME_MAX_LENGTH}
