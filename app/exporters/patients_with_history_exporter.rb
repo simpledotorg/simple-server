@@ -112,8 +112,7 @@ class PatientsWithHistoryExporter
   end
 
   def csv_fields(patient_summary)
-    [
-      registration_date(patient_summary),
+    patient_details = [registration_date(patient_summary),
       registration_quarter(patient_summary),
       patient_summary.id,
       patient_summary.latest_bp_passport&.shortcode,
@@ -126,28 +125,36 @@ class PatientsWithHistoryExporter
       patient_summary.village_or_colony,
       patient_summary.district,
       (patient_summary.zone if Rails.application.config.country[:patient_line_list_show_zone]),
-      patient_summary.state,
-      patient_summary.assigned_facility_name,
+      patient_summary.state].compact
+
+    facility_details = [patient_summary.assigned_facility_name,
       patient_summary.assigned_facility_type,
       patient_summary.assigned_facility_district,
       patient_summary.assigned_facility_state,
       patient_summary.registration_facility_name,
       patient_summary.registration_facility_type,
       patient_summary.registration_facility_district,
-      patient_summary.registration_facility_state,
-      patient_summary.hypertension,
+      patient_summary.registration_facility_state]
+
+    treatment_history = [patient_summary.hypertension,
       patient_summary.diabetes,
       ("High" if patient_summary.risk_level > 0),
-      patient_summary.days_overdue.to_i,
+      patient_summary.days_overdue.to_i]
 
-      blood_pressure_fields(patient_summary, 1),
+    blood_pressures = [blood_pressure_fields(patient_summary, 1),
       blood_pressure_fields(patient_summary, 2),
-      blood_pressure_fields(patient_summary, 3),
+      blood_pressure_fields(patient_summary, 3)].flatten
 
-      blood_sugar_fields(patient_summary, 1),
+    blood_sugars = [blood_sugar_fields(patient_summary, 1),
       blood_sugar_fields(patient_summary, 2),
       blood_sugar_fields(patient_summary, 3)
-    ].compact.flatten
+    ].flatten
+
+    [patient_details,
+     facility_details,
+     treatment_history,
+     blood_pressures,
+     blood_sugars].flatten
   end
 
   private
