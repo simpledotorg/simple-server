@@ -1,7 +1,7 @@
 <h1>Create a new Questionnaire</h1>
 <%= bootstrap_form_for(@questionnaire, url: admin_questionnaires_url) do |f| %>
   <%= f.select :questionnaire_type, Questionnaire.questionnaire_types %>
-  <%= f.number_field :dsl_version %>
+  <%= f.select :dsl_version, Questionnaire::SUPPORTED_LAYOUT_DSL_VERSIONS %>
   <%= f.text_area :layout, rows: 15 %>
   <%= f.check_box :is_active %>
   <%= f.submit class: "btn btn-success mt-20px" %>

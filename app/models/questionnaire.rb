@@ -1,10 +1,13 @@
 class Questionnaire < ApplicationRecord
+  SUPPORTED_LAYOUT_DSL_VERSIONS = [1]
+
   has_many :questionnaire_responses
 
   enum questionnaire_type: {
     monthly_screening_reports: "monthly_screening_reports"
   }
 
+  validates :dsl_version, presence: true
   validates :dsl_version, uniqueness: {
     scope: [:questionnaire_type, :is_active],
     message: "has already been taken for given questionnaire_type",
@@ -30,12 +33,18 @@ class Questionnaire < ApplicationRecord
   end
 
   def validate_layout
+    unless layout.is_a?(Hash)
+      return errors.add(:layout, "should be valid JSON")
+    end
+
     JSON::Validator.fully_validate(layout_schema, layout).each do |error_string|
-      errors.add(:layout_schema, error_string.split("in schema").first)
+      errors.add(:layout, error_string.split("in schema").first)
     end
   end
 
   def transform_layout(&blk)
+    return layout unless layout.is_a?(Hash)
+
     self.layout = apply_recursively_to_layout(layout, &blk)
   end
 

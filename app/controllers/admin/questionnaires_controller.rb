@@ -1,4 +1,6 @@
 class Admin::QuestionnairesController < AdminController
+  include Memery
+
   before_action :is_power_user
 
   def index
@@ -11,16 +13,17 @@ class Admin::QuestionnairesController < AdminController
 
   def new
     @questionnaire = Questionnaire.new(
-      layout: JSON.pretty_generate(Questionnaire.default_layout)
+      layout: JSON.pretty_generate(Questionnaire.default_layout.as_json)
     )
   end
 
   def create
-    @questionnaire = Questionnaire.create(
-      create_questionnaire_params
-    )
+    @questionnaire = Questionnaire.new(create_questionnaire_params)
+    @questionnaire.layout = try_parsing_as_json(@questionnaire.layout)
+    @questionnaire.save
 
-    if @questionnaire.errors
+    if @questionnaire.errors.present?
+      @questionnaire.layout = create_questionnaire_params[:layout]
       render :new
     else
       redirect_to admin_questionnaires_url
@@ -42,20 +45,29 @@ class Admin::QuestionnairesController < AdminController
   end
 
   def destroy
+    @questionnaire = Questionnaire.find(params[:id])
+    @questionnaire.discard
+
+    redirect_to admin_questionnaires_url
   end
 
   def is_power_user
     authorize { current_admin.power_user? }
   end
 
-  def create_questionnaire_params
-    params[:questionnaire][:layout] = JSON.parse(params[:questionnaire][:layout])
+  memoize def create_questionnaire_params
     params.require(:questionnaire).permit(
       :questionnaire_type,
       :dsl_version,
       :is_active,
-      layout: {}
+      :layout
     )
+  end
+
+  def try_parsing_as_json(string)
+    JSON.parse(string)
+  rescue JSON::ParserError, TypeError => e
+    string
   end
 
   def update_questionnaire_params

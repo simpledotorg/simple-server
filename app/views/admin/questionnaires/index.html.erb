@@ -14,7 +14,7 @@
 <!-- filters by: dsl_version, active -->
 <% @questionnaires.group_by(&:questionnaire_type).each do |questionnaire_type, questionnaires| %>
   <h3><%= questionnaire_type.humanize %></h3>
-  <table class="mt-20px table table-responsive table-striped">
+  <table class="mt-20px table table-responsive table-striped" id="questionnaires-table"">
     <thead>
     <tr>
       <th>Questionnaire ID</th>
@@ -22,6 +22,7 @@
       <th>DSL Version</th>
       <th>Active</th>
       <th>Created on</th>
+      <th></th>
     </tr>
     </thead>
     <tbody>
@@ -45,8 +46,23 @@
           <% end %>
         </td>
         <td><%= I18n.l(q.created_at.to_date) %></td>
+        <td>
+              <%= link_to admin_questionnaire_url(q.id),
+                          method: :delete,
+                          class: "btn btn-outline-danger",
+                          data: {confirm: "Are you sure you want to delete the questionnaire?"} do %>
+                <i class="fa fa-trash-alt"></i>
+          <% end %>
+
+            </td>
       </tr>
     <% end %>
     </tbody>
   </table>
 <% end %>
+
+<style>
+#questionnaires-table td {
+    vertical-align: middle;
+}
+</style>
