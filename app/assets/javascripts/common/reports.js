@@ -264,47 +264,48 @@ DashboardReports = () => {
       );
 
       config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
+        x: {
+          stacked: true,
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: true,
           },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: true,
-              drawBorder: false,
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              size: 12,
+              family: "Roboto",
             },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
+            padding: 8,
           },
-        ],
-      };
+          beginAtZero: true,
+          min: 0,
+        },
+        y: {
+          stacked: true,
+          display: true,
+          grid: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              size: 10,
+              family: "Roboto",
+            },
+            padding: 8,
+            stepSize: 25,
+          },
+          beginAtZero: true,
+          min: 0,
+          max: 100,
+        },
+      }
+
       return config;
     },
 
