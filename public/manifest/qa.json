@@ -2,7 +2,7 @@
   "v1": [
     {
       "country_code": "IN",
-      "endpoint": "https://api-qa.simple.org/api/",
+      "endpoint": "https://api-qa-secondary.simple.org/api/",
       "display_name": "India",
       "isd_code": "91"
     },
@@ -34,7 +34,7 @@
         "deployments": [
           {
             "display_name": "India",
-            "endpoint": "https://api-qa.simple.org/api/"
+            "endpoint": "https://api-qa-secondary.simple.org/api/"
           }
         ]
       },
