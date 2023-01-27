@@ -324,7 +324,15 @@ so-ET:
     yearly_report_title: "Sanadkii"
     hypertension_report_title: "Dhiikar"
     diabetes_report_title: "Macaan"
+    report: "warbixin"
     last_updated_at: "Markii ugu danbeeyay la cusboonaysiiyay %{date} markay ahayd %{time}"
+    coming_soon: "Dhawaan soo socda"
+    no_data_card:
+      title: "Warbixintu dhawaan ayay soo socotaa"
+      subtitle: "Waxa aad weli eegi kartaa warbixinaha hore"
+    update_required_card:
+      title: "Cusboonaysiin ayaa loo baahan yahay"
+      subtitle: "Cusboonaysii app-ka si aad u aragto warbixintan"
     diagnoses:
       all: "Dhamaan dhiigarka iyo macaanka"
       hypertension: "Dhiikar"
@@ -348,8 +356,17 @@ so-ET:
     achievements_card:
       title: "Guulaha"
       follow_up_visits_section_title: "la soco %{visit_or_visits} la duubay"
+      visit:
+        one: "booqasho"
+        other: "Booqashooyin"
       overdue_patients_section_title: "%{call_or_calls} ee bukaanka dhaafa"
+      call:
+        one: "Taleefano"
+        other: "Taleefano"
       registered_patients_title: "duwaan gashan %{patient_or_patients}"
+      patient:
+        one: "Bukaan"
+        other: "Bukaan"
     period_report:
       registered_patients_card:
         title: "Bukaanada duwaan gashan"
@@ -428,3 +445,29 @@ so-ET:
         cohort_title: "Natiijada booqashada ugu danbaysay%{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ka duwaan gashan %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} leh %{threshold}"
+  monthly_screening_reports:
+    male: "Lab"
+    female: "Dhedig"
+    transgender: "Jinsiga Badalay"
+    monthly_opd_visits_gt_30: "Booqashooyinka bilaha ah ee OPD ee dadka waa wayns  > 30 sano jirka ah"
+    monthly_opd_visits_gt_18: "Booqashooyinka OPO ee dadka waa wayns >18 sano jirka"
+    outpatient_department_visits: "Booqashooyinka waaxda bukaan socodka"
+    htn_and_dm_screening: "BAADHITAANKA HTN & DM"
+    total_bp_checks: "Wadarta baadhitaanka BP la sameeyay"
+    total_blood_sugar_checks: "Wadarta baadhitaanka dhiiga sonkorta la sameeyay"
+    new_suspected_individuals: "SHAKHSIYAADKA CUSUB EE LAGA SHAKISAN YAHAY"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (labbadaba)"
+    diagnosed_cases_on_follow_up: "XAALADAHA BAADHITAANKA LA SOCODKA AH"
+    diagnosed_cases_on_follow_up_htn: "Bukaanada HTN ee leh booqashada la socodka ah"
+    diagnosed_cases_on_follow_up_dm: "Bukaanada DM ee leh booqashada la socodka ah"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM (labbadaba) bukaanada la socodka ah ee leh booqashada la socodka"
+    cancer_screening: "BAADHITAANKA KANSARKA"
+    total_cancer_screening_oral: "Wadarta baadhitaanka kansarka afka la sameeyay"
+    total_cancer_screening_breast: "Wadarta baadhitaanka kansarka naaska la sameeyay"
+    total_cancer_screening_cervical: "Wadarta baadhitaanka kansarka dhuunta ilma galeenka la sameeyay"
+    oral_cancer: "Kansarka afka"
+    breast_cancer: "Kansarka naaska"
+    cervical_cancer: "Kansarka dhuunta ilma galeenka"
+

@@ -8,16 +8,16 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   end
 
   def current_facility_records
-    []
-  end
-
-  def other_facility_records
     # TODO: Current implementation always responds with 1 JSON minimum. Reason:
     # process_token.last_updated_at has precision upto 3 milliseconds & is always lesser than updated_at.
     Questionnaire
       .for_sync
       .where(dsl_version: params.require("dsl_version").to_i)
-      .updated_on_server_since(other_facilities_processed_since, limit)
+      .updated_on_server_since(current_facility_processed_since, limit)
+  end
+
+  def other_facility_records
+    []
   end
 
   private
@@ -30,9 +30,14 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
     locale_modified? || resync_token_modified?
   end
 
+  def current_facility_processed_since
+    return Time.new(0) if force_resync?
+    process_token[:current_facility_processed_since].try(:to_time) || Time.new(0)
+  end
+
   def response_process_token
     {
-      other_facilities_processed_since: processed_until(other_facility_records) || other_facilities_processed_since,
+      current_facility_processed_since: processed_until(current_facility_records) || current_facility_processed_since,
       locale: I18n.locale.to_s,
       resync_token: resync_token
     }

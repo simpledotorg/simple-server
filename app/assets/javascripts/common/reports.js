@@ -69,39 +69,6 @@ DashboardReports = () => {
     };
   };
 
-  const createBaseGraphConfig = () => {
-    return {
-      type: "line",
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 20,
-            bottom: 0,
-          },
-        },
-        elements: {
-          point: {
-            pointStyle: "circle",
-            hoverRadius: 5,
-          },
-        },
-        legend: {
-          display: false,
-        },
-        hover: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      plugins: [intersectDataVerticalLine],
-    };
-  };
-
   const ReportsGraphConfig = {
     bsBelow200PatientsTrend: function (data) {
       const config = {
@@ -364,104 +331,61 @@ DashboardReports = () => {
     },
   
     diabetesVisitDetails: function(data) {
-      const config = createBaseGraphConfig();
-      config.type = "bar";
-
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
           Object.keys(data.bsBelow200Rate).length,
           maxBarsToDisplay
       );
+      const config = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              backgroundColor: colors.mediumGreen,
+              hoverBackgroundColor: colors.darkGreen,
+              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Blood sugar 200-299",
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Blood sugar ≥300",
+              backgroundColor: colors.mediumRed,
+              hoverBackgroundColor: colors.darkRed,
+              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+              type: "bar",
+            },
+            {
+              label: "Visit but no blood sugar measure",
+              backgroundColor: colors.mediumGrey,
+              hoverBackgroundColor: colors.darkGrey,
+              data: Object.values(data.visitButNoBSMeasureRate).slice(
+                  -barsToDisplay
+              ),
+              type: "bar",
+            },
+            {
+              label: "Missed visits",
+              backgroundColor: colors.mediumBlue,
+              hoverBackgroundColor: colors.darkBlue,
+              data: Object.values(data.diabetesMissedVisitsRate).slice(
+                  -barsToDisplay
+              ),
+              type: "bar",
+            },
+          ],
+        }
+      }
 
-      config.data = {
-        labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
-        datasets: [
-          {
-            label: "Blood sugar <200",
-            backgroundColor: colors.mediumGreen,
-            hoverBackgroundColor: colors.darkGreen,
-            data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar 200-299",
-            backgroundColor: colors.amber,
-            hoverBackgroundColor: colors.darkAmber,
-            data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Blood sugar ≥300",
-            backgroundColor: colors.mediumRed,
-            hoverBackgroundColor: colors.darkRed,
-            data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-            type: "bar",
-          },
-          {
-            label: "Visit but no blood sugar measure",
-            backgroundColor: colors.mediumGrey,
-            hoverBackgroundColor: colors.darkGrey,
-            data: Object.values(data.visitButNoBSMeasureRate).slice(
-                -barsToDisplay
-            ),
-            type: "bar",
-          },
-          {
-            label: "Missed visits",
-            backgroundColor: colors.mediumBlue,
-            hoverBackgroundColor: colors.darkBlue,
-            data: Object.values(data.diabetesMissedVisitsRate).slice(
-                -barsToDisplay
-            ),
-            type: "bar",
-          },
-        ],
-      };
-      config.options.scales = {
-        xAxes: [
-          {
-            stacked: true,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            display: false,
-            gridLines: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 10,
-              fontFamily: "Roboto",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-            },
-          },
-        ],
-      };
-
-      return config;
+      return withBaseBarConfig(config);
     },
     MedicationsDispensation: function(data) {
-      const config = createBaseGraphConfig();
       const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
 
       let datasets = Object.keys(data).map(function (bucket, index) {
@@ -474,16 +398,68 @@ DashboardReports = () => {
           backgroundColor: data[bucket]["color"],
         };
       });
+      const config = {
+        data: {
+          labels: graphPeriods,
+          datasets: datasets,
+        },
+        options: {
+          hover: {
+            mode: "x"
+          },
+          plugins: {
+            datalabels: {
+              align: "end",
+              color: "black",
+              anchor: "end",
+              offset: 1,
+              font: {
+                family: "Roboto Condensed",
+                size: 12,
+              },
+              formatter: function (value) {
+                return value + "%";
+              },
+            },
+          },
+          tooltips: {
+            mode: "x",
+            intersect: false,
+            displayColors: false,
+            xAlign: "center",
+            yAlign: "top",
+            xPadding: 6,
+            yPadding: 6,
+            caretSize: 3,
+            caretPadding: 1,
+            callbacks: {
+              title: function () {
+                return "";
+              },
+              label: function (tooltipItem, data) {
+                let numerators = Object.values(
+                    data.datasets[tooltipItem.datasetIndex].numerators
+                );
+                let denominators = Object.values(
+                    data.datasets[tooltipItem.datasetIndex].denominators
+                );
+                return (
+                    formatNumberWithCommas(numerators[tooltipItem.index]) +
+                    " of " +
+                    formatNumberWithCommas(denominators[tooltipItem.index]) +
+                    " follow-up patients"
+                );
+              },
+            },
+          }
+        },
+        plugins: [ChartDataLabels],
+      }
 
-      // This is a plugin and is expected to be loaded before creating this graph
-      config.plugins = [ChartDataLabels, intersectDataVerticalLine];
-      config.type = "bar";
-      config.data = {
-        labels: graphPeriods,
-        datasets: datasets,
-      };
+      const medicationsDispensationConfig = withBaseBarConfig(config)
 
-      config.options.scales = {
+      // will dry after update
+      medicationsDispensationConfig.options.scales = {
         xAxes: [
           {
             stacked: false,
@@ -527,55 +503,7 @@ DashboardReports = () => {
           },
         ],
       };
-
-      config.options.plugins = {
-        datalabels: {
-          align: "end",
-          color: "black",
-          anchor: "end",
-          offset: 1,
-          font: {
-            family: "Roboto Condensed",
-            size: 12,
-          },
-          formatter: function (value) {
-            return value + "%";
-          },
-        },
-      };
-
-      config.options.tooltips = {
-        mode: "x",
-        intersect: false,
-        displayColors: false,
-        xAlign: "center",
-        yAlign: "top",
-        xPadding: 6,
-        yPadding: 6,
-        caretSize: 3,
-        caretPadding: 1,
-        callbacks: {
-          title: function () {
-            return "";
-          },
-          label: function (tooltipItem, data) {
-            let numerators = Object.values(
-                data.datasets[tooltipItem.datasetIndex].numerators
-            );
-            let denominators = Object.values(
-                data.datasets[tooltipItem.datasetIndex].denominators
-            );
-            return (
-                formatNumberWithCommas(numerators[tooltipItem.index]) +
-                " of " +
-                formatNumberWithCommas(denominators[tooltipItem.index]) +
-                " follow-up patients"
-            );
-          },
-        },
-      };
-      config.options.hover.mode = "x";
-      return config;
+      return medicationsDispensationConfig;
     },
     
     lostToFollowUpTrend: function (data) {
@@ -1118,102 +1046,61 @@ Reports = function (withLtfu) {
   };
 
   this.setupVisitDetailsGraph = (data) => {
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
-
     const maxBarsToDisplay = 6;
     const barsToDisplay = Math.min(
       Object.keys(data.controlRate).length,
       maxBarsToDisplay
     );
-
-    visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: colors.mediumGreen,
-          hoverBackgroundColor: colors.darkGreen,
-          data: Object.values(data.controlRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: colors.mediumRed,
-          hoverBackgroundColor: colors.darkRed,
-          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: colors.mediumGrey,
-          hoverBackgroundColor: colors.darkGrey,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: colors.mediumBlue,
-          hoverBackgroundColor: colors.darkBlue,
-          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      data: {
+        labels: Object.keys(data.controlRate).slice(-barsToDisplay),
+        datasets: [
+          {
+            label: "BP controlled",
+            backgroundColor: colors.mediumGreen,
+            hoverBackgroundColor: colors.darkGreen,
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
+            type: "bar",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "BP uncontrolled",
+            backgroundColor: colors.mediumRed,
+            hoverBackgroundColor: colors.darkRed,
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
+            type: "bar",
           },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+          {
+            label: "Visit but no BP measure",
+            backgroundColor: colors.mediumGrey,
+            hoverBackgroundColor: colors.darkGrey,
+            data: Object.values(data.visitButNoBPMeasureRate).slice(
+              -barsToDisplay
+            ),
+            type: "bar",
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: colors.darkGrey,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "Missed visits",
+            backgroundColor: colors.mediumBlue,
+            hoverBackgroundColor: colors.darkBlue,
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
+            type: "bar",
           },
-        },
-      ],
-    };
-
-    visitDetailsGraphConfig.options.tooltips = {
-      enabled: false,
-      mode: "index",
-      intersect: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateVisitDetailsGraphDefault();
+        ],
       },
-    };
+      options: {
+        tooltips: {
+          enabled: false,
+          mode: "index",
+          intersect: false,
+          custom: (tooltip) => {
+            let hoveredDatapoint = tooltip.dataPoints;
+            if (hoveredDatapoint)
+              populateVisitDetailsGraph(hoveredDatapoint[0].label);
+            else populateVisitDetailsGraphDefault();
+          },
+        }
+      }
+    }
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -1310,7 +1197,7 @@ Reports = function (withLtfu) {
     if (visitDetailsGraphCanvas) {
       new Chart(
         visitDetailsGraphCanvas.getContext("2d"),
-        visitDetailsGraphConfig
+        withBaseBarConfig(config)
       );
       populateVisitDetailsGraphDefault();
     }
@@ -1373,39 +1260,6 @@ Reports = function (withLtfu) {
       bsOver300WithLtfuRate: jsonData.bs_over_300_with_ltfu_rates,
       visitButNoBSMeasure: jsonData.visited_without_bs_taken,
       visitButNoBSMeasureRate: jsonData.visited_without_bs_taken_rates,
-    };
-  };
-
-  this.createBaseGraphConfig = () => {
-    return {
-      type: "line",
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 20,
-            bottom: 0,
-          },
-        },
-        elements: {
-          point: {
-            pointStyle: "circle",
-            hoverRadius: 5,
-          },
-        },
-        legend: {
-          display: false,
-        },
-        hover: {
-          mode: "index",
-          intersect: false,
-        },
-      },
-      plugins: [intersectDataVerticalLine],
     };
   };
 
@@ -1513,6 +1367,74 @@ function baseLineGraphConfig() {
   };
 }
 
+function baseBarChartConfig() {
+  const colors = dashboardReportsChartJSColors()
+  return {
+    type: "bar",
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      legend: {
+        display: false,
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+      },
+      scales: {
+        xAxes: [
+          {
+            stacked: true,
+            display: true,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 12,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+        yAxes: [
+          {
+            stacked: true,
+            display: false,
+            gridLines: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              autoSkip: false,
+              fontColor: colors.darkGrey,
+              fontSize: 10,
+              fontFamily: "Roboto",
+              padding: 8,
+              min: 0,
+              beginAtZero: true,
+            },
+          },
+        ],
+      }
+    },
+    plugins: [intersectDataVerticalLine],
+  }
+}
+
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
   id: "intersectDataVerticalLine",
@@ -1546,6 +1468,14 @@ const intersectDataVerticalLine = {
 function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
+    config,
+    mergeArraysWithConcatenation
+  );
+}
+
+function withBaseBarConfig(config) {
+  return _.mergeWith(
+    baseBarChartConfig(),
     config,
     mergeArraysWithConcatenation
   );
