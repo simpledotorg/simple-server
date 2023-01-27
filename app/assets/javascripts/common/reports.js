@@ -418,9 +418,10 @@ DashboardReports = () => {
           datasets: datasets,
         },
         options: {
-          hover: {
-            mode: "x"
+          interaction: {
+            mode: "x",
           },
+          minBarLength: 4,
           plugins: {
             datalabels: {
               align: "end",
@@ -435,37 +436,55 @@ DashboardReports = () => {
                 return value + "%";
               },
             },
+            tooltip: {
+              mode: "x", // not required
+              intersect: false, // not required
+              enabled: true, // not required?
+
+              displayColors: false,
+              xAlign: "center",
+              yAlign: "top",
+              xPadding: 6,
+              yPadding: 6,
+              caretSize: 3,
+              caretPadding: 1,
+              callbacks: {
+                title: function (context) {
+                  return "";
+                },
+                // label: function (tooltipItem, data) {
+                //   let numerators = Object.values(
+                //       data.datasets[tooltipItem.datasetIndex].numerators
+                //   );
+                //   let denominators = Object.values(
+                //       data.datasets[tooltipItem.datasetIndex].denominators
+                //   );
+                //   return (
+                //       formatNumberWithCommas(numerators[tooltipItem.index]) +
+                //       " of " +
+                //       formatNumberWithCommas(denominators[tooltipItem.index]) +
+                //       " follow-up patients"
+                //   );
+                // },
+                label: function (context) {
+                  // console.log(context);
+                  // console.log(context.dataIndex);
+                  // console.log(context.dataset);
+                  // console.log(
+                  //   context.dataset.numerators[context.label],
+                  //   context.dataset.denominators[context.label]
+                  // );
+                  let numerator = context.dataset.numerators[context.label];
+                  let denominator = context.dataset.denominators[context.label];
+                  return `${formatNumberWithCommas(
+                    numerator
+                  )} of ${formatNumberWithCommas(
+                    denominator
+                  )} follow-up patients`;
+                },
+              },
+            }
           },
-          tooltips: {
-            mode: "x",
-            intersect: false,
-            displayColors: false,
-            xAlign: "center",
-            yAlign: "top",
-            xPadding: 6,
-            yPadding: 6,
-            caretSize: 3,
-            caretPadding: 1,
-            callbacks: {
-              title: function () {
-                return "";
-              },
-              label: function (tooltipItem, data) {
-                let numerators = Object.values(
-                    data.datasets[tooltipItem.datasetIndex].numerators
-                );
-                let denominators = Object.values(
-                    data.datasets[tooltipItem.datasetIndex].denominators
-                );
-                return (
-                    formatNumberWithCommas(numerators[tooltipItem.index]) +
-                    " of " +
-                    formatNumberWithCommas(denominators[tooltipItem.index]) +
-                    " follow-up patients"
-                );
-              },
-            },
-          }
         },
         plugins: [ChartDataLabels],
       }
@@ -474,49 +493,51 @@ DashboardReports = () => {
 
       // will dry after update
       medicationsDispensationConfig.options.scales = {
-        xAxes: [
-          {
-            stacked: false,
-            display: true,
-            gridLines: {
-              display: false,
-              drawBorder: true,
-            },
-            ticks: {
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto Condensed",
-              padding: 0,
-              min: 0,
-              beginAtZero: true,
-            },
+        x: {
+          stacked: false,
+          display: true,
+          grid: {
+            display: false,
+            drawBorder: true,
           },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            display: true,
-            minBarLength: 4,
-            gridLines: {
-              display: true,
-              drawBorder: false,
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              size: 12,
+              family: "Roboto Condensed",
             },
-            ticks: {
-              display: false,
-              autoSkip: false,
-              fontColor: colors.darkGrey,
-              fontSize: 12,
-              fontFamily: "Roboto Condensed",
-              padding: 8,
-              min: 0,
-              beginAtZero: true,
-              stepSize: 25,
-              max: 100,
-            },
+            padding: 0,
           },
-        ],
+          beginAtZero: true,
+          min: 0,
+        },
+
+        y: {
+          stacked: false,
+          display: true,
+          grid: {
+            display: true,
+            drawBorder: false,
+          },
+          ticks: {
+            display: false,
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              size: 12,
+              family: "Roboto Condensed",
+            },
+            padding: 8,
+            stepSize: 25,
+          },
+          beginAtZero: true,
+          min: 0,
+          max: 100,
+        },
+
       };
+
       return medicationsDispensationConfig;
     },
     
