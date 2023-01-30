@@ -1150,20 +1150,14 @@ Reports = function (withLtfu) {
             enabled: false,
             mode: "index",
             intersect: false,
-            external: (context, defaultPeriod) => {
+            external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateVisitDetailsGraph(hoveredDatapoint[0].label);
               }
-              else populateVisitDetailsGraphDefault(defaultPeriod);
+              else populateVisitDetailsGraphDefault();
             },
-            // custom: (tooltip) => {
-            //   let hoveredDatapoint = tooltip.dataPoints;
-            //   if (hoveredDatapoint)
-            //     populateVisitDetailsGraph(hoveredDatapoint[0].label);
-            //   else populateVisitDetailsGraphDefault();
-            // },
           }
         },
       }
