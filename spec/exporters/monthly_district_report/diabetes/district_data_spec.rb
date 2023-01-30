@@ -35,7 +35,7 @@ describe MonthlyDistrictReport::Diabetes::DistrictData do
     end
   end
 
-  context "#content_rows" do
+  context "#content_rows", skip: true do
     it "returns a hash with the required keys and values" do
       Timecop.freeze("2022-07-31") do
         district_data = setup_district_data

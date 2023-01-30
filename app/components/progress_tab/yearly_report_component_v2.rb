@@ -31,10 +31,19 @@ class ProgressTab::YearlyReportComponentV2 < ApplicationComponent
   end
 
   memoize def last_n_years
-    years = (SIMPLE_START_YEAR..Date.current.year).to_a.reverse
     if report_in_financial_year?
-      years.push(SIMPLE_START_YEAR - 1)
+      start_year = SIMPLE_START_YEAR - 1
+      end_year = if Date.current.month < FINANCIAL_YEAR_START_MONTH
+        Date.current.year - 1
+      else
+        Date.current.year
+      end
+    else
+      start_year = SIMPLE_START_YEAR
+      end_year = Date.current.year
     end
+
+    years = (start_year..end_year).to_a.reverse
 
     years.each_with_object({}) do |year, hsh|
       hsh[year] = display_year(year)
