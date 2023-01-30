@@ -679,19 +679,13 @@ Reports = function (withLtfu) {
             enabled: false,
             mode: "index",
             intersect: false,
-            // custom: (tooltip) => {
-            //   let hoveredDatapoint = tooltip.dataPoints;
-            //   if (hoveredDatapoint)
-            //     populateControlledGraph(hoveredDatapoint[0].label);
-            //   else populateControlledGraphDefault();
-            // },
-            external: (context, defaultPeriod) => {
+            external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateControlledGraph(hoveredDatapoint[0].label);
               }
-              else populateControlledGraphDefault(defaultPeriod);
+              else populateControlledGraphDefault();
             },
           },
         },
