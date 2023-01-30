@@ -612,7 +612,7 @@ DashboardReports = () => {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateDynamicComponents(hoveredDatapoint[0].label);
               }
-              else populateDynamicComponents(defaultPeriod);
+              else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
             },
           };
         }
