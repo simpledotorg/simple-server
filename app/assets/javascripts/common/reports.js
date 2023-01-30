@@ -140,7 +140,6 @@ DashboardReports = () => {
       const config = withBaseLineConfig(
         additionalCumulativeDiabetesRegistrationsTrendConfig
       );
-      console.log(config);
     
       config.options.scales = {
         x: {
