@@ -960,19 +960,13 @@ Reports = function (withLtfu) {
             enabled: false,
             mode: "index",
             intersect: false,
-            // custom: (tooltip) => {
-            //   let hoveredDatapoint = tooltip.dataPoints;
-            //   if (hoveredDatapoint)
-            //     populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-            //   else populateCumulativeRegistrationsGraphDefault();
-            // },
-            external: (context, defaultPeriod) => {
+            external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
               }
-              else populateCumulativeRegistrationsGraphDefault(defaultPeriod);
+              else populateCumulativeRegistrationsGraphDefault();
             },
           },
         },
