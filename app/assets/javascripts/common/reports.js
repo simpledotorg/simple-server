@@ -1557,8 +1557,3 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
     return objValue.concat(srcValue);
   }
 }
-
-// update font on load issue
-// document.fonts.onloadingdone = () => {
-// 	Chart.update();
-// };
