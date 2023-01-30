@@ -163,8 +163,8 @@ describe MaterializedPatientSummary, type: :model do
     end
 
     it "checks if prescription drugs have been changed since the last BP check" do
-      prescription_drug_1 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_3.recorded_at)
-      prescription_drug_2 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_1.recorded_at)
+      _prescription_drug_1 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_3.recorded_at)
+      _prescription_drug_2 = create(:prescription_drug, patient: patient, device_created_at: latest_bp_1.recorded_at)
 
       refresh_view
 
