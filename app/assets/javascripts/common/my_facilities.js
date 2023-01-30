@@ -64,8 +64,12 @@ function createBaseTrendChartConfig() {
           left: 2,
         }
       },
+      events: [],
       legend: {
         display: false
+      },
+      plugins: {
+        tooltip:  false,
       },
       scales: {
         x: { display: false },
