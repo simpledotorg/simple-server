@@ -675,18 +675,28 @@ Reports = function (withLtfu) {
         ],
       },
       options: {
-        tooltips: {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-          custom: (tooltip) => {
-            let hoveredDatapoint = tooltip.dataPoints;
-            if (hoveredDatapoint)
-              populateControlledGraph(hoveredDatapoint[0].label);
-            else populateControlledGraphDefault();
+        plugins: {
+          tooltip: {
+            enabled: false,
+            mode: "index",
+            intersect: false,
+            // custom: (tooltip) => {
+            //   let hoveredDatapoint = tooltip.dataPoints;
+            //   if (hoveredDatapoint)
+            //     populateControlledGraph(hoveredDatapoint[0].label);
+            //   else populateControlledGraphDefault();
+            // },
+            external: (context, defaultPeriod) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateControlledGraph(hoveredDatapoint[0].label);
+              }
+              else populateControlledGraphDefault(defaultPeriod);
+            },
           },
         },
-      },
+      }
     };
 
     const populateControlledGraph = (period) => {
@@ -761,15 +771,25 @@ Reports = function (withLtfu) {
         ],
       },
       options: {
-        tooltips: {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-          custom: (tooltip) => {
-            let hoveredDatapoint = tooltip.dataPoints;
-            if (hoveredDatapoint)
-              populateUncontrolledGraph(hoveredDatapoint[0].label);
-            else populateUncontrolledGraphDefault();
+        plugins: {
+          tooltip: {
+            enabled: false,
+            mode: "index",
+            intersect: false,
+            // custom: (tooltip) => {
+            //   let hoveredDatapoint = tooltip.dataPoints;
+            //   if (hoveredDatapoint)
+            //     populateUncontrolledGraph(hoveredDatapoint[0].label);
+            //   else populateUncontrolledGraphDefault();
+            // },
+            external: (context, defaultPeriod) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateUncontrolledGraph(hoveredDatapoint[0].label);
+              }
+              else populateUncontrolledGraphDefault(defaultPeriod);
+            },
           },
         },
       },
@@ -849,17 +869,27 @@ Reports = function (withLtfu) {
         ],
       },
       options: {
-        tooltips: {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-          custom: (tooltip) => {
-            let hoveredDatapoint = tooltip.dataPoints;
-            if (hoveredDatapoint)
-              populateMissedVisitsGraph(hoveredDatapoint[0].label);
-            else populateMissedVisitsGraphDefault();
+        plugins: {
+          tooltip: {
+            enabled: false,
+            mode: "index",
+            intersect: false,
+            external: (context, defaultPeriod) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateMissedVisitsGraph(hoveredDatapoint[0].label);
+              }
+              else populateMissedVisitsGraphDefault(defaultPeriod);
+            },
+            // custom: (tooltip) => {
+            //   let hoveredDatapoint = tooltip.dataPoints;
+            //   if (hoveredDatapoint)
+            //     populateMissedVisitsGraph(hoveredDatapoint[0].label);
+            //   else populateMissedVisitsGraphDefault();
+            // },
           },
-        },
+        }
       },
     };
 
@@ -1125,17 +1155,27 @@ Reports = function (withLtfu) {
         ],
       },
       options: {
-        tooltips: {
-          enabled: false,
-          mode: "index",
-          intersect: false,
-          custom: (tooltip) => {
-            let hoveredDatapoint = tooltip.dataPoints;
-            if (hoveredDatapoint)
-              populateVisitDetailsGraph(hoveredDatapoint[0].label);
-            else populateVisitDetailsGraphDefault();
-          },
-        }
+        plugins: {
+          tooltip: {
+            enabled: false,
+            mode: "index",
+            intersect: false,
+            external: (context, defaultPeriod) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateVisitDetailsGraph(hoveredDatapoint[0].label);
+              }
+              else populateVisitDetailsGraphDefault(defaultPeriod);
+            },
+            // custom: (tooltip) => {
+            //   let hoveredDatapoint = tooltip.dataPoints;
+            //   if (hoveredDatapoint)
+            //     populateVisitDetailsGraph(hoveredDatapoint[0].label);
+            //   else populateVisitDetailsGraphDefault();
+            // },
+          }
+        },
       }
     }
 
