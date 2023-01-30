@@ -18,8 +18,8 @@ with latest_bp_passport as (
     from blood_pressures bp
     left outer join prescription_drugs
         on prescription_drugs.patient_id = bp.patient_id
-        and (prescription_drugs.device_created_at < date(bp.recorded_at) + '1 day'::interval)
-        and (prescription_drugs.is_deleted is false or (prescription_drugs.is_deleted is true and prescription_drugs.device_updated_at >= date(bp.recorded_at) + '1 day'::interval))
+        and (date(prescription_drugs.device_created_at) <= date(bp.recorded_at))
+        and (prescription_drugs.is_deleted is false or (prescription_drugs.is_deleted is true and date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))
     where bp.deleted_at is null and prescription_drugs.deleted_at is null
 ), other_medications as (
     select

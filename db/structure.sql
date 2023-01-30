@@ -1108,7 +1108,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             prescription_drugs.teleconsultation_id,
             rank() OVER (PARTITION BY bp.id ORDER BY prescription_drugs.is_protocol_drug DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS rank
            FROM (public.blood_pressures bp
-             LEFT JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (prescription_drugs.device_created_at < (date(bp.recorded_at) + '1 day'::interval)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (prescription_drugs.device_updated_at >= (date(bp.recorded_at) + '1 day'::interval)))))))
+             LEFT JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (date(prescription_drugs.device_created_at) <= date(bp.recorded_at)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))))))
           WHERE ((bp.deleted_at IS NULL) AND (prescription_drugs.deleted_at IS NULL))
         ), other_medications AS (
          SELECT ranked_prescription_drugs.bp_id,
