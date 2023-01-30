@@ -1161,7 +1161,8 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
                     appointments.user_id,
                     appointments.creation_facility_id
                    FROM public.appointments
-                  WHERE (date_trunc('day'::text, appointments.device_created_at) = date_trunc('day'::text, bp.recorded_at))) a ON ((a.patient_id = bp.patient_id)))
+                  WHERE (date_trunc('day'::text, appointments.device_created_at) = date_trunc('day'::text, bp.recorded_at))
+                  ORDER BY appointments.patient_id, appointments.device_created_at DESC) a ON ((a.patient_id = bp.patient_id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
              LEFT JOIN ranked_prescription_drugs pd_1 ON (((bp.id = pd_1.bp_id) AND (pd_1.rank = 1))))
              LEFT JOIN ranked_prescription_drugs pd_2 ON (((bp.id = pd_2.bp_id) AND (pd_2.rank = 2))))
@@ -6995,7 +6996,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230103063720'),
 ('20230104104248'),
 ('20230105064908'),
-('20230105114342'),
-('20230123125608');
+('20230123125608'),
+('20230130161639');
 
 
