@@ -317,7 +317,7 @@ DashboardReports = () => {
       }
       return withBaseBarConfig(config);
     },
-    
+
     MedicationsDispensation: function(data) {
       const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
 
@@ -383,60 +383,34 @@ DashboardReports = () => {
               },
             }
           },
+          scales: {
+            x: {
+              stacked: false,
+              grid: {
+                drawBorder: true, // do we need it?
+              },
+              // ticks: {
+              //   // padding: 0,
+              // },
+            },
+            y: {
+              stacked: false,
+              display: true,
+              grid: {
+                display: true,
+                drawTicks: false,
+              },
+              ticks: {
+                display: false,
+                stepSize: 25,
+              },
+              max: 100,
+            },
+          }
         },
         plugins: [ChartDataLabels],
       }
-
-      const medicationsDispensationConfig = withBaseBarConfig(config)
-
-      // will dry after update
-      medicationsDispensationConfig.options.scales = {
-        x: {
-          stacked: false,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto Condensed",
-            },
-            padding: 0,
-          },
-          beginAtZero: true,
-          min: 0,
-        },
-
-        y: {
-          stacked: false,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto Condensed",
-            },
-            padding: 8,
-            stepSize: 25,
-          },
-          beginAtZero: true,
-          min: 0,
-          max: 100,
-        },
-
-      };
-
-      return medicationsDispensationConfig;
+      return withBaseBarConfig(config)
     },
     
     lostToFollowUpTrend: function (data) {
