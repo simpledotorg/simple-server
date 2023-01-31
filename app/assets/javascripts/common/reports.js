@@ -423,7 +423,6 @@ DashboardReports = () => {
               backgroundColor: colors.lightBlue,
               borderColor: colors.darkBlue,
               data: Object.values(data.ltfuPatientsRate),
-              type: "line",
             },
           ],
         },
