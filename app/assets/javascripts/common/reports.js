@@ -91,7 +91,7 @@ DashboardReports = () => {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
 
-      const additionalCumulativeDiabetesRegistrationsTrendConfig = {
+      const config = {
         type: "bar",
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
@@ -208,16 +208,11 @@ DashboardReports = () => {
           }
         }
       };
-
-      const config = withBaseLineConfig(
-        additionalCumulativeDiabetesRegistrationsTrendConfig
-      );
-      
-      return config;
+      return withBaseLineConfig(config);
     },
 
     bsOver200PatientsTrend: function (data) {
-      const additionalbsOver200PatientsTrendconfig = {
+      const config = {
         type: "bar",
         data: {
           labels: Object.keys(data.bsOver300Rate),
@@ -247,13 +242,7 @@ DashboardReports = () => {
           }
         }
       };
-
-      // will dry this post upgrade
-      const config = withBaseLineConfig(
-        additionalbsOver200PatientsTrendconfig
-      );
-
-      return config;
+      return withBaseLineConfig(config);
     },
 
     diabetesMissedVisitsTrend: function (data) {
@@ -326,9 +315,9 @@ DashboardReports = () => {
           ],
         }
       }
-
       return withBaseBarConfig(config);
     },
+    
     MedicationsDispensation: function(data) {
       const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
 
