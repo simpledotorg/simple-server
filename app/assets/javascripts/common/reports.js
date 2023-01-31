@@ -90,14 +90,13 @@ DashboardReports = () => {
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
-
+      console.log(cumulativeDiabetesRegistrationsYAxis.max);
       const config = {
-        type: "bar",
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
           datasets: [
             {
-              yAxisID: "yCumulativeDiabetesRegistrations",
+              yAxisID: "y",
               label: "cumulative diabetes registrations",
               backgroundColor: colors.transparent,
               borderColor: colors.darkPurple,
@@ -105,7 +104,7 @@ DashboardReports = () => {
               type: "line",
             },
             {
-              yAxisID: "yMonthlyDiabetesFollowups",
+              yAxisID: "y",
               label: "monthly diabetes followups",
               backgroundColor: colors.transparent,
               borderColor: colors.darkTeal,
@@ -124,86 +123,22 @@ DashboardReports = () => {
         },
         options: {
           scales: {
-            // can be improved
-            // temporary fix for hiding y axis
             y: {
-              display: false,
-            },
-
-            yCumulativeDiabetesRegistrations: {
-              // id: "cumulativeDiabetesRegistrations",
-              position: "left",
-              stacked: true,
-              display: true,
               grid: {
-                display: false,
-                drawBorder: false,
+                drawTicks: false,
               },
               ticks: {
                 display: false,
-                autoSkip: false,
-                color: colors.darkGrey,
-                font: {
-                  size: 10,
-                  family: "Roboto",
-                },
-                padding: 8,
                 stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-                callback: formatNumberWithCommas
               },
-              beginAtZero: true,
-              min: 0,
-              max: cumulativeDiabetesRegistrationsYAxis.max,
+              max: cumulativeDiabetesRegistrationsYAxis.max, // needed?
             },
     
             yMonthlyDiabetesRegistrations: {
-              position: "right",
-              stacked: true,
-              display: true,
-              grid: {
-                display: true,
-                drawBorder: false,
-              },
-              ticks: {
-                display: false,
-                autoSkip: false,
-                color: colors.darkGrey,
-                font: {
-                  size: 10,
-                  family: "Roboto",
-                },
-                padding: 8,
-                stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
-                callback: formatNumberWithCommas
-              },
+              display: false,
               beginAtZero: true,
               min: 0,
-              max: monthlyDiabetesRegistrationsYAxis.max,
-            },
-    
-            yMonthlyDiabetesFollowups: {
-              position: "right",
-              stacked: true,
-              display: true,
-              grid: {
-                display: false,
-                drawBorder: false,
-              },
-              ticks: {
-                display: false,
-                autoSkip: false,
-                color: colors.darkGrey,
-                font: {
-                  size: 10,
-                  family: "Roboto",
-                },
-                padding: 8,
-                stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-                callback: formatNumberWithCommas
-              },
-              beginAtZero: true,
-              min: 0,
-              max: cumulativeDiabetesRegistrationsYAxis.max,
+              max: monthlyDiabetesRegistrationsYAxis.max, // needed?
             },
           }
         }
