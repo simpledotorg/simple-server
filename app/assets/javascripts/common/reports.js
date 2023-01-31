@@ -356,8 +356,6 @@ DashboardReports = () => {
               },
             },
             tooltip: {
-              mode: "x", // not required
-              intersect: false, // not required
               enabled: true, // not required?
 
               displayColors: false,
@@ -540,9 +538,6 @@ Reports = function (withLtfu) {
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -626,9 +621,6 @@ Reports = function (withLtfu) {
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -714,9 +706,6 @@ Reports = function (withLtfu) {
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -809,9 +798,6 @@ Reports = function (withLtfu) {
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -999,9 +985,6 @@ Reports = function (withLtfu) {
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -1244,6 +1227,9 @@ function baseLineGraphConfig() {
         legend: {
           display: false,
         },
+        tooltip: {
+          enabled: false,
+        },
       },
       scales: {
         x: {
@@ -1311,6 +1297,9 @@ function baseBarChartConfig() {
       plugins: {
         legend: {
           display: false,
+        },
+        tooltip: {
+          enabled: false,
         },
       },
       interaction: {
