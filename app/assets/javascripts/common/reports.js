@@ -236,55 +236,22 @@ DashboardReports = () => {
             },
           ],
         },
+        options: { 
+          scales: {
+            x: {
+              stacked: true,
+            },
+            y: {
+              stacked: true,
+            },
+          }
+        }
       };
 
       // will dry this post upgrade
       const config = withBaseLineConfig(
         additionalbsOver200PatientsTrendconfig
       );
-
-      config.options.scales = {
-        x: {
-          stacked: true,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto",
-            },
-            padding: 8,
-          },
-          beginAtZero: true,
-          min: 0,
-        },
-        y: {
-          stacked: true,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 10,
-              family: "Roboto",
-            },
-            padding: 8,
-            stepSize: 25,
-          },
-          beginAtZero: true,
-          min: 0,
-          max: 100,
-        },
-      }
 
       return config;
     },
