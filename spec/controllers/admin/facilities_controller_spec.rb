@@ -131,7 +131,8 @@ RSpec.describe Admin::FacilitiesController, type: :controller do
           short_name: "short name",
           pin: "999999",
           zone: block.name,
-          monthly_estimated_opd_load: 500).except(:id, :slug)
+          monthly_estimated_opd_load: 500,
+          enable_monthly_screening_reports: true).except(:id, :slug)
       end
 
       it "updates the requested facility" do

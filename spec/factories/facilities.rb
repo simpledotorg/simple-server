@@ -12,6 +12,7 @@ FactoryBot.define do
     facility_size { Facility.facility_sizes[:small] }
     facility_group
     enable_diabetes_management { [true, false].sample }
+    enable_monthly_screening_reports { false }
     enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
 
