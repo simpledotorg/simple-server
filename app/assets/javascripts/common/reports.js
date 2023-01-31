@@ -448,31 +448,10 @@ DashboardReports = () => {
               caretSize: 3,
               caretPadding: 1,
               callbacks: {
-                title: function (context) {
+                title: function () {
                   return "";
                 },
-                // label: function (tooltipItem, data) {
-                //   let numerators = Object.values(
-                //       data.datasets[tooltipItem.datasetIndex].numerators
-                //   );
-                //   let denominators = Object.values(
-                //       data.datasets[tooltipItem.datasetIndex].denominators
-                //   );
-                //   return (
-                //       formatNumberWithCommas(numerators[tooltipItem.index]) +
-                //       " of " +
-                //       formatNumberWithCommas(denominators[tooltipItem.index]) +
-                //       " follow-up patients"
-                //   );
-                // },
                 label: function (context) {
-                  // console.log(context);
-                  // console.log(context.dataIndex);
-                  // console.log(context.dataset);
-                  // console.log(
-                  //   context.dataset.numerators[context.label],
-                  //   context.dataset.denominators[context.label]
-                  // );
                   let numerator = context.dataset.numerators[context.label];
                   let denominator = context.dataset.denominators[context.label];
                   return `${formatNumberWithCommas(
