@@ -278,21 +278,18 @@ DashboardReports = () => {
               backgroundColor: colors.mediumGreen,
               hoverBackgroundColor: colors.darkGreen,
               data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Blood sugar 200-299",
               backgroundColor: colors.amber,
               hoverBackgroundColor: colors.darkAmber,
               data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Blood sugar ≥300",
               backgroundColor: colors.mediumRed,
               hoverBackgroundColor: colors.darkRed,
               data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Visit but no blood sugar measure",
@@ -301,7 +298,6 @@ DashboardReports = () => {
               data: Object.values(data.visitButNoBSMeasureRate).slice(
                   -barsToDisplay
               ),
-              type: "bar",
             },
             {
               label: "Missed visits",
@@ -310,7 +306,6 @@ DashboardReports = () => {
               data: Object.values(data.diabetesMissedVisitsRate).slice(
                   -barsToDisplay
               ),
-              type: "bar",
             },
           ],
         }
