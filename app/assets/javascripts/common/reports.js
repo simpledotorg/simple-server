@@ -467,7 +467,8 @@ DashboardReports = () => {
             throw `Graph config not known for ${id}`
         }
 
-        if (!graphConfig.options.plugins.tooltip) {
+        // comeback and improve
+        if (!graphConfig.options.plugins.tooltip.enabled) {
           graphConfig.options.plugins.tooltip = {
             enabled: false,
             mode: "index",
