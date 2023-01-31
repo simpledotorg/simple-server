@@ -808,71 +808,66 @@ Reports = function (withLtfu) {
             },
           },
         },
+        scales: {
+          y: {
+            display: false
+          },
+          yCumulativeRegistrations: {
+            position: "left",
+            stacked: true,
+            display: true,
+            grid: {
+              display: false,
+              drawBorder: false,
+            },
+            ticks: {
+              display: false,
+              autoSkip: false,
+              color: colors.darkGrey,
+              font: {
+                size: 10,
+                family: "Roboto",
+              },
+              padding: 8,
+              stepSize: cumulativeRegistrationsYAxis.stepSize, // not used?
+              callback: (label) => {
+                return this.formatNumberWithCommas(label);
+              },
+            },
+            beginAtZero: true,
+            min: 0,
+            max: cumulativeRegistrationsYAxis.max,
+          },
+          yMonthlyRegistrations: {
+            position: "right",
+            stacked: true,
+            display: true,
+            grid: {
+              display: true,
+              drawBorder: false,
+              drawTicks: false,
+            },
+            ticks: {
+              display: false,
+              autoSkip: false,
+              color: colors.darkGrey,
+              font: {
+                size: 10,
+                family: "Roboto",
+              },
+              padding: 8,
+              stepSize: monthlyRegistrationsYAxis.stepSize,
+              callback: (label) => {
+                return this.formatNumberWithCommas(label); // no numbers shown?
+              },
+            },
+            beginAtZero: true,
+            min: 0,
+            max: monthlyRegistrationsYAxis.max,
+          }
+        }
       }
     };
-
-    // Will comeback and dry this after upgrade
-    const cumulativeRegistrationsGraphConfig = withBaseLineConfig(
-      config
-    );
-
-    cumulativeRegistrationsGraphConfig.options.scales.y = {
-      display: false,
-    }
-
-    cumulativeRegistrationsGraphConfig.options.scales.yCumulativeRegistrations = {
-      position: "left",
-      stacked: true,
-      display: true,
-      grid: {
-        display: false,
-        drawBorder: false,
-      },
-      ticks: {
-        display: false,
-        autoSkip: false,
-        color: colors.darkGrey,
-        font: {
-          size: 10,
-          family: "Roboto",
-        },
-        padding: 8,
-        stepSize: cumulativeRegistrationsYAxis.stepSize, // not used?
-        callback: (label) => {
-          return this.formatNumberWithCommas(label);
-        },
-      },
-      beginAtZero: true,
-      min: 0,
-      max: cumulativeRegistrationsYAxis.max,
-    }
-    cumulativeRegistrationsGraphConfig.options.scales.yMonthlyRegistrations = {
-      position: "right",
-      stacked: true,
-      display: true,
-      grid: {
-        display: true,
-        drawBorder: false,
-        drawTicks: false,
-      },
-      ticks: {
-        display: false,
-        autoSkip: false,
-        color: colors.darkGrey,
-        font: {
-          size: 10,
-          family: "Roboto",
-        },
-        padding: 8,
-        stepSize: monthlyRegistrationsYAxis.stepSize,
-        callback: (label) => {
-          return this.formatNumberWithCommas(label); // no numbers shown?
-        },
-      },
-      beginAtZero: true,
-      min: 0,
-      max: monthlyRegistrationsYAxis.max,
-    }
 
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
@@ -934,7 +929,7 @@ Reports = function (withLtfu) {
     if (cumulativeRegistrationsGraphCanvas) {
       new Chart(
         cumulativeRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeRegistrationsGraphConfig
+        withBaseLineConfig(config)
       );
       populateCumulativeRegistrationsGraphDefault();
     }
