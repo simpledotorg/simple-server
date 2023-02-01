@@ -231,6 +231,7 @@ RSpec.describe Facility, type: :model do
   describe "Validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:district) }
+    it { is_expected.to validate_inclusion_of(:enable_monthly_screening_reports).in_array([true, false]).with_message("not in #{[true, false].join(", ")}") }
 
     context "validate state presence only if facility_group exists" do
       let(:subject) { Facility.new(facility_group: create(:facility_group)) }
