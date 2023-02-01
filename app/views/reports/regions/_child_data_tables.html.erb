@@ -119,13 +119,13 @@
         <% if @region.state_region? && @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
           <% coverage_rate = number_to_percentage(@region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
           <% estimated_population = number_with_delimiter(@region.estimated_population.population) %>
-          <td class="type-percent d-flex"
+            <td class="type-percent d-inline-flex align-center w-full ws-nowrap"
               data-sort-column-key="population-coverage"
               data-sort="<%= coverage_rate %>"
               data-toggle="tooltip"
               title="<%= "#{number_with_delimiter(@data.dig(:cumulative_registrations, @period))} / #{estimated_population} covered" %>">
-            <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good"><%= coverage_rate %></em>
-            of <%= estimated_population %>
+              <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good mr-4px"><%= coverage_rate %></em>
+              of <%= estimated_population %>
           </td>
         <% else %>
             <td
@@ -197,13 +197,13 @@
           <% if @region.state_region? && child.estimated_population.present? %>
             <% coverage_rate = number_to_percentage(child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)), precision: 0) %>
             <% estimated_population = number_with_delimiter(child.estimated_population.population) %>
-            <td class="type-percent d-flex"
+              <td class="type-percent d-inline-flex align-center w-full ws-nowrap"
                 data-sort-column-key="population-coverage"
                 data-sort="<%= coverage_rate %>"
                 data-toggle="tooltip"
                 title="<%= "#{number_with_delimiter(result.dig(:cumulative_registrations, @period))} / #{estimated_population} covered" %>">
-              <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good"><%= coverage_rate %></em>
-              of <%= estimated_population %>
+                <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good mr-4px"><%= coverage_rate %></em>
+                of <%= estimated_population %>
             </td>
           <% else %>
               <td
