@@ -103,16 +103,20 @@
         <td class="ta-right">
           <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
         </td>
-        <td class="type-percent"
-            data-sort-column-key="population-coverage"
-            data-sort="<%= @region.estimated_population&.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)) %>"
-            data-toggle="tooltip"
-            title="<%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %> / <%= number_with_delimiter( @region.estimated_population&.population) %> patients"
-        >
-          <em data-rate="<%= @region.estimated_population&.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)) %>" class="high-is-good">
-            <%= number_to_percentage(@region.estimated_population&.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
-          </em> of <%= @region.estimated_population&.population %>
-        </td>
+        <% if @region.estimated_population.present? %>
+          <td class="type-percent"
+              data-sort-column-key="population-coverage"
+              data-sort="<%= @region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)) %>"
+              data-toggle="tooltip"
+              title="<%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %> / <%= number_with_delimiter( @region.estimated_population.population) %> patients"
+          >
+            <em data-rate="<%= @region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)) %>" class="high-is-good">
+              <%= number_to_percentage(@region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
+            </em> of <%= @region.estimated_population.population %>
+          </td>
+        <% else %>
+            <td class="type-percent">-</td>
+        <% end %>
         <td
           class="type-percent"
           data-sort-column-key="total-patients-<%= @period %>"
@@ -171,16 +175,20 @@
           <td class="ta-right">
             <%= number_with_delimiter(result.dig(:registrations, @period)) %>
           </td>
-          <td class="type-percent"
-              data-sort-column-key="population-coverage"
-              data-sort="<%= child.estimated_population&.patient_coverage_rate(result.dig(:cumulative_registrations, @period)) %>"
-              data-toggle="tooltip"
-              title="<%= number_with_delimiter(result.dig(:cumulative_registrations, @period)) %> / <%= number_with_delimiter( child.estimated_population&.population) %> patients"
-          >
-            <em data-rate="<%= child.estimated_population&.patient_coverage_rate(result.dig(:cumulative_registrations, @period)) %>" class="high-is-good">
-              <%= number_to_percentage(child.estimated_population&.patient_coverage_rate(result.dig(:cumulative_registrations, @period)), precision: 0) %>
-            </em> of <%= child.estimated_population&.population %>
-          </td>
+          <% if child.estimated_population.present? %>
+            <td class="type-percent"
+                data-sort-column-key="population-coverage"
+                data-sort="<%= child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)) %>"
+                data-toggle="tooltip"
+                title="<%= number_with_delimiter(result.dig(:cumulative_registrations, @period)) %> / <%= number_with_delimiter( child.estimated_population.population) %> patients"
+            >
+              <em data-rate="<%= child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)) %>" class="high-is-good">
+                <%= number_to_percentage(child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)), precision: 0) %>
+              </em> of <%= child.estimated_population.population %>
+            </td>
+          <% else %>
+            <td class="type-percent"> - </td>
+          <% end %>
           <td
             class="type-percent"
             data-sort-column-key="total-patients-<%= @period %>"
