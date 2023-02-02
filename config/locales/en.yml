@@ -107,7 +107,8 @@ en:
     monthly_registered_patients: "Hypertension patients registered during a month in %{region_name}."
     total_registered_patients: "Total hypertension patients registered in %{region_name}."
   population_coverage:
-    denominator: "All individuals and patients with %{diagnosis} in %{region_name}"
+    numerator: "Total %{diagnosis} patients registered."
+    denominator: "Total estimated population with %{diagnosis}."
     add_missing_estimate:
       accessible_region: "Add the estimated %{diagnosis} population to see the coverage rate."
       accessible_region_with_region_name: "Add the estimated %{diagnosis} population for %{region_name} to see the coverage rate."

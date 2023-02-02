@@ -35,8 +35,8 @@
             Coverage
             <%= render "definition_tooltip",
                        definitions: {
-                         "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
-                         "Estimated population" => t("population_coverage.denominator", diagnosis: :hypertension, region_name: @region.name)
+                         "Numerator" => t("population_coverage.numerator", diagnosis: :hypertension),
+                         "Denominator" => t("population_coverage.denominator", diagnosis: :hypertension)
                        }
             %>
           </th>
