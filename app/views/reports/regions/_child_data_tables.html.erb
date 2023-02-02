@@ -110,10 +110,10 @@
           <%= @region.name %>
         </td>
         <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
+          <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
         </td>
         <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
+          <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
         </td>
         <%= can_manage_region = accessible_region?(@region, :manage) %>
         <% if @region.state_region? && @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
