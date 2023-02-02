@@ -126,7 +126,6 @@
                 data-toggle="tooltip"
                 title="<%= "#{number_with_delimiter(@data.dig(:cumulative_registrations, @period))} / #{estimated_population} patients" %>">
                 <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good"><%= coverage_rate %></em>
-              of <%= estimated_population %>
             </td>
           <% else %>
             <td
@@ -207,7 +206,6 @@
                   data-toggle="tooltip"
                   title="<%= "#{number_with_delimiter(result.dig(:cumulative_registrations, @period))} / #{estimated_population} patients" %>">
                   <em data-rate="<%= coverage_rate.to_i %>" class="high-is-good"><%= coverage_rate %></em>
-                of <%= estimated_population %>
               </td>
             <% else %>
               <td
