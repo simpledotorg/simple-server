@@ -115,7 +115,6 @@
         <td class="ta-right">
           <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
         </td>
-        <%= can_manage_region = accessible_region?(@region, :manage) %>
         <% if @region.state_region? %>
           <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
             <% coverage_rate = number_to_percentage(@region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
@@ -132,9 +131,7 @@
               data-sort-column-key="population-coverage"
               data-sort="<%= coverage_rate %>"
               data-toggle="tooltip"
-              title="<%= can_manage_region ?
-                           t("population_coverage.add_missing_child_estimate.accessible_region", diagnosis: :hypertension, child_type: @region.child_region_type.pluralize) :
-                           t("population_coverage.add_missing_child_estimate.inaccessible_region", diagnosis: :hypertension, region_name: @region.name, child_type: @region.child_region_type.pluralize) %>">-
+              title="<%= t("population_coverage.add_missing_child_estimate.accessible_region", diagnosis: :hypertension, child_type: @region.child_region_type.pluralize) %>">-
             </td>
           <% end %>
         <% end %>
@@ -212,7 +209,7 @@
                 data-sort-column-key="population-coverage"
                 data-sort="0"
                 data-toggle="tooltip"
-                title="<%= can_manage_region ?
+                title="<%= accessible_region?(child, :manage) ?
                              t("population_coverage.add_missing_estimate.accessible_region_with_region_name", diagnosis: :hypertension, region_name: child.name) :
                              t("population_coverage.add_missing_estimate.inaccessible_region", diagnosis: :hypertension, region_name: @region.name) %>">-
               </td>
