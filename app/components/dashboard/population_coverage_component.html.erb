@@ -30,14 +30,14 @@
     <% if accessible_region?(@region, :manage) %>
       <div class="mb-16px p-12px br-4px bg-blue-light">
         <p class="m-0px fs-14px c-black">
-          Add the estimated <%= diagnosis %> population to see the coverage rate.
+          <%= t("population_coverage.add_missing_estimate.accessible_region", diagnosis: diagnosis) %>
         </p>
         <%= link_to "+ Add population", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
       </div>
     <% else %>
       <div class="mb-16px p-12px br-4px bg-yellow-light">
         <p class="m-0px fs-14px c-black">
-          Ask a Dashboard admin to add the est. population with <%= diagnosis %> for <%= @region.name %> to see the <%= diagnosis %> coverage rate.
+          <%= t("population_coverage.add_missing_estimate.inaccessible_region", diagnosis: diagnosis, region_name: @region.name) %>
         </p>
       </div>
     <% end %>
@@ -45,14 +45,14 @@
     <% if current_admin.accessible_district_regions(:manage).to_set.superset?(@region.district_regions.to_set) %>
       <div class="mb-16px p-12px br-4px bg-blue-light">
         <p class="m-0px fs-14px c-black">
-          Add the estimated population of <%= diagnosis %> patients for all <%= @region.child_region_type.pluralize %> to see the coverage rate.
+          <%= t("population_coverage.add_missing_child_estimate.accessible_region", diagnosis: diagnosis, child_type: @region.child_region_type.pluralize) %>
         </p>
         <%= link_to "+ Add #{@region.child_region_type} populations", "/admin/facilities", :class => "fs-14px" %>
       </div>
     <% else %>
       <div class="mb-16px p-12px br-4px bg-yellow-light">
         <p class="m-0px fs-14px c-black">
-          Ask a Dashboard admin to add the est. population with <%= diagnosis %> for all districts in <%= @region.name %> to see the <%= diagnosis %> coverage rate.
+          <%= t("population_coverage.add_missing_child_estimate.inaccessible_region", diagnosis: diagnosis, child_type: @region.child_region_type.pluralize) %>
         </p>
       </div>
     <% end %>

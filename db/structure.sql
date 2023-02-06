@@ -205,7 +205,8 @@ CREATE TABLE public.facilities (
     facility_size character varying NOT NULL,
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL,
-    short_name character varying NOT NULL
+    short_name character varying NOT NULL,
+    enable_monthly_screening_reports boolean DEFAULT false NOT NULL
 );
 
 
@@ -5997,6 +5998,13 @@ CREATE INDEX index_latest_bp_per_patient_per_quarters_patient_id ON public.lates
 
 
 --
+-- Name: index_materialized_patient_summaries_on_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_materialized_patient_summaries_on_id ON public.materialized_patient_summaries USING btree (id);
+
+
+--
 -- Name: index_medical_histories_on_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6997,6 +7005,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230104104248'),
 ('20230105064908'),
 ('20230123125608'),
+('20230124063249'),
 ('20230130161639');
 
 
