@@ -18,8 +18,10 @@ with latest_bp_passport as (
     from blood_pressures bp
     left outer join prescription_drugs
         on prescription_drugs.patient_id = bp.patient_id
-        and (date(prescription_drugs.device_created_at) <= date(bp.recorded_at))
-        and (prescription_drugs.is_deleted is false or (prescription_drugs.is_deleted is true and date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))
+        and date(prescription_drugs.device_created_at) <= date(bp.recorded_at)
+        and (prescription_drugs.is_deleted is false
+                 or (prescription_drugs.is_deleted is true
+                         and date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))
     where bp.deleted_at is null and prescription_drugs.deleted_at is null
 ), other_medications as (
     select
@@ -29,7 +31,7 @@ with latest_bp_passport as (
     from ranked_prescription_drugs
     group by bp_id
 ), ranked_blood_pressures as (
-    select
+    select distinct on (bp.patient_id, rank)
         bp.id,
         bp.patient_id,
         bp.recorded_at as recorded_at,
@@ -172,7 +174,7 @@ with latest_bp_passport as (
         f.state,
         follow_up_facility.name as follow_up_facility_name,
         a.scheduled_date as follow_up_date,
-        greatest(0, date_part('day', a.scheduled_date -  date_trunc('day',a.device_created_at)))::int as follow_up_days,
+        greatest(0, date_part('day', a.scheduled_date - date_trunc('day',a.device_created_at)))::int as follow_up_days,
         rank() over (partition by bs.patient_id order by bs.recorded_at desc) rank
     from blood_sugars bs
     left outer join facilities f on bs.facility_id = f.id

@@ -1118,7 +1118,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
            FROM ranked_prescription_drugs
           GROUP BY ranked_prescription_drugs.bp_id
         ), ranked_blood_pressures AS (
-         SELECT bp.id,
+         SELECT DISTINCT ON (bp.patient_id, (rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC))) bp.id,
             bp.patient_id,
             bp.recorded_at,
             bp.systolic,
