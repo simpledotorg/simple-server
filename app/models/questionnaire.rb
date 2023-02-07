@@ -43,7 +43,7 @@ class Questionnaire < ApplicationRecord
 
   def layout_schema
     # TODO: When dsl_version is incremented, insert a switch here.
-    Api::V4::Models::Questionnaires::Version1.group.merge(
+    Api::V4::Models::Questionnaires::Version1.view_group.merge(
       definitions: Api::V4::Schema.all_definitions
     )
   end
