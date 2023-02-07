@@ -8,10 +8,11 @@ From https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity
 When copying sources from CDNs, look for the integrity check hash, or an option to copy HTML with SRI.
 A link with SRI should look lik this:
 ```html
-<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0/dist/Chart.min.js"
-        integrity="sha256-Uv9BNBucvCPipKQ2NS9wYpJmi8DTOEfTA/nH2aoJALw=" 
-        crossorigin="anonymous">
-</script>
+<script 
+        src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" 
+        integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" 
+        crossorigin="anonymous"
+></script>
 ```
 
 ### Notes
