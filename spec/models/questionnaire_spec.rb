@@ -23,8 +23,8 @@ RSpec.describe Questionnaire, type: :model do
       }.to change { Questionnaire.count }.by 3
     end
 
-    it "validates the layout using the swagger schema" do
-      questionnaire = build(:questionnaire)
+    it "validates the specimen layout using the swagger schema" do
+      questionnaire = build(:questionnaire, layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!
