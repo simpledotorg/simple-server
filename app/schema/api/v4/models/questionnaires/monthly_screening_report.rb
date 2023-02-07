@@ -16,15 +16,25 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
             view_type: "sub_header"
           },
           {
-            type: "integer",
-            id: "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
-            link_id: "monthly_screening_reports.outpatient_department_visits",
-            text: "Outpatient department visits",
-            view_type: "input_field",
-            validations: {
-              min: 0,
-              max: 1_000_000
-            }
+            id: "964f8d0f-ecaf-4b9e-87e8-62614ff5c7db",
+            type: "group",
+            view_type: "input_view_group",
+            display_properties: {
+              orientation: "horizontal"
+            },
+            item: [
+              {
+                type: "integer",
+                id: "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
+                link_id: "monthly_screening_reports.outpatient_department_visits",
+                text: "Outpatient department visits",
+                view_type: "input_field",
+                validations: {
+                  min: 0,
+                  max: 1_000_000
+                }
+              }
+            ]
           },
           {
             type: "display",
@@ -46,7 +56,7 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
           {
             type: "group",
             id: "b39903c9-04e2-4fd8-9218-6ff5e5cf6466",
-            view_type: "view_group",
+            view_type: "input_view_group",
             display_properties: {
               orientation: "horizontal"
             },
