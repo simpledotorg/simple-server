@@ -22,9 +22,9 @@ class PatientListDownloadJob
 
     exporter = PatientsWithHistoryExporter
     patients_csv = if model.region.diabetes_management_enabled?
-      exporter.csv(patients, display_blood_sugars: true)
+      exporter.csv(patients)
     else
-      exporter.csv(patients, display_blood_sugars: false)
+      exporter.csv(patients, display_blood_sugars: 0)
     end
 
     PatientListDownloadMailer.patient_list(recipient_email, model_type, model_name, patients_csv).deliver_now
