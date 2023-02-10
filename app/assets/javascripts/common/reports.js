@@ -818,33 +818,29 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "BP controlled",
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumGreen,
             hoverBackgroundColor: colors.darkGreen,
-            data: Object.values(data.controlRate).slice(-barsToDisplay),
-            type: "bar",
           },
           {
             label: "BP uncontrolled",
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumRed,
             hoverBackgroundColor: colors.darkRed,
-            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-            type: "bar",
           },
           {
             label: "Visit but no BP measure",
-            backgroundColor: colors.mediumGrey,
-            hoverBackgroundColor: colors.darkGrey,
             data: Object.values(data.visitButNoBPMeasureRate).slice(
               -barsToDisplay
             ),
-            type: "bar",
+            backgroundColor: colors.mediumGrey,
+            hoverBackgroundColor: colors.darkGrey,
           },
           {
             label: "Missed visits",
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumBlue,
             hoverBackgroundColor: colors.darkBlue,
-            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-            type: "bar",
           },
         ],
       },
