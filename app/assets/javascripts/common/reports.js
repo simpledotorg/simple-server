@@ -96,28 +96,28 @@ DashboardReports = () => {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
           datasets: [
             {
-              yAxisID: "y",
+              type: "line",
+              data: Object.values(data.cumulativeDiabetesRegistrations),
               label: "cumulative diabetes registrations",
+              yAxisID: "y",
               backgroundColor: colors.transparent,
               borderColor: colors.darkPurple,
-              data: Object.values(data.cumulativeDiabetesRegistrations),
-              type: "line",
             },
             {
-              yAxisID: "y",
+              type: "line",
+              data: Object.values(data.monthlyDiabetesFollowups),
               label: "monthly diabetes followups",
+              yAxisID: "y",
               backgroundColor: colors.transparent,
               borderColor: colors.darkTeal,
-              data: Object.values(data.monthlyDiabetesFollowups),
-              type: "line",
             },
             {
-              yAxisID: "yMonthlyDiabetesRegistrations",
+              type: "bar",
+              data: Object.values(data.monthlyDiabetesRegistrations),
               label: "monthly diabetes registrations",
+              yAxisID: "yMonthlyDiabetesRegistrations",
               backgroundColor: colors.lightPurple,
               hoverBackgroundColor: colors.darkPurple,
-              data: Object.values(data.monthlyDiabetesRegistrations),
-              type: "bar",
             },
           ],
         },
@@ -131,14 +131,14 @@ DashboardReports = () => {
                 display: false,
                 stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
               },
-              max: cumulativeDiabetesRegistrationsYAxis.max, // needed?
+              max: cumulativeDiabetesRegistrationsYAxis.max,
             },
     
             yMonthlyDiabetesRegistrations: {
               display: false,
               beginAtZero: true,
               min: 0,
-              max: monthlyDiabetesRegistrationsYAxis.max, // needed?
+              max: monthlyDiabetesRegistrationsYAxis.max,
             },
           }
         }
