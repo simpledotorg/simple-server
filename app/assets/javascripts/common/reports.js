@@ -524,9 +524,9 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "BP uncontrolled",
+            data: Object.values(uncontrolledGraphRate),
             backgroundColor: colors.lightRed,
             borderColor: colors.mediumRed,
-            data: Object.values(uncontrolledGraphRate),
           },
         ],
       },
