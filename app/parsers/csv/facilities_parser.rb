@@ -23,7 +23,8 @@ class Csv::FacilitiesParser
     latitude: "latitude (optional)",
     longitude: "longitude (optional)",
     facility_size: "size (optional)",
-    enable_diabetes_management: "enable_diabetes_management (true/false)"
+    enable_diabetes_management: "enable_diabetes_management (true/false)",
+    enable_monthly_screening_reports: "enable_monthly_screening_reports (true/false)"
   }
 
   def self.parse(*args)
@@ -58,9 +59,9 @@ class Csv::FacilitiesParser
     COLUMNS
       .map { |attr, col_name| [attr, row[col_name]] }
       .to_h
-      .yield_self { |attrs| attrs.merge(set_region_data(attrs)) }
-      .yield_self { |attrs| attrs.merge(set_facility_size(attrs)) }
-      .yield_self { |attrs| attrs.merge(set_blanks_to_false(attrs)) }
+      .then { |attrs| attrs.merge(set_region_data(attrs)) }
+      .then { |attrs| attrs.merge(set_facility_size(attrs)) }
+      .then { |attrs| attrs.merge(set_blanks_to_false(attrs)) }
   end
 
   def set_region_data(facility_attrs)
@@ -81,16 +82,15 @@ class Csv::FacilitiesParser
   end
 
   def facility_sizes
-    # {
-    #   "Localized facility size" => "facility_size",
-    # }
+    # { "Localized facility size" => "facility_size" }
     @facility_sizes ||= Facility.facility_sizes.transform_values { |size| Facility.localized_facility_size(size) }.invert
   end
 
   def set_blanks_to_false(facility_attrs)
     {
       enable_teleconsultation: facility_attrs[:enable_teleconsultation] || false,
-      enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false
+      enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false,
+      enable_monthly_screening_reports: facility_attrs[:enable_monthly_screening_reports] || false
     }
   end
 
