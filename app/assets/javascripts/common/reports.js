@@ -90,7 +90,6 @@ DashboardReports = () => {
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
-      console.log(cumulativeDiabetesRegistrationsYAxis.max);
       const config = {
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
