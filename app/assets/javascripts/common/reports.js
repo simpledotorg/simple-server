@@ -190,7 +190,6 @@ DashboardReports = () => {
               backgroundColor: colors.lightBlue,
               borderColor: colors.mediumBlue,
               data: Object.values(data.diabetesMissedVisitsGraphRate),
-              type: "line",
             },
           ],
         },
