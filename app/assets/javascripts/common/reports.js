@@ -331,16 +331,15 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Lost to follow-up",
+              data: Object.values(data.ltfuPatientsRate),
               backgroundColor: colors.lightBlue,
               borderColor: colors.darkBlue,
-              data: Object.values(data.ltfuPatientsRate),
             },
           ],
         },
       };
       return withBaseLineConfig(config);
     },
-  
   };
 
   return {
