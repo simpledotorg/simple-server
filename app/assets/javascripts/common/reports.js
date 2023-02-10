@@ -609,9 +609,9 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "Missed visits",
+            data: Object.values(missedVisitsGraphRate),
             backgroundColor: colors.lightBlue,
             borderColor: colors.mediumBlue,
-            data: Object.values(missedVisitsGraphRate),
           },
         ],
       },
