@@ -685,25 +685,24 @@ Reports = function (withLtfu) {
     );
 
     const config = {
-      type: "bar",
       data: {
         labels: Object.keys(data.cumulativeRegistrations),
         datasets: [
           {
-            yAxisID: "yCumulativeRegistrations",
+            type: "line",
             label: "cumulative registrations",
+            data: Object.values(data.cumulativeRegistrations),
+            yAxisID: "y",
             backgroundColor: colors.transparent,
             borderColor: colors.darkPurple,
-            data: Object.values(data.cumulativeRegistrations),
-            type: "line",
           },
           {
-            yAxisID: "yMonthlyRegistrations",
+            type: "bar",
             label: "monthly registrations",
+            data: Object.values(data.monthlyRegistrations),
+            yAxisID: "yMonthlyRegistrations",
             backgroundColor: colors.lightPurple,
             hoverBackgroundColor: colors.darkPurple,
-            data: Object.values(data.monthlyRegistrations),
-            type: "bar",
           },
         ],
       },
@@ -722,57 +721,17 @@ Reports = function (withLtfu) {
         },
         scales: {
           y: {
-            display: false
-          },
-          yCumulativeRegistrations: {
-            position: "left",
-            stacked: true,
-            display: true,
             grid: {
-              display: false,
-              drawBorder: false,
-            },
-            ticks: {
-              display: false,
-              autoSkip: false,
-              color: colors.darkGrey,
-              font: {
-                size: 10,
-                family: "Roboto",
-              },
-              padding: 8,
-              stepSize: cumulativeRegistrationsYAxis.stepSize, // not used?
-              callback: (label) => {
-                return this.formatNumberWithCommas(label);
-              },
-            },
-            beginAtZero: true,
-            min: 0,
-            max: cumulativeRegistrationsYAxis.max,
-          },
-          yMonthlyRegistrations: {
-            position: "right",
-            stacked: true,
-            display: true,
-            grid: {
-              display: true,
-              drawBorder: false,
               drawTicks: false,
             },
             ticks: {
               display: false,
-              autoSkip: false,
-              color: colors.darkGrey,
-              font: {
-                size: 10,
-                family: "Roboto",
-              },
-              padding: 8,
-              stepSize: monthlyRegistrationsYAxis.stepSize,
-              callback: (label) => {
-                return this.formatNumberWithCommas(label); // no numbers shown?
-              },
+              stepSize: cumulativeRegistrationsYAxis.stepSize,
             },
+            max: cumulativeRegistrationsYAxis.max,
+          },
+          yMonthlyRegistrations: {
+            display: false,
             beginAtZero: true,
             min: 0,
             max: monthlyRegistrationsYAxis.max,
