@@ -1105,7 +1105,6 @@ function baseLineGraphConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 12, // default is 12
               family: "Roboto",
             },
             padding: 6,
@@ -1124,8 +1123,8 @@ function baseLineGraphConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 10,
               family: "Roboto",
+              size: 10,
             },
             padding: 8,
             stepSize: 25, // unitStepSize??
@@ -1180,7 +1179,6 @@ function baseBarChartConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 12,
               family: "Roboto",
             },
             padding: 6,
@@ -1199,8 +1197,8 @@ function baseBarChartConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 10,
               family: "Roboto",
+              size: 10,
             },
             padding: 8,
           },
