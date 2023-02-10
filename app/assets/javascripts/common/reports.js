@@ -261,6 +261,7 @@ DashboardReports = () => {
         };
       });
       const config = {
+        type: 'bar',
         data: {
           labels: graphPeriods,
           datasets: datasets,
@@ -272,28 +273,25 @@ DashboardReports = () => {
           minBarLength: 4,
           plugins: {
             datalabels: {
+              anchor: "end",
               align: "end",
               color: "black",
-              anchor: "end",
               offset: 1,
               font: {
                 family: "Roboto Condensed",
-                size: 12,
               },
               formatter: function (value) {
                 return value + "%";
               },
             },
             tooltip: {
-              enabled: true, // not required?
-
+              enabled: true,
               displayColors: false,
               xAlign: "center",
               yAlign: "top",
-              xPadding: 6,
-              yPadding: 6,
-              caretSize: 3,
-              caretPadding: 1,
+              caretSize: 4,
+              caretPadding: 4,
+
               callbacks: {
                 title: function () {
                   return "";
@@ -311,33 +309,19 @@ DashboardReports = () => {
             }
           },
           scales: {
-            x: {
-              stacked: false,
-              grid: {
-                drawBorder: true, // do we need it?
-              },
-              // ticks: {
-              //   // padding: 0,
-              // },
-            },
             y: {
-              stacked: false,
-              display: true,
               grid: {
-                display: true,
                 drawTicks: false,
               },
               ticks: {
                 display: false,
-                stepSize: 25,
               },
-              max: 100,
             },
           }
         },
         plugins: [ChartDataLabels],
       }
-      return withBaseBarConfig(config)
+      return withBaseLineConfig(config)
     },
     
     lostToFollowUpTrend: function (data) {
