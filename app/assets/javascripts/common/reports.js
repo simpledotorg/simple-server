@@ -154,15 +154,15 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate),
               backgroundColor: colors.amber,
               hoverBackgroundColor: colors.darkAmber,
-              data: Object.values(data.bs200to300Rate),
             },
             {
               label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate),
               backgroundColor: colors.mediumRed,
               hoverBackgroundColor: colors.darkRed,
-              data: Object.values(data.bsOver300Rate),
             },
           ],
         },
