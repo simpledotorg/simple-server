@@ -1127,7 +1127,7 @@ function baseLineGraphConfig() {
               size: 10,
             },
             padding: 8,
-            stepSize: 25, // unitStepSize??
+            stepSize: 25,
           },
           beginAtZero: true,
           min: 0,
