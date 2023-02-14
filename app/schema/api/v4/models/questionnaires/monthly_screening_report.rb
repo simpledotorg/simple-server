@@ -5,9 +5,6 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
         type: "group",
         id: "2e8ce537-616c-4c4c-a651-ad065d05f220",
         view_type: "view_group",
-        display_properties: {
-          orientation: "vertical"
-        },
         item: [
           {
             type: "display",
@@ -19,9 +16,6 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
             id: "964f8d0f-ecaf-4b9e-87e8-62614ff5c7db",
             type: "group",
             view_type: "input_view_group",
-            display_properties: {
-              orientation: "horizontal"
-            },
             item: [
               {
                 type: "integer",
@@ -57,9 +51,6 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
             type: "group",
             id: "b39903c9-04e2-4fd8-9218-6ff5e5cf6466",
             view_type: "input_view_group",
-            display_properties: {
-              orientation: "horizontal"
-            },
             item: [
               {
                 type: "integer",
