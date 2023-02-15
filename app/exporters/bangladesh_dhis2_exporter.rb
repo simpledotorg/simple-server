@@ -6,20 +6,21 @@ class BangladeshDhis2Exporter
     @period = period
   end
 
+  BUCKETS = (15..75).step(5)
+
   def data
     {
-      cumulative_assigned_patients: cumulative_assigned_patients_count
+      cumulative_assigned_patients: disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(region, period)),
+      controlled_patients: disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region, period))
     }
   end
 
-  def cumulative_assigned_patients_count
-    PatientStates::DisaggregatedPatientCountQuery.disaggregate_by(
-      PatientStates::CumulativeAssignedPatientsQuery.new(region, period),
-      groupings
-    )
-  end
-
-  def groupings
-    :gender
+  def disaggregated_counts(query)
+    PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
+      BUCKETS.map { |k, v| v[:stat] },
+      PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(
+        query.call
+      )
+    ).count
   end
 end
