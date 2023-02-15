@@ -18,7 +18,6 @@ class Api::V4::Models::Questionnaires::Version1
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},
           view_type: {type: :string, enum: %w[view_group]},
-          display_properties: display_properties,
           item: {
             type: :array,
             items: {
@@ -30,7 +29,7 @@ class Api::V4::Models::Questionnaires::Version1
             }
           }
         },
-        required: %w[type id view_type display_properties item]
+        required: %w[type id view_type item]
       }
     end
 
@@ -41,7 +40,6 @@ class Api::V4::Models::Questionnaires::Version1
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},
           view_type: {type: :string, enum: %w[input_view_group]},
-          display_properties: display_properties,
           item: {
             type: :array,
             items: {
@@ -51,7 +49,7 @@ class Api::V4::Models::Questionnaires::Version1
             }
           }
         },
-        required: %w[type id view_type display_properties item]
+        required: %w[type id view_type item]
       }
     end
 
@@ -99,16 +97,6 @@ class Api::V4::Models::Questionnaires::Version1
           }
         },
         required: %w[type id link_id text view_type validations]
-      }
-    end
-
-    def display_properties
-      {
-        type: :object,
-        properties: {
-          orientation: {type: :string, enum: %w[horizontal vertical]}
-        },
-        required: %w[orientation]
       }
     end
   end
