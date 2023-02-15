@@ -17,7 +17,7 @@ class BangladeshDhis2Exporter
 
   def disaggregated_counts(query)
     PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
-      BUCKETS.map { |k, v| v[:stat] },
+      BUCKETS,
       PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(
         query.call
       )

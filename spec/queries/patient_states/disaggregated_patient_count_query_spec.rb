@@ -18,7 +18,7 @@ describe PatientStates::DisaggregatedPatientCountQuery do
       refresh_views
 
       expect(PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(query).count)
-        .to eq({"female" => 1, "male" => 1})
+        .to eq({"female" => 1, "male" => 1, "transgender" => 1})
     end
   end
 
