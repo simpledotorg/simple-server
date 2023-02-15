@@ -33,9 +33,11 @@
           <th colspan="6">
             Monthly registered patients
           </th>
+          <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
           <th colspan="6">
             Follow-up patients per user
           </th>
+          <% end %>
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small sticky" data-sort-default>
@@ -49,10 +51,12 @@
               <%= period %>
             </th>
           <% end %>
-          <% @details_period_range.each do |period| %>
-            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-              <%= period %>
-            </th>
+          <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
+            <% @details_period_range.each do |period| %>
+              <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+                <%= period %>
+              </th>
+            <% end %>
           <% end %>
         </tr>
       </thead>
@@ -72,11 +76,13 @@
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
-            <% @details_period_range.each do |period| %>
-              <td class="ta-right">
-                <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
-                  number_or_dash_with_delimiter(val) %>
-              </td>
+            <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
+              <% @details_period_range.each do |period| %>
+                <td class="ta-right">
+                  <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
+                      number_or_dash_with_delimiter(val) %>
+                </td>
+              <% end %>
             <% end %>
           </tr>
         <% end %>

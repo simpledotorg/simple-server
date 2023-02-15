@@ -26,3 +26,5 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | sync_encounters | Yes | When enabled, encounters can be synced between app and server like any other standard sync resource. |
 | automated_telemed_report | Yes | When enabled, a monthly report on telemedicine activity in Simple will be sent via email to the configured recipients. |
 | whatsapp_appointment_reminders | Yes | When enabled, patient reminder messages will be attempted via Whatsapp first, before falling back to SMS. |
+| monthly_screening_reports | Yes | When enabled, a cron job will run on first of every month and pre-fill screening reports with follow-up data from previous month. |
+| hide_facility_follow_up_patients_per_user | Yes | When enabled, hides the follow-up patients per user section in facility level dashboard reports. |
