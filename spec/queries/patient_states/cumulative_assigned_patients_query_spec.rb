@@ -28,8 +28,8 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
     end
 
     it "returns the same number of cumulative patients as in reporting facility states" do
-      facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      facility_2_patients = create_list(:patient, 3, assigned_facility: regions[:facility_2])
+      _facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
+      _facility_2_patients = create_list(:patient, 3, assigned_facility: regions[:facility_2])
 
       refresh_views
 

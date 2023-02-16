@@ -31,5 +31,17 @@ describe BangladeshDhis2Exporter do
                .data[:controlled_patients])
         .to eq({["female", 4] => 1, ["male", 10] => 1})
     end
+
+    it "contains count of uncontrolled patients disaggregated by gender and age in a facility as of the given period" do
+      _facility_1_patient_1 = create(:patient, :uncontrolled, assigned_facility: regions[:facility_1], gender: :male, age: 63)
+      _facility_1_patient_2 = create(:patient, :uncontrolled, assigned_facility: regions[:facility_1], gender: :female, age: 30)
+      _facility_1_patient_3 = create(:patient, :controlled, assigned_facility: regions[:facility_1], gender: :female, age: 48)
+      refresh_views
+
+      expect(BangladeshDhis2Exporter
+               .new(regions[:facility_1].region, period)
+               .data[:uncontrolled_patients])
+        .to eq({["female", 4] => 1, ["male", 10] => 1})
+    end
   end
 end
