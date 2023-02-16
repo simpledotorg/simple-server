@@ -4,6 +4,7 @@ RSpec.describe Messaging::AlphaSms::Api do
   def stub_credentials
     allow(ENV).to receive(:[]).and_call_original
     allow(ENV).to receive(:[]).with("ALPHA_SMS_API_KEY").and_return("ABCDEF")
+    allow(ENV).to receive(:[]).with("ALPHA_SMS_SENDER_ID").and_return("AAAAAA")
   end
 
   describe "#new" do
@@ -23,7 +24,8 @@ RSpec.describe Messaging::AlphaSms::Api do
       expect(request.with(body: {
         api_key: "ABCDEF",
         msg: message,
-        to: recipient_number
+        to: recipient_number,
+        sender_id: "AAAAAA"
       })).to have_been_made
     end
 
