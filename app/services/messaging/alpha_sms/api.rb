@@ -1,4 +1,5 @@
 class Messaging::AlphaSms::Api
+  SENDER_ID = ENV["ALPHA_SMS_SENDER_ID"]
   HOST = "api.sms.net.bd"
   URL_PATHS = {
     send_sms: "/sendsms",
@@ -13,7 +14,7 @@ class Messaging::AlphaSms::Api
   end
 
   def send_sms(recipient_number:, message:)
-    post(URL_PATHS[:send_sms], msg: message, to: recipient_number)
+    post(URL_PATHS[:send_sms], msg: message, to: recipient_number, sender_id: SENDER_ID)
   end
 
   def get_message_status_report(request_id)
