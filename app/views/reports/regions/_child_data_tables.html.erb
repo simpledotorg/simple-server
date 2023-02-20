@@ -212,7 +212,7 @@
             <%= number_with_delimiter(result.dig(:cumulative_registrations, @period)) %>
           </td>
           <% if @region.state_region? %>
-            <% if child.estimated_population.present? %>
+              <% if child.estimated_population.present? && child.estimated_population.population > 0 %>
               <% coverage_rate = number_to_percentage(child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)), precision: 0) %>
               <% estimated_population = number_with_delimiter(child.estimated_population.population) %>
                 <td class="type-percent"
