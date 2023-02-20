@@ -13,7 +13,7 @@ class Messaging::AlphaSms::Api
   end
 
   def send_sms(recipient_number:, message:)
-    post(URL_PATHS[:send_sms], msg: message, to: recipient_number)
+    post(URL_PATHS[:send_sms], msg: message, to: recipient_number, sender_id: sender_id)
   end
 
   def get_message_status_report(request_id)
@@ -28,6 +28,10 @@ class Messaging::AlphaSms::Api
 
   def api_key
     ENV["ALPHA_SMS_API_KEY"]
+  end
+
+  def sender_id
+    ENV["ALPHA_SMS_SENDER_ID"]
   end
 
   def post(path, body = {})
