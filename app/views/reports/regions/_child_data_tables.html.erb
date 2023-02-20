@@ -119,7 +119,7 @@
           <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
         </td>
         <% if @region.state_region? %>
-          <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
+            <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? && @region.estimated_population.population > 0 %>
             <% coverage_rate = number_to_percentage(@region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
             <% estimated_population = number_with_delimiter(@region.estimated_population.population) %>
               <td class="type-percent"
