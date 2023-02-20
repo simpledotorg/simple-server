@@ -382,8 +382,6 @@ DashboardReports = () => {
         if (!graphConfig.options.plugins.tooltip.enabled) {
           graphConfig.options.plugins.tooltip = {
             enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
