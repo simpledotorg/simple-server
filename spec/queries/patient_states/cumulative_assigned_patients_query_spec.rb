@@ -33,17 +33,28 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
-               .call.count)
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .cumulative_assigned_patients)
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
-                               .call.count)
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .cumulative_assigned_patients)
+    end
+
+    it "does not include dead patients" do
+      facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
+      facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: 'dead')
+      refresh_views
+
+      cumulative_assigned_patient_ids = PatientStates::CumulativeAssignedPatientsQuery
+                                          .new(regions[:facility_1].region, period)
+                                          .call
+                                          .map(&:patient_id)
+      expect(cumulative_assigned_patient_ids).to match_array(facility_1_patients.map(&:id))
+      expect(cumulative_assigned_patient_ids).not_to include(facility_1_dead_patient[:id])
     end
   end
 end
