@@ -1,12 +1,12 @@
-class DHIS2Exporter
+class Dhis2Exporter
   require "dhis2"
 
-  def self.export
-    new.export
-  end
+  attr_reader :facility_identifier, :periods, :data_elements_map
 
-  def initialize
-    abort("DHIS2 export not enabled in Flipper") unless Flipper.enabled?(:dhis2_export)
+  def initialize(facility_identifiers:, periods:, data_elements_map:)
+    @facility_identifier = facility_identifiers
+    @periods = periods
+    @data_elements_map = data_elements_map
 
     Dhis2.configure do |config|
       config.url = ENV.fetch("DHIS2_URL")
@@ -17,49 +17,25 @@ class DHIS2Exporter
   end
 
   def export
-    data_elements_map = CountryConfig.current.fetch(:dhis2_data_elements)
+    export_values = []
+    @facility_identifier.each do |facility_identifier|
+      @periods.each do |period|
+        facility_data = yield(facility_identifier, period)
 
-    current_month_period = Period.current.previous
-
-    FacilityBusinessIdentifier.dhis2_org_unit_id.each do |facility_identifier|
-      facility_bulk_data = []
-
-      facility = facility_identifier.facility
-      slug = facility.region.slug
-      org_unit_id = facility_identifier.identifier
-
-      range = (current_month_period.advance(months: -24)..current_month_period)
-
-      repository = Reports::Repository.new(facility.region, periods: range)
-
-      range.each do |month_period|
-        data = {
-          cumulative_assigned: repository.cumulative_assigned_patients[slug][month_period],
-          cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][month_period],
-          controlled: repository.controlled[slug][month_period],
-          uncontrolled: repository.uncontrolled[slug][month_period],
-          missed_visits: repository.missed_visits[slug][month_period],
-          ltfu: repository.ltfu[slug][month_period],
-          # Note: dead patients are always the current count due to lack of status timestamps
-          dead: facility.assigned_patients.with_hypertension.status_dead.count,
-          cumulative_registrations: repository.cumulative_registrations[slug][month_period],
-          monthly_registrations: repository.monthly_registrations[slug][month_period]
-        }
-
-        data.each do |data_element, value|
+        facility_data.each do |data_element, value|
           data_element_id = data_elements_map[data_element]
 
-          facility_bulk_data << {
+          export_values << {
             data_element: data_element_id,
-            org_unit: org_unit_id,
-            period: reporting_period(month_period),
+            org_unit: facility_identifier.identifier,
+            period: reporting_period(period),
             value: value
           }
-          puts "Adding data for #{facility.name}, #{month_period}, #{data_element}: #{facility_bulk_data.last}"
+          puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{export_values.last}"
         end
       end
 
-      pp Dhis2.client.data_value_sets.bulk_create(data_values: facility_bulk_data)
+      pp Dhis2.client.data_value_sets.bulk_create(data_values: export_values)
     end
   end
 
