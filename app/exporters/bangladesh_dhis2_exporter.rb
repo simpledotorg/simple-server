@@ -48,6 +48,7 @@ class BangladeshDhis2Exporter
   def data
     {
       cumulative_assigned_patients: disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(region, period)),
+      # cumulative_assigned_patients_excluding_recent_registrations: disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(region, period)),
       controlled_patients: disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region, period)),
       uncontrolled_patients: disaggregated_counts(PatientStates::UncontrolledPatientsQuery.new(region, period))
     }
