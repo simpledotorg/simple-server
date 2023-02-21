@@ -13,25 +13,27 @@ with latest_bp_passport as (
 ),ranked_prescription_drugs as (
     select
         bp.id as bp_id,
-        prescription_drugs.*,
-        rank() over (partition by bp.id order by prescription_drugs.is_protocol_drug desc, prescription_drugs.name, prescription_drugs.device_created_at desc) rank
+        array_agg(array[name, dosage] order by prescription_drugs.is_protocol_drug desc, prescription_drugs.name, prescription_drugs.device_created_at desc) as blood_pressure_drugs,
+        array_agg(name || '-' || dosage order by prescription_drugs.is_protocol_drug desc, prescription_drugs.name, prescription_drugs.device_created_at desc) as drug_strings
     from blood_pressures bp
-    left outer join prescription_drugs
-        on prescription_drugs.patient_id = bp.patient_id
-        and date(prescription_drugs.device_created_at) <= date(bp.recorded_at)
-        and (prescription_drugs.is_deleted is false
-                 or (prescription_drugs.is_deleted is true
-                         and date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))
+        join prescription_drugs
+            on prescription_drugs.patient_id = bp.patient_id
+                and date(prescription_drugs.device_created_at) <= date(bp.recorded_at)
+                and (prescription_drugs.is_deleted is false or (prescription_drugs.is_deleted is true and date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))
     where bp.deleted_at is null and prescription_drugs.deleted_at is null
-), other_medications as (
-    select
-        bp_id,
-        string_agg (name || '-' || dosage, ', ') filter (where rank > 5) as other_prescription_drugs,
-        string_agg (name || '-' || dosage, ', ' order by rank) as all_prescription_drugs
-    from ranked_prescription_drugs
-    group by bp_id
+    group by bp.id
+), blood_pressure_follow_up as (
+    select distinct on (bp.patient_id, date(bp.recorded_at)) bp.id bp_id, appointments.*
+    from blood_pressures bp
+    join appointments on appointments.patient_id = bp.patient_id and date(appointments.device_created_at) = date(bp.recorded_at)
+    order by bp.patient_id, date(bp.recorded_at), appointments.device_created_at desc
+), blood_sugar_follow_up as (
+    select distinct on (bs.patient_id, date(bs.recorded_at)) bs.id bs_id, appointments.*
+    from blood_sugars bs
+    join appointments on appointments.patient_id = bs.patient_id and date(appointments.device_created_at) = date(bs.recorded_at)
+    order by bs.patient_id, date(bs.recorded_at), appointments.device_created_at desc
 ), ranked_blood_pressures as (
-    select distinct on (bp.patient_id, rank)
+    select
         bp.id,
         bp.patient_id,
         bp.recorded_at as recorded_at,
@@ -45,40 +47,30 @@ with latest_bp_passport as (
         a.scheduled_date as follow_up_date,
         greatest(0, date_part('day', a.scheduled_date - date_trunc('day', a.device_created_at)))::int as follow_up_days,
 
-        pd_1.name as prescription_drug_1_name,
-        pd_1.dosage as prescription_drug_1_dosage,
+        bp_drugs.blood_pressure_drugs[1][1] as prescription_drug_1_name,
+        bp_drugs.blood_pressure_drugs[1][2] as prescription_drug_1_dosage,
 
-        pd_2.name as prescription_drug_2_name,
-        pd_2.dosage as prescription_drug_2_dosage,
+        bp_drugs.blood_pressure_drugs[2][1] as prescription_drug_2_name,
+        bp_drugs.blood_pressure_drugs[2][2] as prescription_drug_2_dosage,
 
-        pd_3.name as prescription_drug_3_name,
-        pd_3.dosage as prescription_drug_3_dosage,
+        bp_drugs.blood_pressure_drugs[3][1] as prescription_drug_3_name,
+        bp_drugs.blood_pressure_drugs[3][2] as prescription_drug_3_dosage,
 
-        pd_4.name as prescription_drug_4_name,
-        pd_4.dosage as prescription_drug_4_dosage,
+        bp_drugs.blood_pressure_drugs[4][1] as prescription_drug_4_name,
+        bp_drugs.blood_pressure_drugs[4][2] as prescription_drug_4_dosage,
 
-        pd_5.name as prescription_drug_5_name,
-        pd_5.dosage as prescription_drug_5_dosage,
+        bp_drugs.blood_pressure_drugs[5][1] as prescription_drug_5_name,
+        bp_drugs.blood_pressure_drugs[5][2] as prescription_drug_5_dosage,
 
-        other_medications.other_prescription_drugs,
-        other_medications.all_prescription_drugs,
+        (select string_agg(value, ', ') from unnest(bp_drugs.drug_strings[6:]) as value) as other_prescription_drugs,
+        (select string_agg(value, ', ') from unnest(bp_drugs.drug_strings) as value) as all_prescription_drugs,
 
-        rank() over (partition by bp.patient_id order by bp.recorded_at desc) rank
+        rank() over (partition by bp.patient_id order by bp.recorded_at desc, bp.id) rank
     from blood_pressures bp
-    left outer join facilities f on bp.facility_id = f.id
-    left outer join lateral (
-        select distinct on(patient_id) *
-        from appointments
-        where date_trunc('day', device_created_at) = date_trunc('day', bp.recorded_at)
-        order by patient_id, device_created_at desc
-    ) a on a.patient_id = bp.patient_id
-    left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
-    left outer join ranked_prescription_drugs pd_1 on bp.id = pd_1.bp_id and pd_1.rank = 1
-    left outer join ranked_prescription_drugs pd_2 on bp.id = pd_2.bp_id and pd_2.rank = 2
-    left outer join ranked_prescription_drugs pd_3 on bp.id = pd_3.bp_id and pd_3.rank = 3
-    left outer join ranked_prescription_drugs pd_4 on bp.id = pd_4.bp_id and pd_4.rank = 4
-    left outer join ranked_prescription_drugs pd_5 on bp.id = pd_5.bp_id and pd_5.rank = 5
-    left outer join other_medications on bp.id = other_medications.bp_id
+             left outer join facilities f on bp.facility_id = f.id
+             left outer join ranked_prescription_drugs bp_drugs on bp.id = bp_drugs.bp_id
+             left outer join blood_pressure_follow_up a on  a.bp_id = bp.id
+             left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     where bp.deleted_at is null and a.deleted_at is null
 ), latest_blood_pressures as (
     select
@@ -175,10 +167,10 @@ with latest_bp_passport as (
         follow_up_facility.name as follow_up_facility_name,
         a.scheduled_date as follow_up_date,
         greatest(0, date_part('day', a.scheduled_date - date_trunc('day',a.device_created_at)))::int as follow_up_days,
-        rank() over (partition by bs.patient_id order by bs.recorded_at desc) rank
+        rank() over (partition by bs.patient_id order by bs.recorded_at desc, bs.id) rank
     from blood_sugars bs
     left outer join facilities f on bs.facility_id = f.id
-    left outer join appointments a on a.patient_id = bs.patient_id and date_trunc('day', a.device_created_at) = date_trunc('day', bs.recorded_at)
+    left outer join blood_sugar_follow_up a on a.bs_id = bs.id
     left outer join facilities follow_up_facility on follow_up_facility.id = a.facility_id
     where bs.deleted_at is null and a.deleted_at is null
 ), latest_blood_sugars as (

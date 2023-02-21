@@ -1090,35 +1090,56 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
           WHERE (medical_histories.deleted_at IS NULL)
         ), ranked_prescription_drugs AS (
          SELECT bp.id AS bp_id,
-            prescription_drugs.id,
-            prescription_drugs.name,
-            prescription_drugs.rxnorm_code,
-            prescription_drugs.dosage,
-            prescription_drugs.device_created_at,
-            prescription_drugs.device_updated_at,
-            prescription_drugs.created_at,
-            prescription_drugs.updated_at,
-            prescription_drugs.patient_id,
-            prescription_drugs.facility_id,
-            prescription_drugs.is_protocol_drug,
-            prescription_drugs.is_deleted,
-            prescription_drugs.deleted_at,
-            prescription_drugs.user_id,
-            prescription_drugs.frequency,
-            prescription_drugs.duration_in_days,
-            prescription_drugs.teleconsultation_id,
-            rank() OVER (PARTITION BY bp.id ORDER BY prescription_drugs.is_protocol_drug DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS rank
+            array_agg(ARRAY[prescription_drugs.name, prescription_drugs.dosage] ORDER BY prescription_drugs.is_protocol_drug DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS blood_pressure_drugs,
+            array_agg((((prescription_drugs.name)::text || '-'::text) || (prescription_drugs.dosage)::text) ORDER BY prescription_drugs.is_protocol_drug DESC, prescription_drugs.name, prescription_drugs.device_created_at DESC) AS drug_strings
            FROM (public.blood_pressures bp
-             LEFT JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (date(prescription_drugs.device_created_at) <= date(bp.recorded_at)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))))))
+             JOIN public.prescription_drugs ON (((prescription_drugs.patient_id = bp.patient_id) AND (date(prescription_drugs.device_created_at) <= date(bp.recorded_at)) AND ((prescription_drugs.is_deleted IS FALSE) OR ((prescription_drugs.is_deleted IS TRUE) AND (date(prescription_drugs.device_updated_at) > date(bp.recorded_at)))))))
           WHERE ((bp.deleted_at IS NULL) AND (prescription_drugs.deleted_at IS NULL))
-        ), other_medications AS (
-         SELECT ranked_prescription_drugs.bp_id,
-            string_agg((((ranked_prescription_drugs.name)::text || '-'::text) || (ranked_prescription_drugs.dosage)::text), ', '::text) FILTER (WHERE (ranked_prescription_drugs.rank > 5)) AS other_prescription_drugs,
-            string_agg((((ranked_prescription_drugs.name)::text || '-'::text) || (ranked_prescription_drugs.dosage)::text), ', '::text ORDER BY ranked_prescription_drugs.rank) AS all_prescription_drugs
-           FROM ranked_prescription_drugs
-          GROUP BY ranked_prescription_drugs.bp_id
+          GROUP BY bp.id
+        ), blood_pressure_follow_up AS (
+         SELECT DISTINCT ON (bp.patient_id, (date(bp.recorded_at))) bp.id AS bp_id,
+            appointments.id,
+            appointments.patient_id,
+            appointments.facility_id,
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id
+           FROM (public.blood_pressures bp
+             JOIN public.appointments ON (((appointments.patient_id = bp.patient_id) AND (date(appointments.device_created_at) = date(bp.recorded_at)))))
+          ORDER BY bp.patient_id, (date(bp.recorded_at)), appointments.device_created_at DESC
+        ), blood_sugar_follow_up AS (
+         SELECT DISTINCT ON (bs.patient_id, (date(bs.recorded_at))) bs.id AS bs_id,
+            appointments.id,
+            appointments.patient_id,
+            appointments.facility_id,
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id
+           FROM (public.blood_sugars bs
+             JOIN public.appointments ON (((appointments.patient_id = bs.patient_id) AND (date(appointments.device_created_at) = date(bs.recorded_at)))))
+          ORDER BY bs.patient_id, (date(bs.recorded_at)), appointments.device_created_at DESC
         ), ranked_blood_pressures AS (
-         SELECT DISTINCT ON (bp.patient_id, (rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC))) bp.id,
+         SELECT bp.id,
             bp.patient_id,
             bp.recorded_at,
             bp.systolic,
@@ -1130,47 +1151,26 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             follow_up_facility.name AS follow_up_facility_name,
             a.scheduled_date AS follow_up_date,
             (GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - date_trunc('day'::text, a.device_created_at)))))::integer AS follow_up_days,
-            pd_1.name AS prescription_drug_1_name,
-            pd_1.dosage AS prescription_drug_1_dosage,
-            pd_2.name AS prescription_drug_2_name,
-            pd_2.dosage AS prescription_drug_2_dosage,
-            pd_3.name AS prescription_drug_3_name,
-            pd_3.dosage AS prescription_drug_3_dosage,
-            pd_4.name AS prescription_drug_4_name,
-            pd_4.dosage AS prescription_drug_4_dosage,
-            pd_5.name AS prescription_drug_5_name,
-            pd_5.dosage AS prescription_drug_5_dosage,
-            other_medications.other_prescription_drugs,
-            other_medications.all_prescription_drugs,
-            rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC) AS rank
-           FROM (((((((((public.blood_pressures bp
+            bp_drugs.blood_pressure_drugs[1][1] AS prescription_drug_1_name,
+            bp_drugs.blood_pressure_drugs[1][2] AS prescription_drug_1_dosage,
+            bp_drugs.blood_pressure_drugs[2][1] AS prescription_drug_2_name,
+            bp_drugs.blood_pressure_drugs[2][2] AS prescription_drug_2_dosage,
+            bp_drugs.blood_pressure_drugs[3][1] AS prescription_drug_3_name,
+            bp_drugs.blood_pressure_drugs[3][2] AS prescription_drug_3_dosage,
+            bp_drugs.blood_pressure_drugs[4][1] AS prescription_drug_4_name,
+            bp_drugs.blood_pressure_drugs[4][2] AS prescription_drug_4_dosage,
+            bp_drugs.blood_pressure_drugs[5][1] AS prescription_drug_5_name,
+            bp_drugs.blood_pressure_drugs[5][2] AS prescription_drug_5_dosage,
+            ( SELECT string_agg(value.value, ', '::text) AS string_agg
+                   FROM unnest(bp_drugs.drug_strings[6:]) value(value)) AS other_prescription_drugs,
+            ( SELECT string_agg(value.value, ', '::text) AS string_agg
+                   FROM unnest(bp_drugs.drug_strings) value(value)) AS all_prescription_drugs,
+            rank() OVER (PARTITION BY bp.patient_id ORDER BY bp.recorded_at DESC, bp.id) AS rank
+           FROM ((((public.blood_pressures bp
              LEFT JOIN public.facilities f ON ((bp.facility_id = f.id)))
-             LEFT JOIN LATERAL ( SELECT DISTINCT ON (appointments.patient_id) appointments.id,
-                    appointments.patient_id,
-                    appointments.facility_id,
-                    appointments.scheduled_date,
-                    appointments.status,
-                    appointments.cancel_reason,
-                    appointments.device_created_at,
-                    appointments.device_updated_at,
-                    appointments.created_at,
-                    appointments.updated_at,
-                    appointments.remind_on,
-                    appointments.agreed_to_visit,
-                    appointments.deleted_at,
-                    appointments.appointment_type,
-                    appointments.user_id,
-                    appointments.creation_facility_id
-                   FROM public.appointments
-                  WHERE (date_trunc('day'::text, appointments.device_created_at) = date_trunc('day'::text, bp.recorded_at))
-                  ORDER BY appointments.patient_id, appointments.device_created_at DESC) a ON ((a.patient_id = bp.patient_id)))
+             LEFT JOIN ranked_prescription_drugs bp_drugs ON ((bp.id = bp_drugs.bp_id)))
+             LEFT JOIN blood_pressure_follow_up a ON ((a.bp_id = bp.id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
-             LEFT JOIN ranked_prescription_drugs pd_1 ON (((bp.id = pd_1.bp_id) AND (pd_1.rank = 1))))
-             LEFT JOIN ranked_prescription_drugs pd_2 ON (((bp.id = pd_2.bp_id) AND (pd_2.rank = 2))))
-             LEFT JOIN ranked_prescription_drugs pd_3 ON (((bp.id = pd_3.bp_id) AND (pd_3.rank = 3))))
-             LEFT JOIN ranked_prescription_drugs pd_4 ON (((bp.id = pd_4.bp_id) AND (pd_4.rank = 4))))
-             LEFT JOIN ranked_prescription_drugs pd_5 ON (((bp.id = pd_5.bp_id) AND (pd_5.rank = 5))))
-             LEFT JOIN other_medications ON ((bp.id = other_medications.bp_id)))
           WHERE ((bp.deleted_at IS NULL) AND (a.deleted_at IS NULL))
         ), latest_blood_pressures AS (
          SELECT latest_blood_pressure_1.patient_id,
@@ -1264,7 +1264,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             rank() OVER (PARTITION BY bs.patient_id ORDER BY bs.recorded_at DESC) AS rank
            FROM (((public.blood_sugars bs
              LEFT JOIN public.facilities f ON ((bs.facility_id = f.id)))
-             LEFT JOIN public.appointments a ON (((a.patient_id = bs.patient_id) AND (date_trunc('day'::text, a.device_created_at) = date_trunc('day'::text, bs.recorded_at)))))
+             LEFT JOIN blood_sugar_follow_up a ON ((a.bs_id = bs.id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
           WHERE ((bs.deleted_at IS NULL) AND (a.deleted_at IS NULL))
         ), latest_blood_sugars AS (
