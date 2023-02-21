@@ -1,4 +1,4 @@
-version: "3"
+version: "3.4"
 
 services:
   postgres:
@@ -23,8 +23,13 @@ services:
       context: ../
       dockerfile: .docker/dev.Dockerfile
     volumes:
-      - .:/myapp
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rake db:setup; bundle exec rails s -p 3000 -b '0.0.0.0'"
+      - ../:/opt/app
+    command: bash -c "rm -f tmp/pids/server.pid && \
+      bundle install && \
+      yarn install && \
+      bundle exec rake tmp:clear && \
+      bundle exec rake db:setup && \
+      bundle exec rails s -p 3000 -b '0.0.0.0'"
     expose:
       - "3000"
     ports:
@@ -33,7 +38,24 @@ services:
       - redis
       - postgres
     env_file:
-     - ../.env.docker
+      - ../.env.development
+      - ../.env.docker
+
+  worker:
+    build:
+      context: ../
+      dockerfile: .docker/dev.Dockerfile
+    volumes:
+      - ../:/opt/app
+    command: bash -c "bundle install && \
+      bundle exec sidekiq -C config/sidekiq.yml"
+    depends_on:
+      - server
+      - redis
+      - postgres
+    env_file:
+      - ../.env.development
+      - ../.env.docker
 
 volumes:
   postgresqldata:

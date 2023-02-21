@@ -1,7 +1,6 @@
 # Dockerfile development version
 FROM ruby:2.7.4
 
-ENV BUNDLE_VERSION 2.3.22
 ENV EDITOR vim
 
 ## Install dependencies
@@ -26,6 +25,6 @@ WORKDIR $INSTALL_PATH
 COPY . .
 
 # Install gems
-RUN gem install bundler -v $BUNDLE_VERSION
+RUN gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
 RUN bundle install
 RUN yarn install

@@ -66,8 +66,8 @@ brew install docker-compose
 ```
 
 ##### Setup
-```
-bin/docker-up
+```bash
+bin/docker-up # rerun this command to restart/install new dependencies
 ```
 
 After a successful docker-compose initialisation, an admin dashboard account is automatically created.
@@ -80,9 +80,33 @@ Open http://localhost:3000 in your browser to view the simple dashboard
 
 Use below Ngrok [guide](#developing-with-the-android-app) for Android development setup
 
-##### Teardown (delete docker containers and volumes)
+Open rails console
+```bash
+bin/docker-rails-console
 ```
-bin/docker-down
+
+Open pg console
+```bash
+bin/docker-pg-console
+```
+
+Open server console, this is useful for running rake tasks
+```bash
+bin/docker-server-console
+```
+
+Logs can be viewed using
+```bash
+bin/docker-logs
+```
+
+##### Teardown (delete docker containers and volumes)
+```bash
+bin/docker-down # deletes only containers
+```
+
+```bash
+bin/docker-destroy # deletes all containers and volumes
 ```
 
 #### Manual Setup
