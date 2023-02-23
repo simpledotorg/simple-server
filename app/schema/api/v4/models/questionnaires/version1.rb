@@ -2,14 +2,15 @@ class Api::V4::Models::Questionnaires::Version1
   class << self
     def definitions
       {
-        questionnaire_group_dsl_1: group,
+        questionnaire_view_group_dsl_1: view_group,
+        questionnaire_input_view_group_dsl_1: input_view_group,
         questionnaire_display_dsl_1: display,
         questionnaire_line_break_dsl_1: line_break,
         questionnaire_integer_input_dsl_1: integer_input
       }
     end
 
-    def group
+    def view_group
       {
         type: :object,
         example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout,
@@ -17,26 +18,38 @@ class Api::V4::Models::Questionnaires::Version1
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},
           view_type: {type: :string, enum: %w[view_group]},
-          display_properties: {
-            type: :object,
-            properties: {
-              orientation: {type: :string, enum: %w[horizontal vertical]}
-            },
-            required: %w[orientation]
-          },
           item: {
             type: :array,
             items: {
               oneOf: [
-                {"$ref" => "#/definitions/questionnaire_group_dsl_1"},
+                {"$ref" => "#/definitions/questionnaire_input_view_group_dsl_1"},
                 {"$ref" => "#/definitions/questionnaire_display_dsl_1"},
-                {"$ref" => "#/definitions/questionnaire_line_break_dsl_1"},
+                {"$ref" => "#/definitions/questionnaire_line_break_dsl_1"}
+              ]
+            }
+          }
+        },
+        required: %w[type id view_type item]
+      }
+    end
+
+    def input_view_group
+      {
+        type: :object,
+        properties: {
+          type: {type: :string, enum: %w[group]},
+          id: {"$ref" => "#/definitions/uuid"},
+          view_type: {type: :string, enum: %w[input_view_group]},
+          item: {
+            type: :array,
+            items: {
+              oneOf: [
                 {"$ref" => "#/definitions/questionnaire_integer_input_dsl_1"}
               ]
             }
           }
         },
-        required: %w[type id view_type display_properties item]
+        required: %w[type id view_type item]
       }
     end
 

@@ -2744,7 +2744,7 @@
         "layout": {
           "oneOf": [
             {
-              "$ref": "#/definitions/questionnaire_group_dsl_1"
+              "$ref": "#/definitions/questionnaire_view_group_dsl_1"
             }
           ]
         },
@@ -2821,15 +2821,12 @@
         "$ref": "#/definitions/questionnaire_response"
       }
     },
-    "questionnaire_group_dsl_1": {
+    "questionnaire_view_group_dsl_1": {
       "type": "object",
       "example": {
         "type": "group",
         "id": "2e8ce537-616c-4c4c-a651-ad065d05f220",
         "view_type": "view_group",
-        "display_properties": {
-          "orientation": "vertical"
-        },
         "item": [
           {
             "type": "display",
@@ -2838,15 +2835,22 @@
             "view_type": "sub_header"
           },
           {
-            "type": "integer",
-            "id": "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
-            "link_id": "monthly_screening_reports.outpatient_department_visits",
-            "text": "Outpatient department visits",
-            "view_type": "input_field",
-            "validations": {
-              "min": 0,
-              "max": 1000000
-            }
+            "id": "964f8d0f-ecaf-4b9e-87e8-62614ff5c7db",
+            "type": "group",
+            "view_type": "input_view_group",
+            "item": [
+              {
+                "type": "integer",
+                "id": "3bda5cb0-de8e-463e-9d7c-54a7215e4077",
+                "link_id": "monthly_screening_reports.outpatient_department_visits",
+                "text": "Outpatient department visits",
+                "view_type": "input_field",
+                "validations": {
+                  "min": 0,
+                  "max": 1000000
+                }
+              }
+            ]
           },
           {
             "type": "display",
@@ -2868,10 +2872,7 @@
           {
             "type": "group",
             "id": "b39903c9-04e2-4fd8-9218-6ff5e5cf6466",
-            "view_type": "view_group",
-            "display_properties": {
-              "orientation": "horizontal"
-            },
+            "view_type": "input_view_group",
             "item": [
               {
                 "type": "integer",
@@ -2925,34 +2926,52 @@
             "view_group"
           ]
         },
-        "display_properties": {
-          "type": "object",
-          "properties": {
-            "orientation": {
-              "type": "string",
-              "enum": [
-                "horizontal",
-                "vertical"
-              ]
-            }
-          },
-          "required": [
-            "orientation"
-          ]
-        },
         "item": {
           "type": "array",
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_group_dsl_1"
+                "$ref": "#/definitions/questionnaire_input_view_group_dsl_1"
               },
               {
                 "$ref": "#/definitions/questionnaire_display_dsl_1"
               },
               {
                 "$ref": "#/definitions/questionnaire_line_break_dsl_1"
-              },
+              }
+            ]
+          }
+        }
+      },
+      "required": [
+        "type",
+        "id",
+        "view_type",
+        "item"
+      ]
+    },
+    "questionnaire_input_view_group_dsl_1": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": [
+            "group"
+          ]
+        },
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "view_type": {
+          "type": "string",
+          "enum": [
+            "input_view_group"
+          ]
+        },
+        "item": {
+          "type": "array",
+          "items": {
+            "oneOf": [
               {
                 "$ref": "#/definitions/questionnaire_integer_input_dsl_1"
               }
@@ -2964,7 +2983,6 @@
         "type",
         "id",
         "view_type",
-        "display_properties",
         "item"
       ]
     },
