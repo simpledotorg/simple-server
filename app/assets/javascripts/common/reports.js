@@ -1054,7 +1054,6 @@ function baseLineGraphConfig() {
     options: {
       animation: false,
       clip: false,
-      responsive: true,
       maintainAspectRatio: false,
       layout: {
         padding: {
@@ -1094,10 +1093,8 @@ function baseLineGraphConfig() {
       scales: {
         x: {
           stacked: false,
-          display: true,
           grid: {
             display: false,
-            drawBorder: true,
           },
           ticks: {
             autoSkip: false,
@@ -1112,10 +1109,8 @@ function baseLineGraphConfig() {
         },
         y: {
           stacked: false,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
+          border: {
+            display: false,
           },
           ticks: {
             autoSkip: false,
@@ -1143,7 +1138,6 @@ function baseBarChartConfig() {
     type: "bar",
     options: {
       animation: false,
-      responsive: true,
       maintainAspectRatio: false,
       layout: {
         padding: {
@@ -1168,10 +1162,11 @@ function baseBarChartConfig() {
       scales: {
         x: {
           stacked: true,
-          display: true,
+          border: {
+            display: false,
+          },
           grid: {
             display: false,
-            drawBorder: false,
           },
           ticks: {
             autoSkip: false,
@@ -1187,9 +1182,11 @@ function baseBarChartConfig() {
         y: {
           stacked: true,
           display: false,
+          border: {
+            display: false,
+          },
           grid: {
             display: false,
-            drawBorder: false,
           },
           ticks: {
             autoSkip: false,
