@@ -1261,7 +1261,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             follow_up_facility.name AS follow_up_facility_name,
             a.scheduled_date AS follow_up_date,
             (GREATEST((0)::double precision, date_part('day'::text, ((a.scheduled_date)::timestamp without time zone - date_trunc('day'::text, a.device_created_at)))))::integer AS follow_up_days,
-            rank() OVER (PARTITION BY bs.patient_id ORDER BY bs.recorded_at DESC) AS rank
+            rank() OVER (PARTITION BY bs.patient_id ORDER BY bs.recorded_at DESC, bs.id) AS rank
            FROM (((public.blood_sugars bs
              LEFT JOIN public.facilities f ON ((bs.facility_id = f.id)))
              LEFT JOIN blood_sugar_follow_up a ON ((a.bs_id = bs.id)))
@@ -1333,7 +1333,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
           WHERE (appointments.deleted_at IS NULL)
           ORDER BY appointments.patient_id, appointments.device_created_at DESC
         )
- SELECT p.id,
+ SELECT DISTINCT ON (p.id) p.id,
     p.recorded_at,
     p.full_name,
     latest_bp_passport.id AS latest_bp_passport_id,
@@ -5830,13 +5830,6 @@ CREATE INDEX index_facilities_on_facility_group_id ON public.facilities USING bt
 
 
 --
--- Name: index_facilities_on_slug; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_facilities_on_slug ON public.facilities USING btree (slug);
-
-
---
 -- Name: index_facilities_on_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5883,13 +5876,6 @@ CREATE INDEX index_facility_groups_on_organization_id ON public.facility_groups 
 --
 
 CREATE INDEX index_facility_groups_on_protocol_id ON public.facility_groups USING btree (protocol_id);
-
-
---
--- Name: index_facility_groups_on_slug; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_facility_groups_on_slug ON public.facility_groups USING btree (slug);
 
 
 --
@@ -5995,13 +5981,6 @@ CREATE INDEX index_latest_bp_per_patient_per_months_patient_id ON public.latest_
 --
 
 CREATE INDEX index_latest_bp_per_patient_per_quarters_patient_id ON public.latest_blood_pressures_per_patient_per_quarters USING btree (patient_id);
-
-
---
--- Name: index_materialized_patient_summaries_on_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX index_materialized_patient_summaries_on_id ON public.materialized_patient_summaries USING btree (id);
 
 
 --
@@ -6478,6 +6457,13 @@ CREATE INDEX index_users_on_organization_id ON public.users USING btree (organiz
 --
 
 CREATE INDEX index_users_on_teleconsultation_phone_number ON public.users USING btree (teleconsultation_phone_number);
+
+
+--
+-- Name: materialized_patient_summary_unique_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX materialized_patient_summary_unique_patient_id ON public.materialized_patient_summaries USING btree (id);
 
 
 --

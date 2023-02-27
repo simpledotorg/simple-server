@@ -231,7 +231,7 @@ with latest_bp_passport as (
     order by patient_id, device_created_at desc
 )
 
-select
+select distinct  on (p.id)
     p.id,
     p.recorded_at,
     p.full_name as full_name,
