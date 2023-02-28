@@ -342,7 +342,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
 
-        expect(subject.csv(Patient.all, display_blood_sugars: 3).to_s.strip).to eq((timestamp.to_csv + measurement_headers.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
+        expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + measurement_headers.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
       end
     end
 
@@ -359,6 +359,14 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
 
       expect(subject.csv_headers).not_to include("Patient #{Address.human_attribute_name :zone}")
       expect(subject.csv_fields(MaterializedPatientSummary.find_by(id: patient))).not_to include(patient.address.zone)
+    end
+
+    it "handles cases when patients do not have enough blood sugar and blood pressures records" do
+      create(:patient, assigned_facility: facility, registration_facility: registration_facility)
+      MaterializedPatientSummary.refresh
+      Timecop.freeze do
+        expect { subject.csv(Patient.all) }.not_to raise_error
+      end
     end
   end
 end
