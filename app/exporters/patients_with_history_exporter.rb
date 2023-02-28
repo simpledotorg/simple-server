@@ -214,7 +214,7 @@ class PatientsWithHistoryExporter
       patient_summary.public_send("latest_blood_pressure_#{i}_district"),
       patient_summary.public_send("latest_blood_pressure_#{i}_state"),
       patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_facility_name"),
-      I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_date")),
+      patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_date") ? I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_date")) : nil,
       patient_summary.public_send("latest_blood_pressure_#{i}_follow_up_days"),
       patient_summary.public_send("latest_blood_pressure_#{i}_medication_updated") ? "Yes" : "No",
       patient_summary.public_send("latest_blood_pressure_#{i}_prescription_drug_1_name"),
@@ -244,7 +244,7 @@ class PatientsWithHistoryExporter
       patient_summary.public_send("latest_blood_sugar_#{i}_district"),
       patient_summary.public_send("latest_blood_sugar_#{i}_state"),
       patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_facility_name"),
-      I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_date")),
+      patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_date") ? I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_date")) : nil,
       patient_summary.public_send("latest_blood_sugar_#{i}_follow_up_days")]
   end
 
