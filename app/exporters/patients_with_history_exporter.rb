@@ -201,8 +201,12 @@ class PatientsWithHistoryExporter
   end
 
   def blood_pressure_fields(patient_summary, i)
-    [I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at")&.to_date),
-      quarter_string(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at")&.to_date),
+    unless patient_summary.public_send("latest_blood_pressure_#{i}_id").present?
+      return Array.new(23)
+    end
+
+    [I18n.l(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.public_send("latest_blood_pressure_#{i}_recorded_at").to_date),
       patient_summary.public_send("latest_blood_pressure_#{i}_systolic"),
       patient_summary.public_send("latest_blood_pressure_#{i}_diastolic"),
       patient_summary.public_send("latest_blood_pressure_#{i}_facility_name"),
@@ -227,8 +231,12 @@ class PatientsWithHistoryExporter
   end
 
   def blood_sugar_fields(patient_summary, i)
-    [I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at")&.to_date),
-      quarter_string(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at")&.to_date),
+    unless patient_summary.public_send("latest_blood_sugar_#{i}_id").present?
+      return Array.new(11)
+    end
+
+    [I18n.l(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at").to_date),
+      quarter_string(patient_summary.public_send("latest_blood_sugar_#{i}_recorded_at").to_date),
       patient_summary.public_send("latest_blood_sugar_#{i}_blood_sugar_type"),
       patient_summary.public_send("latest_blood_sugar_#{i}_blood_sugar_value"),
       patient_summary.public_send("latest_blood_sugar_#{i}_facility_name"),
