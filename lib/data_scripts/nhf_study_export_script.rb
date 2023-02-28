@@ -15,7 +15,7 @@ class NhfStudyExportScript < DataScript
   def call
     patients = Patient.where("full_name ILIKE ? OR full_name ILIKE ?", "%XYZ%", "%XYX%")
 
-    csv = PatientsWithHistoryExporter.csv(patients, display_blood_pressures: 12)
+    csv = PatientsWithHistoryExporter.csv(patients)
 
     File.write(File.join(Rails.root, "nhf_study_line_list.csv"), csv)
   end
