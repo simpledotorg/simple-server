@@ -1,0 +1,37 @@
+filters:
+  - filter_type: file
+    # all supported i18n types: https://docs.transifex.com/formats
+    file_format: YML
+    source_language: en
+    source_file: config/locales/api/en.yml
+    # path expression to translation files, must contain <lang> placeholder
+    translation_files_expression: 'config/locales/api/<lang>.yml'
+  - filter_type: file
+    # all supported i18n types: https://docs.transifex.com/formats
+    file_format: YML
+    source_language: en
+    source_file: config/locales/notifications/en.yml
+    # path expression to translation files, must contain <lang> placeholder
+    translation_files_expression: 'config/locales/notifications/<lang>.yml'
+  - filter_type: file
+    # all supported i18n types: https://docs.transifex.com/formats
+    file_format: HTML
+    source_language: en
+    source_file: config/locales/api/help/en.html
+    # path expression to translation files, must contain <lang> placeholder
+    translation_files_expression: 'config/locales/api/help/<lang>.html'
+  - filter_type: file
+    # all supported i18n types: https://docs.transifex.com/formats
+    file_format: YML
+    source_language: en
+    source_file: config/locales/api/v3/help/en.yml
+    # path expression to translation files, must contain <lang> placeholder
+    translation_files_expression: 'config/locales/api/v3/help/<lang>.yml'
+settings:
+  language_mapping:
+    pa: pa_Guru_IN
+    mr: mr_IN
+    om: om_ET
+    ti: ti_ET
+    so: so_ET
+    sid: sid_ET
