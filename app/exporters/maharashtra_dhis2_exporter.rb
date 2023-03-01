@@ -11,7 +11,7 @@ class MaharashtraDHIS2Exporter
     exporter = Dhis2Exporter.new(
       facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
       periods: periods,
-      data_elements_map: CountryConfig.current.fetch(:dhis2_data_elements)
+      data_elements_map: CountryConfig.current.fetch(:maharashtra_dhis2_data_elements)
     )
 
     exporter.export do |facility_identifier, period|
@@ -25,7 +25,7 @@ class MaharashtraDHIS2Exporter
     end
   end
 
-  def current_month_period
+  def self.current_month_period
     @current_month_period ||= Period.current.previous
   end
 end
