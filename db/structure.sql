@@ -5830,6 +5830,13 @@ CREATE INDEX index_facilities_on_facility_group_id ON public.facilities USING bt
 
 
 --
+-- Name: index_facilities_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_facilities_on_slug ON public.facilities USING btree (slug);
+
+
+--
 -- Name: index_facilities_on_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -5876,6 +5883,13 @@ CREATE INDEX index_facility_groups_on_organization_id ON public.facility_groups 
 --
 
 CREATE INDEX index_facility_groups_on_protocol_id ON public.facility_groups USING btree (protocol_id);
+
+
+--
+-- Name: index_facility_groups_on_slug; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_facility_groups_on_slug ON public.facility_groups USING btree (slug);
 
 
 --
