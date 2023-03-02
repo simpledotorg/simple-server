@@ -44,6 +44,12 @@ class CountryConfig
         cumulative_registrations: "bdMBWIf2i1h",
         monthly_registrations: "tI9g0mtCzOv"
       },
+      disaggregated_dhis2_data_elements: {
+        cumulative_assigned: "",
+        controlled: "",
+        uncontrolled: "",
+        missed_visits: "",
+      },
       enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::AlphaSms::Sms"
     },
