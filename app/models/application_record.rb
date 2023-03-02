@@ -15,8 +15,4 @@ class ApplicationRecord < ActiveRecord::Base
   def readonly?
     RequestStore[:readonly] || @readonly
   end
-
-  def errors_hash
-    errors.to_hash.merge(id: id)
-  end
 end

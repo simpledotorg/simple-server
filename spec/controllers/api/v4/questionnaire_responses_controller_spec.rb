@@ -279,6 +279,18 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
                          .with_int_timestamps)
         end
       end
+
+      it "returns errors for records failing model-level validations" do
+        record = build_payload.call.merge(questionnaire_id: SecureRandom.uuid)
+        invalid_payload = {request_key => [record]}
+        post(:sync_from_user, params: invalid_payload, as: :json)
+
+        response_errors = JSON(response.body)["errors"].first
+
+        expect(response_errors).to be_present
+        expect(response_errors["id"]).to eq(record["id"])
+        expect(response_errors["questionnaire"]).to eq(["must exist"])
+      end
     end
   end
 end
