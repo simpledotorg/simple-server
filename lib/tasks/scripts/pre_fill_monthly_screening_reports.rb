@@ -3,19 +3,19 @@ class PreFillMonthlyScreeningReports
     return unless Flipper.enabled?(:monthly_screening_reports)
 
     month_date = date.beginning_of_month
-    month_date_str = month_date.strftime("%Y-%m-%d")
+    month_date = month_date.strftime("%Y-%m-%d")
     facility_reports = monthly_followup_and_registration(month_date)
 
     reports_exist = false
     questionnaire = Questionnaire.monthly_screening_reports.active.order(:dsl_version).last
     facility_reports.each do |facility_report|
-      if monthly_screening_report_exists?(facility_report.facility_id, month_date_str)
+      if monthly_screening_report_exists?(facility_report.facility_id, month_date)
         reports_exist = true
       else
         QuestionnaireResponse.create!(
           questionnaire_id: questionnaire.id,
           facility_id: facility_report.facility_id,
-          content: prefilled_responses(month_date_str, facility_report),
+          content: prefilled_responses(month_date, facility_report),
           device_created_at: Time.now,
           device_updated_at: Time.now
         )
@@ -23,7 +23,7 @@ class PreFillMonthlyScreeningReports
     end
 
     if reports_exist
-      Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_date_str)
+      Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_date)
     end
   end
 
