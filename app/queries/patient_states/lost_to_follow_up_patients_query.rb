@@ -1,4 +1,4 @@
-class PatientStates::ControlledPatientsQuery
+class PatientStates::LostToFollowUpPatientsQuery
   attr_reader :region, :period
 
   def initialize(region, period)
@@ -9,7 +9,6 @@ class PatientStates::ControlledPatientsQuery
   def call
     PatientStates::CumulativeAssignedPatientsQuery.new(region, period)
       .call
-      .where("months_since_registration >= ?", 3)
-      .where(htn_care_state: "under_care", htn_treatment_outcome_in_last_3_months: "controlled")
+      .where(htn_care_state: "lost_to_follow_up")
   end
 end

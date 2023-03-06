@@ -48,7 +48,11 @@ class CountryConfig
         cumulative_assigned: "",
         controlled: "",
         uncontrolled: "",
-        missed_visits: ""
+        missed_visits: "",
+        lost_to_follow_up: "",
+        dead: "",
+        cumulative_registrations: "",
+        monthly_registrations: ""
       },
       enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::AlphaSms::Sms"

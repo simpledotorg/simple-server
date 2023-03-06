@@ -1,4 +1,4 @@
-class PatientStates::CumulativeAssignedPatientsQuery
+class PatientStates::MonthlyRegistrationsQuery
   attr_reader :region, :period
 
   def initialize(region, period)
@@ -12,11 +12,6 @@ class PatientStates::CumulativeAssignedPatientsQuery
         assigned_facility_id: region.facility_ids,
         month_date: period
       )
-      .where(hypertension: "yes")
-      .where.not(htn_care_state: "dead")
-  end
-
-  def excluding_recent_registrations
-    call.where("months_since_registration >= ?", 3)
+      .where("months_since_registration == ?", 0)
   end
 end
