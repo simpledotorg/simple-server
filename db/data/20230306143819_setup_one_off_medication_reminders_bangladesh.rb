@@ -18,8 +18,8 @@ class SetupOneOffMedicationRemindersBangladesh < ActiveRecord::Migration[6.1]
           patient_id: patient.id,
           remind_on: Date.current + batch_number.days + 1,
           status: "scheduled",
-          message: "notifications.one_off_medication_reminder",
-          purpose: "one_off_medication_reminder"
+          message: "notifications.one_off_medications_reminder",
+          purpose: "one_off_medications_reminder"
         )
       end
     end
@@ -27,7 +27,7 @@ class SetupOneOffMedicationRemindersBangladesh < ActiveRecord::Migration[6.1]
 
   def down
     Notification
-      .where(purpose: :one_off_medication_reminder)
+      .where(purpose: :one_off_medications_reminder)
       .status_scheduled
       .discard_all
   end
