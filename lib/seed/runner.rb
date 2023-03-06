@@ -55,6 +55,12 @@ module Seed
       total_counts.merge!(hsh)
 
       print_summary
+
+      ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
+      RefreshReportingViews.call
+      puts "Reporting views have been refreshed"
+      QuestionnaireSeeder.call
+
       [counts, total_counts]
     end
 
@@ -72,6 +78,7 @@ module Seed
       [
         :dashboard_progress_reports,
         :drug_stocks,
+        :monthly_screening_reports,
         :follow_ups_v2_progress_tab,
         :notifications,
         (:auto_approve_users if SimpleServer.env.android_review?),
