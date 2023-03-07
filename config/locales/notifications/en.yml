@@ -1,5 +1,6 @@
 en:
   notifications:
+    one_off_medications_reminder: "{%patient_name%}, BP medications are available at Upazila. Please come pick it up."
     set01:
       basic: "%{patient_name}, please visit %{facility_name} on %{appointment_date} for a BP measure and medicines."
       gratitude: "Thank you for taking regular medicines for High BP. %{patient_name}, please visit %{facility_name} on %{appointment_date} for a BP measure and medicines."
