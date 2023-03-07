@@ -6,8 +6,9 @@ RSpec.describe SetupOneOffMedicationRemindersBangladesh do
     allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return true
     stub_const("SIMPLE_SERVER_ENV", "production")
     stub_const("SetupOneOffMedicationRemindersBangladesh::PATIENTS_PER_DAY", 2)
-    create_list(:patient, 5)
-    create_list(:patient, 2, facility_id: "2e7a4917-be56-4d2e-aee6-4c9738ab8a9b")
+    create_list(:patient, 5, :with_overdue_appointments)
+    excluded_facility = create(:facility, id: SetupOneOffMedicationRemindersBangladesh::EXCLUDED_FACILITIES.first)
+    _excluded_patients = create_list(:patient, 2, registration_facility_id: excluded_facility)
 
     described_class.new.up
 

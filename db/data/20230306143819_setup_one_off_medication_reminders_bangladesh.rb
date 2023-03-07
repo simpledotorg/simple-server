@@ -16,6 +16,8 @@ class SetupOneOffMedicationRemindersBangladesh < ActiveRecord::Migration[6.1]
         .merge(Patient.contactable)
         .where("current_age >= ?", 18)
         .where("days_overdue < ?", 365)
+        .where(next_appointment_status: :scheduled)
+        .where("next_appointment_scheduled_date < ?", Date.today)
         .where.not(assigned_facility_id: EXCLUDED_FACILITIES)
 
     patients.find_in_batches(batch_size: PATIENTS_PER_DAY).with_index do |batch, batch_number|
