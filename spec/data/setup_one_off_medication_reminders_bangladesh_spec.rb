@@ -13,7 +13,7 @@ RSpec.describe SetupOneOffMedicationRemindersBangladesh do
     described_class.new.up
 
     expect(Notification.count).to eq(5)
-    expect(Notification.pluck(:status)).to all eq("scheduled")
+    expect(Notification.pluck(:status)).to all eq("pending")
     expect(Notification.pluck(:message)).to all eq("notifications.one_off_medications_reminder")
     expect(Notification.pluck(:purpose)).to all eq("one_off_medications_reminder")
     expect(Notification.order(:remind_on).pluck(:remind_on)).to eq [
