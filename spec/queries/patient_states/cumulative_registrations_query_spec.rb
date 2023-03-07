@@ -31,9 +31,9 @@ describe PatientStates::CumulativeRegistrationsQuery do
     it 'returns the same number of cumulative registrations as in reporting facility states' do
       refresh_views
 
-      _facility_1_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      _facility_2_new_registrations = create_list(:patient, 3, assigned_facility: regions[:facility_2])
-      _facility_2_old_registration = create(:patient, assigned_facility: regions[:facility_2], device_created_at: 2.months.ago)
+      _facility_1_new_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])
+      _facility_2_new_registrations = create_list(:patient, 3, registration_facility: regions[:facility_2])
+      _facility_2_old_registration = create(:patient, registration_facility: regions[:facility_2], device_created_at: 2.months.ago)
 
       refresh_views
 
