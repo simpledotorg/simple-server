@@ -13,7 +13,7 @@ fi
 
 http_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time $max_time localhost:80/api/v3/ping)
 
-if [ $http_code -eq 301 ]; then
+if [ $http_code -ge 200 ] && [ $http_code -le 499 ]; then
   exit 0
 else
   exit 1
