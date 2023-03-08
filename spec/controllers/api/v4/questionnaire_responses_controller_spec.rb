@@ -6,7 +6,12 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { QuestionnaireResponse }
   let(:build_payload) { -> { build_questionnaire_response_payload } }
+
+  let(:update_payload) { ->(questionnaire_response) { updated_questionnaire_response_payload(questionnaire_response) } }
+
   let(:build_invalid_payload) { -> { build_invalid_questionnaire_response_payload } }
+  let(:invalid_record) { build_invalid_payload.call }
+  let(:number_of_schema_errors_in_invalid_payload) { 1 }
 
   before do
     @questionnaire_types = stub_questionnaire_types
@@ -27,6 +32,7 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
 
   it_behaves_like "a sync controller that authenticates user requests"
   it_behaves_like "a sync controller that audits the data access: sync_to_user"
+  it_behaves_like "a working sync controller creating records"
 
   describe "a sync controller that audits the data access: sync_from_user" do
     include ActiveJob::TestHelper
@@ -125,7 +131,7 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
       expect(response_2_body["questionnaire_responses"].pluck("id")).to match_array questionnaire_responses.pluck(:id)
     end
 
-    describe "a working V3 sync controller sending records" do
+    describe "a working V4 sync controller sending records" do
       before :each do
         Timecop.travel(15.minutes.ago) do
           create_record_list(5)
@@ -229,6 +235,61 @@ RSpec.describe Api::V4::QuestionnaireResponsesController, type: :controller do
 
         expect(response_body[response_key].map { |record| record["id"] })
           .to include(discarded_record.id)
+      end
+    end
+  end
+
+  describe "a working sync controller updating records" do
+    let(:request_key) { model.to_s.underscore.pluralize }
+    let(:existing_records) { create_record_list(10) }
+    let(:updated_records) { existing_records.map(&update_payload) }
+    let(:updated_payload) { {request_key => updated_records} }
+
+    before :each do
+      set_authentication_headers
+    end
+
+    describe "updates records" do
+      it "with updated record attributes" do
+        post :sync_from_user, params: updated_payload, as: :json
+
+        updated_records.each do |record|
+          db_record = model.find(record["id"])
+          expect(db_record.attributes.to_json_and_back.except("user_id").with_payload_keys.with_int_timestamps)
+            .to eq(record.to_json_and_back.except("user_id", "questionnaire_type").with_int_timestamps)
+        end
+      end
+
+      it "no-ops the discarded records" do
+        existing_records.map(&:discard)
+        post :sync_from_user, params: updated_payload, as: :json
+
+        updated_records.each do |record|
+          db_record = model.with_discarded.find(record["id"])
+
+          expect(db_record).to be_discarded
+          expect(db_record
+                   .attributes
+                   .to_json_and_back
+                   .except("user_id")
+                   .with_payload_keys.with_int_timestamps)
+            .not_to eq(record
+                         .to_json_and_back
+                         .except("user_id")
+                         .with_int_timestamps)
+        end
+      end
+
+      it "returns errors for records failing model-level validations" do
+        record = build_payload.call.merge(questionnaire_id: SecureRandom.uuid)
+        invalid_payload = {request_key => [record]}
+        post(:sync_from_user, params: invalid_payload, as: :json)
+
+        response_errors = JSON(response.body)["errors"].first
+
+        expect(response_errors).to be_present
+        expect(response_errors["id"]).to eq(record["id"])
+        expect(response_errors["questionnaire"]).to eq(["must exist"])
       end
     end
   end

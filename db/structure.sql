@@ -5998,6 +5998,13 @@ CREATE INDEX index_latest_bp_per_patient_per_quarters_patient_id ON public.lates
 
 
 --
+-- Name: index_materialized_patient_summaries_on_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_materialized_patient_summaries_on_id ON public.materialized_patient_summaries USING btree (id);
+
+
+--
 -- Name: index_medical_histories_on_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6471,13 +6478,6 @@ CREATE INDEX index_users_on_organization_id ON public.users USING btree (organiz
 --
 
 CREATE INDEX index_users_on_teleconsultation_phone_number ON public.users USING btree (teleconsultation_phone_number);
-
-
---
--- Name: materialized_patient_summary_unique_patient_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX materialized_patient_summary_unique_patient_id ON public.materialized_patient_summaries USING btree (id);
 
 
 --
