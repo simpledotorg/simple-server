@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::MissedVisitsQuery do
+describe PatientStates::MonthlyRegistrationsQuery do
   before do
     # Do nothing
   end

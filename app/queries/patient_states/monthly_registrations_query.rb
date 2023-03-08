@@ -9,9 +9,9 @@ class PatientStates::MonthlyRegistrationsQuery
   def call
     Reports::PatientState
       .where(
-        assigned_facility_id: region.facility_ids,
+        registration_facility_id: region.facility_ids,
         month_date: period
       )
-      .where("months_since_registration == ?", 0)
+      .where('months_since_registration = ?', 0)
   end
 end

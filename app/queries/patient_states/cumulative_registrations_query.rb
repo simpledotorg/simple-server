@@ -7,7 +7,12 @@ class PatientStates::CumulativeRegistrationsQuery
   end
 
   def call
-    PatientStates::CumulativeAssignedPatientsQuery.new(region, period)
-      .call
+    Reports::PatientState
+      .where(
+        registration_facility_id: region.facility_ids,
+        month_date: period
+      )
+      .where(hypertension: 'yes')
+      .where.not(htn_care_state: 'dead')
   end
 end

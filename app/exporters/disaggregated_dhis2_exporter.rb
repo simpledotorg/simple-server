@@ -13,7 +13,7 @@ class DisaggregatedDhis2Exporter
         cumulative_assigned: disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(region, period)),
         controlled: disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region, period)),
         uncontrolled: disaggregated_counts(PatientStates::UncontrolledPatientsQuery.new(region, period)),
-        missed_visits: disaggregated_counts(PatientStates::MissedVisitsQuery.new(region, period)),
+        missed_visits: disaggregated_counts(PatientStates::MissedVisitsPatientsQuery.new(region, period)),
         lost_to_follow_up: disaggregated_counts(PatientStates::LostToFollowUpPatientsQuery.new(region, period)),
         dead: disaggregated_counts(PatientStates::DeadPatientsQuery.new(region, period)),
         cumulative_registrations: disaggregated_counts(PatientStates::CumulativeRegistrationsQuery.new(region, period)),
