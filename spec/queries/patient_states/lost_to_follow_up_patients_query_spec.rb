@@ -18,7 +18,7 @@ describe PatientStates::LostToFollowUpPatientsQuery do
 
       expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
-        .to match_array([facility_1_lost_to_follow_up_patients].map(&:id))
+        .to match_array(facility_1_lost_to_follow_up_patients[:id])
 
       expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
                                                        .call.map(&:patient_id))

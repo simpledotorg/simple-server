@@ -18,7 +18,7 @@ describe PatientStates::DeadPatientsQuery do
 
       expect(PatientStates::DeadPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
-        .to match_array([facility_1_dead_patients].map(&:id))
+        .to match_array(facility_1_dead_patients[:id])
 
       expect(PatientStates::DeadPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))

@@ -8,8 +8,8 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context "cumulative assigned patients" do
-    it "returns all the assigned patients in a facility as of the given period" do
+  context 'cumulative assigned patients' do
+    it 'returns all the assigned patients in a facility as of the given period' do
       facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_2_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
@@ -27,7 +27,7 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
         .to match_array((facility_1_patients + facility_2_patients).map(&:id))
     end
 
-    it "returns the same number of cumulative patients as in reporting facility states" do
+    it 'returns the same number of cumulative patients as in reporting facility states' do
       _facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       _facility_2_patients = create_list(:patient, 3, assigned_facility: regions[:facility_2])
 
@@ -44,7 +44,7 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
                  .cumulative_assigned_patients)
     end
 
-    it "does not include dead patients" do
+    it 'does not include dead patients' do
       facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: "dead")
       refresh_views
@@ -55,6 +55,33 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
         .map(&:patient_id)
       expect(cumulative_assigned_patient_ids).to match_array(facility_1_patients.map(&:id))
       expect(cumulative_assigned_patient_ids).not_to include(facility_1_dead_patient[:id])
+    end
+  end
+
+  describe '#excluding_recent_registrations' do
+    it 'returns patients registered at least 3 months ago' do
+      facility_1_old_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1], device_created_at: 6.months.ago)
+      facility_1_recent_registrations = create(:patient, registration_facility: regions[:facility_1])
+      facility_2_recent_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])
+
+      refresh_views
+
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+                                                           .excluding_recent_registrations
+                                                           .map(&:patient_id))
+        .to match_array(facility_1_old_registrations.map(&:id))
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+                                                           .excluding_recent_registrations
+                                                           .map(&:patient_id))
+        .not_to include(facility_1_recent_registrations[:id])
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
+                                                           .excluding_recent_registrations
+                                                           .count)
+        .to eq(0)
+      expect(PatientStates::ControlledPatientsQuery.new(regions[:facility_2].region, period)
+                                                   .call
+                                                   .map(&:patient_id))
+        .not_to include(*facility_2_recent_registrations.map(&:id))
     end
   end
 end
