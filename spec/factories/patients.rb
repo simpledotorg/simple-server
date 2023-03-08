@@ -91,6 +91,18 @@ FactoryBot.define do
     trait(:dead) do
       status { "dead" }
     end
+
+    trait(:controlled) do
+      hypertension
+      under_care
+      blood_pressures { build_list(:blood_pressure, 1, :under_control) }
+    end
+
+    trait(:uncontrolled) do
+      hypertension
+      under_care
+      blood_pressures { build_list(:blood_pressure, 1, :hypertensive) }
+    end
   end
 end
 

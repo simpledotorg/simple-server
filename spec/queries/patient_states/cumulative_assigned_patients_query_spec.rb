@@ -46,13 +46,13 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
 
     it "does not include dead patients" do
       facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: 'dead')
+      facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: "dead")
       refresh_views
 
       cumulative_assigned_patient_ids = PatientStates::CumulativeAssignedPatientsQuery
-                                          .new(regions[:facility_1].region, period)
-                                          .call
-                                          .map(&:patient_id)
+        .new(regions[:facility_1].region, period)
+        .call
+        .map(&:patient_id)
       expect(cumulative_assigned_patient_ids).to match_array(facility_1_patients.map(&:id))
       expect(cumulative_assigned_patient_ids).not_to include(facility_1_dead_patient[:id])
     end

@@ -48,7 +48,7 @@ class CountryConfig
         cumulative_assigned: "",
         controlled: "",
         uncontrolled: "",
-        missed_visits: "",
+        missed_visits: ""
       },
       enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::AlphaSms::Sms"

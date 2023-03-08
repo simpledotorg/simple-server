@@ -1,5 +1,4 @@
 class DisaggregatedDhis2Exporter
-
   BUCKETS = (15..75).step(5)
 
   def self.export
@@ -14,7 +13,7 @@ class DisaggregatedDhis2Exporter
         cumulative_assigned: disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(region, period)),
         controlled: disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region, period)),
         uncontrolled: disaggregated_counts(PatientStates::UncontrolledPatientsQuery.new(region, period)),
-        missed_visits: disaggregated_counts(PatientStates::MissedVisitsQuery.new(region, period)),
+        missed_visits: disaggregated_counts(PatientStates::MissedVisitsQuery.new(region, period))
       }
     end
   end

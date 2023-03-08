@@ -10,7 +10,7 @@ class PatientStates::CumulativeAssignedPatientsQuery
     Reports::PatientState.where(
       assigned_facility_id: region.facility_ids,
       month_date: period
-    ).where.not(htn_care_state: 'dead')
+    ).where.not(htn_care_state: "dead")
   end
 
   def excluding_recent_registrations

@@ -8,9 +8,9 @@ class PatientStates::MissedVisitsQuery
 
   def call
     PatientStates::CumulativeAssignedPatientsQuery.new(region, period)
-                                                  .call
-                                                  .where(hypertension: "yes")
-                                                  .where("months_since_registration >= ?", 3)
-                                                  .where(htn_treatment_outcome_in_last_3_months: "missed_visit")
+      .call
+      .where(hypertension: "yes")
+      .where("months_since_registration >= ?", 3)
+      .where(htn_treatment_outcome_in_last_3_months: "missed_visit")
   end
 end

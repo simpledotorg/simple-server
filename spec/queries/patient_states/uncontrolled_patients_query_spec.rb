@@ -53,4 +53,3 @@ describe PatientStates::UncontrolledPatientsQuery do
     end
   end
 end
-
