@@ -12,7 +12,7 @@ class PatientStates::CumulativeRegistrationsQuery
         registration_facility_id: region.facility_ids,
         month_date: period
       )
-      .where(hypertension: 'yes')
-      .where.not(htn_care_state: 'dead')
+      .where(hypertension: "yes")
+      .where.not(htn_care_state: "dead")
   end
 end

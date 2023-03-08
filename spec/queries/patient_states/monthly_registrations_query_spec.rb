@@ -8,8 +8,8 @@ describe PatientStates::MonthlyRegistrationsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context 'monthly registrations' do
-    it 'returns the registrations in a facility for that month' do
+  context "monthly registrations" do
+    it "returns the registrations in a facility for that month" do
       facility_1_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_2_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
@@ -27,7 +27,7 @@ describe PatientStates::MonthlyRegistrationsQuery do
         .to match_array((facility_1_new_registrations + facility_2_new_registrations).map(&:id))
     end
 
-    it 'returns the same number of monthly registrations as in reporting facility states' do
+    it "returns the same number of monthly registrations as in reporting facility states" do
       refresh_views
 
       _facility_1_new_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])

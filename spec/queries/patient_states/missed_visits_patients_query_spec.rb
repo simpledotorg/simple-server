@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe PatientStates::MissedVisitsPatientsQuery do
   around do |example|
@@ -8,8 +8,8 @@ describe PatientStates::MissedVisitsPatientsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context 'missed visits' do
-    it 'returns patients under care with missed visits in a facility as of the given period' do
+  context "missed visits" do
+    it "returns patients under care with missed visits in a facility as of the given period" do
       facility_1_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_missed_visit_patients = create(:patient, :missed_visit, assigned_facility: regions[:facility_1])
       facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
@@ -33,7 +33,7 @@ describe PatientStates::MissedVisitsPatientsQuery do
         .not_to include(*facility_2_under_care_patients.map(&:id))
     end
 
-    it 'returns the same number of under care patients with missed visits as in reporting facility states' do
+    it "returns the same number of under care patients with missed visits as in reporting facility states" do
       _facility_1_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       _facility_1_missed_visit_patients = create(:patient, :missed_visit, assigned_facility: regions[:facility_1])
       _facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])

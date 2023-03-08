@@ -8,7 +8,7 @@ class PatientStates::MissedVisitsPatientsQuery
 
   def call
     PatientStates::CumulativeAssignedPatientsQuery.new(region, period)
-                                                  .excluding_recent_registrations
-                                                  .where(htn_treatment_outcome_in_last_3_months: "missed_visit")
+      .excluding_recent_registrations
+      .where(htn_treatment_outcome_in_last_3_months: "missed_visit")
   end
 end

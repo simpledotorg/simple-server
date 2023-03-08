@@ -8,8 +8,8 @@ describe PatientStates::DeadPatientsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context 'dead patients' do
-    it 'returns only dead patients in a facility as of the given period' do
+  context "dead patients" do
+    it "returns only dead patients in a facility as of the given period" do
       facility_1_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_dead_patients = create(:patient, :dead, assigned_facility: regions[:facility_1])
       facility_2_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
@@ -33,7 +33,7 @@ describe PatientStates::DeadPatientsQuery do
         .not_to include(*facility_2_living_patients.map(&:id))
     end
 
-    it 'returns the same number of dead patients as in reporting facility states' do
+    it "returns the same number of dead patients as in reporting facility states" do
       _facility_1_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       _facility_1_dead_patients = create(:patient, :dead, assigned_facility: regions[:facility_1])
       _facility_2_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])

@@ -8,8 +8,8 @@ describe PatientStates::CumulativeRegistrationsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context 'cumulative registrations' do
-    it 'returns the cumulative registrations in a facility as of the given period' do
+  context "cumulative registrations" do
+    it "returns the cumulative registrations in a facility as of the given period" do
       facility_1_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_old_registration = create(:patient, assigned_facility: regions[:facility_1], device_created_at: 2.months.ago)
       facility_2_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_2])
@@ -26,9 +26,9 @@ describe PatientStates::CumulativeRegistrationsQuery do
       expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:region].region, period)
                                                            .call.map(&:patient_id))
         .to match_array((facility_1_new_registrations + [facility_1_old_registration] + facility_2_new_registrations).map(&:id))
-          end
+    end
 
-    it 'returns the same number of cumulative registrations as in reporting facility states' do
+    it "returns the same number of cumulative registrations as in reporting facility states" do
       refresh_views
 
       _facility_1_new_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])

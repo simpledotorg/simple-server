@@ -8,8 +8,8 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
   let(:regions) { setup_district_with_facilities }
   let(:period) { Period.current }
 
-  context 'cumulative assigned patients' do
-    it 'returns all the assigned patients in a facility as of the given period' do
+  context "cumulative assigned patients" do
+    it "returns all the assigned patients in a facility as of the given period" do
       facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_2_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
@@ -27,7 +27,7 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
         .to match_array((facility_1_patients + facility_2_patients).map(&:id))
     end
 
-    it 'returns the same number of cumulative patients as in reporting facility states' do
+    it "returns the same number of cumulative patients as in reporting facility states" do
       _facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       _facility_2_patients = create_list(:patient, 3, assigned_facility: regions[:facility_2])
 
@@ -44,7 +44,7 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
                  .cumulative_assigned_patients)
     end
 
-    it 'does not include dead patients' do
+    it "does not include dead patients" do
       facility_1_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: "dead")
       refresh_views
@@ -58,8 +58,8 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
     end
   end
 
-  describe '#excluding_recent_registrations' do
-    it 'returns patients registered at least 3 months ago' do
+  describe "#excluding_recent_registrations" do
+    it "returns patients registered at least 3 months ago" do
       facility_1_old_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1], device_created_at: 6.months.ago)
       facility_1_recent_registrations = create(:patient, registration_facility: regions[:facility_1])
       facility_2_recent_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])
