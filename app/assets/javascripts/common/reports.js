@@ -79,10 +79,6 @@ DashboardReports = () => {
               label: "Blood sugar <200",
               backgroundColor: colors.lightGreen,
               borderColor: colors.mediumGreen,
-              borderWidth: 2,
-              pointBackgroundColor: colors.white,
-              hoverBackgroundColor: colors.white,
-              hoverBorderWidth: 2,
               data: Object.values(data.bsBelow200Rate),
             },
           ],
@@ -94,231 +90,93 @@ DashboardReports = () => {
     cumulativeDiabetesRegistrationsTrend: function(data) {
       const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
       const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
-
-      const additionalCumulativeDiabetesRegistrationsTrendConfig = {
-        type: "bar",
+      const config = {
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
           datasets: [
             {
-              yAxisID: "yCumulativeDiabetesRegistrations",
+              type: "line",
+              data: Object.values(data.cumulativeDiabetesRegistrations),
               label: "cumulative diabetes registrations",
+              yAxisID: "y",
               backgroundColor: colors.transparent,
               borderColor: colors.darkPurple,
-              borderWidth: 2,
-              pointBackgroundColor: colors.white,
-              hoverBackgroundColor: colors.white,
-              hoverBorderWidth: 2,
-              data: Object.values(data.cumulativeDiabetesRegistrations),
-              type: "line",
             },
             {
-              yAxisID: "yMonthlyDiabetesFollowups",
+              type: "line",
+              data: Object.values(data.monthlyDiabetesFollowups),
               label: "monthly diabetes followups",
+              yAxisID: "y",
               backgroundColor: colors.transparent,
               borderColor: colors.darkTeal,
-              borderWidth: 2,
-              pointBackgroundColor: colors.white,
-              hoverBackgroundColor: colors.white,
-              hoverBorderWidth: 2,
-              data: Object.values(data.monthlyDiabetesFollowups),
-              type: "line",
             },
             {
-              yAxisID: "yMonthlyDiabetesRegistrations",
+              type: "bar",
+              data: Object.values(data.monthlyDiabetesRegistrations),
               label: "monthly diabetes registrations",
+              yAxisID: "yMonthlyDiabetesRegistrations",
               backgroundColor: colors.lightPurple,
               hoverBackgroundColor: colors.darkPurple,
-              data: Object.values(data.monthlyDiabetesRegistrations),
-              type: "bar",
             },
           ],
         },
-      };
-
-      // will dry this post upgrade
-      const config = withBaseLineConfig(
-        additionalCumulativeDiabetesRegistrationsTrendConfig
-      );
+        options: {
+          scales: {
+            y: {
+              grid: {
+                drawTicks: false,
+              },
+              ticks: {
+                display: false,
+                stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+              },
+              max: cumulativeDiabetesRegistrationsYAxis.max,
+            },
     
-      config.options.scales = {
-        x: {
-          stacked: true,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto",
+            yMonthlyDiabetesRegistrations: {
+              display: false,
+              beginAtZero: true,
+              min: 0,
+              max: monthlyDiabetesRegistrationsYAxis.max,
             },
-            padding: 8,
-          },
-          beginAtZero: true,
-          min: 0,
-        },
-
-        // temporary fix for hiding y axis
-        y: {
-          display: false,
-        },
-
-        yCumulativeDiabetesRegistrations: {
-          // id: "cumulativeDiabetesRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 10,
-              family: "Roboto",
-            },
-            padding: 8,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            callback: formatNumberWithCommas
-          },
-          beginAtZero: true,
-          min: 0,
-          max: cumulativeDiabetesRegistrationsYAxis.max,
-        },
-
-        yMonthlyDiabetesRegistrations: {
-          position: "right",
-          stacked: true,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 10,
-              family: "Roboto",
-            },
-            padding: 8,
-            stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
-            callback: formatNumberWithCommas
-          },
-          beginAtZero: true,
-          min: 0,
-          max: monthlyDiabetesRegistrationsYAxis.max,
-        },
-
-        yMonthlyDiabetesFollowups: {
-          position: "right",
-          stacked: true,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 10,
-              family: "Roboto",
-            },
-            padding: 8,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            callback: formatNumberWithCommas
-          },
-          beginAtZero: true,
-          min: 0,
-          max: cumulativeDiabetesRegistrationsYAxis.max,
-        },
-
-      }
-      
-      return config;
+          }
+        }
+      };
+      return withBaseLineConfig(config);
     },
 
     bsOver200PatientsTrend: function (data) {
-      const additionalbsOver200PatientsTrendconfig = {
+      const config = {
         type: "bar",
         data: {
           labels: Object.keys(data.bsOver300Rate),
           datasets: [
             {
               label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate),
               backgroundColor: colors.amber,
               hoverBackgroundColor: colors.darkAmber,
-              data: Object.values(data.bs200to300Rate),
             },
             {
               label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate),
               backgroundColor: colors.mediumRed,
               hoverBackgroundColor: colors.darkRed,
-              data: Object.values(data.bsOver300Rate),
             },
           ],
         },
+        options: { 
+          scales: {
+            x: {
+              stacked: true,
+            },
+            y: {
+              stacked: true,
+            },
+          }
+        }
       };
-
-      // will dry this post upgrade
-      const config = withBaseLineConfig(
-        additionalbsOver200PatientsTrendconfig
-      );
-
-      config.options.scales = {
-        x: {
-          stacked: true,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto",
-            },
-            padding: 8,
-          },
-          beginAtZero: true,
-          min: 0,
-        },
-        y: {
-          stacked: true,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 10,
-              family: "Roboto",
-            },
-            padding: 8,
-            stepSize: 25,
-          },
-          beginAtZero: true,
-          min: 0,
-          max: 100,
-        },
-      }
-
-      return config;
+      return withBaseLineConfig(config);
     },
 
     diabetesMissedVisitsTrend: function (data) {
@@ -330,12 +188,7 @@ DashboardReports = () => {
               label: "Missed visits",
               backgroundColor: colors.lightBlue,
               borderColor: colors.mediumBlue,
-              borderWidth: 2,
-              pointBackgroundColor: colors.white,
-              hoverBackgroundColor: colors.white,
-              hoverBorderWidth: 2,
               data: Object.values(data.diabetesMissedVisitsGraphRate),
-              type: "line",
             },
           ],
         },
@@ -355,49 +208,44 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Blood sugar <200",
+              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
               backgroundColor: colors.mediumGreen,
               hoverBackgroundColor: colors.darkGreen,
-              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
               backgroundColor: colors.amber,
               hoverBackgroundColor: colors.darkAmber,
-              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
               backgroundColor: colors.mediumRed,
               hoverBackgroundColor: colors.darkRed,
-              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-              type: "bar",
             },
             {
               label: "Visit but no blood sugar measure",
-              backgroundColor: colors.mediumGrey,
-              hoverBackgroundColor: colors.darkGrey,
               data: Object.values(data.visitButNoBSMeasureRate).slice(
                   -barsToDisplay
               ),
-              type: "bar",
+              backgroundColor: colors.mediumGrey,
+              hoverBackgroundColor: colors.darkGrey,
             },
             {
               label: "Missed visits",
-              backgroundColor: colors.mediumBlue,
-              hoverBackgroundColor: colors.darkBlue,
               data: Object.values(data.diabetesMissedVisitsRate).slice(
                   -barsToDisplay
               ),
-              type: "bar",
+              backgroundColor: colors.mediumBlue,
+              hoverBackgroundColor: colors.darkBlue,
             },
           ],
         }
       }
-
       return withBaseBarConfig(config);
     },
+
     MedicationsDispensation: function(data) {
       const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
 
@@ -412,6 +260,7 @@ DashboardReports = () => {
         };
       });
       const config = {
+        type: 'bar',
         data: {
           labels: graphPeriods,
           datasets: datasets,
@@ -423,30 +272,25 @@ DashboardReports = () => {
           minBarLength: 4,
           plugins: {
             datalabels: {
+              anchor: "end",
               align: "end",
               color: "black",
-              anchor: "end",
               offset: 1,
               font: {
                 family: "Roboto Condensed",
-                size: 12,
               },
               formatter: function (value) {
                 return value + "%";
               },
             },
             tooltip: {
-              mode: "x", // not required
-              intersect: false, // not required
-              enabled: true, // not required?
-
+              enabled: true,
               displayColors: false,
               xAlign: "center",
               yAlign: "top",
-              xPadding: 6,
-              yPadding: 6,
-              caretSize: 3,
-              caretPadding: 1,
+              caretSize: 4,
+              caretPadding: 4,
+
               callbacks: {
                 title: function () {
                   return "";
@@ -463,60 +307,20 @@ DashboardReports = () => {
               },
             }
           },
+          scales: {
+            y: {
+              grid: {
+                drawTicks: false,
+              },
+              ticks: {
+                display: false,
+              },
+            },
+          }
         },
         plugins: [ChartDataLabels],
       }
-
-      const medicationsDispensationConfig = withBaseBarConfig(config)
-
-      // will dry after update
-      medicationsDispensationConfig.options.scales = {
-        x: {
-          stacked: false,
-          display: true,
-          grid: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto Condensed",
-            },
-            padding: 0,
-          },
-          beginAtZero: true,
-          min: 0,
-        },
-
-        y: {
-          stacked: false,
-          display: true,
-          grid: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            color: colors.darkGrey,
-            font: {
-              size: 12,
-              family: "Roboto Condensed",
-            },
-            padding: 8,
-            stepSize: 25,
-          },
-          beginAtZero: true,
-          min: 0,
-          max: 100,
-        },
-
-      };
-
-      return medicationsDispensationConfig;
+      return withBaseLineConfig(config)
     },
     
     lostToFollowUpTrend: function (data) {
@@ -526,21 +330,15 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Lost to follow-up",
+              data: Object.values(data.ltfuPatientsRate),
               backgroundColor: colors.lightBlue,
               borderColor: colors.darkBlue,
-              borderWidth: 2,
-              pointBackgroundColor: colors.white,
-              hoverBackgroundColor: colors.white,
-              hoverBorderWidth: 2,
-              data: Object.values(data.ltfuPatientsRate),
-              type: "line",
             },
           ],
         },
       };
       return withBaseLineConfig(config);
     },
-  
   };
 
   return {
@@ -580,11 +378,10 @@ DashboardReports = () => {
             throw `Graph config not known for ${id}`
         }
 
-        if (!graphConfig.options.plugins.tooltip) {
+        // comeback and improve
+        if (!graphConfig.options.plugins.tooltip.enabled) {
           graphConfig.options.plugins.tooltip = {
             enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -642,22 +439,15 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "BP controlled",
+            data: Object.values(controlledGraphRate),
             backgroundColor: colors.lightGreen,
             borderColor: colors.mediumGreen,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(controlledGraphRate),
           },
         ],
       },
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -732,22 +522,15 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "BP uncontrolled",
+            data: Object.values(uncontrolledGraphRate),
             backgroundColor: colors.lightRed,
             borderColor: colors.mediumRed,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(uncontrolledGraphRate),
           },
         ],
       },
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -824,22 +607,15 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "Missed visits",
+            data: Object.values(missedVisitsGraphRate),
             backgroundColor: colors.lightBlue,
             borderColor: colors.mediumBlue,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(missedVisitsGraphRate),
           },
         ],
       },
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -907,38 +683,30 @@ Reports = function (withLtfu) {
     );
 
     const config = {
-      type: "bar",
       data: {
         labels: Object.keys(data.cumulativeRegistrations),
         datasets: [
           {
-            yAxisID: "yCumulativeRegistrations",
+            type: "line",
             label: "cumulative registrations",
+            data: Object.values(data.cumulativeRegistrations),
+            yAxisID: "y",
             backgroundColor: colors.transparent,
             borderColor: colors.darkPurple,
-            borderWidth: 2,
-            pointBackgroundColor: colors.white,
-            hoverBackgroundColor: colors.white,
-            hoverBorderWidth: 2,
-            data: Object.values(data.cumulativeRegistrations),
-            type: "line",
           },
           {
-            yAxisID: "yMonthlyRegistrations",
+            type: "bar",
             label: "monthly registrations",
+            data: Object.values(data.monthlyRegistrations),
+            yAxisID: "yMonthlyRegistrations",
             backgroundColor: colors.lightPurple,
             hoverBackgroundColor: colors.darkPurple,
-            data: Object.values(data.monthlyRegistrations),
-            type: "bar",
           },
         ],
       },
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -949,71 +717,26 @@ Reports = function (withLtfu) {
             },
           },
         },
+        scales: {
+          y: {
+            grid: {
+              drawTicks: false,
+            },
+            ticks: {
+              display: false,
+              stepSize: cumulativeRegistrationsYAxis.stepSize,
+            },
+            max: cumulativeRegistrationsYAxis.max,
+          },
+          yMonthlyRegistrations: {
+            display: false,
+            beginAtZero: true,
+            min: 0,
+            max: monthlyRegistrationsYAxis.max,
+          }
+        }
       }
     };
-
-    // Will comeback and dry this after upgrade
-    const cumulativeRegistrationsGraphConfig = withBaseLineConfig(
-      config
-    );
-
-    cumulativeRegistrationsGraphConfig.options.scales.y = {
-      display: false,
-    }
-
-    cumulativeRegistrationsGraphConfig.options.scales.yCumulativeRegistrations = {
-      position: "left",
-      stacked: true,
-      display: true,
-      grid: {
-        display: false,
-        drawBorder: false,
-      },
-      ticks: {
-        display: false,
-        autoSkip: false,
-        color: colors.darkGrey,
-        font: {
-          size: 10,
-          family: "Roboto",
-        },
-        padding: 8,
-        stepSize: cumulativeRegistrationsYAxis.stepSize, // not used?
-        callback: (label) => {
-          return this.formatNumberWithCommas(label);
-        },
-      },
-      beginAtZero: true,
-      min: 0,
-      max: cumulativeRegistrationsYAxis.max,
-    }
-    cumulativeRegistrationsGraphConfig.options.scales.yMonthlyRegistrations = {
-      position: "right",
-      stacked: true,
-      display: true,
-      grid: {
-        display: true,
-        drawBorder: false,
-        drawTicks: false,
-      },
-      ticks: {
-        display: false,
-        autoSkip: false,
-        color: colors.darkGrey,
-        font: {
-          size: 10,
-          family: "Roboto",
-        },
-        padding: 8,
-        stepSize: monthlyRegistrationsYAxis.stepSize,
-        callback: (label) => {
-          return this.formatNumberWithCommas(label); // no numbers shown?
-        },
-      },
-      beginAtZero: true,
-      min: 0,
-      max: monthlyRegistrationsYAxis.max,
-    }
 
     const populateCumulativeRegistrationsGraph = (period) => {
       const cardNode = document.getElementById("cumulative-registrations");
@@ -1075,7 +798,7 @@ Reports = function (withLtfu) {
     if (cumulativeRegistrationsGraphCanvas) {
       new Chart(
         cumulativeRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeRegistrationsGraphConfig
+        withBaseLineConfig(config)
       );
       populateCumulativeRegistrationsGraphDefault();
     }
@@ -1093,42 +816,35 @@ Reports = function (withLtfu) {
         datasets: [
           {
             label: "BP controlled",
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumGreen,
             hoverBackgroundColor: colors.darkGreen,
-            data: Object.values(data.controlRate).slice(-barsToDisplay),
-            type: "bar",
           },
           {
             label: "BP uncontrolled",
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumRed,
             hoverBackgroundColor: colors.darkRed,
-            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-            type: "bar",
           },
           {
             label: "Visit but no BP measure",
-            backgroundColor: colors.mediumGrey,
-            hoverBackgroundColor: colors.darkGrey,
             data: Object.values(data.visitButNoBPMeasureRate).slice(
               -barsToDisplay
             ),
-            type: "bar",
+            backgroundColor: colors.mediumGrey,
+            hoverBackgroundColor: colors.darkGrey,
           },
           {
             label: "Missed visits",
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
             backgroundColor: colors.mediumBlue,
             hoverBackgroundColor: colors.darkBlue,
-            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-            type: "bar",
           },
         ],
       },
       options: {
         plugins: {
           tooltip: {
-            enabled: false,
-            mode: "index",
-            intersect: false,
             external: (context) => {
               const isTooltipActive = context.tooltip._active.length > 0;
               if (isTooltipActive) {
@@ -1351,10 +1067,15 @@ function baseLineGraphConfig() {
       elements: {
         point: {
           pointStyle: "circle",
+          pointBackgroundColor: colors.white,
+          hoverBackgroundColor: colors.white,
+          borderWidth: 2,
           hoverRadius: 5,
+          hoverBorderWidth: 2,
         },
         line: {
           tension: 0.4,
+          borderWidth: 2,
           fill: true,
         }
       },
@@ -1365,6 +1086,9 @@ function baseLineGraphConfig() {
       plugins: {
         legend: {
           display: false,
+        },
+        tooltip: {
+          enabled: false,
         },
       },
       scales: {
@@ -1379,7 +1103,6 @@ function baseLineGraphConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 12, // default is 12
               family: "Roboto",
             },
             padding: 6,
@@ -1398,11 +1121,11 @@ function baseLineGraphConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 10,
               family: "Roboto",
+              size: 10,
             },
             padding: 8,
-            stepSize: 25, // unitStepSize??
+            stepSize: 25,
           },
           beginAtZero: true,
           min: 0,
@@ -1434,6 +1157,9 @@ function baseBarChartConfig() {
         legend: {
           display: false,
         },
+        tooltip: {
+          enabled: false,
+        },
       },
       interaction: {
         mode: "index",
@@ -1451,7 +1177,6 @@ function baseBarChartConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 12,
               family: "Roboto",
             },
             padding: 6,
@@ -1470,8 +1195,8 @@ function baseBarChartConfig() {
             autoSkip: false,
             color: colors.darkGrey,
             font: {
-              size: 10,
               family: "Roboto",
+              size: 10,
             },
             padding: 8,
           },

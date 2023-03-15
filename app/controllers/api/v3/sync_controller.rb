@@ -67,6 +67,10 @@ class Api::V3::SyncController < APIController
       .map(&:to_hash)
   end
 
+  def errors_hash(record)
+    record.errors.to_hash.merge(id: record.id)
+  end
+
   def capture_errors(params, errors)
     return unless errors.present?
 

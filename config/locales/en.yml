@@ -110,12 +110,12 @@ en:
     numerator: "Total %{diagnosis} patients registered."
     denominator: "Total estimated population with %{diagnosis}."
     add_missing_estimate:
-      accessible_region: "Add the estimated %{diagnosis} population to see the coverage rate."
-      accessible_region_with_region_name: "Add the estimated %{diagnosis} population for %{region_name} to see the coverage rate."
-      inaccessible_region: "Ask a Dashboard admin to add the estimated population with %{diagnosis} for %{@region_name} to see the %{diagnosis} coverage rate."
+      accessible_region: "Add the estimated %{diagnosis} population to see the coverage percentage."
+      accessible_region_with_region_name: "Add the estimated %{diagnosis} population for %{region_name} to see the coverage percentage."
+      inaccessible_region: "Ask a Dashboard admin to add the estimated population with %{diagnosis} for %{@region_name} to see the %{diagnosis} coverage percentage."
     add_missing_child_estimate:
-      accessible_region: "Add the estimated population of %{diagnosis} patients for all %{child_type} to see the coverage rate."
-      inaccessible_region: "Ask a Dashboard admin to add the estimated population with %{diagnosis} for all %{child_type} in %{@region.name} to see the %{diagnosis} coverage rate."
+      accessible_region: "Add the estimated population of %{diagnosis} patients for all %{child_type} to see the coverage percentage."
+      inaccessible_region: "Ask a Dashboard admin to add the estimated population with %{diagnosis} for all %{child_type} in %{@region.name} to see the %{diagnosis} coverage percentage."
   registered_diabetes_patients_copy:
     reports_card_subtitle: "Monthly and total diabetes patient registrations and follow-up visits in %{region_name}"
     monthly_registered_patients: "Diabetes patients registered during a month in %{region_name}."

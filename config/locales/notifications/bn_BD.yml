@@ -1,5 +1,6 @@
-bn_BD:
+bn-BD:
   notifications:
+    one_off_medications_reminder: "%{patient_name}, উপজেলা স্বাস্হ্য কমপ্লেক্সে উচ্চ রক্তচাপের ঔষধ এসেছে। অনুগ্রহ করে নিতে আসুন।"
     set01:
       basic: "%{patient_name}, রক্তচাপের পরিমাপ এবং ওষুধের জন্য অনুগ্রহ করে %{appointment_date}-এ %{facility_name}-এ যান।"
       gratitude: "উচ্চরক্তচাপের ঔষধ নিয়মিত সেবন করার জন্য আপনাকে ধন্যবাদ। %{patient_name}, রক্তচাপের পরিমাপ এবং ওষুধের জন্য অনুগ্রহ করে %{appointment_date}-এ %{facility_name}-এ যান।"

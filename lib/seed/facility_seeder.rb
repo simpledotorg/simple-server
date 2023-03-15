@@ -169,8 +169,8 @@ module Seed
         }
       end
 
-      announce "Importing #{facility_attrs.count} Facilities"
       Facility.import(facility_attrs, returning: [:id, :name, :zone], on_duplicate_key_ignore: true)
+        .tap { |results| announce "Imported #{results.count} Facilities" }
     end
 
     def create_facility_regions(facility_results)
@@ -188,8 +188,9 @@ module Seed
         }
         FactoryBot.build(:region, attrs)
       }
-      logger.info { "Importing #{facility_regions.count} Facility regions" }
-      Region.import(facility_regions, on_duplicate_key_ignore: true)
+      Region
+        .import(facility_regions, on_duplicate_key_ignore: true)
+        .tap { |results| logger.info "Imported #{results.count} Facility regions" }
     end
   end
 end
