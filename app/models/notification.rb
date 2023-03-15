@@ -26,6 +26,7 @@ class Notification < ApplicationRecord
   }, _prefix: true
   enum purpose: {
     covid_medication_reminder: "covid_medication_reminder",
+    one_off_medications_reminder: "one_off_medications_reminder",
     experimental_appointment_reminder: "experimental_appointment_reminder",
     missed_visit_reminder: "missed_visit_reminder",
     test_message: "test_message"
