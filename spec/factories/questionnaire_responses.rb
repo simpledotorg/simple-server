@@ -18,3 +18,11 @@ end
 def build_invalid_questionnaire_response_payload
   build_questionnaire_response_payload.merge("created_at" => nil)
 end
+
+def updated_questionnaire_response_payload(existing_questionnaire_response)
+  update_time = 10.days.from_now
+  build_questionnaire_response_payload(existing_questionnaire_response).merge(
+    "updated_at" => update_time,
+    "content" => {"updated_key" => "updated_value"}
+  )
+end

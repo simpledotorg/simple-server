@@ -78,11 +78,6 @@ class Api::V4::Models::Questionnaires::MonthlyScreeningReport
           },
           {
             type: "display",
-            id: "234700ac-645b-47e8-8d17-457ab3c0f53f",
-            view_type: "separator"
-          },
-          {
-            type: "display",
             id: "c0777808-7098-4a93-a40c-9860c716d9d3",
             view_type: "line_separator"
           }

@@ -55,12 +55,17 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
 
   def merge_if_valid(questionnaire_response_params)
     validator = Api::V4::QuestionnaireResponsePayloadValidator.new(questionnaire_response_params)
-    logger.debug "Questionnaire response payload had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.check_invalid?
+      logger.debug "Questionnaire response payload had errors: #{validator.errors_hash}"
       {errors_hash: validator.errors_hash}
     else
       transformed_params = Api::V4::QuestionnaireResponseTransformer.from_request(questionnaire_response_params)
-      {record: QuestionnaireResponse.merge(transformed_params)}
+      record = QuestionnaireResponse.merge(transformed_params)
+      if record.merge_status == :invalid
+        {errors_hash: errors_hash(record)}
+      else
+        {record: record}
+      end
     end
   end
 end

@@ -23,10 +23,10 @@ RSpec.describe PreFillMonthlyScreeningReports do
     it "pre-fills monthly screening reports for previous month" do
       PreFillMonthlyScreeningReports.call
 
-      date = 1.month.ago
+      date = 1.month.ago.beginning_of_month
       expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
         {
-          "month_string" => date.strftime("%Y-%m"),
+          "month_date" => date.strftime("%Y-%m-%d"),
           "submitted" => false,
           "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male" => 0,
           "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female" => 1,
@@ -39,7 +39,7 @@ RSpec.describe PreFillMonthlyScreeningReports do
     end
 
     it "ignores existing monthly screening reports" do
-      existing_content = {"month_string" => month_date.strftime("%Y-%m")}
+      existing_content = {"month_date" => month_date.strftime("%Y-%m-%d")}
       existing_monthly_screening_report = create(:questionnaire_response, facility: facility, content: existing_content)
 
       PreFillMonthlyScreeningReports.call
@@ -59,7 +59,7 @@ RSpec.describe PreFillMonthlyScreeningReports do
 
     it "ignores non-monthly screening reports for idempotency check" do
       questionnaire = create(:questionnaire, questionnaire_type: @questionnaire_types[1])
-      existing_content = {"month_string" => month_date.strftime("%Y-%m")}
+      existing_content = {"month_date" => month_date.strftime("%Y-%m-%d")}
       create(:questionnaire_response, questionnaire: questionnaire, facility: facility, content: existing_content)
       expect(QuestionnaireResponse.where(facility: facility).count).to eq(1)
 
@@ -76,12 +76,12 @@ RSpec.describe PreFillMonthlyScreeningReports do
       create(:appointment, patient: patient_1, user: user, facility: facility, recorded_at: three_months_ago)
       refresh_views
 
-      date = three_months_ago
+      date = three_months_ago.beginning_of_month
       PreFillMonthlyScreeningReports.call(date)
 
       expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
         {
-          "month_string" => date.strftime("%Y-%m"),
+          "month_date" => date.strftime("%Y-%m-%d"),
           "submitted" => false,
           "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male" => 1,
           "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female" => 0,
