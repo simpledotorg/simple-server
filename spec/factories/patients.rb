@@ -88,7 +88,7 @@ FactoryBot.define do
       appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 2.months.ago) }
     end
 
-    trait(:missed_visit) do
+    trait(:missed_visit_under_care) do
       recorded_at { 2.years.ago }
       appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 5.months.ago) }
     end

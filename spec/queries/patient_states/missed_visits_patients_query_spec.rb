@@ -11,7 +11,7 @@ describe PatientStates::MissedVisitsPatientsQuery do
   context "missed visits" do
     it "returns patients under care with missed visits in a facility as of the given period" do
       facility_1_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      facility_1_missed_visit_patients = create(:patient, :missed_visit, assigned_facility: regions[:facility_1])
+      facility_1_missed_visit_patients = create(:patient, :missed_visit_under_care, assigned_facility: regions[:facility_1])
       facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
 
       refresh_views
@@ -34,9 +34,8 @@ describe PatientStates::MissedVisitsPatientsQuery do
     end
 
     it "returns the same number of under care patients with missed visits as in reporting facility states" do
-      _facility_1_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      _facility_1_missed_visit_patients = create(:patient, :missed_visit, assigned_facility: regions[:facility_1])
-      _facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
+      _facility_1_missed_visit_patients = create(:patient, :missed_visit_under_care, assigned_facility: regions[:facility_1])
+      _facility_2_under_care_patients = create_list(:patient, 2, :under_care, assigned_facility: regions[:facility_2])
 
       refresh_views
 
