@@ -1103,6 +1103,7 @@ function baseLineGraphConfig() {
               family: "Roboto",
             },
             padding: 6,
+            showLabelBackdrop: true,
           },
           beginAtZero: true,
           min: 0,
