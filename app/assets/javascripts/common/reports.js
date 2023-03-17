@@ -1239,6 +1239,18 @@ const intersectDataVerticalLine = {
   },
 };
 
+// [Segment] Functions
+// Create a dashed line for the last X segment of dynamic charts
+const dynamicChartSegementDashed = (
+  ctx,
+  numberOfXAxisTicks,
+  numberOfDashedSegments
+) => {
+  // console.log("ctx", ctx);
+  // console.log(numberOfXAxisTicks);
+  return ctx.p0DataIndex === numberOfXAxisTicks - 2 ? [4, 3] : undefined;
+};
+
 function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
