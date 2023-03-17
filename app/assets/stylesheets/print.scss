@@ -1,22 +1,33 @@
 // Universal variables
 @import "partials/variables";
 
-@page { margin: 1cm; }
+@page {
+  margin: 1cm;
+}
 
-body { background: #fff; }
+body {
+  background: #fff;
+}
 
-table { page-break-inside: avoid; }
+table {
+  page-break-inside: avoid;
+}
 
 /* Force background colors to print */
-*{ color-adjust: exact; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-
+* {
+  color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 
 /* Hide elements that are not required in print */
 .mobile,
 .dropdown,
 .breadcrumb,
 .downloads,
-.alert { display: none !important; }
+.alert {
+  display: none !important;
+}
 
 /******************
 Custom formatting for printable elements
@@ -25,50 +36,89 @@ Custom formatting for printable elements
 * a:link,
 * a:visited,
 .table-compact tr.sorts .sort-label {
-    color: #000 !important;
-    text-decoration: none !important;
-    font-weight: bold !important;
+  color: #000 !important;
+  text-decoration: none !important;
+  font-weight: bold !important;
 }
 
-.table-compact td, .table-compact th, .table-compact col {
-    background: none !important;
-    border-color: #000 !important;
+.table-compact td,
+.table-compact th,
+.table-compact col {
+  background: none !important;
+  border-color: #000 !important;
 }
 
-.card { border: 2px solid black; }
+.card {
+  border: 2px solid black;
+}
 
 .split-bars {
-    border-collapse: separate;
-    border-radius: 4px;
-    border-spacing: 4px;
-    overflow: hidden;
+  border-collapse: separate;
+  border-radius: 4px;
+  border-spacing: 4px;
+  overflow: hidden;
 }
 
-.split-bars .bar-1 { }
-.split-bars .bar-2 { background: #E892A0; color: #AA1A32; }
-.split-bars .bar-3 { }
+.split-bars .bar-1 {
+}
+.split-bars .bar-2 {
+  background: #e892a0;
+  color: #aa1a32;
+}
+.split-bars .bar-3 {
+}
 
-.key div.didntattend:after { }
-.key div.uncontrolled:after { }
-.key div.controlled:after { }
+.key div.didntattend:after {
+}
+.key div.uncontrolled:after {
+}
+.key div.controlled:after {
+}
 
 .key div.didntattend,
 .key div.uncontrolled,
 .key div.controlled {
-    color: #000;
+  color: #000;
 }
 
 /* Display */
-.d-print-none { display: none !important; }
-.d-print-block { display: block !important; }
-.pb-inside-avoid { page-break-inside: avoid; }
-.pb-after-always { page-break-after: always; }
+.d-print-none {
+  display: none !important;
+}
+.d-print-block {
+  display: block !important;
+}
+.pb-inside-avoid {
+  page-break-inside: avoid;
+}
+.pb-after-always {
+  page-break-after: always;
+}
 /* Size */
-.w-print-16cm { width: 16cm !important; }
-.h-print-12cm { height: 12cm !important; }
+.w-print-16cm {
+  width: 16cm !important;
+}
+.h-print-12cm {
+  height: 12cm !important;
+}
 /* Space */
-.mt-print-2cm { margin-top: 2cm !important; }
+.mt-print-2cm {
+  margin-top: 2cm !important;
+}
 /* Fonts, colors, and borders */
-.fw-print-bold { font-weight: 700; }
-.c-print-black { color: #000; }
-.b-print-black { border: 2px solid #000; }
+.fw-print-bold {
+  font-weight: 700;
+}
+.c-print-black {
+  color: #000;
+}
+.b-print-black {
+  border: 2px solid #000;
+}
+
+@media print {
+  .grid-2-columns {
+    display: flex;
+    flex-direction: column;
+  }
+}

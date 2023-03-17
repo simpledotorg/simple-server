@@ -1,0 +1,29 @@
+<div id="overdue-trend">
+  <%= render Dashboard::Card::GraphComponentTidy.new(id: "overduePatients", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Overdue patients", subtitle: t("overdue.overdue_patients.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("overdue.overdue_patients.numerator"),
+                               "Denominator" => t("overdue.overdue_patients.denominator", region_name: @region.name) }) %>
+    <%end%>
+    <%= c.summary do %>
+      <div class="d-lg-flex align-lg-center w-100">
+        <%# <p class="c-print-black graph-percent fs-28px" style="color: chocolate;" data-key="ltfuPatientsRate" data-format="percentage"></p> %>
+        <p class="c-print-black graph-percent fs-28px" style="color: chocolate;">21%</p>
+        <div>
+          <p class="m-0px c-black">
+            127
+            <%# <span data-key="ltfuPatients" data-format="numberWithCommas"></span> %>
+            patients that are overdue at the start of
+            <%= period.to_s %>
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            <%# <span data-key="cumulativeAssignedPatients" data-format="numberWithCommas"></span> %>
+            669
+            assigned patients
+            <%# <span data-key="registrationDate"></span> %>
+          </p>
+        </div>
+      </div>
+    <%end%>
+  <%end%>
+</div>

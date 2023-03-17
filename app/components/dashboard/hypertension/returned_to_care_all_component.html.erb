@@ -1,0 +1,61 @@
+<div id="ltfu-trend" class="d-lg-flex" style="flex: 0 1 auto;">
+  <%= render Dashboard::Card::GraphComponentTidy.new(id: "returnedToCareAll", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Called overdue patients that returned to care", subtitle: t("overdue.returned_to_care.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("overdue.returned_to_care.numerator"),
+                               "Denominator" => t("overdue.returned_to_care.denominator", region_name: @region.name) }) %>
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <%# <p class="c-print-black graph-percent fs-28px" style="color: rgb(91, 0, 206)" data-key="ltfuPatientsRate" data-format="percentage">25%</p> %>
+        <p class="c-print-black graph-percent fs-28px" style="color: rgb(91, 0, 206)" >24%</p>
+        <div>
+          <p class="m-0px c-black">
+            <%# <span data-key="ltfuPatients" data-format="numberWithCommas"></span> %>
+            7
+            patients returned to care within 15 days
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            30
+            <%# <span data-key="patients_called" data-format="numberWithCommas"></span> %>
+            patients that were called in
+            <%# <span data-key="registrationDate"></span> %>
+            <%= period.to_s %>
+          </p>
+        </div>
+      </div>
+      <p style="font-weight: 600; margin-bottom: 2px;">Return rates</p>
+      <%# <div style="display: flex; flex-direction: row; grid-gap: 8px;">
+        <div>
+          <p style="margin: 0; padding-right: 10px; overflow: hidden;">
+            <span style="width: 50px; display: inline-block; border-radius: 100px; text-align: center; padding: 1px 0; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">70%</span>
+            <span>of 'Agreed to visit'</span>
+          </p>
+        </div>
+        <div>
+          <p style="margin: 0; padding-right: 10px; overflow: hidden;">
+            <span style="background: rgba(255, 201, 63, 0.30); border-radius: 100px; width: 50px; display: inline-block; text-align: center; padding: 1px 0; ">0%</span>
+            <span>of 'Remind to call' </span></p>
+        </div>
+        <div>
+          <p style="margin: 0; padding-right: 10px; overflow: hidden;">
+            <span style="width: 50px; display: inline-block; border-radius: 100px; text-align: center; padding: 1px 0; background: rgba(232, 144, 80, 0.15);">28%</span>
+            <span>of 'Removed from overdue list' </span>
+          </p>
+        </div>
+      </div> %>
+      <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
+        <%# <p style="background: rgba(78, 206, 0, 0.20); margin: 0; border-radius: 8px; padding-right: 10px; overflow: hidden;"><span style="width: 50px; display: inline-block; text-align: center; padding: 3px 0; background: rgba(78, 206, 0, 0.15); margin-right: 8px;">40%</span><span>of patients called 'Agreed to visit'</span></p> %>
+        <p style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
+          26% of 'Agreed to visit'
+        </p>
+        <p style="border-radius: 30px; text-align: center; background: rgba(255, 201, 63, 0.30); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
+          0% of 'Remind to call'</p>
+        <%# <p style="background: rgba(78, 206, 0, 0.20); margin: 0; border-radius: 8px; padding-right: 10px; overflow: hidden;"><span style="width: 50px; display: inline-block; text-align: center; padding: 3px 0; background: rgba(78, 206, 0, 0.15); margin-right: 8px;">40%</span><span>of patients called 'Agreed to visit'</span></p> %>
+        <p title="28% of 'Removed from overdue list'" style="background: rgba(232, 144, 80, 0.15); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
+          22% of 'Removed from...'
+        </p>
+      </div>
+    <%end%>
+  <%end%>
+</div>

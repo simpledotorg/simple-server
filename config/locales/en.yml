@@ -99,6 +99,19 @@ en:
   lost_to_follow_up_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 12 months"
     numerator: "Patients with no visit in the last 12 month"
+  overdue:
+    overdue_patients: 
+      reports_card_subtitle: "Hypertension patients that are overdue at the start of the month"
+      numerator: "Patients that are overdue at the start of the month"
+      denominator: "Hypertension patients assigned to %{region_name}. Deleted, dead and lost to follow-up patients are excluded"
+    called_overdue_patients:
+      reports_card_subtitle: "Total overdue hypertension patients called during the month by call outcome"
+      numerator: ""
+      denominator: ""
+    returned_to_care: 
+      reports_card_subtitle: "Overdue hypertension patients that returned to care within 15 days of receiving their first call"
+      numerator: ""
+      denominator: ""
   diabetes_lost_to_follow_up_copy:
     reports_card_subtitle: "Diabetes patients with no visit in the last 12 months"
     numerator: "Patients with no visit in the last 12 months"

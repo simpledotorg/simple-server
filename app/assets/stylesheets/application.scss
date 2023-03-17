@@ -8,6 +8,7 @@
 @import "bootstrap-datepicker";
 
 // Local imports
+@import "partials/structure";
 @import "partials/dashboard";
 @import "partials/graphs";
 @import "partials/navigation";
@@ -22,7 +23,6 @@
 @import "partials/admin/form";
 @import "partials/admin/index";
 @import "partials/admin/show";
-
 
 body {
   font-size: 15px;
@@ -545,6 +545,32 @@ span.inactive {
   position: relative;
 }
 
+.cardv2 {
+  border: none;
+  background: #fff;
+  // padding: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  position: relative;
+  width: 100%;
+  border-radius: 4px;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+// @media print {
+//   .cardv2 canvas {
+//   width: 100% !important;
+//   height: auto !important;
+//   }
+// }
+
+.card-content {
+  padding: 20px;
+} 
+
 @include media-breakpoint-down(lg) {
   .card {
     height: auto !important;
@@ -731,4 +757,10 @@ span.inactive {
 }
 .w-full {
   width: 100%;
+}
+
+// graph styles
+.graph {
+  height: 320px;
+  padding: 12px;
 }

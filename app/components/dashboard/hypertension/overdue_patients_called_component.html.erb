@@ -1,0 +1,70 @@
+<div id="ltfu-trend" class="d-lg-flex" style="flex: 0 1 auto;">
+  <%= render Dashboard::Card::GraphComponentTidy.new(id: "overduePatientsCalled", data: graph_data, period: period) do |c| %>
+    <%= c.title(title: "Overdue patients called", subtitle: t("overdue.called_overdue_patients.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("overdue.called_overdue_patients.numerator"),
+                               "Denominator" => t("overdue.called_overdue_patients.denominator", region_name: @region.name) }) %>
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <%# <p class="c-print-black graph-percent fs-28px" style="color: rgb(228, 180, 57);" data-key="ltfuPatientsRate" data-format="percentage"></p> %>
+        <p class="c-print-black graph-percent fs-28px" style="color: rgb(228, 180, 57);">24%</p>
+        <div>
+          <p class="m-0px c-black">
+            <%# <span data-key="ltfuPatients" data-format="numberWithCommas"></span> %>
+            30
+            patients called in
+            <%= period.to_s %>
+            <%# <span data-key="endDate"></span> %>
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            127
+            <%# <span data-key="cumulativeAssignedPatients" data-format="numberWithCommas"></span> %>
+            patients that are overdue at the start of
+            <%# <span data-key="registrationDate"></span> %>
+            <%= period.to_s %>
+          </p>
+        </div>
+      </div>
+      <p style="font-weight: 600; margin-bottom: 2px;">Call outcomes</p>
+      <%# <div style="display: flex; grid-gap: 16px; padding: 0 10px;">
+        <div>
+          <p style="background: rgba(78, 206, 0, 0.15); margin: 0; border-radius: 1000px; padding-right: 10px;"><span style="width: 50px; display: inline-block; text-align: center; padding: 3px 12px;">76%</span> <span>'Agreed to vist'</span></p>
+        </div>
+        <div>
+          <p style="background: rgba(255, 201, 63, 0.20); margin: 0; border-radius: 1000px; padding-right: 10px;"><span style="width: 50px; display: inline-block; text-align: center; padding: 3px 12px;">23%</span> <span>'Remind to call'</span></p>
+        </div>
+        <div>
+          <p style="background: rgba(232, 144, 80, 0.20); margin: 0; border-radius: 1000px; padding-right: 10px;"><span style="width: 50px; display: inline-block; text-align: center; padding: 3px 12px;">3%</span> <span>'Removed from overdue list'</span></p>
+        </div>
+      </div> %>
+      <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
+        <p style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
+          32% 'Agreed to visit'
+        </p>
+        <p style="border-radius: 30px; text-align: center; background: rgba(255, 201, 63, 0.30); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
+          1% 'Remind to call'</p>
+        <p title="28% of 'Removed from overdue list'" style="background: rgba(232, 144, 80, 0.15); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
+          67% 'Removed from...'
+        </p>
+      </div>
+      <%# <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
+        <p style="display: flex; align-items: center; border-radius: 30px; width: 33%; margin: 0; padding: 0; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
+          <span style=" background: rgba(78, 206, 0, 0.15); margin: 0; width: 42px; text-align: center; padding: 2px 0 2px 5px;">100%</span>
+          <span style=" margin-left:6px ;">(10) 'Agreed to visit'</span>
+        </p>
+        <p style="display: flex; align-items: center; border-radius: 30px; width: 33%; margin: 0; padding: 0; overflow: hidden; color: rgba(140, 101, 0, 1); background: rgba(255, 201, 63, 0.30);">
+          <span style=" background: rgba(255, 201, 63, 0.30); margin: 0; width: 42px; text-align: center; padding: 2px 0 2px 5px;">1%</span>
+          <span style=" margin-left:6px ;">(1) 'Remind to call'</span>
+        </p>
+        <p style="display: flex; align-items: center; border-radius: 30px; width: 33%; margin: 0; padding: 0; overflow: hidden; color: rgba(152, 18, 0, 1); background: rgba(232, 144, 80, 0.15);">
+          <span style=" background: rgba(232, 144, 80, 0.15); margin: 0; width: 42px; text-align: center; padding: 2px 0 2px 5px;">67%</span>
+          <span style=" margin-left:6px ;">(19) 'Removed from...'</span>
+        </p>
+      </div> %>
+    <%end%>
+  <%end%>
+</div>
+<%# colorAgree = "78, 206, 0";
+      colorRemind = "255, 201, 63";
+      colorRemoved = "232, 144, 80"; %>

@@ -1,0 +1,52 @@
+<div
+  id="<%= id.to_s %>"
+  data-period="<%= period.to_s %>"
+  class="cardv2 pb-inside-avoid b-print-black overflow-hidden">
+  <div class="card-content">
+    <%# <div>
+      <select></select>
+    </div> %>
+    <%= title %>
+    <%= summary %>
+  </div>
+  <%# <div style="display: flex; justify-content: space-between;  align-items: center;  background: #fafafa; border-radius-bottom: 4px; padding: 8px 16px; margin: 0 16px; border-radius: 8px;">
+    <div style="display: flex; grid-gap: 12px;">
+      <p style="margin-bottom: 0;">234 Agreed</p>
+      <p style="margin-bottom: 0;">102 Remind</p>
+      <p style="margin-bottom: 0;">87 Removed</p>
+    </div>
+    <div class="align-right custom-control custom-switch">
+      <form method="get" name="ltfu_form">
+        <input type="checkbox" onchange="this.form.submit()" name="with_ltfu" for="ltfu_form" class="custom-control-input" id="controlledGraphLtfuToggle">
+        <label class="font-weight-normal custom-control-label c-grey-dark" for="controlledGraphLtfuToggle">
+          Include 'Removed from overdue list'
+        </label>
+      </form>
+    </div>
+  </div> %>
+  <div class="p-relative">
+    <div class="graph">
+      <canvas></canvas>
+    </div>
+    <%# <div style="height: 40px; border: 0; border-top: 2px solid lightgrey; border-style: dashed; margin: 0 2px;"> %>
+    <%# <%= footer %>
+    <%# <div style="display: flex; justify-content: space-between;  align-items: center;  background: #fafafa; box-shadow: inset 0 3px 3px 0 #f0f0f0; border-radius-bottom: 4px; padding: 8px 16px;">
+      <div style="display: flex; grid-gap: 10px;">
+        <p style="margin-bottom: 0;">Agreed: 234</p>
+        <p style="margin-bottom: 0;">Remind: 102</p>
+        <p style="margin-bottom: 0;">Removed: 87</p>
+      </div>
+      <div class="align-right custom-control custom-switch">
+        <form method="get" name="ltfu_form">
+          <input type="checkbox" onchange="this.form.submit()" name="with_ltfu" for="ltfu_form" class="custom-control-input" id="controlledGraphLtfuToggle">
+          <label class="font-weight-normal custom-control-label c-grey-dark" for="controlledGraphLtfuToggle">
+            'Agreed' only'
+          </label>
+        </form>
+      </div>
+    </div> %>
+  </div>
+</div>
+<script>
+  DashboardReports().ReportsGraph("<%= id %>", <%= data.to_json.html_safe %>)
+</script>

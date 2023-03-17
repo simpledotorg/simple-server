@@ -50,13 +50,13 @@ DashboardReports = () => {
 
     switch (format) {
       case "percentage":
-        return formatPercentage(value)
+        return formatPercentage(value);
       case "numberWithCommas":
-        return formatNumberWithCommas(value)
+        return formatNumberWithCommas(value);
       default:
         throw `Unknown format ${format}`;
     }
-  }
+  };
 
   const createAxisMaxAndStepSize = (data) => {
     const maxDataValue = Math.max(...Object.values(data));
@@ -87,9 +87,13 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
 
-    cumulativeDiabetesRegistrationsTrend: function(data) {
-      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
-      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+    cumulativeDiabetesRegistrationsTrend: function (data) {
+      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.cumulativeDiabetesRegistrations
+      );
+      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.monthlyDiabetesRegistrations
+      );
       const config = {
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
@@ -132,15 +136,15 @@ DashboardReports = () => {
               },
               max: cumulativeDiabetesRegistrationsYAxis.max,
             },
-    
+
             yMonthlyDiabetesRegistrations: {
               display: false,
               beginAtZero: true,
               min: 0,
               max: monthlyDiabetesRegistrationsYAxis.max,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -165,7 +169,7 @@ DashboardReports = () => {
             },
           ],
         },
-        options: { 
+        options: {
           scales: {
             x: {
               stacked: true,
@@ -173,8 +177,8 @@ DashboardReports = () => {
             y: {
               stacked: true,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -195,12 +199,12 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
-  
-    diabetesVisitDetails: function(data) {
+
+    diabetesVisitDetails: function (data) {
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
-          Object.keys(data.bsBelow200Rate).length,
-          maxBarsToDisplay
+        Object.keys(data.bsBelow200Rate).length,
+        maxBarsToDisplay
       );
       const config = {
         data: {
@@ -227,7 +231,7 @@ DashboardReports = () => {
             {
               label: "Visit but no blood sugar measure",
               data: Object.values(data.visitButNoBSMeasureRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumGrey,
               hoverBackgroundColor: colors.darkGrey,
@@ -235,19 +239,19 @@ DashboardReports = () => {
             {
               label: "Missed visits",
               data: Object.values(data.diabetesMissedVisitsRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumBlue,
               hoverBackgroundColor: colors.darkBlue,
             },
           ],
-        }
-      }
+        },
+      };
       return withBaseBarConfig(config);
     },
 
-    MedicationsDispensation: function(data) {
-      const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
+    MedicationsDispensation: function (data) {
+      const graphPeriods = Object.keys(Object.values(data)[0]["counts"]);
 
       let datasets = Object.keys(data).map(function (bucket, index) {
         return {
@@ -260,7 +264,7 @@ DashboardReports = () => {
         };
       });
       const config = {
-        type: 'bar',
+        type: "bar",
         data: {
           labels: graphPeriods,
           datasets: datasets,
@@ -305,7 +309,7 @@ DashboardReports = () => {
                   )} follow-up patients`;
                 },
               },
-            }
+            },
           },
           scales: {
             y: {
@@ -316,13 +320,13 @@ DashboardReports = () => {
                 display: false,
               },
             },
-          }
+          },
         },
         plugins: [ChartDataLabels],
-      }
-      return withBaseLineConfig(config)
+      };
+      return withBaseLineConfig(config);
     },
-    
+
     lostToFollowUpTrend: function (data) {
       const config = {
         data: {
@@ -339,68 +343,623 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
+
+    overduePatients: function (data) {
+      const overdueDataLabels = [
+        "Apr-2022",
+        "May-2022",
+        "Jun-2022",
+        "Jul-2022",
+        "Aug-2022",
+        "Sep-2022",
+        "Oct-2022",
+        "Nov-2022",
+        "Dec-2022",
+        "Jan-2023",
+        "Feb-2023",
+        "Mar-2023",
+      ];
+      const patients_under_care = [
+        253, 275, 309, 361, 406, 450, 500, 528, 579, 613, 667, 669,
+      ];
+
+      const overdue_patients = [
+        29, 123, 113, 174, 142, 141, 130, 97, 194, 226, 180, 127,
+      ];
+      const overdue_patients_percent = percentArray(
+        overdue_patients,
+        patients_under_care
+      );
+
+      console.log(overdue_patients_percent);
+
+      console.log(Object.keys(data.ltfuPatientsRate));
+      console.log(Object.values(data.ltfuPatientsRate));
+      const config = {
+        data: {
+          labels: overdueDataLabels,
+          // labels: Object.keys(data.ltfuPatientsRate),
+          datasets: [
+            {
+              label: "Lost to follow-up",
+              data: overdue_patients_percent,
+              backgroundColor: "rgba(255, 165, 0, 0.15)",
+              borderColor: "chocolate",
+            },
+          ],
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    overduePatientsCalled: function (data) {
+      console.log("data called", data);
+      // const agreedToReturn = [
+      //   26, 27, 25, 29, 31, 38, 46, 43, 42, 45, 56, 56, 42, 47, 59, 64, 68, 24,
+      // ];
+      // const remindToCall = [
+      //   10, 15, 25, 29, 31, 38, 25, 25, 20, 17, 13, 10, 12, 12, 14, 15, 20, 10,
+      // ];
+      // const removedFromOverdue = [
+      //   4, 4, 5, 6, 3, 3, 1, 1, 4, 6, 10, 12, 34, 12, 8, 2, 1, 5,
+      // ];
+      // const overduePatientsData2 = overduePatientsData.map((number) => number - randomNumber(0, number))
+      const overdueDataLabels = [
+        "Apr-2022",
+        "May-2022",
+        "Jun-2022",
+        "Jul-2022",
+        "Aug-2022",
+        "Sep-2022",
+        "Oct-2022",
+        "Nov-2022",
+        "Dec-2022",
+        "Jan-2023",
+        "Feb-2023",
+        "Mar-2023",
+      ];
+
+      const overdue_patients = [
+        29, 123, 113, 174, 142, 141, 130, 97, 194, 226, 180, 127,
+      ];
+      const patients_called = [0, 7, 2, 34, 21, 36, 34, 13, 13, 140, 77, 30];
+
+      const patients_called_agreed_to_visit = [
+        0, 3, 2, 16, 6, 15, 17, 5, 8, 70, 34, 8,
+      ];
+      const patients_called_remind_to_call = [
+        0, 0, 0, 0, 0, 1, 0, 1, 2, 0, 0, 0,
+      ];
+      const patients_called_removed_from_overdue_list = [
+        0, 4, 0, 18, 15, 20, 17, 7, 3, 70, 43, 22,
+      ];
+
+      const overdue_patients_called_percent = percentArray(
+        patients_called,
+        overdue_patients
+      );
+      const overdue_patients_called_agree = percentArray(
+        patients_called_agreed_to_visit,
+        overdue_patients
+      );
+      const overdue_patients_called_remid = percentArray(
+        patients_called_remind_to_call,
+        overdue_patients
+      );
+      const overdue_patients_called_removed = percentArray(
+        patients_called_removed_from_overdue_list,
+        overdue_patients
+      );
+      // red yellow green
+      colorAgree = "78, 206, 0";
+      colorRemind = "255, 201, 63";
+      colorRemoved = "232, 144, 80";
+      colorCalledChart = "228, 180, 57";
+
+      // colorAgree = "245, 220, 0";
+      // colorRemind = "255, 201, 63";
+      // colorRemoved = "232, 144, 80";
+      // colorRemoved = "255, 149, 26";
+      console.log("data:", data.ltfuPatientsRate);
+      console.log(Object.keys(data.ltfuPatientsRate));
+      console.log(Object.values(data.ltfuPatientsRate));
+      const config = {
+        data: {
+          labels: overdueDataLabels,
+          datasets: [
+            {
+              // type: "bar",
+              label: "agreed to return",
+              data: overdue_patients_called_agree,
+              // backgroundColor: 'rgba(134, 193, 98, 0.20)',
+              // borderColor: '#86C162',
+              // backgroundColor: `rgba(${colorAgree}, 0.10)`,
+              backgroundColor: `rgba(${colorAgree}, 0.10)`,
+              borderColor: `rgba(${colorAgree}, 0.25)`,
+              borderWidth: 0,
+              radius: 0,
+              // yAxisID: "y1",
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              // type: "bar",
+              label: "remind to call",
+              data: overdue_patients_called_remid,
+              backgroundColor: `rgba(${colorRemind}, 0.10)`,
+              borderColor: `rgba(${colorRemind}, .45)`,
+              borderWidth: 0,
+              radius: 0,
+              // yAxisID: "y1",
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              // type: "bar",
+              label: "removed from overdue list",
+              data: overdue_patients_called_removed,
+              backgroundColor: `rgba(${colorRemoved}, 0.10)`,
+              // borderColor: `rgba(${colorRemoved}, 1)`,
+              borderColor: `rgba(${colorCalledChart}, 1)`,
+              // borderWidth: 0,
+              // yAxisID: "y1",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            // {
+            //   type: "line",
+            //   label: "all called",
+            //   data: overdue_patients_called_percent,
+            //   backgroundColor: `rgba(${colorRemoved}, 0.10)`,
+            //   // borderColor: `rgba(${colorRemoved}, 1)`,
+            //   borderColor: `rgba(${colorCalledChart}, 1)`,
+            //   // borderWidth: 0,
+            //   fill: false,
+            //   segment: {
+            //     borderDash: (ctx) =>
+            //       dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+            //   },
+            // },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              stacked: true,
+              //     min: 0,
+              //     max: 100,
+              //     display: false,
+            },
+            //   x: {
+            //     stacked: true,
+            //   },
+          },
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    //   returnedToCare: function (data) {
+    //     const overdueDataLabels = [
+    //       "Apr-2022",
+    //       "May-2022",
+    //       "Jun-2022",
+    //       "Jul-2022",
+    //       "Aug-2022",
+    //       "Sep-2022",
+    //       "Oct-2022",
+    //       "Nov-2022",
+    //       "Dec-2022",
+    //       "Jan-2023",
+    //       "Feb-2023",
+    //       "Mar-2023",
+    //     ];
+    //     const patients_called = [1, 7, 2, 34, 21, 36, 34, 13, 13, 140, 77, 30];
+    //     const patients_called_agreed_to_visit = [
+    //       0, 3, 2, 16, 6, 15, 17, 5, 8, 70, 34, 8,
+    //     ];
+    //     const returned_to_care = [0, 1, 0, 6, 5, 15, 12, 5, 4, 38, 66, 6];
+    //     const returned_to_care_agreed = [, 0, 0, 4, 2, 8, 10, 3, 4, 26, 23, 2];
+    //     const returned_to_care_remind = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    //     const returned_to_care_removed = [0, 1, 0, 2, 3, 7, 2, 2, 0, 10, 13, 4];
+
+    //     const allReturnToCare = percentArray(returned_to_care, patients_called);
+    //     const AgreeToVisit = percentArray(
+    //       patients_called_agreed_to_visit,
+    //       patients_called
+    //     );
+    //     const AgreeToVisitANDReturnTOCare = percentArray(
+    //       returned_to_care_agreed,
+    //       patients_called
+    //     );
+    //     // const AgreeToVisit = [
+    //     //   26, 27, 25, 29, 31, 38, 46, 43, 42, 45, 56, 56, 42, 47, 59, 64, 68, 72,
+    //     // ];
+
+    //     // const AgreeToVisitANDReturnTOCare = [
+    //     //   10, 12, 12, 15, 26, 21, 23, 26, 20, 20, 25, 27, 38, 44, 47, 60, 60, 61,
+    //     // ];
+
+    //     // const allReturnToCare = [
+    //     //   13, 14, 15, 18, 31, 26, 29, 44, 49, 49, 56, 34, 60, 53, 61, 71, 66, 70,
+    //     // ];
+
+    //     // console.log(Object.keys(data.ltfuPatientsRate));
+    //     // console.log(Object.values(data.ltfuPatientsRate));
+
+    //     const returnToCareColor = "91, 0, 206";
+
+    //     const config = {
+    //       data: {
+    //         labels: overdueDataLabels,
+    //         datasets: [
+    //           {
+    //             label: "Returned to care",
+    //             data: allReturnToCare,
+    //             fill: false,
+    //             //  backgroundColor: `rgba(${returnToCareColor}, 0.2)`,
+    //             borderColor: `rgba(${returnToCareColor}, 1)`,
+    //           },
+    //           {
+    //             label: "Agree to visit",
+    //             data: AgreeToVisitANDReturnTOCare,
+    //             backgroundColor: "rgba(134, 193, 98, 0.25)",
+    //             borderColor: "#86C162",
+    //           },
+    //           {
+    //             label: "Agreed to visit",
+    //             data: AgreeToVisit,
+    //             backgroundColor: "rgba(78, 206, 0, 0.15)",
+    //             borderColor: "rgba(78, 206, 0, 1)",
+    //             pointStyle: "line",
+    //             pointBackgroundColor: `rgba(${colorAgree}, 1)`,
+    //             borderWidth: 0,
+    //             radius: 0,
+    //             line: 1,
+    //           },
+    //         ],
+    //       },
+    //       // options: {
+    //       //   scales: {
+    //       //     y: {
+    //       //       stacked: true,
+    //       //     }
+    //       //   }
+    //       // }
+    //     };
+    //     return withBaseLineConfig(config);
+    //   },
+    // };
+    returnedToCare: function (data) {
+      console.log("PUC", data);
+      const overdueDataLabels = [
+        "Apr-2022",
+        "May-2022",
+        "Jun-2022",
+        "Jul-2022",
+        "Aug-2022",
+        "Sep-2022",
+        "Oct-2022",
+        "Nov-2022",
+        "Dec-2022",
+        "Jan-2023",
+        "Feb-2023",
+        "Mar-2023",
+      ];
+      // const patients_called = [1, 7, 2, 34, 21, 36, 34, 13, 13, 140, 77, 30];
+      // const patients_called_agreed_to_visit = [
+      //   0, 3, 2, 16, 6, 15, 17, 5, 8, 70, 34, 8,
+      // ];
+      // const returned_to_care = [0, 1, 0, 6, 5, 15, 12, 5, 4, 38, 66, 6];
+      // const returned_to_care_agreed = [, 0, 0, 4, 2, 8, 10, 3, 4, 26, 23, 2];
+      // const returned_to_care_remind = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      // const returned_to_care_removed = [0, 1, 0, 2, 3, 7, 2, 2, 0, 10, 13, 4];
+      colorAgree = "78, 206, 0";
+      colorRemind = "255, 201, 63";
+      colorRemoved = "232, 144, 80";
+
+      const allReturnToCare = percentArray(
+        data.returned_to_care,
+        data.patients_called
+      );
+
+      const AgreeToVisitReturnRate = percentArray(
+        data.returned_to_care_agreed,
+        data.patients_called_agreed_to_visit
+      );
+      const RemindToCallReturnRate = percentArray(
+        data.returned_to_care_remind,
+        data.patients_called_remind_to_call
+      );
+
+      const RemovedFromListReturnRate = percentArray(
+        data.returned_to_care_removed,
+        data.patients_called_removed_from_overdue_list
+      );
+
+      const returnToCareColor = "91, 0, 206";
+
+      const config = {
+        data: {
+          labels: overdueDataLabels,
+          datasets: [
+            {
+              label: "Agree to visit",
+              data: AgreeToVisitReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorAgree},0.8)`,
+              fill: false,
+              radius: 0,
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              label: "Remind to call",
+              data: RemindToCallReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorRemind}, 0.8)`,
+              fill: false,
+              radius: 0,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              label: "Removed from overdue list",
+              data: RemovedFromListReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorRemoved}, 0.8)`,
+              fill: false,
+              radius: 0,
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              label: "Returned to care",
+              data: allReturnToCare,
+              fill: true,
+              backgroundColor: `rgba(${returnToCareColor}, 0.05)`,
+              borderColor: `rgba(${returnToCareColor}, 1)`,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            // {
+            //   label: "Agreed to visit",
+            //   data: AgreeToVisitANDReturnTOCare,
+            //   backgroundColor: "rgba(78, 206, 0, 0.15)",
+            //   borderColor: "rgba(78, 206, 0, 1)",
+            //   pointStyle: "line",
+            //   pointBackgroundColor: `rgba(${colorAgree}, 1)`,
+            //   borderWidth: 0,
+            //   radius: 0,
+            //   line: 1,
+            // },
+          ],
+        },
+        options: {
+          // plugins: {
+          //   tooltip: {
+          //     enabled: true,
+          //   },
+          // },
+          // scales: {
+          //   y: {
+          //     stacked: true,
+          //   }
+          // }
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    returnedToCareAll: function (data) {
+      console.log("PUC", data);
+      const overdueDataLabels = [
+        "Apr-2022",
+        "May-2022",
+        "Jun-2022",
+        "Jul-2022",
+        "Aug-2022",
+        "Sep-2022",
+        "Oct-2022",
+        "Nov-2022",
+        "Dec-2022",
+        "Jan-2023",
+        "Feb-2023",
+        "Mar-2023",
+      ];
+      // const patients_called = [1, 7, 2, 34, 21, 36, 34, 13, 13, 140, 77, 30];
+      // const patients_called_agreed_to_visit = [
+      //   0, 3, 2, 16, 6, 15, 17, 5, 8, 70, 34, 8,
+      // ];
+      // const returned_to_care = [0, 1, 0, 6, 5, 15, 12, 5, 4, 38, 66, 6];
+      // const returned_to_care_agreed = [, 0, 0, 4, 2, 8, 10, 3, 4, 26, 23, 2];
+      // const returned_to_care_remind = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      // const returned_to_care_removed = [0, 1, 0, 2, 3, 7, 2, 2, 0, 10, 13, 4];
+      colorAgree = "78, 206, 0";
+      colorRemind = "255, 201, 63";
+      colorRemoved = "232, 144, 80";
+
+      const allReturnToCare = percentArray(
+        data.returned_to_care,
+        data.patients_called
+      );
+
+      const allReturnToCareFilter = percentArray(
+        data.returned_to_care_filter,
+        data.patients_called_filter
+      );
+
+
+      const AgreeToVisitReturnRate = percentArray(
+        data.returned_to_care_agreed,
+        data.patients_called_agreed_to_visit
+      );
+      const RemindToCallReturnRate = percentArray(
+        data.returned_to_care_remind,
+        data.patients_called_remind_to_call
+      );
+
+      const RemovedFromListReturnRate = percentArray(
+        data.returned_to_care_removed,
+        data.patients_called_removed_from_overdue_list
+      );
+
+      const returnToCareColor = "91, 0, 206";
+
+      const config = {
+        data: {
+          labels: overdueDataLabels,
+          datasets: [
+            {
+              label: "Agree to visit",
+              data: AgreeToVisitReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorAgree},0.8)`,
+              fill: false,
+              radius: 0,
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              label: "Remind to call",
+              data: RemindToCallReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorRemind}, 0.8)`,
+              fill: false,
+              radius: 0,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            {
+              label: "Removed from overdue list",
+              data: RemovedFromListReturnRate,
+              backgroundColor: "rgba(134, 193, 98, 0.25)",
+              borderColor: `rgba(${colorRemoved}, 0.8)`,
+              fill: false,
+              radius: 0,
+
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+            // {
+            //   label: "Returned to care filter",
+            //   data: allReturnToCareFilter,
+            //   fill: true,
+            //   backgroundColor: `rgba(${returnToCareColor}, 0.1)`,
+            //   borderColor: `rgba(${returnToCareColor}, 1)`,
+            //   borderWidth: 0,
+            //   radius: 0,
+            //   segment: {
+            //     borderDash: (ctx) =>
+            //       dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+            //   },
+            // },
+            {
+              label: "Returned to care",
+              data: allReturnToCare,
+              fill: true,
+              backgroundColor: `rgba(${returnToCareColor}, 0.05)`,
+              borderColor: `rgba(${returnToCareColor}, 1)`,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, overdueDataLabels.length),
+              },
+            },
+
+          ],
+        },
+        
+      };
+      return withBaseLineConfig(config);
+    },
   };
 
   return {
-      ReportsTable: (id) => {
-        const tableSortAscending = { descending: false };
-        const table = document.getElementById(id);
+    ReportsTable: (id) => {
+      const tableSortAscending = { descending: false };
+      const table = document.getElementById(id);
 
-        if (table) {
-            new Tablesort(table, tableSortAscending);
-        }
-      },
-      ReportsGraph: (id, data) => {
-        const container = document.querySelector(`#${id}`);
-        const graphCanvas = container.querySelector('canvas')
-        const defaultPeriod = container.getAttribute("data-period");
-        const dataKeyNodes = container.querySelectorAll("[data-key]");
-
-        const populateDynamicComponents = (period) => {
-            dataKeyNodes.forEach(dataNode => {
-                const format = dataNode.dataset.format;
-                const key = dataNode.dataset.key;
-
-                if(!data[key]) {
-                    throw `${key}: Key not present in data.`
-                }
-
-                dataNode.innerHTML = formatValue(format, data[key][period]);
-            })
-        };
-
-        if(!ReportsGraphConfig[id]) {
-            throw `Config for ${id} is not defined`;
-        }
-
-        const graphConfig = ReportsGraphConfig[id](data);
-        if(!graphConfig) {
-            throw `Graph config not known for ${id}`
-        }
-
-        // comeback and improve
-        if (!graphConfig.options.plugins.tooltip.enabled) {
-          graphConfig.options.plugins.tooltip = {
-            enabled: false,
-            external: (context) => {
-              const isTooltipActive = context.tooltip._active.length > 0;
-              if (isTooltipActive) {
-                let hoveredDatapoint = context.tooltip.dataPoints;
-                populateDynamicComponents(hoveredDatapoint[0].label);
-              }
-              else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
-            },
-          };
-        }
-
-        if(graphCanvas) {
-            // Assumes ChartJS is already imported
-            new Chart(graphCanvas.getContext("2d"), graphConfig);
-            populateDynamicComponents(defaultPeriod);
-        }
+      if (table) {
+        new Tablesort(table, tableSortAscending);
       }
-  }
-}
+    },
+    ReportsGraph: (id, data) => {
+      const container = document.querySelector(`#${id}`);
+      const graphCanvas = container.querySelector("canvas");
+      const defaultPeriod = container.getAttribute("data-period");
+      const dataKeyNodes = container.querySelectorAll("[data-key]");
+      // console.log('datanodes', dataKeyNodes);
+      const populateDynamicComponents = (period) => {
+        console.log(period);
+        console.log(dataKeyNodes);
+        dataKeyNodes.forEach((dataNode) => {
+          const format = dataNode.dataset.format;
+          const key = dataNode.dataset.key;
+          console.log(id + "-data-key", data[key]);
+          if (!data[key]) {
+            throw `${key}: Key not present in data.`;
+          }
+
+          dataNode.innerHTML = formatValue(format, data[key][period]);
+        });
+      };
+
+      if (!ReportsGraphConfig[id]) {
+        throw `Config for ${id} is not defined`;
+      }
+
+      const graphConfig = ReportsGraphConfig[id](data);
+      if (!graphConfig) {
+        throw `Graph config not known for ${id}`;
+      }
+
+      // comeback and improve
+      if (!graphConfig.options.plugins.tooltip.enabled) {
+        graphConfig.options.plugins.tooltip = {
+          enabled: false,
+          external: (context) => {
+            const isTooltipActive = context.tooltip._active.length > 0;
+            if (isTooltipActive) {
+              let hoveredDatapoint = context.tooltip.dataPoints;
+              populateDynamicComponents(hoveredDatapoint[0].label);
+            } else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
+          },
+        };
+      }
+
+      if (graphCanvas) {
+        // Assumes ChartJS is already imported
+        new Chart(graphCanvas.getContext("2d"), graphConfig);
+        populateDynamicComponents(defaultPeriod);
+      }
+    },
+  };
+};
 
 Reports = function (withLtfu) {
   const colors = dashboardReportsChartJSColors();
@@ -453,12 +1012,11 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateControlledGraph(hoveredDatapoint[0].label);
-              }
-              else populateControlledGraphDefault();
+              } else populateControlledGraphDefault();
             },
           },
         },
-      }
+      },
     };
 
     const populateControlledGraph = (period) => {
@@ -536,8 +1094,7 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateUncontrolledGraph(hoveredDatapoint[0].label);
-              }
-              else populateUncontrolledGraphDefault();
+              } else populateUncontrolledGraphDefault();
             },
           },
         },
@@ -621,11 +1178,10 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateMissedVisitsGraph(hoveredDatapoint[0].label);
-              }
-              else populateMissedVisitsGraphDefault();
+              } else populateMissedVisitsGraphDefault();
             },
           },
-        }
+        },
       },
     };
 
@@ -667,7 +1223,7 @@ Reports = function (withLtfu) {
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
       new Chart(
-        missedVisitsGraphCanvas.getContext("2d"), 
+        missedVisitsGraphCanvas.getContext("2d"),
         withBaseLineConfig(config)
       );
       populateMissedVisitsGraphDefault();
@@ -712,8 +1268,7 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-              }
-              else populateCumulativeRegistrationsGraphDefault();
+              } else populateCumulativeRegistrationsGraphDefault();
             },
           },
         },
@@ -733,9 +1288,9 @@ Reports = function (withLtfu) {
             beginAtZero: true,
             min: 0,
             max: monthlyRegistrationsYAxis.max,
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
     const populateCumulativeRegistrationsGraph = (period) => {
@@ -752,16 +1307,18 @@ Reports = function (withLtfu) {
       );
 
       const hypertensionOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-only-registrations]"
+        "[data-hypertension-only-registrations]"
       );
 
-      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
+      const hypertensionAndDiabetesOnlyRegistrationsNode =
+        cardNode.querySelector(
           "[data-hypertension-and-diabetes-registrations]"
-      );
+        );
 
       const periodInfo = data.periodInfo[period];
       const cumulativeRegistrations = data.cumulativeRegistrations[period];
-      const cumulativeHypertensionAndDiabetesRegistrations = data.cumulativeHypertensionAndDiabetesRegistrations[period];
+      const cumulativeHypertensionAndDiabetesRegistrations =
+        data.cumulativeHypertensionAndDiabetesRegistrations[period];
       const monthlyRegistrations = data.monthlyRegistrations[period];
 
       monthlyRegistrationsNode.innerHTML =
@@ -772,16 +1329,19 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
 
-      if(hypertensionOnlyRegistrationsNode) {
-        hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-            cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-        );
+      if (hypertensionOnlyRegistrationsNode) {
+        hypertensionOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
+            cumulativeRegistrations -
+              cumulativeHypertensionAndDiabetesRegistrations
+          );
       }
 
-      if(hypertensionAndDiabetesOnlyRegistrationsNode) {
-        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+      if (hypertensionAndDiabetesOnlyRegistrationsNode) {
+        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
             cumulativeHypertensionAndDiabetesRegistrations
-        );
+          );
       }
     };
 
@@ -850,13 +1410,12 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateVisitDetailsGraph(hoveredDatapoint[0].label);
-              }
-              else populateVisitDetailsGraphDefault();
+              } else populateVisitDetailsGraphDefault();
             },
-          }
+          },
         },
-      }
-    }
+      },
+    };
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -992,8 +1551,10 @@ Reports = function (withLtfu) {
       adjustedPatientCounts: jsonData.adjusted_patient_counts,
       adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
-      cumulativeDiabetesRegistrations: jsonData.cumulative_diabetes_registrations,
-      cumulativeHypertensionAndDiabetesRegistrations: jsonData.cumulative_hypertension_and_diabetes_registrations,
+      cumulativeDiabetesRegistrations:
+        jsonData.cumulative_diabetes_registrations,
+      cumulativeHypertensionAndDiabetesRegistrations:
+        jsonData.cumulative_hypertension_and_diabetes_registrations,
       uncontrolledPatients: jsonData.uncontrolled_patients,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
@@ -1048,7 +1609,7 @@ Reports = function (withLtfu) {
 };
 
 function baseLineGraphConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "line",
     options: {
@@ -1077,7 +1638,7 @@ function baseLineGraphConfig() {
           tension: 0.4,
           borderWidth: 2,
           fill: true,
-        }
+        },
       },
       interaction: {
         mode: "index",
@@ -1138,7 +1699,7 @@ function baseLineGraphConfig() {
 }
 
 function baseBarChartConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "bar",
     options: {
@@ -1203,11 +1764,29 @@ function baseBarChartConfig() {
           min: 0,
           beginAtZero: true,
         },
-      }
+      },
     },
     plugins: [intersectDataVerticalLine],
-  }
+  };
 }
+
+// ----------------------------
+// Segment Functions
+
+// Create a dashed line for the last segment of dynamic charts
+const dynamicChartSegementDashed = (
+  ctx,
+  numberOfXAxisTicks,
+  numberOfDashedSegments
+) => {
+  // console.log("ctx", ctx);
+  // console.log(numberOfXAxisTicks);
+  return ctx.p0DataIndex === numberOfXAxisTicks - 2 ? [4, 3] : undefined;
+};
+
+// Create a different line color for segments that go down
+const down = (ctx, color) =>
+  ctx.p0.parsed.y > ctx.p1.parsed.y ? color : undefined;
 
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
@@ -1255,9 +1834,26 @@ function withBaseBarConfig(config) {
   );
 }
 
-
 function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
+}
+
+function randomNumber(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function getPercent(figure1, figure2) {
+  if (figure1 === 0 && figure2 === 0) {
+    return 0;
+  }
+  return (figure1 * 100) / figure2;
+}
+function percentArray(array1, array2) {
+  const percentArray = [];
+  for (let index = 0; index < array1.length; index++) {
+    percentArray.push(getPercent(array1[index], array2[index]));
+  }
+  return percentArray;
 }

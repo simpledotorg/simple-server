@@ -1,19 +1,15 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js" integrity="sha256-+8RZJua0aEWg+QVVKg4LEzEEm/8RFez5Tb4JBNiV5xA=" crossorigin="anonymous"></script>
 <% content_for :title do %>
- <%= @region.name %> | Hypertension
+  <%= @region.name %> | Hypertension
 <% end %>
-
 <%= render "header" %>
-
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
-
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-controlled"
          data-period="<%= @period.to_s %>"
          class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
           <div class="d-flex flex-1">
@@ -84,7 +80,8 @@
             </p>
             <div>
               <p class="m-0px c-black c-print-black">
-                total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
+                total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>
+                till
                 <span data-registrations-period-end=""></span>
               </p>
             </div>
@@ -95,7 +92,8 @@
             </p>
             <div>
               <p class="m-0px c-black c-print-black">
-                new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
+                new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>
+                in
                 <span data-registrations-month-end=""></span>
               </p>
             </div>
@@ -124,15 +122,15 @@
           justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
       <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
-            <div class="d-flex flex-1">
-              <h3 class="mb-0px mr-8px">
-                BP not controlled
-              </h3>
-              <%= render "definition_tooltip",
+          <div class="d-flex flex-1">
+            <h3 class="mb-0px mr-8px">
+              BP not controlled
+            </h3>
+            <%= render "definition_tooltip",
                          definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
                                         "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-            </div>
-            <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
+          </div>
+          <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
         </div>
         <p class="c-grey-dark">
           <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
@@ -216,9 +214,7 @@
     </div>
   </div>
 </div>
-
 <%= render "treatment_outcomes_card" %>
-
 <h4 class="mt-5 mb-32px">Details</h4>
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Hypertension::CoverageCardComponent.new(
@@ -227,20 +223,39 @@
     period: @period,
     current_admin: current_admin
   ) %>
-
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
-
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <h4 class="mt-5 mb-32px">Medications</h4>
-    <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
-  <% end %>
-
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
+<% end %>
+<div style="display: flex; justify-content: space-between;" class="mt-5">
+  <h4 class="">Overdue patients</h4>
+  <div class="align-right custom-control custom-switch">
+    <form method="get" name="ltfu_form">
+      <input type="checkbox" onchange="this.form.submit()" name="with_ltfu" for="ltfu_form" class="custom-control-input" id="controlledGraphLtfuToggle">
+      <label class="font-weight-normal custom-control-label c-grey-dark" for="controlledGraphLtfuToggle">
+        Include 'Removed from overdue list'
+      </label>
+    </form>
+  </div>
+</div>
+<div class="grid-2-columns">
+  <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(data: @data, region: @region, period: @period)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(data: @data, region: @region, period: @period)) %>
+  <div class="cardv2 span-2-columns">
+    <div style="background: #f5f5f5; margin:16px; height: 120px; display: flex; justify-content: center; align-items: center; border-radius: 5px;">
+      <p style="color: #777">Table view</p>
+    </div>
+  </div>
+  <%= render(Dashboard::Hypertension::ReturnedToCareComponent.new(data: @data, region: @region, period: @period)) %>
+  <%= render(Dashboard::Hypertension::ReturnedToCareAllComponent.new(data: @data, region: @region, period: @period)) %>
+  <div style="border: 2px dashed #ddd; border-radius: 8px; display: flex; justify-content: center; align-items: center; color: #aaa">Intentionally blank</div>
+</div>
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
-
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
   <%= render "facility_details" %>
@@ -250,22 +265,17 @@
     repository: @details_repository,
     current_period: @period)) %>
 <% end %>
-
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
-
 <div class="d-lg-flex">
   <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
 </div>
-
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
   <%= render "shared/recent_bp_log",
               blood_pressures: @recent_blood_pressures,
               display_model: :facility %>
 <% end %>
-
 <%= render "overview_footnotes" %>
-
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
