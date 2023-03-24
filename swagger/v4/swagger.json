@@ -1375,6 +1375,7 @@
           ],
           "enum": [
             "not_responding",
+            "refused_to_come_back",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",
@@ -1578,6 +1579,7 @@
           "enum": [
             "already_visited",
             "not_responding",
+            "refused_to_come_back",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",

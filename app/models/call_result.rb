@@ -22,6 +22,7 @@ class CallResult < ApplicationRecord
   enum remove_reason: {
     already_visited: "already_visited",
     not_responding: "not_responding",
+    refused_to_come_back: "refused_to_come_back",
     invalid_phone_number: "invalid_phone_number",
     public_hospital_transfer: "public_hospital_transfer",
     moved_to_private: "moved_to_private",

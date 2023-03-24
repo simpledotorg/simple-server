@@ -42,7 +42,10 @@ class OneOff::CphcEnrollment::CreateSubcenterUserRequest
   end
 
   def headers
-    {"stateCode" => state_code, "txnUser" => CPHC_TXN_USER, "Host" => CPHC_HOST}
+    {"stateCode" => state_code,
+     "txnUser" => CPHC_TXN_USER,
+     "Host" => CPHC_HOST,
+     "facilityType" => "STATE"}
   end
 
   def payload
