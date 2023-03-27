@@ -27,4 +27,8 @@ class BangladeshDhis2Exporter
       }
     end
   end
+
+  def self.current_month_period
+    @current_month_period ||= Period.current.previous
+  end
 end
