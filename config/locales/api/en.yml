@@ -446,13 +446,15 @@ en:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
   monthly_screening_reports:
+    # Common
     male: "Male"
     female: "Female"
     transgender: "Transgender"
+    htn_and_dm_screening: "HTN & DM SCREENING"
+    # India
     monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
     monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
     outpatient_department_visits: "Outpatient department visits"
-    htn_and_dm_screening: "HTN & DM SCREENING"
     total_bp_checks: "Total BP checks done"
     total_blood_sugar_checks: "Total blood sugar checks done"
     new_suspected_individuals: "NEW SUSPECTED INDIVIDUALS"
@@ -470,4 +472,18 @@ en:
     oral_cancer: "Oral cancer"
     breast_cancer: "Breast cancer"
     cervical_cancer: "Cervical cancer"
-
+    # Ethiopia
+    et_total_bp: "Total BP screening done"
+    et_total_bs: "Total blood sugar screening done"
+    et_new_raised_cases: "NEW RAISED CASES"
+    et_total_bp_raised: "Total raised BP"
+    et_total_bs_raised: "Total raised BS"
+    et_total_bp_raised_ncd_linked: "Total raised BP cases linked to NCD clinic"
+    et_total_bs_raised_ncd_linked: "Total raised BS cases linked to NCD clinic"
+    et_diagnosed_cases: "DIAGNOSED CASES"
+    et_total_htn_diagnosed: "Total HTN Diagnosed"
+    et_total_dm_diagnosed: "Total DM Diagnosed"
+    et_cervical_cancer: "CERVICAL CANCER"
+    et_total_women_screened_cervical: "Total women screened for Cervical Cancer"
+    et_total_women_treated_cervical: "Total women treated for Cervical Cancer"
+    et_total_women_followup_cervical: "Total women followed up after 1 year"
