@@ -1,4 +1,4 @@
-class DisaggregatedDhis2Exporter
+class BangladeshDisaggregatedDhis2Exporter
   STEP = 5
   BUCKETS = (15..75).step(STEP).to_a
 
@@ -12,25 +12,25 @@ class DisaggregatedDhis2Exporter
       region = facility_identifier.facility.region
       {
         htn_cumulative_assigned_patients: cleanup(disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(
-                                                                         region, period
-                                                                       ))),
+          region, period
+        ))),
         htn_controlled_patients: cleanup(disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region,
                                                                                                          period))),
         htn_uncontrolled_patients: cleanup(disaggregated_counts(PatientStates::UncontrolledPatientsQuery.new(region,
                                                                                                              period))),
         htn_patients_who_missed_visits: cleanup(disaggregated_counts(PatientStates::MissedVisitsPatientsQuery.new(
-                                                                       region, period
-                                                                     ))),
+          region, period
+        ))),
         htn_patients_lost_to_follow_up: cleanup(disaggregated_counts(PatientStates::LostToFollowUpPatientsQuery.new(
-                                                                       region, period
-                                                                     ))),
+          region, period
+        ))),
         htn_dead_patients: cleanup(disaggregated_counts(PatientStates::DeadPatientsQuery.new(region, period))),
         htn_cumulative_registered_patients: cleanup(disaggregated_counts(PatientStates::CumulativeRegistrationsQuery.new(
-                                                                           region, period
-                                                                         ))),
+          region, period
+        ))),
         htn_monthly_registered_patients: cleanup(disaggregated_counts(PatientStates::MonthlyRegistrationsQuery.new(
-                                                                        region, period
-                                                                      ))),
+          region, period
+        ))),
         htn_cumulative_assigned_patients_adjusted: PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
           BUCKETS,
           PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(
