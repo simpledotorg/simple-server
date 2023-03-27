@@ -8,4 +8,9 @@ namespace :dhis2 do
   task maharashtra_export: :environment do
     MaharashtraDHIS2Exporter.export
   end
+
+  desc "Export disaggregated indicators for each facility to DHIS2"
+  task disaggregated_export: :environment do
+    DisaggregatedDhis2Exporter.export
+  end
 end
