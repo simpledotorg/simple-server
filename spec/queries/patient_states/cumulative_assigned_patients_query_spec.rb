@@ -57,4 +57,31 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
       expect(cumulative_assigned_patient_ids).not_to include(facility_1_dead_patient[:id])
     end
   end
+
+  describe "#excluding_recent_registrations" do
+    it "returns patients registered at least 3 months ago" do
+      facility_1_old_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1], device_created_at: 6.months.ago)
+      facility_1_recent_registrations = create(:patient, registration_facility: regions[:facility_1])
+      facility_2_recent_registrations = create_list(:patient, 2, registration_facility: regions[:facility_1])
+
+      refresh_views
+
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+                                                           .excluding_recent_registrations
+                                                           .map(&:patient_id))
+        .to match_array(facility_1_old_registrations.map(&:id))
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+                                                           .excluding_recent_registrations
+                                                           .map(&:patient_id))
+        .not_to include(facility_1_recent_registrations[:id])
+      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
+                                                           .excluding_recent_registrations
+                                                           .count)
+        .to eq(0)
+      expect(PatientStates::ControlledPatientsQuery.new(regions[:facility_2].region, period)
+                                                   .call
+                                                   .map(&:patient_id))
+        .not_to include(*facility_2_recent_registrations.map(&:id))
+    end
+  end
 end
