@@ -1,5 +1,5 @@
 class Dhis2Exporter
-  require 'dhis2'
+  require "dhis2"
 
   attr_reader :facility_identifiers, :periods, :data_elements_map
 
@@ -9,11 +9,25 @@ class Dhis2Exporter
     @data_elements_map = data_elements_map
 
     Dhis2.configure do |config|
-      config.url = ENV.fetch('DHIS2_URL')
-      config.user = ENV.fetch('DHIS2_USERNAME')
-      config.password = ENV.fetch('DHIS2_PASSWORD')
-      config.version = ENV.fetch('DHIS2_VERSION')
+      config.url = ENV.fetch("DHIS2_URL")
+      config.user = ENV.fetch("DHIS2_USERNAME")
+      config.password = ENV.fetch("DHIS2_PASSWORD")
+      config.version = ENV.fetch("DHIS2_VERSION")
     end
+  end
+
+  def export
+    @facility_identifiers.each do |facility_identifier|
+      @periods.each do |period|
+        data_values = yield(facility_identifier, period)
+      end
+
+      send_data_to_dhis2(data_values)
+    end
+  end
+
+  def send_data_to_dhis2(data_values)
+    pp Dhis2.client.data_value_sets.bulk_create(data_values: data_values)
   end
 
   def export
@@ -25,7 +39,9 @@ class Dhis2Exporter
           data_element_id = data_elements_map[data_element]
           export_values << if CountryConfig.current.fetch(:dhis2_category_option_combo).exists?
                              disaggregate_export_values(facility_identifier, period, value)
+                             # array of maps
                            else
+                             # single map
                              {
                                data_element: data_element_id,
                                org_unit: facility_identifier.identifier,
@@ -37,7 +53,7 @@ class Dhis2Exporter
           puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{export_values.last}"
         end
       end
-      pp Dhis2.client.data_value_sets.bulk_create(data_values: export_values)
+
     end
   end
 
