@@ -1,0 +1,8 @@
+<!--Implementation Pending - Overdue Patients Graph-->
+<div id="" class="d-lg-flex w-lg-50 pr-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "", data: graph_data, period: @period) do |c| %>
+    <%= c.title(title: "Overdue Patients Called By User Table".html_safe)%>
+  <% end %>
+</div>
+
+

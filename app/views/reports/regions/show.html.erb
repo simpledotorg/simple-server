@@ -231,6 +231,26 @@
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
 
+<h4 class="mt-5 mb-32px">Overdue</h4>
+
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledByUserComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+</div>
+
   <% if current_admin.feature_enabled?(:medications_dispensation) %>
     <h4 class="mt-5 mb-32px">Medications</h4>
     <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
