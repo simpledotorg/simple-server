@@ -1,5 +1,12 @@
 unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.android_review? || SimpleServer.env.review?
   module RateLimit
+    def self.dashboard_auth_options
+      limit_proc = proc { |_req| 5 }
+      period_proc = proc { |_req| 1.minute }
+
+      {limit: limit_proc, period: period_proc}
+    end
+
     def self.auth_api_options
       limit_proc = proc { |_req| 5 }
       period_proc = proc { |_req| 1.minute }
@@ -27,19 +34,19 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
       [429, {}, ["Too many requests. Please wait and try again later.\n"]]
     end
 
-    throttle("throttle_logins", RateLimit.auth_api_options) do |req|
+    throttle("throttle_logins", RateLimit.dashboard_auth_options) do |req|
       if req.post? && req.path.start_with?("/email_authentications/sign_in")
         req.ip
       end
     end
 
-    throttle("throttle_password_edit", RateLimit.auth_api_options) do |req|
+    throttle("throttle_password_edit", RateLimit.dashboard_auth_options) do |req|
       if req.get? && req.path.start_with?("/email_authentications/password/edit")
         req.ip
       end
     end
 
-    throttle("throttle_password_reset", RateLimit.auth_api_options) do |req|
+    throttle("throttle_password_reset", RateLimit.dashboard_auth_options) do |req|
       if (req.post? || req.put?) && req.path.start_with?("/email_authentications/password")
         req.ip
       end
@@ -52,7 +59,7 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
     end
 
     throttle("throttle_user_activate", RateLimit.user_api_options) do |req|
-      if req.post? && req.path.start_with?("/api/v4/users/activate") && SimpleServer.env.production?
+      if req.post? && req.path.start_with?("/api/v4/users/activate") && Rails.env.production?
         req.ip
       end
     end
@@ -64,4 +71,8 @@ unless SimpleServer.env.sandbox? || SimpleServer.env.qa? || SimpleServer.env.and
     end
   end
 
+  ActiveSupport::Notifications.subscribe(/rack_attack/) do |name, start, finish, request_id, payload|
+    request = payload[:request]
+    Rails.logger.info "Too many login attempts for user #{request.params.dig(:user, :id)}"
+  end
 end
