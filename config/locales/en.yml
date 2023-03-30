@@ -151,6 +151,11 @@ en:
     numerator: "Number of days until a patient's next scheduled appointment"
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
+  overdue_patients: 
+    reports_card_subtitle: "Hypertension patients that are overdue at the start of the month"
+    numerator: "Patients that are overdue at the start of the month."
+    denominator: "Hypertension patients assigned to %{region_name}. Deleted, dead and lost to follow-up patients are excluded."
+
   admin:
     reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
     disable_access_alert: "Are you sure you want to disable the access for user?"

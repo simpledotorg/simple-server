@@ -1,25 +1,27 @@
 <!--Implementation Pending - Overdue Patients Graph-->
 <div id="overdue-trend" class="d-lg-flex w-lg-50 pr-lg-2">
-
-   <%= render Dashboard::Card::GraphComponent.new(id: "overdueTrend", data: graph_data, period: @period) do |c| %>
-      <%= c.title(title: "Overdue Patients") do |title| %>
-        
-      <%end%>
+  <%= render Dashboard::Card::GraphComponent.new(id: "overdueTrend", data: graph_data, period: @period) do |c| %>
+    <%= c.title(title: "Overdue Patients", subtitle: t("overdue_patients.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("overdue_patients.numerator"),
+                               "Denominator" => t("overdue_patients.denominator", region_name: @region.name) }) %>
+    <%end%>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
         <p class="c-print-black graph-percent fs-28px" data-key="overduePatientsRates" data-format="percentage"></p>
         <div>
           <p class="m-0px c-black">
             <span data-key="overduePatients" data-format="numberWithCommas"></span>
-            patients overdue
+            patients that are overdue at the start of
+            <%# <span data-key="endDate"></span> %>
+            Mar-2023
           </p>
           <p class="m-0px c-grey-dark c-print-black">
             of
             <span data-key="assignedPatients" data-format="numberWithCommas"></span>
-            patients
+            assigned patients
           </p>
         </div>
       </div>
-      <%end%>
+    <%end%>
   <%end%>
 </div>
