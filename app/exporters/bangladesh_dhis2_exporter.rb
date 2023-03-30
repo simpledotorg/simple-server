@@ -1,5 +1,5 @@
 class BangladeshDhis2Exporter
-  require "dhis2"
+  require 'dhis2'
 
   def self.export
     periods = (current_month_period.advance(months: -24)..current_month_period)
@@ -13,15 +13,6 @@ class BangladeshDhis2Exporter
     exporter.export do |facility_identifier, period|
       repository = Reports::Repository.new(facility_identifier.facility.region, periods: periods)
       slug = facility_identifier.facility.region.slug
-
-      [
-        {
-          data_element: :cumulative_assigned,
-          org_unit: facility_identifier.identifier,
-          period: reporting_period(period),
-          value: repository.cumulative_assigned_patients[slug][period]
-        }
-      ]
       {
         cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
         cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
@@ -29,7 +20,7 @@ class BangladeshDhis2Exporter
         uncontrolled: repository.uncontrolled[slug][period],
         missed_visits: repository.missed_visits[slug][period],
         ltfu: repository.ltfu[slug][period],
-        # Note: dead patients are always the current count due to lack of status timestamps
+        # NOTE: dead patients are always the current count due to lack of status timestamps
         dead: facility.assigned_patients.with_hypertension.status_dead.count,
         cumulative_registrations: repository.cumulative_registrations[slug][period],
         monthly_registrations: repository.monthly_registrations[slug][period]
