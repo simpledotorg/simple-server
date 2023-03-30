@@ -120,7 +120,7 @@ en:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
       bp_passports:
-        heading_html: BP Passports
+        heading_html: "BP Passports"
         contents_html: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
         video_link_html: How to use a BP Passport
         video_link_subtitle_html: Hindi with English subtitles
@@ -447,6 +447,7 @@ en:
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
   monthly_screening_reports:
     # Common
+    total: "Total"
     male: "Male"
     female: "Female"
     transgender: "Transgender"
@@ -487,3 +488,10 @@ en:
     et_total_women_screened_cervical: "Total women screened for Cervical Cancer"
     et_total_women_treated_cervical: "Total women treated for Cervical Cancer"
     et_total_women_followup_cervical: "Total women followed up after 1 year"
+  monthly_supplies_reports:
+    # Use "BP Passports" from help.videos.bp_passports.heading_html
+    instruction_1: "Enter the supplies left in stock at the end of every month"
+    instruction_2: "Leave blank if you don't know an amount"
+    instruction_3: "Enter \"0\" if stock is out"
+    stock_on_hand: "Stock on hand"
+    glucometer_strips: "Glucometer strips"
