@@ -6,57 +6,48 @@ class BangladeshDisaggregatedDhis2Exporter
     exporter = Dhis2Exporter.new(
       facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
       periods: (current_month_period.advance(months: -24)..current_month_period),
-      data_elements_map: CountryConfig.current.fetch(:disaggregated_dhis2_data_elements)
+      data_elements_map: CountryConfig.current.fetch(:disaggregated_dhis2_data_elements),
+      category_option_combo_ids: CountryConfig.current.fetch(:dhis2_category_option_combo)
     )
-    exporter.export do |facility_identifier, period|
+
+    exporter.export_disaggregated do |facility_identifier, period|
       region = facility_identifier.facility.region
       {
-        htn_cumulative_assigned_patients: cleanup(disaggregated_counts(PatientStates::CumulativeAssignedPatientsQuery.new(
-          region, period
-        ))),
-        htn_controlled_patients: cleanup(disaggregated_counts(PatientStates::ControlledPatientsQuery.new(region,
-                                                                                                         period))),
-        htn_uncontrolled_patients: cleanup(disaggregated_counts(PatientStates::UncontrolledPatientsQuery.new(region,
-                                                                                                             period))),
-        htn_patients_who_missed_visits: cleanup(disaggregated_counts(PatientStates::MissedVisitsPatientsQuery.new(
-          region, period
-        ))),
-        htn_patients_lost_to_follow_up: cleanup(disaggregated_counts(PatientStates::LostToFollowUpPatientsQuery.new(
-          region, period
-        ))),
-        htn_dead_patients: cleanup(disaggregated_counts(PatientStates::DeadPatientsQuery.new(region, period))),
-        htn_cumulative_registered_patients: cleanup(disaggregated_counts(PatientStates::CumulativeRegistrationsQuery.new(
-          region, period
-        ))),
-        htn_monthly_registered_patients: cleanup(disaggregated_counts(PatientStates::MonthlyRegistrationsQuery.new(
-          region, period
-        ))),
-        htn_cumulative_assigned_patients_adjusted: PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
-          BUCKETS,
-          PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(
-            PatientStates::CumulativeAssignedPatientsQuery.new(region, period).excluding_recent_registrations
-          )
-        ).count
-      }
+        htn_cumulative_assigned_patients: PatientStates::CumulativeAssignedPatientsQuery.new(region, period).call,
+        htn_controlled_patients: PatientStates::ControlledPatientsQuery.new(region, period).call,
+        htn_uncontrolled_patients: PatientStates::UncontrolledPatientsQuery.new(region, period).call,
+        htn_patients_who_missed_visits: PatientStates::MissedVisitsPatientsQuery.new(region, period).call,
+        htn_patients_lost_to_follow_up: PatientStates::LostToFollowUpPatientsQuery.new(region, period).call,
+        htn_dead_patients: PatientStates::DeadPatientsQuery.new(region, period).call,
+        htn_cumulative_registered_patients: PatientStates::CumulativeRegistrationsQuery.new(region, period).call,
+        htn_monthly_registered_patients: PatientStates::MonthlyRegistrationsQuery.new(region, period).call,
+        htn_cumulative_assigned_patients_adjusted: PatientStates::CumulativeAssignedPatientsQuery.new(region, period).excluding_recent_registrations
+      }.transform_values { |patient_states| disaggregated_counts(patient_states) }
     end
   end
 
-  def self.disaggregated_counts(query)
+  def self.disaggregated_counts(patient_states)
+    transform_gender_age_group_names(gender_age_bucket_counts(patient_states))
+  end
+
+  def self.gender_age_bucket_counts(patient_states)
     PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
       BUCKETS,
-      PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(
-        query.call
-      )
+      PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(patient_states)
     ).count
   end
 
-  def self.cleanup(disaggregated_values)
-    disaggregated_values.transform_keys do |disaggregated_counts_key|
-      disaggregated_counts_key[0] +
-        '_' +
-        BUCKETS[disaggregated_counts_key[1] - 1].to_s +
-        '_' +
-        (BUCKETS[disaggregated_counts_key[1] - 1] + STEP - 1).to_s
+  def self.transform_gender_age_group_names(groups)
+    groups.transform_keys do |(gender, age_bucket_index)|
+      age_range_start, age_range_end =
+        PatientStates::DisaggregatedPatientCountQuery
+          .bucket_index_to_range(BUCKETS, STEP, age_bucket_index)
+
+      if age_range_start == 75
+        "#{gender}_#{age_range_start}_plus"
+      else
+        "#{gender}_#{age_range_start}_#{age_range_end}"
+      end
     end
   end
 
