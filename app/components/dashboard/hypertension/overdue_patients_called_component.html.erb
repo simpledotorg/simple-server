@@ -1,6 +1,24 @@
 <!--Implementation Pending - Overdue Patients Graph-->
-<div id="" class="d-lg-flex w-lg-50 pr-lg-2">
-  <%= render Dashboard::Card::GraphComponent.new(id: "", data: graph_data, period: @period) do |c| %>
-    <%= c.title(title: "Overdue Patients Called".html_safe)%>
+<div id="overdue-patients-called-trend" class="d-lg-flex w-lg-50 pr-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "overduePatientsCalledTrend", data: graph_data, period: @period) do |c| %>
+    <%= c.title(title: "Overdue Patients Called".html_safe)do |title| %>
+
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black graph-percent fs-28px" data-key="overduePatientsCalledRates" data-format="percentage"></p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
+            patients overdue
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            <span data-key="overduePatients" data-format="numberWithCommas"></span>
+            overdue patients
+          </p>
+        </div>
+      </div>
+    <%end%>
   <% end %>
 </div>
