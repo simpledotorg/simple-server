@@ -1,8 +1,9 @@
-<!--Implementation Pending - Overdue Patients Graph-->
-<div id="" class="d-lg-flex w-lg-50 pr-lg-2">
-  <%= render Dashboard::Card::GraphComponent.new(id: "", data: graph_data, period: @period) do |c| %>
-    <%= c.title(title: "Overdue Patients Called By User Table".html_safe)%>
+<div class="card mb-16px">
+  <%= render Dashboard::Card::TitleComponent.new(
+    title: "Overdue Patients Called",
+    subtitle: "Subtitle here" 
+  ) do |c| %>
+    <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
   <% end %>
+
 </div>
-
-
