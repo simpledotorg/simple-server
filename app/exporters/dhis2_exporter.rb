@@ -29,8 +29,8 @@ class Dhis2Exporter
             period: reporting_period(period),
             value: value
           }
+          puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{data_values.last}"
         end
-        puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{data_values.last}"
       end
       send_data_to_dhis2(data_values)
     end
@@ -56,13 +56,13 @@ class Dhis2Exporter
   end
 
   def self.disaggregate_data_values(data_element_id, facility_identifier, period, values)
-    category_option_combo_ids.map do |name, id|
+    category_option_combo_ids.map do |combo, id|
       {
         data_element: data_element_id,
         org_unit: facility_identifier.identifier,
         category_option_combo: id,
         period: reporting_period(period),
-        value: values[name] || 0
+        value: values[combo] || 0
       }
     end
   end
