@@ -354,6 +354,22 @@ DashboardReports = () => {
         }
       };
       return withBaseLineConfig(config)
+    },
+    overduePatientsCalledTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsCalledRates),
+          datasets: [
+            {
+              label: "Overdue Patients Called",
+              data: Object.values(data.overduePatientsCalledRates),
+              backgroundColor: colors.lightPurple,
+              borderColor: colors.darkPurple,
+            }
+          ]
+        }
+      };
+      return withBaseLineConfig(config)
     }
   };
 

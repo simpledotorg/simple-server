@@ -9,19 +9,20 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     @with_removed_from_overdue_list = with_removed_from_overdue_list
   end
 
-  def graph_data; end
+  def graph_data
+  end
 
   def gen_children_data
     user = {
       user: User.first,
-      patients_called: periods.map { |p| { p => rand(0..200) } }.reduce(:merge),
-      total_patients: periods.map { |p| { p => rand(0..200) } }.reduce(:merge)
+      patients_called: periods.map { |p| {p => rand(0..200)} }.reduce(:merge),
+      total_patients: periods.map { |p| {p => rand(0..200)} }.reduce(:merge)
     }
     [user, user]
   end
 
   def table_headers
-    [{ title: 'RBS &lt;200'.html_safe }]
+    [{title: "RBS &lt;200".html_safe}]
   end
 
   def periods
