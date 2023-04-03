@@ -339,6 +339,7 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
+
     overdueTrend: function (data) {
       const config = {
         data: {
@@ -355,22 +356,24 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config)
     },
-    overduePatientsCalledTrend: function (data) {
+
+    overdueCalledTrend: function (data) {
       const config = {
         data: {
-          labels: Object.keys(data.overduePatientsCalledRates),
+          labels: Object.keys(data.overduePatientsRates),
           datasets: [
             {
-              label: "Overdue Patients Called",
-              data: Object.values(data.overduePatientsCalledRates),
-              backgroundColor: colors.lightPurple,
-              borderColor: colors.darkPurple,
+              label: "Called Overdue Patients",
+              data: Object.values(data.overduePatientsRates),
+              backgroundColor: colors.lightRed,
+              borderColor: colors.darkRed,
             }
           ]
         }
       };
       return withBaseLineConfig(config)
     }
+
   };
 
   return {

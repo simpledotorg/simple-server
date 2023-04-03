@@ -155,6 +155,11 @@ en:
     reports_card_subtitle: "Hypertension patients that are overdue at the start of the month"
     numerator: "Patients that are overdue at the start of the month."
     denominator: "Hypertension patients assigned to %{region_name}. Deleted, dead and lost to follow-up patients are excluded."
+  called_overdue_patients: 
+    reports_card_subtitle: "Total overdue hypertension patients called during the month"
+    numerator: "Unique patients with at least one ‘Result of call...’ marked during the month. Note: This number includes patients that become overdue during the month and received a call, they may not be part of the denominator."
+    denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
+
 
   admin:
     reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
