@@ -22,6 +22,8 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
+    orange: 'rgb(223,104,15)',
+    lightOrange: 'rgba(255,156,8,0.15)'
   };
 }
 
@@ -348,8 +350,8 @@ DashboardReports = () => {
             {
               label: "Overdue Patients",
               data: Object.values(data.overduePatientsRates),
-              backgroundColor: colors.lightRed,
-              borderColor: colors.darkRed,
+              backgroundColor: colors.lightOrange,
+              borderColor: colors.orange,
             }
           ]
         }
