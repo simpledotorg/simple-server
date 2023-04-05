@@ -23,7 +23,6 @@ class Dhis2Exporter
         facility_data = yield(facility_identifier, period)
         facility_data.each do |data_element, value|
           data_values << {
-            # TODO: do nil checks for non existent mappings of data_elements
             data_element: data_elements_map[data_element],
             org_unit: facility_identifier.identifier,
             period: reporting_period(period),
@@ -55,7 +54,7 @@ class Dhis2Exporter
     pp Dhis2.client.data_value_sets.bulk_create(data_values: data_values)
   end
 
-  def self.disaggregate_data_values(data_element_id, facility_identifier, period, values)
+  def disaggregate_data_values(data_element_id, facility_identifier, period, values)
     category_option_combo_ids.map do |combo, id|
       {
         data_element: data_element_id,
