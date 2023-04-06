@@ -22,6 +22,10 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
+    overdueCalledLightGreen: 'rgba(41,181,0,0.2)',
+    overdueCalledLightYellow: 'rgba(255,241,49,0.25)',
+    overdueCalledLightRed: 'rgba(255,146,122,0.2)',
+    darkYellow: 'rgba(228, 180, 57, 1)'
   };
 }
 
@@ -50,13 +54,13 @@ DashboardReports = () => {
 
     switch (format) {
       case "percentage":
-        return formatPercentage(value)
+        return formatPercentage(value);
       case "numberWithCommas":
-        return formatNumberWithCommas(value)
+        return formatNumberWithCommas(value);
       default:
         throw `Unknown format ${format}`;
     }
-  }
+  };
 
   const createAxisMaxAndStepSize = (data) => {
     const maxDataValue = Math.max(...Object.values(data));
@@ -87,9 +91,13 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
 
-    cumulativeDiabetesRegistrationsTrend: function(data) {
-      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
-      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+    cumulativeDiabetesRegistrationsTrend: function (data) {
+      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.cumulativeDiabetesRegistrations
+      );
+      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.monthlyDiabetesRegistrations
+      );
       const config = {
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
@@ -132,15 +140,15 @@ DashboardReports = () => {
               },
               max: cumulativeDiabetesRegistrationsYAxis.max,
             },
-    
+
             yMonthlyDiabetesRegistrations: {
               display: false,
               beginAtZero: true,
               min: 0,
               max: monthlyDiabetesRegistrationsYAxis.max,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -165,7 +173,7 @@ DashboardReports = () => {
             },
           ],
         },
-        options: { 
+        options: {
           scales: {
             x: {
               stacked: true,
@@ -173,8 +181,8 @@ DashboardReports = () => {
             y: {
               stacked: true,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -195,12 +203,12 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
-  
-    diabetesVisitDetails: function(data) {
+
+    diabetesVisitDetails: function (data) {
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
-          Object.keys(data.bsBelow200Rate).length,
-          maxBarsToDisplay
+        Object.keys(data.bsBelow200Rate).length,
+        maxBarsToDisplay
       );
       const config = {
         data: {
@@ -227,7 +235,7 @@ DashboardReports = () => {
             {
               label: "Visit but no blood sugar measure",
               data: Object.values(data.visitButNoBSMeasureRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumGrey,
               hoverBackgroundColor: colors.darkGrey,
@@ -235,19 +243,19 @@ DashboardReports = () => {
             {
               label: "Missed visits",
               data: Object.values(data.diabetesMissedVisitsRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumBlue,
               hoverBackgroundColor: colors.darkBlue,
             },
           ],
-        }
-      }
+        },
+      };
       return withBaseBarConfig(config);
     },
 
-    MedicationsDispensation: function(data) {
-      const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
+    MedicationsDispensation: function (data) {
+      const graphPeriods = Object.keys(Object.values(data)[0]["counts"]);
 
       let datasets = Object.keys(data).map(function (bucket, index) {
         return {
@@ -260,7 +268,7 @@ DashboardReports = () => {
         };
       });
       const config = {
-        type: 'bar',
+        type: "bar",
         data: {
           labels: graphPeriods,
           datasets: datasets,
@@ -305,7 +313,7 @@ DashboardReports = () => {
                   )} follow-up patients`;
                 },
               },
-            }
+            },
           },
           scales: {
             y: {
@@ -316,13 +324,13 @@ DashboardReports = () => {
                 display: false,
               },
             },
-          }
+          },
         },
         plugins: [ChartDataLabels],
-      }
-      return withBaseLineConfig(config)
+      };
+      return withBaseLineConfig(config);
     },
-    
+
     lostToFollowUpTrend: function (data) {
       const config = {
         data: {
@@ -349,90 +357,116 @@ DashboardReports = () => {
               data: Object.values(data.overduePatientsRates),
               backgroundColor: colors.lightRed,
               borderColor: colors.darkRed,
-            }
-          ]
-        }
+            },
+          ],
+        },
       };
-      return withBaseLineConfig(config)
+      return withBaseLineConfig(config);
     },
     overduePatientsCalledTrend: function (data) {
       const config = {
         data: {
-          labels: Object.keys(data.overduePatientsCalledRates),
+          labels: Object.keys(data.percentageCalled),
           datasets: [
             {
-              label: "Overdue Patients Called",
-              data: Object.values(data.overduePatientsCalledRates),
-              backgroundColor: colors.lightPurple,
+              label: "Agreed to visit",
+              data: Object.values(data.chartProportionalPercentageCalledWithResultAgreedToVisit),
+              backgroundColor: colors.overdueCalledLightGreen,
+              borderColor: colors.darkRed,
+              borderWidth: 0,
+              radius: 0,
+              fill: true,
+            },
+            {
+              label: "Remind to call later",
+              data: Object.values(data.chartProportionalPercentageCalledWithResultRemindToCallLater),
+              backgroundColor: colors.overdueCalledLightYellow,
               borderColor: colors.darkPurple,
-            }
-          ]
-        }
+              borderWidth: 0,
+              radius: 0,
+              fill: "-1",
+
+            },
+            {
+              label: "Remove from overdue list",
+              data: Object.values(data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList),
+              backgroundColor: colors.overdueCalledLightRed,
+              borderColor: colors.darkYellow,
+              fill: "-1",
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              stacked: true,
+            },
+          },
+        },
       };
-      return withBaseLineConfig(config)
-    }
+      return withBaseLineConfig(config);
+    },
   };
 
   return {
-      ReportsTable: (id) => {
-        const tableSortAscending = { descending: false };
-        const table = document.getElementById(id);
+    ReportsTable: (id) => {
+      const tableSortAscending = { descending: false };
+      const table = document.getElementById(id);
 
-        if (table) {
-            new Tablesort(table, tableSortAscending);
-        }
-      },
-      ReportsGraph: (id, data) => {
-        const container = document.querySelector(`#${id}`);
-        const graphCanvas = container.querySelector('canvas')
-        const defaultPeriod = container.getAttribute("data-period");
-        const dataKeyNodes = container.querySelectorAll("[data-key]");
-
-        const populateDynamicComponents = (period) => {
-            dataKeyNodes.forEach(dataNode => {
-                const format = dataNode.dataset.format;
-                const key = dataNode.dataset.key;
-
-                if(!data[key]) {
-                    throw `${key}: Key not present in data.`
-                }
-
-                dataNode.innerHTML = formatValue(format, data[key][period]);
-            })
-        };
-
-        if(!ReportsGraphConfig[id]) {
-            throw `Config for ${id} is not defined`;
-        }
-
-        const graphConfig = ReportsGraphConfig[id](data);
-        if(!graphConfig) {
-            throw `Graph config not known for ${id}`
-        }
-
-        // comeback and improve
-        if (!graphConfig.options.plugins.tooltip.enabled) {
-          graphConfig.options.plugins.tooltip = {
-            enabled: false,
-            external: (context) => {
-              const isTooltipActive = context.tooltip._active.length > 0;
-              if (isTooltipActive) {
-                let hoveredDatapoint = context.tooltip.dataPoints;
-                populateDynamicComponents(hoveredDatapoint[0].label);
-              }
-              else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
-            },
-          };
-        }
-
-        if(graphCanvas) {
-            // Assumes ChartJS is already imported
-            new Chart(graphCanvas.getContext("2d"), graphConfig);
-            populateDynamicComponents(defaultPeriod);
-        }
+      if (table) {
+        new Tablesort(table, tableSortAscending);
       }
-  }
-}
+    },
+    ReportsGraph: (id, data) => {
+      const container = document.querySelector(`#${id}`);
+      const graphCanvas = container.querySelector("canvas");
+      const defaultPeriod = container.getAttribute("data-period");
+      const dataKeyNodes = container.querySelectorAll("[data-key]");
+
+      const populateDynamicComponents = (period) => {
+        dataKeyNodes.forEach((dataNode) => {
+          const format = dataNode.dataset.format;
+          const key = dataNode.dataset.key;
+
+          if (!data[key]) {
+            throw `${key}: Key not present in data.`;
+          }
+
+          dataNode.innerHTML = formatValue(format, data[key][period]);
+        });
+      };
+
+      if (!ReportsGraphConfig[id]) {
+        throw `Config for ${id} is not defined`;
+      }
+
+      const graphConfig = ReportsGraphConfig[id](data);
+      if (!graphConfig) {
+        throw `Graph config not known for ${id}`;
+      }
+
+      // comeback and improve
+      if (!graphConfig.options.plugins.tooltip.enabled) {
+        graphConfig.options.plugins.tooltip = {
+          enabled: false,
+          external: (context) => {
+            const isTooltipActive = context.tooltip._active.length > 0;
+            if (isTooltipActive) {
+              let hoveredDatapoint = context.tooltip.dataPoints;
+              populateDynamicComponents(hoveredDatapoint[0].label);
+            } else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
+          },
+        };
+      }
+
+      if (graphCanvas) {
+        // Assumes ChartJS is already imported
+        new Chart(graphCanvas.getContext("2d"), graphConfig);
+        populateDynamicComponents(defaultPeriod);
+      }
+    },
+  };
+};
 
 Reports = function (withLtfu) {
   const colors = dashboardReportsChartJSColors();
@@ -485,12 +519,11 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateControlledGraph(hoveredDatapoint[0].label);
-              }
-              else populateControlledGraphDefault();
+              } else populateControlledGraphDefault();
             },
           },
         },
-      }
+      },
     };
 
     const populateControlledGraph = (period) => {
@@ -568,8 +601,7 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateUncontrolledGraph(hoveredDatapoint[0].label);
-              }
-              else populateUncontrolledGraphDefault();
+              } else populateUncontrolledGraphDefault();
             },
           },
         },
@@ -653,11 +685,10 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateMissedVisitsGraph(hoveredDatapoint[0].label);
-              }
-              else populateMissedVisitsGraphDefault();
+              } else populateMissedVisitsGraphDefault();
             },
           },
-        }
+        },
       },
     };
 
@@ -699,7 +730,7 @@ Reports = function (withLtfu) {
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
       new Chart(
-        missedVisitsGraphCanvas.getContext("2d"), 
+        missedVisitsGraphCanvas.getContext("2d"),
         withBaseLineConfig(config)
       );
       populateMissedVisitsGraphDefault();
@@ -744,8 +775,7 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-              }
-              else populateCumulativeRegistrationsGraphDefault();
+              } else populateCumulativeRegistrationsGraphDefault();
             },
           },
         },
@@ -765,9 +795,9 @@ Reports = function (withLtfu) {
             beginAtZero: true,
             min: 0,
             max: monthlyRegistrationsYAxis.max,
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
     const populateCumulativeRegistrationsGraph = (period) => {
@@ -784,16 +814,18 @@ Reports = function (withLtfu) {
       );
 
       const hypertensionOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-only-registrations]"
+        "[data-hypertension-only-registrations]"
       );
 
-      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
+      const hypertensionAndDiabetesOnlyRegistrationsNode =
+        cardNode.querySelector(
           "[data-hypertension-and-diabetes-registrations]"
-      );
+        );
 
       const periodInfo = data.periodInfo[period];
       const cumulativeRegistrations = data.cumulativeRegistrations[period];
-      const cumulativeHypertensionAndDiabetesRegistrations = data.cumulativeHypertensionAndDiabetesRegistrations[period];
+      const cumulativeHypertensionAndDiabetesRegistrations =
+        data.cumulativeHypertensionAndDiabetesRegistrations[period];
       const monthlyRegistrations = data.monthlyRegistrations[period];
 
       monthlyRegistrationsNode.innerHTML =
@@ -804,16 +836,19 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
 
-      if(hypertensionOnlyRegistrationsNode) {
-        hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-            cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-        );
+      if (hypertensionOnlyRegistrationsNode) {
+        hypertensionOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
+            cumulativeRegistrations -
+              cumulativeHypertensionAndDiabetesRegistrations
+          );
       }
 
-      if(hypertensionAndDiabetesOnlyRegistrationsNode) {
-        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+      if (hypertensionAndDiabetesOnlyRegistrationsNode) {
+        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
             cumulativeHypertensionAndDiabetesRegistrations
-        );
+          );
       }
     };
 
@@ -882,13 +917,12 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateVisitDetailsGraph(hoveredDatapoint[0].label);
-              }
-              else populateVisitDetailsGraphDefault();
+              } else populateVisitDetailsGraphDefault();
             },
-          }
+          },
         },
-      }
-    }
+      },
+    };
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -1024,8 +1058,10 @@ Reports = function (withLtfu) {
       adjustedPatientCounts: jsonData.adjusted_patient_counts,
       adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
-      cumulativeDiabetesRegistrations: jsonData.cumulative_diabetes_registrations,
-      cumulativeHypertensionAndDiabetesRegistrations: jsonData.cumulative_hypertension_and_diabetes_registrations,
+      cumulativeDiabetesRegistrations:
+        jsonData.cumulative_diabetes_registrations,
+      cumulativeHypertensionAndDiabetesRegistrations:
+        jsonData.cumulative_hypertension_and_diabetes_registrations,
       uncontrolledPatients: jsonData.uncontrolled_patients,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
@@ -1080,7 +1116,7 @@ Reports = function (withLtfu) {
 };
 
 function baseLineGraphConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "line",
     options: {
@@ -1108,7 +1144,7 @@ function baseLineGraphConfig() {
           tension: 0.4,
           borderWidth: 2,
           fill: true,
-        }
+        },
       },
       interaction: {
         mode: "index",
@@ -1166,7 +1202,7 @@ function baseLineGraphConfig() {
 }
 
 function baseBarChartConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "bar",
     options: {
@@ -1233,10 +1269,10 @@ function baseBarChartConfig() {
           min: 0,
           beginAtZero: true,
         },
-      }
+      },
     },
     plugins: [intersectDataVerticalLine],
-  }
+  };
 }
 
 // [plugin] vertical instersect line
@@ -1284,7 +1320,6 @@ function withBaseBarConfig(config) {
     mergeArraysWithConcatenation
   );
 }
-
 
 function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
