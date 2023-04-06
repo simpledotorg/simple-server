@@ -445,7 +445,11 @@ bn-IN:
         cohort_title: "%{period}-এ শেষবারের ভিজিট থেকে ফলাফল"
         cohort_subtitle: "%{registration_period}-এ রেজিস্টার করা %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} থাকা %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
+    male: "পুরুষ"
+    female: "মহিলা"
+    transgender: "ট্রান্সজেন্ডার"
+  monthly_screening_report:
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
