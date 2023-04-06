@@ -450,9 +450,6 @@ bn-IN:
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
   monthly_screening_report:
-    male: "পুরুষ"
-    female: "মহিলা"
-    transgender: "ট্রান্সজেন্ডার"
     monthly_opd_visits_gt_30: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >30 বছর বয়েস"
     monthly_opd_visits_gt_18: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >18 বছর বয়েস"
     outpatient_department_visits: "বাইরের রোগীদের দেখানো জন্য"

@@ -502,8 +502,12 @@ en:
     total_working_condition: "Total in working condition"
     # Bangladesh
     patient_books: "Patient books"
-    bp_monitors_large: "Digital BP monitors (large)"
-    bp_monitors_handheld: "Digital BP monitors (handheld)"
+    available_bp_monitors_arm_in: "Total available BP monitors (arm-in)"
+    functioning_bp_monitors_arm_in: "Functioning BP monitors (arm-in)"
+    available_bp_monitors_handheld: "Total available BP monitors (handheld)"
+    functioning_bp_monitors_handheld: "Functioning BP monitors (handheld)"
+    available_blood_glucose_monitors: "Total available Blood Glucose monitors"
+    functioning_blood_glucose_monitors: "Functioning Blood Glucose monitors"
     # Ethiopia
     bp_monitor: "BP monitor"
     glucose_meter: "Blood glucose meter"
@@ -514,9 +518,9 @@ en:
     glucometer_strips: "Glucometer strips"
     # Sri Lanka
     equipment: "EQUIPMENT"
-    available_bp_devices: "Available number of BP devices"
+    available_bp_devices: "Total available BP devices"
     functioning_bp_devices: "Functioning BP devices"
-    available_phones: "Available number of Mobile phones"
+    available_phones: "Total available Mobile phones"
     functioning_phones: "Functioning Mobile phones"
     drug_stock: "DRUG STOCK"
     drug_stock_losartan: "Enough drugs for next month: Losartan"
