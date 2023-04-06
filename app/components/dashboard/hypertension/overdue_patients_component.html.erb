@@ -1,4 +1,3 @@
-<!--Implementation Pending - Overdue Patients Graph-->
 <div id="overdue-trend" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "overdueTrend", data: graph_data, period: @period) do |c| %>
     <%= c.title(title: "Overdue Patients", subtitle: t("overdue_patients.reports_card_subtitle")) do |title| %>
@@ -7,13 +6,12 @@
     <%end%>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
-        <p class="c-orange-darker c-print-black graph-percent fs-28px" data-key="overduePatientsRates" data-format="percentage"></p>
+        <p class="c-orange-darker c-print-black graph-percent fs-28px" data-key="overduePatientsPercentage" data-format="percentage"></p>
         <div>
           <p class="m-0px c-black">
             <span data-key="overduePatients" data-format="numberWithCommas"></span>
             patients that are overdue at the start of
-            <span data-period="endDate"></span>
-            <%# Mar-2023 %>
+            <span data-key="endDate"></span>
           </p>
           <p class="m-0px c-grey-dark c-print-black">
             of

@@ -343,13 +343,14 @@ DashboardReports = () => {
     },
 
     overdueTrend: function (data) {
+      console.log(data.overduePatientsPercentage);
       const config = {
         data: {
-          labels: Object.keys(data.overduePatientsRates),
+          labels: Object.keys(data.overduePatientsPercentage),
           datasets: [
             {
               label: "Overdue Patients",
-              data: Object.values(data.overduePatientsRates),
+              data: Object.values(data.overduePatientsPercentage),
               backgroundColor: colors.lightOrange,
               borderColor: colors.orange,
             }
@@ -394,7 +395,10 @@ DashboardReports = () => {
         const dataKeyNodes = container.querySelectorAll("[data-key]");
 
         const populateDynamicComponents = (period) => {
+          console.log(period);
+          console.log('---- datanodes ------');
             dataKeyNodes.forEach(dataNode => {
+              console.log(dataNode);
                 const format = dataNode.dataset.format;
                 const key = dataNode.dataset.key;
 
