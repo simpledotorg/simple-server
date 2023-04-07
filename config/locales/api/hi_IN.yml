@@ -445,10 +445,11 @@ hi-IN:
         cohort_title: "%{period} में पिछली विज़िट के परिणाम"
         cohort_subtitle: "%{registration_period} में %{number_of_patients} %{patient_or_patients} रजिस्टर किए गए"
         cohort_bar_tooltip: "%{threshold} वाले %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "पुरूष"
     female: "महिला"
     transgender: "ट्रांसजेंडर"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "30 साल से अधिक उम्र के लोगों के लिए हर महीने OPD की विज़िट"
     monthly_opd_visits_gt_18: "18 साल से अधिक उम्र के लोगों के लिए हर महीने OPD की विज़िट"
     outpatient_department_visits: "बाह्य-रोगी विभाग की विज़िट"
