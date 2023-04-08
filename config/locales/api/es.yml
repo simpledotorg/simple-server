@@ -1,0 +1,540 @@
+es:
+  date:
+    month_names: [~, "enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"]
+    abbr_month_names: [~, "ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"]
+  today_str: "Hoy"
+  registration: "Nuevo registro"
+  reset_password: "Reiniciar PIN"
+  login:
+    error_messages:
+      unknown_user: "No reconocemos al usuario. Por favor intente de nuevo."
+      invalid_otp: "Su código OTP no concuerda. Inténte de nuevo."
+      expired_otp: "Su código OTP ha expirado. Solicite uno nuevo."
+      invalid_password: "Su contraseña no concuerda. Intente de nuevo."
+      account_locked: "Su cuenta ha sido bloqueada por los próximos %{minutes} minutos. Por favor espere e inténte de nuevo."
+  communications:
+    request_otp: "<#> %{otp}es su código de verificación de Simple\n%{app_signature}"
+    appointment_reminders:
+      sms: "Nuestro equipo en %{facility_name}está pensando en su salud. Por favor continúe tomando sus medicamentos para la presión arterial y recoja su medicina en el centro de distribución mas cercano."
+      whatsapp: "Nuestro equipo en %{facility_name}está pensando en su salud. Por favor continúe tomando sus medicamentos para la presión arterial y recoja su medicina en el centro de distribución mas cercano."
+    patient_request_otp: "<#> %{otp} es su código de verificación de BP Passport\n%{app_signature}"
+  dashboard:
+    graphics:
+      graphics_title_html: "¿Qué sucedió en <b>%{current_quarter_string}</b> a los %{patients_in_previous_quarter} pacientes registrados durante <b>%{previous_quarter_string}</b>?"
+      report_name: "Reporte de Hipertensión"
+      patients_controlled_in_quarter_html: "pacientes visitados con PA &lt;"
+      patients_uncontrolled_in_quarter_html: "pacientes visitados con PA &ge;"
+      patients_defaulted_in_quarter_html: "pacientes no acudieron a una visita de seguimiento esperada"
+      new_patients_registered: "Nuevos registros"
+      patients_called_for_followup: "Pacientes de seguimiento"
+  analytics:
+    page_title: "Analíticas de Usuario"
+    updated: "Actualizado: %{time}"
+    tap_sync: "Pulse \"Sincronizar\" en la pantalla de inicio para obtener datos nuevos."
+    registered: "Registrado"
+    follow_up: "Seguimiento"
+    patient:
+      one: "paciente"
+      many: "pacientes"
+      other: "pacientes"
+    registered_patients: "Pacientes registrados"
+    follow_up_patients: "Pacientes de seguimiento"
+    hypertension_controlled: "Hipertensión controlada"
+    hypertension_control_desc: "¿Cuántos pacientes con hipertensión PA <140/90 en los últimos 3 meses?"
+    last_12_months: "Últimos 12 meses"
+    achievements: "Logros"
+    hypertension_patients: "Pacientes hipertensos"
+    notes: "Notas"
+    footer_note_1: "Los datos son para toda la actividad en %{facility_name}. Si los datos no se muestran actualizados, pulse el enlace de \"Sincronización pendiente\" en la pantalla inicial."
+    thank_you: "Gracias"
+    thank_you_note: "Gracias por su arduo trabajo tratando pacientes con hipertensión. Su trabajo salva vidas de infartos y derrames."
+    definition: "Definición"
+    registered_patients_desc: "Pacientes registrados en Simple por el equipo de esta ubicación. La “Ubicación preferida” del paciente puede ser cualquier ubicación."
+    follow_up_patients_desc: "Pacientes con PA o azúcar tomados en esta unidad. El número de pacientes con seguimiento no es afectado por la unidad de registro del paciente o su \"Unidad Preferida\"."
+    numerator: "Numerador"
+    denominator: "Denominador"
+    hypertension_cohort_report: "Reporte de cohortes hípertensos"
+    hypertension_cohort_report_desc: "Los reportes de cohortes muestran las medidas de los pacientes hipertensos recién registrados en los primeros meses de su tratamiento."
+    patients_with_controlled_bp: "Pacientes visitados con PA &lt;140/90"
+    patients_with_uncontrolled_bp: "Pacientes visitados con PA &ge;140/90"
+    patients_with_no_bp_measure: "Pacientes sin medición de PA"
+    patients_with_missed_visits: "Pacientes con una visita perdida"
+    registered_in: "registrado en"
+    result_from_last_visit_in: "Resultado de la última visita"
+    no_patients: "Sin pacientes"
+    cohort_report_footnote_1: "La última visita de seguimiento en <em>cualquier unidad</em> un cuarto después de registro."
+    cohort_report_footnote_2: "Todos los pacientes hipertensos asignados a esta unidad, registrados en un cuarto. No incluye pacientes muertos."
+    cohort_report_footnote_3: "Si un paciente tiene múltiples visitas, su última PA se usa para calcular el control de PA."
+    all_hypertension_and_diabetes: "Todos de hipertensión y diabetes"
+    hypertension_controlled_numerator: "Pacientes con PA <140/90 en su última visita en <em>cualquier unidad</em> en los últimos 3 meses."
+    hypertension_controlled_denominator: "Pacientes hipertensos asignados a esta unidad, registrados hace mas de 3 meses. No incluye pacientes muertos o pacientes sin una visita de seguimiento durante los últimos 12 meses."
+    hypertension: "Hipertensión"
+    diabetes: "Diabetes"
+    all_time: "Todos los meses"
+    genders:
+      all: "Todos"
+      female: "Femenino"
+      male: "Másculino"
+      transgender: "Transgénero"
+  help:
+    menu:
+      videos_html: Videos
+      start_html: 1. Cómo empezar
+      register_html: 2. Registra un paciente
+      search_html: 3. Encuentra al paciente correcto
+      record_html: 4. Graba la visita del paciente
+      overdue_html: 5. Llama a pacientes atrasados
+      faq_html: Preguntas comunes
+    support:
+      heading_html: Pedir ayuda
+      contents_html: "Si tienes problemas o preguntas, presiona el botón para hablar con nuestro equipo de apoyo. Estamos aquí para ayudarte."
+    bp_passport_app_summary:
+      new_html: ¡NUEVO!
+      heading_html: Aplicación para sus pacientes
+      contents_1_html: Los pacientes ahora pueden registrar su PA y glucosa en sangre con una aplicación sencilla llamada "BP Passport".
+      contents_2_html: Pida a sus pacientes que vayan a la tienda de Google Play o Apple App Store e instalen la aplicación "BP Passport".
+      learn_more_html: Conozca más...
+    videos:
+      heading_html: Videos de capacitación
+      class:
+        heading_html: Tome la clase
+        contents_html: Tome una clase para aprender a usar Simple.
+        training_videos_link_html: "Capacitación: Todos los capítulos"
+        training_videos_subtitle_html: "Inglés con subtítulos en Hindi 36:15"
+      chapters:
+        heading_html: Capítulos de la clase
+        chapter_1_html: "1: Instalar la aplicación"
+        chapter_2_html: "2: Introducción"
+        chapter_3_html: "3: Registrar un paciente"
+        chapter_4_html: "4: Buscar un paciente de seguimiento"
+        chapter_5_html: "5: Encontrar el paciente correcto"
+        chapter_6_html: "6: Llamar pacientes atrasados"
+        chapter_7_html: "7: Herramientas importantes"
+        chapter_8_html: "8: Preguntas frecuentes"
+        chapter_9_html: "9: Cómo obtener ayuda"
+        chapter_10_html: "10: Empieze a usar Simple"
+      teleconsultation:
+        heading_html: Capacitación para teleconsultas
+        contents_html: "Si su hospital usa Simple para teleconsultas, esta capacitación es para usted."
+        english_video_link_html: Teleconsultas con Simple
+        english_video_link_language_html: Inglés
+        hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
+        hindi_video_link_language_html: Hindi
+      bp_passports:
+        heading_html: "BP Passports"
+        contents_html: Aprenda a usar tarjetas o etiquetas BP Passport en su hospital.
+        video_link_html: Cómo usar un BP Passport
+        video_link_subtitle_html: Hindi con subtítulos en inglés
+      film:
+        heading_html: Película de Simple
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Un día en la vida de Simple"</a> es un cortometraje que muestra cómo una enfermera en Punjab, India, usa Simple para tratar pacientes con hipertensión.'
+    start:
+      heading_html: Empezando
+      getting_started_video:
+        heading_html: Mire un video
+        contents_html: Aprenda lo básico de Simple en 5 minutos.
+      who_to_record:
+        heading_html: "¿A quién registrar en Simple?"
+        contents_1_html: Use Simple para registrar a <i>cada paciente con hipertensión</i> o que toma medicinas para PA alta.
+        contents_2_html: "Cuando el paciente regrese para seguimiento, busque al mismo paciente e ingrese una nueva PA."
+      step_1:
+        label_html: Paso 1
+        heading_html: Tome la PA del paciente
+        contents_html: "Tome una PA precisa: pies en el piso, espalda contra el respaldo, sin hablar."
+      step_2:
+        label_html: Paso 2
+        heading_html: Escriba en BP Passport
+        contents_html: "Si tiene BP Passports, escriba el nombre del paciente. Después, escanéelo usando la aplicación Simple."
+      step_3:
+        label_html: Paso 3
+        heading_html: Registrar paciente
+        contents_html: "Si el paciente es nuevo, regístrelo."
+      step_4:
+        label_html: Paso 4
+        heading_html: Ingrese la PA en Simple
+        contents_html: <i>No redondee</i> la lectura de PA.
+      step_5:
+        label_html: Paso 5
+        heading_html: Ingrese medicamentos
+        contents_html: Ingrese los medicamentos para hipertensión que el paciente esté tomando actualmente.
+      step_6:
+        label_html: Paso 6
+        heading_html: Guarde al paciente
+        contents_html: "Pulse <span class=\"code\">GUARDAR</span> y programe la siguiente visita del paciente. Escriba esa fecha en el BP Passport."
+      missed_visit:
+        label_html: Visita perdida
+        heading_html: "¿Qué sucede después?"
+        contents_html: "Si su paciente no acude a su visita, Simple les enviará un mensaje de texto recordándoles que regresen."
+      tip:
+        heading_html: Tip
+        contents_html: Asegúrese de grabar pacientes en la unidad correcta. Revise el nombre de la unidad en la parte de arriba en la página de inicio.
+    register:
+      heading_html: Registre un paciente
+      contents_html: "Hay dos formas de registrar nuevos pacientes:"
+      option_1:
+        label_html: Opción 1
+        heading_html: Si tiene BP Passports
+        step_1_html: Pulse este botón en la pantalla de inicio
+        step_2_html: Tome un Pasaporte PA <i>en blanco</i> y escanée el código QR.
+        step_3_html: Busque el nombre completo del paciente.
+        step_4_html: "Si no ve al paciente en los resultados de búsqueda, pulse <span class=\"code\">Registrar como paciente nuevo</span>."
+        step_5_html: Llene la forma de registro.
+        step_6_html: Hable con su paciente y complete la historia médica.
+        step_7_html: "Guarde la visita del paciente, pulsando <span class=\"code\">Guardar</span>."
+      option_2:
+        label_html: Opción 2
+        heading_html: Si <i>no tiene</i> Pasaportes PA
+        step_1_html: "Pulse <span class=\"code\">Ingrese el nombre del paciente</span>"
+        step_2_html: Ingrese el nombre completo del paciente.
+        step_3_html: "Si no ve al paciente en los resultados de búsqueda, pulse <span class=\"code\">Registrar como paciente nuevo</span>."
+        step_4_html: Llene la forma de registro.
+        step_5_html: Hable con su paciente y complete la historia médica.
+        step_6_html: "Guarde la visita del paciente, pulsando <span class=\"code\">Guardar</span>."
+      tips:
+        heading_html: Tips
+        tip_1_html: Asegúrese de grabar pacientes en la unidad correcta. Revise el nombre de la unidad en la parte de arriba en la página de inicio.
+        tip_2_html: "De ser posible, ¡ingrese el número de teléfono móvil!"
+        tip_3_html: "Si no puede encontrar a un paciente de seguimiento, está bien si lo registra como un paciente nuevo."
+        tip_4_html: "Si un paciente pierde su Pasaporte PA, entréguele uno nuevo. Los pacientes pueden tener múltiples Pasaportes PA, todos funcionan correctamente."
+    search:
+      heading_html: Encontrar al paciente correcto
+      find_patient:
+        heading_html: Cómo encontrar pacientes
+        contents_html: "Cuando busque a un paciente por nombre o número de teléfono móvil, es importante seleccionar al paciente correcto."
+      choose_patient:
+        heading_html: Elegir al paciente <i>correcto</i>
+        contents_1_html: "En los resultados de búsqueda, es muy importante elegir al paciente correcto. Siempre revise:"
+        check_item_1_html: "Que el <span class=\"code\">nombre</span> concuerde"
+        check_item_2_html: "Que la <span class=\"code\">edad</span> sea correcta"
+        check_item_3_html: "Que la <span class=\"code\">dirección</span> es donde el paciente vive"
+        check_item_4_html: "Que el <span class=\"code\">número de teléfono móvil</span> concuerde"
+        check_item_5_html: "Que la <span class=\"code\">fecha de última visita</span> sea un día en que el paciente visitó el hospital."
+        contents_2_html: "Si el paciente no concuerda con ninguno de los pacientes en la búsqueda, por favor regístrelos como un paciente nuevo."
+      tip:
+        heading_html: Tip
+        contents_html: "Si el escaneo de Pasaporte PA no funciona, puede escribir el número de Pasaporte PA en Simple, usando la misma pantalla donde escanea."
+    record:
+      heading_html: Registrar la visita de un paciente.
+      find_patient:
+        heading_html: "Primero, encuentre al paciente"
+        contents_html: "Puede encontrar a pacientes de dos maneras: escaneando su Pasaporte PA o buscando al paciente por nombre o número de teléfono móvil."
+      record_info:
+        heading_html: Registrar PA y medicinas
+        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+&nbsp;Presión Arterial</span>"
+        step_2_html: "Después, añada las medicinas para la hipertensión del paciente."
+        step_3_html: "Seleccione las medicinas correctas y sus dosis. Para eliminar una medicina, pulse la dosis y seleccione <span class=\"code\">Ninguna</span>."
+        step_4_html: "Pulse <span class=\"code\">Guardar</span> y elija la fecha de la siguiente visita. Opcional: Presione \"Cambiar\" debajo de la unidad del paciente para cambiar la unidad de la siguiente visita."
+        step_5_html: Listo. La visita del paciente fue guardada
+      medicine_refills:
+        heading_html: Resurtido de medicamentos
+        contents_html: "Si está resurtiendo los medicamentos actuales de un paciente:"
+        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+ Medicinas</span>"
+        step_2_html: "Pulse <span class=\"code\">Resurtir medicinas</span>"
+        step_3_html: ¡Listo!
+        english_video_link_html: Cómo resurtir los medicamentos de un paciente
+        english_video_link_language_html: Inglés
+        hindi_video_link_html: Cómo resurtir los medicamentos de un paciente
+        hindi_video_link_language_html: Hindi
+      tips:
+        heading_html: Tips
+        tip_1_html: "Puede seleccionar la fecha de la siguiente visita en un calendario, pulsando <span class=\"code\">CAMBIAR</span> cuando esté programando la visita."
+        tip_2_html: "Si selecciona <span class=\"code\">NO AHORA</span>, el paciente no tendrá una visita programada."
+        tip_3_html: "Puede ingresar la PA de una visita anterior. Ingrese la PA como normalmente lo hace y pulse en <span class=\"code\">CAMBIAR</span> la fecha."
+    overdue:
+      heading_html: Llamar pacientes atrasados
+      what_is_overdue:
+        heading_html: "¿Qué es \"atrasado\"?"
+        contents_1_html: Los pacientes se muestran como atrasados si llegó la fecha de su visita programada y no tienen una PA ingresada.
+        contents_2_html: Los pacientes en la parte superior de la lista de pacientes atrasados son los más críticos. Empieze llamando a los pacientes en la parte superior de esta lista.
+      calling:
+        heading_html: Llamando pacientes
+        contents_html: "Llame a los pacientes pulsando el icono de teléfono. Podrá ver dos opciones:  Llamada normal</span> y <span class=\"code\">Llamada segura</span>. Una llamada \"segura\" es gratuita y ocultará su número telefónico."
+      result_of_call:
+        heading_html: Ingrese el "resultado de la llamada"
+        contents_html: "Por favor ingrese el resultado de cada llamada telefónica que haga. Pulse en la tarjeta del paciente para ver las siguientes opciones:"
+        agreed_to_visit_html: "<span class=\"code\">Accedió a visitar</span> si el paciente le dice que irá a una visita de seguimiento."
+        remind_to_call_later_html: "<span class=\"code\">Recordar llamar después...</span> si el paciente no mencionó cuándo podía ir a seguimiento o si no respondió la llamada telefónica."
+        remove_from_overdue_list:
+          contents_html: "<span class=\"code\">Eliminar de lista de atrasados</span> si:"
+          condition_1_html: El paciente ya visitó
+          condition_2_html: El paciente no responde
+          condition_3_html: El número telefónico no funciona
+          condition_4_html: El paciente se ha transferido a otra unidad
+          condition_5_html: El paciente se ha cambiado a un profesional privado
+          condition_6_html: Fallecido
+    faq:
+      heading_html: Preguntas comunes
+      app_crash_question_html: "¿Qué debo hacer si mi aplicación falla?"
+      app_crash_answer_html: "Primero intente reiniciar su dispositivo. Si Simple sigue fallando y no puede arreglarlo, por favor vaya a la pantalla de <span class=\"help\">Ayuda</span> y contacte a su supervisor o a nuestro equipo."
+      scan_not_working_question_html: "No es posible escanear. ¿Qué debo hacer?"
+      scan_not_working_answer_html: "Ingree el número de Pasaporte PA en la parte inferior de su pantalla. Si el problema persiste, reinicie su teléfono. Si aún así no funciona, contacte a su supervisor."
+      udpate_app_question_html: "¿Cómo actualizo la aplicación?"
+      udpate_app_answer_html: "Actualice la aplicación pulsando el icono de ajustes y pulsando <span class=\"code\">Actualizar</span>. Es importante siempre tener la versión más reciente de Simple en su dispositivo."
+      cant_find_followup_question_html: No puedo encontrar a un paciente de seguimiento
+      cant_find_followup_answer_html: "A veces es difícil encontrar a un paciente de seguimiento si no tienen un Pasaporte PA. Si después de 5 minutos no puede encontrar al paciente, regístrelos como un nuevo paciente. Es posible combinar los registros de paciente en un futuro."
+      two_bp_passports_question_html: "¿Un paciente puede tener 2 Pasaportes PA?"
+      two_bp_passports_answer_html: Sí. Un paciente puede tener múltiples Pasaportes PA. Todos seguirán funcionando.
+      no_more_bp_passports_question_html: Se me terminaron los Pasaportes PA
+      no_more_bp_passports_answer_html: Por favor pida a su supervisor que ordene más Pasaportes PA antes de que se le acaben. Recuerde que usted puede seguir registrando pacientes incluso si no tiene Pasaportes PA &#8212; podrá asignarles uno después.
+      what_is_sync_question_html: "¿Qué es \"sincronización\"?"
+      what_is_sync_answer_html: "Una \"sincronización\" guarda su información en un servidor central. Por favor asegúrese de que su información se ha guardado por lo menos una vez al día. Si su conexión a internet no es buena, su información puede tomar algo de tiempo para sincronizar."
+      data_usage_question_html: "¿Cuántos datos usa Simple?"
+      data_usage_answer_html: Simple usa muy pocos datos. En promedio utiliza 20 MB cada mes.
+      access_my_info_question_html: "¿Simple puede acceder a mi información?"
+      access_my_info_answer_html: Simple no accede a ninguna de su información personal en su teléfono o tableta.
+    bp_passport_app:
+      heading_html: Aplicación BP Passport
+      features:
+        heading_html: Una aplicación gratuita para pacientes
+        contents_html: "Los pacientes pueden escanear sus Pasaportes PA de papel y la aplicación les mostrará la medición actual y los medicamentos que usted añada en su hospital o clínica, directamente en su teléfono."
+        feature_1_html: Registre PA
+        feature_2_html: Registre azúcar en sangre
+        feature_3_html: Recordatorios para tomar medicamentos
+        feature_4_html: Consejos saludables
+        feature_5_html: "Gratis, sin publicidad"
+        learn_more_html: "Conozca más"
+      platforms:
+        headings_html: Apple y Android
+        contents_html: "Pídale a sus pacientes que obtengan la aplicación, buscando <span class=\"code\">BP Passport</span> en la tienda de Google Play o Apple App Store"
+        apple_app_store_html: Apple App Store
+        google_play_store_html: Tienda Google Play
+      languages:
+        heading_html: Idiomas
+        contents_html: "La aplicación BP Passport está disponible en:"
+        language_amharic_html: Amárico
+        language_bengali_html: Bengalí
+        language_english_html: Inglés
+        language_french_html: Francés
+        language_hindi_html: Hindi
+        language_kannada_html: Canarés
+        language_marathi_html: Marati
+        language_oromo_html: Oromo
+        language_punjabi_html: Panyabí/Punjabi
+        language_spanish_html: Español
+        language_tamil_html: Tamil
+        language_telugu_html: Télugu
+        language_tigrinya_html: Tigriña
+    privacy_policy_html: Política de Privacidad
+    terms_of_service_html: Términos de servicio
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "Registros y seguimiento"
+    daily_report_title: "Diario"
+    monthly_report_title: "Mensual"
+    yearly_report_title: "Anual"
+    hypertension_report_title: "Hipertensión"
+    diabetes_report_title: "Diabetes"
+    report: "reporte"
+    last_updated_at: "Datos actualizados por última vez en %{date} a las %{time}"
+    coming_soon: "Próximamente"
+    no_data_card:
+      title: "Este reporte llegará próximamente"
+      subtitle: "Usted puede ver los reportes anteriores"
+    update_required_card:
+      title: "Se requiere actualizar"
+      subtitle: "Actualice su aplicación para ver este reporte"
+    diagnoses:
+      all: "Todos de hipertensión y diabetes"
+      hypertension: "Hipertensión"
+      diabetes: "Diabetes"
+      hypertension_only: "Sólo hipertensión"
+      diabetes_only: "Sólo diabetes"
+      hypertension_and_diabetes: "Hipertensión y diabetes"
+    genders:
+      male: "Másculino"
+      female: "Femenino"
+      transgender: "Transgénero"
+    period_card:
+      title: "Registros y seguimiento"
+    reports_card:
+      title: "Reportes"
+      subtitle: "Cómo %{facility_name} está ayudando a que los pacientes traten su hipertensión y diabetes."
+    drug_stock_report_card:
+      title: "Reporte de existencias de medicamentos"
+      subtitle: "Envíe las existencias de medicamentos de %{facility_name} en %{period}."
+      button_title: "Ingrese la existencia de medicamentos"
+    achievements_card:
+      title: "Logros"
+      follow_up_visits_section_title: "%{visit_or_visits} de seguimiento ingresadas"
+      visit:
+        one: "visita"
+        many: "visitas"
+        other: "visitas"
+      overdue_patients_section_title: "%{call_or_calls}a pacientes atrasados"
+      call:
+        one: "llamada"
+        many: "llamadas"
+        other: "llamadas"
+      registered_patients_title: "%{patient_or_patients} registrados"
+      patient:
+        one: "paciente"
+        many: "pacientes"
+        other: "pacientes"
+    period_report:
+      registered_patients_card:
+        title: "Pacientes registrado"
+        subtitle: "Pacientes registrados en %{facility_name}."
+      follow_up_patients_card:
+        title: "Pacientes de seguimiento"
+        subtitle: "Pacientes a quienes se les midió PA o azúcar en sangre, se les agendó una cita o se les actualizaron medicamentos en %{facility_name}"
+      follow_up_visits_card:
+        title: "Visitas de seguimiento"
+        subtitle: "Visitas de seguimiento registradas en %{facility_name}. Una visita de seguimiento es cuando a un paciente se le midió PA o azúcar en sangre, se le agendó una cita o se le actualizaron medicamentos."
+      patients_initiated_on_treatment_card:
+        title: '¿Dónde están los datos de los "Pacientes en tratamiento"?'
+        main_text: 'Use "Pacientes registrados", siempre equivale al número de "Pacientes en tratamiento" registrados en Simple.'
+      more_patient_data_coming_soon_card:
+        title: "Pronto estará disponible más información de pacientes."
+        main_text: "Pronto se agregará registro diario e información de seguimiento segmentada por enfermedad y sexo."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "PA controlada"
+        hypertension_controlled_long: "PA <140/90"
+        diabetes_controlled_short: "Azúcar en sangre <200"
+        diabetes_controlled_long: "GPa/GPP <200, GPA <126 o hemoglobina glicosilada/A1c <7.0"
+        hypertension_uncontrolled_short: "PA no controlada"
+        hypertension_uncontrolled_long: "PA ≥140/90"
+        diabetes_uncontrolled_short: "Glucosa en sangre 200-299"
+        diabetes_uncontrolled_long: "GPa/GPP 200-99, GPA 126-199, o hemoglobina glicosilada/A1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "Glucosa en sangre ≥300"
+        diabetes_very_uncontrolled_long: "GPa/GPP  ≥300, GPA ≥200 o hemoglobina glicosilada/A1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Visitó pero no se midió PA"
+        hypertension_visited_but_no_bp_taken_long: "no se midió PA"
+        missed_visits_short: "Visitas perdidas"
+        missed_visits_long: "sin visita"
+      assigned_patients_card:
+        title: "Pacientes asignados"
+        subtitle: "Pacientes esperados para seguimiento en %{facility_name} para recibir tratamiento de %{diagnosis}."
+        assigned_patients_breakdown:
+          registered_patients: "Pacientes registrados"
+          transferred_in_patients: "Transferidos de otra unidad"
+          transferred_out_patients: "Transferidos a otra unidad"
+      total_registered_patients:
+        title: "Todos los pacientes registrados"
+        subtitle: "Todos los pacientes %{diagnosis} registrados en %{facility_name}."
+      monthly_follow_up_patients:
+        title: "Pacientes de seguimiento mensual"
+        subtitle: "Pacientes %{diagnosis} con una medida de PA, una medida de azúcar, una consulta agendada, o con una actualización de sus medicamentos en %{facility_name} durante un mes."
+      patient_treatment_outcomes:
+        section_title: "Estatus de tratamiento de pacientes"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} con %{threshold} entre %{start_period} y %{end_period} de %{number_of_registered_patients} %{number_of_registered_patient_or_patients} registrados hasta %{registration_period}."
+        controlled_card:
+          subtitle: "Pacientes %{diagnosis} en %{facility_name} registrados hace >3 meses con %{controlled_threshold} durante su última visita en los últimos 3 meses."
+          help_tooltip:
+            numerator: "Pacientes con %{controlled_threshold} en su última visita en los últimos 3 meses."
+            denominator: "Pacientes %{diagnosis} asignados a %{facility_name}, registrados hace mas de 3 meses. No incluye pacientes muertos y pacientes sin una visita de seguimiento durante los últimos 12 meses."
+        uncontrolled_card:
+          subtitle: "Pacientes %{diagnosis} en %{facility_name} registrados hace mas de 3 meses con %{uncontrolled_threshold} durante su última visita en los últimos 3 meses."
+          help_tooltip:
+            numerator: "Pacientes con %{uncontrolled_threshold} durante su última visita en los últimos 3 meses."
+            denominator: "Pacientes %{diagnosis} asignados a %{facility_name}, registrados hace mas de 3 meses. No incluye pacientes muertos y pacientes sin una visita de seguimiento durante los últimos 12 meses."
+        very_uncontrolled_card:
+          subtitle: "Pacientes diabéticos en %{facility_name} registrados hace mas de 3 meses con %{very_uncontrolled_threshold} en su última visita durante los últimos 3 meses."
+          help_tooltip:
+            numerator: "Pacientes diabéticos con %{very_uncontrolled_threshold} en su última visita durante los últimos 3 meses."
+            denominator: "Pacientes diabéticos asignados a %{facility_name}, registrados antes de los últimos 3 meses. No incluye pacientes muertos o pacientes sin una visita de seguimiento durante los últimos 12 meses."
+        missed_visits_card:
+          subtitle: "Pacientes %{diagnosis} en %{facility_name} registrados hace más de 3 meses sin una visita durante los últimos 3 meses."
+          help_tooltip:
+            numerator: "Pacientes %{diagnosis} sin una visita en los últimos 3 meses"
+            denominator: "Pacientes %{diagnosis} asignados a %{facility_name}, registrados hace mas de 3 meses. No incluye pacientes muertos y pacientes sin una visita de seguimiento durante los últimos 12 meses."
+      drug_stock_report:
+        section_title: "Reporte de existencia de medicamentos"
+        card_subtitle: "%{number_of_days}%{day_or_days} de tabletas disponibles"
+      cohort_report:
+        section_title: "Reportes de cohortes"
+        card_title: "Reportes de cohortes trimestrales"
+        card_subtitle: "El resultado de todos los pacientes hipertensos asignados y registrados en un trimestre con una visita de seguimiento en el próximo trimestre."
+        cohort_title: "El resultado de la última visita en %{period}"
+        cohort_subtitle: "%{number_of_patients}%{patient_or_patients} registrados en %{registration_period}"
+        cohort_bar_tooltip: "%{total_patients}%{patient_or_patients} con %{threshold}"
+  questionnaire_layout:
+    male: "Másculino"
+    female: "Femenino"
+    transgender: "Transgénero"
+    total: "Total"
+    yes: "Sí"
+    no: "No"
+    comments: "Comentarios"
+    instruction_1: "Deje en blanco si no sabe la cantidad"
+    instruction_2: 'Escriba "0" si ya no hay en existencias'
+  monthly_screening_report:
+    htn_and_dm_screening: "Examen de HTA y DM"
+    # Ethiopia
+    total_bp: "Total de mediciones de PA hechas"
+    total_bs: "Total de mediciones de glucosa en sangre hechas"
+    new_raised_cases: "Nuevos casos levantados"
+    total_bp_raised: "PA elevada"
+    total_bs_raised: "GP elevada"
+    total_bp_raised_ncd_linked: "Casos totales de PA elevada ligadas a clínica ENT"
+    total_bs_raised_ncd_linked: "Casos totales de GP elevada ligadas a clínica ENT"
+    diagnosed_cases: "CASOS DIAGNOSTICADOS"
+    total_htn_diagnosed: "Total diagnosticados HTA"
+    total_dm_diagnosed: "Total diagnosticados DM"
+    cervical_cancer_uc: "CÁNCER DE CUELLO UTERINO"
+    total_women_screened_cervical: "Total de mujeres examinadas para cáncer de cuello uterino"
+    total_women_treated_cervical: "Total de mujeres tratadas para cáncer de cuello uterino"
+    total_women_followup_cervical: "Total de mujeres con seguimiento después de 1 año"
+    # India
+    monthly_opd_visits_gt_30: "Visitas mensuales al departamento ambulatorio de adultos mayores de 30 años"
+    monthly_opd_visits_gt_18: "Visitas mensuales al departamento ambulatorio de adultos mayores de 18 años"
+    outpatient_department_visits: "Visitas al departamento ambulatorio"
+    total_bp_checks: "Todas las medidas de PA"
+    total_blood_sugar_checks: "Todas las medidas de azúcar"
+    new_suspected_individuals: "Nuevos individuos sospectos"
+    new_suspected_individuals_htn: "HTA"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTA+DM (ambas)"
+    diagnosed_cases_on_follow_up: "Casos diagnosticados en una visita"
+    diagnosed_cases_on_follow_up_htn: "Pacientes HTA con una visita de seguimiento"
+    diagnosed_cases_on_follow_up_dm: "Pacientes DM con una visita de seguimiento"
+    diagnosed_cases_on_follow_up_htn_and_dm: "Pacientes HTA+DM (ambas) con una visita de seguimiento"
+    cancer_screening: "EXAMEN DE CÁNCER"
+    total_cancer_screening_oral: "Total de revisiones de cáncer oral"
+    total_cancer_screening_breast: "Total de revisiones de cáncer de mama"
+    total_cancer_screening_cervical: "Total de revisiones de cáncer de cuello uterino"
+    oral_cancer: "Cáncer oral"
+    breast_cancer: "Cáncer de mama"
+    cervical_cancer: "Cáncer de cuello uterino"
+  monthly_supplies_report:
+    instruction_1: "Ingrese los suministros que queden al final de cada mes"
+    stock_on_hand: "Existencias disponibles"
+    stock_on_hand_uc: "EXISTENCIAS DISPONIBLES"
+    working_equipments: "EQUIPOS FUNCIONANDO"
+    glucose_strips: "Tiras de prueba de glucosa"
+    total_working_condition: "Total en condición de funcionamiento"
+    # Bangladesh
+    patient_books: "Libros de pacientes"
+    available_bp_monitors_arm_in: "Total de monitores de PA (de brazo) disponibles"
+    functioning_bp_monitors_arm_in: "Monitores de PA (de brazo) funcionando"
+    available_bp_monitors_handheld: "Total disponible de monitores de PA (portátil)"
+    functioning_bp_monitors_handheld: "Monitores de PA (portátil) funcionando"
+    available_blood_glucose_monitors: "Total de monitores de glucosa en sangre disponibles"
+    functioning_blood_glucose_monitors: "Monitores de glucosa en sangre funcionando"
+    # Ethiopia
+    bp_monitor: "Monitor de PA"
+    glucose_meter: "Monitor de glucosa en sangre"
+    stethoscope: "Estetoscopio"
+    height_weight_machine: "Aparato para medir altura y peso"
+    waist_tape: "Cinta para medir circunferencia de cintura"
+    # India
+    glucometer_strips: "Tiras de glucómetro"
+    # Sri Lanka
+    equipment: "EQUIPO"
+    available_bp_devices: "Total de dispositivos de PA disponibles"
+    functioning_bp_devices: "Dispositivos de PA funcionando"
+    available_phones: "Total de teléfonos móviles disponibles"
+    functioning_phones: "Teléfonos móviles funcionando"
+    drug_stock: "EXISTENCIA DE MEDICAMENTOS"
+    drug_stock_losartan: "Suficientes medicamentos para el siguiente mes: Losartán"
+    drug_stock_amlodipine: "Suficientes medicamentos para el siguiente mes: Amlodipino"
+    drug_stock_hct: "Suficientes medicamentos para el siguiente mes: HCTZ (Hidroclorotiazida)"
+    trained_staff: "PERSONAL ENTRENADO"
+    doctors_count: "Número de doctores atendiendo la clínica"
+    nurses_count: "Número de enfermeros atendiendo la clínica"
+    pharmacists_count: "Número de farmacólogos atendiendo la clínica"
+    drug_dispensers_count: "Número de dispensarios de medicamentos disponibles en el hospital"
+    others: "OTROS"
+    television_functional: "¿Se muestran mensajes educativos de salud en la clínica usando una pantalla de televisión?"
+    wifi_functional: "¿Hay internet inalámbrico/Wi-Fi disponible?"
