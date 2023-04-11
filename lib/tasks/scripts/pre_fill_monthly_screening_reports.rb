@@ -56,12 +56,12 @@ class PreFillMonthlyScreeningReports
     {
       "month_date" => month_date,
       "submitted" => false,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male" => facility_report.monthly_follow_ups_htn_male,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female" => facility_report.monthly_follow_ups_htn_female,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.male" => facility_report.monthly_follow_ups_dm_male,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.female" => facility_report.monthly_follow_ups_dm_female,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.male" => facility_report.monthly_follow_ups_htn_and_dm_male,
-      "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.female" => facility_report.monthly_follow_ups_htn_and_dm_female
+      "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => facility_report.monthly_follow_ups_htn_male,
+      "monthly_screening_report.diagnosed_cases_on_follow_up_htn.female" => facility_report.monthly_follow_ups_htn_female,
+      "monthly_screening_report.diagnosed_cases_on_follow_up_dm.male" => facility_report.monthly_follow_ups_dm_male,
+      "monthly_screening_report.diagnosed_cases_on_follow_up_dm.female" => facility_report.monthly_follow_ups_dm_female,
+      "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.male" => facility_report.monthly_follow_ups_htn_and_dm_male,
+      "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => facility_report.monthly_follow_ups_htn_and_dm_female
     }
   end
 end
