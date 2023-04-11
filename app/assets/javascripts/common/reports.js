@@ -22,10 +22,10 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
-    overdueCalledLightGreen: 'rgba(41,181,0,0.2)',
-    overdueCalledLightYellow: 'rgba(255,241,49,0.25)',
-    overdueCalledLightRed: 'rgba(255,146,122,0.2)',
-    darkYellow: 'rgba(228, 180, 57, 1)'
+    overdueCalledChartLineDarkYellow: "rgba(228, 180, 57, 1)",
+    overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
+    overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
+    overdueCalledChartFillLightRed: "rgba(255,146,122,0.2)",
   };
 }
 
@@ -370,28 +370,37 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Agreed to visit",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultAgreedToVisit),
-              backgroundColor: colors.overdueCalledLightGreen,
-              borderColor: colors.darkRed,
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultAgreedToVisit
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
+              hoverBorderWidth: 0,
               radius: 0,
+              hoverRadius: 0,
+
               fill: true,
             },
             {
               label: "Remind to call later",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultRemindToCallLater),
-              backgroundColor: colors.overdueCalledLightYellow,
-              borderColor: colors.darkPurple,
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultRemindToCallLater
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
+              hoverBorderWidth: 0,
               radius: 0,
+              hoverRadius: 0,
               fill: "-1",
-
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList),
-              backgroundColor: colors.overdueCalledLightRed,
-              borderColor: colors.darkYellow,
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightRed,
+              borderColor: colors.overdueCalledChartLineDarkYellow,
+              hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
               fill: "-1",
             },
           ],
