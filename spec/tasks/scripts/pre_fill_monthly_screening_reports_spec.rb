@@ -24,7 +24,8 @@ RSpec.describe PreFillMonthlyScreeningReports do
       PreFillMonthlyScreeningReports.call
 
       date = 1.month.ago.beginning_of_month
-      expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
+      questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
+      expect(questionnaire_response.content).to eq(
         {
           "month_date" => date.strftime("%Y-%m-%d"),
           "submitted" => false,
@@ -36,6 +37,8 @@ RSpec.describe PreFillMonthlyScreeningReports do
           "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => 0
         }
       )
+      expect(questionnaire_response.device_created_at).to eq(date)
+      expect(questionnaire_response.device_updated_at).to eq(date)
     end
 
     it "ignores existing monthly screening reports" do
