@@ -445,10 +445,11 @@ sid-ET:
         cohort_title: " %{period} ra jeefote towaanyo guma."
         cohort_subtitle: "%{number_of_patients} \n%{patient_or_patients} borreessantinori \n%{registration_period}"
         cohort_bar_tooltip: "%{total_patients} \n%{patient_or_patients} ledo \n%{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "Labbaaha"
     female: "Meyaa beeetto"
     transgender: "lamenka koo/te "
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "aganunita OPD laooshe wede'laho >30 diro. "
     monthly_opd_visits_gt_18: "aganunita OPD laooshe wede'laho >18 diro."
     outpatient_department_visits: "hare giganni xagisirano xiwamasine base laooshe"

@@ -445,10 +445,11 @@ om-ET:
         cohort_title: "Bu'aa kan tarree  %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} kan %{registration_period} keessatti galmaa'an"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} kan %{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "Dhiira"
     female: "Dubara"
     transgender: "Saaldarbaa"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >30 "
     monthly_opd_visits_gt_18: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >18"
     outpatient_department_visits: "Daawwannaawwan muummee deddeebi'anii yaalamuu"
