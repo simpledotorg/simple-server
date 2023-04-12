@@ -117,7 +117,7 @@
             Error traces
           <% end %>
         <% end %>
-        <% if current_admin.power_user? %>
+        <% if current_admin.power_user? && CountryConfig.current_country?("India") %>
           <%= link_to admin_cphc_migration_path, class: "sub-nav-link #{active_controller?("admin/cphc_migration")}" do %>
             CPHC Migration
           <% end %>
