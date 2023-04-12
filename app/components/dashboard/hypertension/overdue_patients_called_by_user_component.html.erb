@@ -1,10 +1,98 @@
 <div class="card mb-16px mt-0 w-full">
   <%= render Dashboard::Card::TitleComponent.new(
-    title: "Overdue Patients Called By User",
-    subtitle: "Subtitle here" 
+    title: "Overdue patients called",
+    subtitle: "The number of unique overdue hypertension patients that were called during the month." 
   ) do |c| %>
     <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
   <% end %>
-  <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |c| %>
+  <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <% 5.times do %>
+            <col>
+          <% end %>
+          <col class="table-divider">
+          <% 5.times do %>
+            <col>
+          <% end %>
+        </colgroup>
+      <% end %>
+      
+      <%= table.header("Jan-2023", colspan: 2) %>
+      <%= table.header("Feb-2023", colspan: 2) %>
+      <%= table.header("Mar-2023", colspan: 2) %>
+      <%= table.sub_header(region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+      <%# <% range.each do |period| %>
+        <%= table.sub_header("Patients called") %>
+        <%= table.sub_header("Percent") %>
+        <%= table.sub_header("Patients called") %>
+        <%= table.sub_header("Percent") %>
+        <%= table.sub_header("Patients called") %>
+        <%= table.sub_header("Percent") %>
+      <%# <% end %>
+      <%= table.row do %>
+        <tr class="row-title row-total" data-sort-method="none">
+          <td class="row-title row-total">
+            <%= region.name %>
+          </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="high-is-good">30%</em>
+            </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="23%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="23" class="high-is-good">23%</em>
+            </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="58%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="58" class="high-is-good">58%</em>
+            </td>
+
+        </tr>
+      <% end %>
+        <% table.row do %>
+          <tr>
+            <td class="row-title">
+              <%# <%= link_to child.name, reports_region_path(child.region, report_scope: child.region_type) %>
+              Bijnor
+            </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="high-is-good">30%</em>
+            </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="high-is-good">30%</em>
+            </td>
+
+            <td class="row-total ta-right">
+              50
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="high-is-good">30%</em>
+            </td>
+          
+          </tr>
+        <% end %>
+
   <% end %>
 </div>
