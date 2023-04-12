@@ -614,7 +614,7 @@ CREATE TABLE public.deduplication_logs (
 --
 
 CREATE TABLE public.download_api_tokens (
-    id bigint NOT NULL,
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
     name character varying,
     access_token character varying,
     enabled boolean DEFAULT true,
@@ -623,25 +623,6 @@ CREATE TABLE public.download_api_tokens (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
-
-
---
--- Name: download_api_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.download_api_tokens_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: download_api_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.download_api_tokens_id_seq OWNED BY public.download_api_tokens.id;
 
 
 --
@@ -4885,13 +4866,6 @@ ALTER TABLE ONLY public.cphc_migration_configs ALTER COLUMN id SET DEFAULT nextv
 --
 
 ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT nextval('public.cphc_migration_error_logs_id_seq'::regclass);
-
-
---
--- Name: download_api_tokens id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.download_api_tokens ALTER COLUMN id SET DEFAULT nextval('public.download_api_tokens_id_seq'::regclass);
 
 
 --

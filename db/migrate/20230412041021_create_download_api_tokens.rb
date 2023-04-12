@@ -1,6 +1,6 @@
 class CreateDownloadApiTokens < ActiveRecord::Migration[6.1]
   def change
-    create_table :download_api_tokens do |t|
+    create_table :download_api_tokens, id: :uuid do |t|
       t.string :name
       t.string :access_token
       t.boolean :enabled, default: true
