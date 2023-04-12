@@ -168,14 +168,14 @@ module Seed
         scheduled_date = Faker::Time.between(from: device_created_at, to: device_created_at.advance(days: 45))
         user_id = user_ids.sample
         FactoryBot.attributes_for(:appointment,
-                                  creation_facility_id: facility.id,
-                                  facility_id: facility.id,
-                                  patient_id: patient_id,
-                                  scheduled_date: scheduled_date,
-                                  device_created_at: device_created_at,
-                                  created_at: created_at,
-                                  updated_at: created_at,
-                                  user_id: user_id)
+          creation_facility_id: facility.id,
+          facility_id: facility.id,
+          patient_id: patient_id,
+          scheduled_date: scheduled_date,
+          device_created_at: device_created_at,
+          created_at: created_at,
+          updated_at: created_at,
+          user_id: user_id)
       end.compact
 
       call_result_attributes = appointment_attributes.map do |appointment|
@@ -184,17 +184,17 @@ module Seed
 
         device_created_at = Faker::Time.between(from: appointment[:scheduled_date], to: Time.now)
         FactoryBot.attributes_for(:call_result,
-                                  appointment_id: appointment[:id],
-                                  patient_id: appointment[:patient_id],
-                                  facility_id: appointment[:facility_id],
-                                  user_id: user_ids.sample,
-                                  device_created_at: device_created_at,
-                                  device_updated_at: device_created_at)
+          appointment_id: appointment[:id],
+          patient_id: appointment[:patient_id],
+          facility_id: appointment[:facility_id],
+          user_id: user_ids.sample,
+          device_created_at: device_created_at,
+          device_updated_at: device_created_at)
       end.compact
       appointments_creation_info = Appointment.import(appointment_attributes)
       call_results_creation_info = CallResult.import(call_result_attributes)
-      { appointments_creation_info: appointments_creation_info,
-        call_results_creation_info: call_results_creation_info }
+      {appointments_creation_info: appointments_creation_info,
+       call_results_creation_info: call_results_creation_info}
     end
   end
 end
