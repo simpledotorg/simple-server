@@ -445,10 +445,11 @@ so-ET:
         cohort_title: "Natiijada booqashada ugu danbaysay%{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ka duwaan gashan %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} leh %{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "Lab"
     female: "Dhedig"
     transgender: "Jinsiga Badalay"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "Booqashooyinka bilaha ah ee OPD ee dadka waa wayns  > 30 sano jirka ah"
     monthly_opd_visits_gt_18: "Booqashooyinka OPO ee dadka waa wayns >18 sano jirka"
     outpatient_department_visits: "Booqashooyinka waaxda bukaan socodka"

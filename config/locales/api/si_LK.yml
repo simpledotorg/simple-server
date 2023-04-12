@@ -445,10 +445,11 @@ si-LK:
         cohort_title: "%{period} හි අවසන් සංචාරයේ ප්‍රතිඵලය"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} හි ලියාපදිංචි වී ඇත"
         cohort_bar_tooltip: "%{threshold} සමඟ %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "පුරුෂ"
     female: "ස්ත්‍රී"
     transgender: "සංක්‍රාන්ති"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "වයස අවුරුදු 30 ට වැඩි වැඩිහිටියන් සඳහා මාසික OPD පැමිණීම්"
     monthly_opd_visits_gt_18: "වයස අවුරුදු 18 ට වැඩි වැඩිහිටියන් සඳහා මාසික OPD පැමිණීම්"
     outpatient_department_visits: "බාහිර රෝගී අංශ පැමිණීම්"
