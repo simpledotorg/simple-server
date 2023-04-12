@@ -164,6 +164,10 @@ Rails.application.routes.draw do
       resources :drug_stocks, only: [:index]
 
       get "states", to: "states#index"
+
+      scope :patient_lists do
+        get "district", to: "patient_lists#district"
+      end
     end
   end
 

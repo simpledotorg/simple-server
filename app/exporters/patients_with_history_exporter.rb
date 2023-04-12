@@ -29,6 +29,17 @@ class PatientsWithHistoryExporter
 
   attr_reader :display_blood_sugars
 
+  def self.json(*args)
+    new.json(*args)
+  end
+
+  def json(patients, display_blood_sugars: true)
+    @display_blood_sugars = display_blood_sugars
+    summaries = MaterializedPatientSummary.where(patient: patients)
+
+    summaries.to_json
+  end
+
   def self.csv(*args)
     new.csv(*args)
   end
