@@ -610,6 +610,41 @@ CREATE TABLE public.deduplication_logs (
 
 
 --
+-- Name: download_api_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.download_api_tokens (
+    id bigint NOT NULL,
+    name character varying,
+    access_token character varying,
+    enabled boolean DEFAULT true,
+    facility_id uuid,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: download_api_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.download_api_tokens_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: download_api_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.download_api_tokens_id_seq OWNED BY public.download_api_tokens.id;
+
+
+--
 -- Name: drug_stocks; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4853,6 +4888,13 @@ ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: download_api_tokens id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.download_api_tokens ALTER COLUMN id SET DEFAULT nextval('public.download_api_tokens_id_seq'::regclass);
+
+
+--
 -- Name: facility_business_identifiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5051,6 +5093,14 @@ ALTER TABLE ONLY public.data_migrations
 
 ALTER TABLE ONLY public.deduplication_logs
     ADD CONSTRAINT deduplication_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: download_api_tokens download_api_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.download_api_tokens
+    ADD CONSTRAINT download_api_tokens_pkey PRIMARY KEY (id);
 
 
 --
@@ -5701,6 +5751,13 @@ CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree
 --
 
 CREATE UNIQUE INDEX index_df_facility_region_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_region_id, visit_date);
+
+
+--
+-- Name: index_download_api_tokens_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_download_api_tokens_on_facility_id ON public.download_api_tokens USING btree (facility_id);
 
 
 --
@@ -6872,6 +6929,14 @@ ALTER TABLE ONLY public.notifications
 
 
 --
+-- Name: download_api_tokens fk_rails_f4b6842c6c; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.download_api_tokens
+    ADD CONSTRAINT fk_rails_f4b6842c6c FOREIGN KEY (facility_id) REFERENCES public.facilities(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -7006,6 +7071,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230105064908'),
 ('20230123125608'),
 ('20230124063249'),
-('20230130161639');
+('20230130161639'),
+('20230412041021');
 
 
