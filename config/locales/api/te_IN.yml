@@ -1,4 +1,4 @@
-te-IN:
+te_IN:
   date:
     month_names: [~, "జనవరి", "ఫిబ్రవరి", "మార్చి", "ఏప్రిల్", "మే", "జూన్", "జూలై", "ఆగస్టు", "సెప్టెంబర్", "అక్టోబర్", "నవంబర్", "డిసెంబర్"]
     abbr_month_names: [~, "జన", "ఫిబ్ర", "మార్చి", "ఏప్రిల్", "మే", "జూన్", "జూలై", "ఆగ", "సెప్టెం", "అక్టో", "నవం", "డిసెం"]
@@ -120,7 +120,7 @@ te-IN:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: హిందీ
       bp_passports:
-        heading_html: బీపి పాస్‌పోర్ట్‌లు
+        heading_html: "బీపి పాస్‌పోర్ట్‌లు"
         contents_html: మీ ఆసుపత్రిలో బీపి పాస్‌పోర్ట్ కార్డులు లేదా బీపి పాస్‌పోర్ట్ స్టిక్కర్లను ఎలా ఉపయోగించాలో తెలుసుకోండి.
         video_link_html: బీపి పాస్‌పోర్ట్ ఎలా ఉపయోగించాలి
         video_link_subtitle_html: ఇంగ్లిష్ ఉపశీర్షికలతో హిందీ
@@ -449,11 +449,33 @@ te-IN:
     male: "పురుషుడు"
     female: "మహిళ"
     transgender: "ట్రాన్స్‌జండర్"
+    total: "మొత్తం"
+    yes: "ఔను"
+    no: "లేదు"
+    comments: "వ్యాఖ్యలు"
+    instruction_1: "మీకు మొత్తము తెలియకపోతే ఖాళీగా వదిలేయండి"
+    instruction_2: 'స్టాక్ గనక అయిపోయి ఉంటే "0" ఎంటర్ చేయండి'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN మరియు DM స్క్రీనింగ్"
+    # Ethiopia
+    total_bp: "మొత్తం BP స్క్రీనింగ్ చేసినది"
+    total_bs: "మొత్తం బ్లడ్ షుగర్ స్క్రీనింగ్ చేసినవి"
+    new_raised_cases: "కొత్తగా పెరిగిన కేసులు"
+    total_bp_raised: "మొత్తం పెరిగిన BP"
+    total_bs_raised: "మొత్తం పెరిగిన BS"
+    total_bp_raised_ncd_linked: "మొత్తం పెరిగిన BP కేసులు NCD క్లినిక్ కి లింక్ చేసినవి"
+    total_bs_raised_ncd_linked: "మొత్తం పెరిగిన BS కేసులు NCD క్లినిక్ కి లింక్ చేసినవి"
+    diagnosed_cases: "వ్యాధినిర్ధారణ చేయబడిన కేసులు"
+    total_htn_diagnosed: "మొత్తం HTN వ్యాధినిర్ధారణ చేయబడినవి"
+    total_dm_diagnosed: "మొత్తం DM వ్యాధినిర్ధారణ చేయబడినవి"
+    cervical_cancer_uc: "గర్భాశయ క్యాన్సర్"
+    total_women_screened_cervical: "గర్భాశయ క్యాన్సర్ కోసం స్క్రీన్ చేయబడిన మొత్తం స్త్రీలు"
+    total_women_treated_cervical: "గర్భాశయ క్యాన్సర్ కోసం చికిత్స చేయబడిన మొత్తం స్త్రీలు"
+    total_women_followup_cervical: "1 సంవత్సరం తర్వాత ఫాలో-అప్ చేయబడిన మొత్తం స్త్రీలు"
+    # India
     monthly_opd_visits_gt_30: "30 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
     monthly_opd_visits_gt_18: "18 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
     outpatient_department_visits: "అవుట్‌పేషంట్ డిపార్ట్‌మెంట్ సందర్శనలు"
-    htn_and_dm_screening: "HTN మరియు DM స్క్రీనింగ్"
     total_bp_checks: "మొత్తం బిపి తనిఖీలు పూర్తయ్యాయి"
     total_blood_sugar_checks: "మొత్తం బ్లడ్ షుగర్ తనిఖీలు పూర్తయ్యాయి"
     new_suspected_individuals: "కొత్త అనుమానాస్పద వ్యక్తులు"
@@ -471,4 +493,44 @@ te-IN:
     oral_cancer: "నోటి క్యాన్సర్"
     breast_cancer: "రొమ్ము క్యాన్సర్"
     cervical_cancer: "గర్భాశయ క్యాన్సర్"
-
+  monthly_supplies_report:
+    instruction_1: "ప్రతి నెలాఖరున స్టాకులో మిగిలిపోయిన సరఫరాలను ఎంటర్ చేయండి"
+    stock_on_hand: "చేతిలో ఉన్న స్టాక్"
+    stock_on_hand_uc: "చేతిలో ఉన్న స్టాక్"
+    working_equipments: "పనిచేస్తున్న పరికర సామాగ్రి"
+    glucose_strips: "బ్లడ్ గ్లూకోజ్ పరీక్షించు పట్టీలు"
+    total_working_condition: "మొత్తం పనిచేస్తున్న స్థితిలో ఉన్నవి"
+    # Bangladesh
+    patient_books: "పేషెంట్ పుస్తకాలు"
+    available_bp_monitors_arm_in: "మొత్తం అందుబాటులో ఉన్న BP మానిటర్లు (ఆర్మ్-ఇన్)"
+    functioning_bp_monitors_arm_in: "పనిచేస్తున్న BP మానిటర్లు (ఆర్మ్-ఇన్)"
+    available_bp_monitors_handheld: "మొత్తం అందుబాటులో ఉన్న BP మానిటర్లు (చేతిలో ఉంచుకునేవి)"
+    functioning_bp_monitors_handheld: "పనిచేస్తున్న BP మానిటర్లు (చేతిలో ఉంచుకునేవి)"
+    available_blood_glucose_monitors: "అందుబాటులో ఉన్న మొత్తం బ్లడ్ గ్లూకోజ్ మానిటర్లు"
+    functioning_blood_glucose_monitors: "బ్లడ్ గ్లూకోజ్ మానిటర్ల పని చేయడం"
+    # Ethiopia
+    bp_monitor: "BP మానిటర్"
+    glucose_meter: "బ్లడ్ గ్లూకోజ్ మీటర్"
+    stethoscope: "స్టెతస్కోప్"
+    height_weight_machine: "ఎత్తు మరియు బరువు కొలిచే మెషీన్"
+    waist_tape: "నడుము చుట్టుకొలత కొలిచే టేపు"
+    # India
+    glucometer_strips: "గ్లూకోమీటర్ పట్టీలు"
+    # Sri Lanka
+    equipment: "పరికర సామగ్రి"
+    available_bp_devices: "మొత్తం అందుబాటులో ఉన్న BP ఉపకరణాలు"
+    functioning_bp_devices: "పనిచేస్తున్న BP ఉపకరణాలు"
+    available_phones: "మొత్తం అందుబాటులో ఉన్న మొబైల్ ఫోన్లు"
+    functioning_phones: "పనిచేస్తున్న మొబైల్ ఫోన్లు"
+    drug_stock: "ఔషధాల స్టాక్"
+    drug_stock_losartan: "వచ్చే నెల కోసం తగినన్ని ఔషధాలు: లోసార్టన్"
+    drug_stock_amlodipine: "వచ్చే నెల కోసం తగినన్ని ఔషధాలు: ఆమ్లోడిపైన్"
+    drug_stock_hct: "వచ్చే నెల కోసం తగినన్ని ఔషధాలు: HCT (హైడ్రోక్లోరాథియాజైడ్)"
+    trained_staff: "శిక్షణ పొందిన సిబ్బంది"
+    doctors_count: "మెడికల్ క్లినిక్‌కి హాజరవుతున్న డాక్టర్ల సంఖ్య"
+    nurses_count: "మెడికల్ క్లినిక్‌కి హాజరవుతున్న నర్సుల సంఖ్య"
+    pharmacists_count: "ఆసుపత్రిలో ఉన్న ఫార్మసిస్టుల సంఖ్య"
+    drug_dispensers_count: "ఆసుపత్రిలో ఉన్న ఔషధ పంపిణీదారుల సంఖ్య"
+    others: "ఇతరములు"
+    television_functional: "మెడికల్ క్లినిక్ యందు ఒక టెలివిజన్ స్క్రీన్ ఉపయోగించి ఆరోగ్య విద్యా అవగాహన సందేశాలు డిస్‌ప్లే చేయబడుతున్నాయా?"
+    wifi_functional: "Wi-Fi నెట్‌వర్క్ అందుబాటులో ఉందా?"
