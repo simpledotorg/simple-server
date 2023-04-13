@@ -120,7 +120,7 @@ bn_BD:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: হিন্দি
       bp_passports:
-        heading_html: বিপি পাসপোর্ট
+        heading_html: "বিপি পাসপোর্ট"
         contents_html: আপনার হসপিটালে কীভাবে বিপি পাসপোর্ট কার্ড বা বিপি পাসপোর্ট স্টিকারগুলো ব্যবহার করবেন তা শিখুন।
         video_link_html: কীভাবে একটি বিপি পাসপোর্ট ব্যবহার করবেন
         video_link_subtitle_html: হিন্দি সাবটাইটেল সহ ইংরেজিতে
@@ -449,11 +449,33 @@ bn_BD:
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
+    total: "মোট"
+    yes: "হ্যাঁ"
+    no: "না"
+    comments: "কমেন্ট"
+    instruction_1: "পরিমাণ না জানলে ফাঁকা রাখুন"
+    instruction_2: 'স্টক আউট হলে "0" লিখুন'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN এবং DM স্ক্রিনিং"
+    # Ethiopia
+    total_bp: "মোট BP স্ক্রিনিং সম্পন্ন হয়েছে"
+    total_bs: "মোট ব্লাড সুগার স্ক্রিনিং সম্পন্ন হয়েছে"
+    new_raised_cases: "নতুন উদ্ভাবিত কেস"
+    total_bp_raised: "মোট উত্থিত BP"
+    total_bs_raised: "মোট উত্থিত BS"
+    total_bp_raised_ncd_linked: "NCD ক্লিনিকের সাথে সম্পর্কিত মোট উত্থিত BP কেস"
+    total_bs_raised_ncd_linked: "NCD ক্লিনিকের সাথে সম্পর্কিত মোট উত্থিত BS কেস"
+    diagnosed_cases: "নির্ণয় করা কেস"
+    total_htn_diagnosed: "মোট HTN নির্ণয় করা হয়েছে"
+    total_dm_diagnosed: "মোট DM নির্ণয় করা হয়েছে"
+    cervical_cancer_uc: "সার্ভিক্যাল ক্যান্সার"
+    total_women_screened_cervical: "সার্ভিক্যাল ক্যান্সারের জন্য স্ক্রিনিং করা মোট মহিলার সংখ্যা"
+    total_women_treated_cervical: "সার্ভিক্যাল ক্যান্সারের জন্য চিকিৎসা করা মোট মহিলার সংখ্যা"
+    total_women_followup_cervical: "1 বছর পর ফলো-আপ করা মোট মহিলার সংখ্যা"
+    # India
     monthly_opd_visits_gt_30: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >30 বছর বয়েস"
     monthly_opd_visits_gt_18: "প্রাপ্ত বয়েস্কদের জন্য প্রতি মাসে OPD-তে দেখাতে হবে >18 বছর বয়েস"
     outpatient_department_visits: "বাইরের রোগীদের দেখানো জন্য"
-    htn_and_dm_screening: "HTN এবং DM স্ক্রিনিং"
     total_bp_checks: "মোট বিপি চেক করা হয়ে গেছে"
     total_blood_sugar_checks: "মোট ব্লাড সুগার চেক করা হয়ে গেছে"
     new_suspected_individuals: "নতুন শনাক্ত করা ব্যাক্তিগণ"
@@ -471,4 +493,44 @@ bn_BD:
     oral_cancer: "মুখের ক্যান্সার"
     breast_cancer: "ব্রেস্ট ক্যান্সার"
     cervical_cancer: "কারভিক্যাল ক্যান্সার"
-
+  monthly_supplies_report:
+    instruction_1: "প্রত্যেক মাসের শেষে স্টকে যত সাপ্লাই বাকি থাকে তা লিখুন"
+    stock_on_hand: "হাতে থাকা স্টক"
+    stock_on_hand_uc: "হাতে থাকা স্টক"
+    working_equipments: "কাজের সরঞ্জাম"
+    glucose_strips: "ব্লাড গ্লুকোজ টেস্ট করার স্ট্রাইপ"
+    total_working_condition: "মোট যতগুলো কর্মক্ষম অবস্থায় আছে"
+    # Bangladesh
+    patient_books: "পেশেন্ট বুক"
+    available_bp_monitors_arm_in: "যতগুলো BP মনিটর (আর্ম-ইন) আছে"
+    functioning_bp_monitors_arm_in: "কর্মক্ষম BP মনিটর (আর্ম-ইন)"
+    available_bp_monitors_handheld: "যতগুলো BP মনিটর (হ্যান্ডহেল্ড) আছে"
+    functioning_bp_monitors_handheld: "কর্মক্ষম BP মনিটর (handheld)"
+    available_blood_glucose_monitors: "যতগুলো ব্লাড গ্লুকোজ মনিটর আছে"
+    functioning_blood_glucose_monitors: "কর্মক্ষম ব্লাড গ্লুকোজ মনিটর"
+    # Ethiopia
+    bp_monitor: "BP মনিটর"
+    glucose_meter: "ব্লাড গ্লুকোজ মিটার"
+    stethoscope: "স্টেথোস্কোপ"
+    height_weight_machine: "উচ্চতা এবং ওজন মাপার যন্ত্র"
+    waist_tape: "কোমরের পরিধি মাপার টেপ"
+    # India
+    glucometer_strips: "গ্লুকোমিটার স্টাইপ"
+    # Sri Lanka
+    equipment: "সরঞ্জাম"
+    available_bp_devices: "যতগুলো BP ডিভাইস আছে"
+    functioning_bp_devices: "কর্মক্ষম BP ডিভাইস"
+    available_phones: "যতগুলো মোবাইল ফোন আছে"
+    functioning_phones: "কর্মক্ষম মোবাইল ফোন"
+    drug_stock: "ওষুধের স্টক"
+    drug_stock_losartan: "আগামী মাসের জন্য পর্যাপ্ত ওষুধ: লোসার্টান"
+    drug_stock_amlodipine: "আগামী মাসের জন্য পর্যাপ্ত ওষুধ: অ্যামলোডিপাইন"
+    drug_stock_hct: "আগামী মাসের জন্য পর্যাপ্ত ওষুধ: HCT (হাইড্রোক্লোরোথিয়াজাইড)"
+    trained_staff: "প্রশিক্ষিত স্টাফ"
+    doctors_count: "যত জন ডাক্তার মেডিক্যাল ক্লিনিকে অংশগ্রহণ করছেন"
+    nurses_count: "যত জন নার্স মেডিক্যাল ক্লিনিকে অংশগ্রহণ করছেন"
+    pharmacists_count: "হাসপাতালে যতজন ফার্মাসিস্ট আছেন"
+    drug_dispensers_count: "হাসপাতালে যতগুলো ওষুধের ডিসেপেন্সারি আছেন"
+    others: "অন্যান্য"
+    television_functional: "মেডিক্যাল ক্লিনিকে টেলিভিশনে স্ক্রিনের মাধ্যমে স্বাস্থ্য শিক্ষা সম্পর্কিত ম্যাসেজ দেখানো হয় কি?"
+    wifi_functional: "Wi-Fi নেটওয়ার্কের ব্যবস্থা আছে?"
