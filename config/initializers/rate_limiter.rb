@@ -69,4 +69,3 @@ module RateLimit
     RateLimit.logger.info "Too many login attempts for user #{request.params.dig(:user, :id)}"
   end
 end
-

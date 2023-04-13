@@ -1,7 +1,11 @@
+# This workflow needs to be kept at par with
+# https://github.com/simpledotorg/simple-android/blob/master/.github/workflows/ci_checks.yml
 name: Android QA tests
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - "user-enumeration-attack-monitoring"
     inputs:
       pr_number:
         description: 'PR number'
@@ -19,7 +23,17 @@ jobs:
         - name: Checkout Android source
           uses: actions/checkout@v3
           with:
+            repository: simpledotorg/simple-android
             path: android-app
+
+        - name: Cache AVD
+          uses: actions/cache@v3
+          id: avd-cache
+          with:
+            path: |
+              ~/.android/avd/*
+              ~/.android/adb*
+            key: ${{ runner.os }}-avd-${{ env.AVD_API_LEVEL }}-${{ env.AVD_ARCH }}
 
         - name: create AVD and generate snapshot for caching
           if: steps.avd-cache.outputs.cache-hit != 'true'
@@ -38,7 +52,9 @@ jobs:
           with:
             distribution: 'zulu'
             java-version: 11
-            cache: 'gradle'
+
+        - name: Setup Gradle
+          uses: gradle/gradle-build-action@v2
 
         - name: QA Android Tests
           id: run-instrumented-tests
@@ -53,7 +69,7 @@ jobs:
             script: |
               adb root
               mkdir -p android-app/app/build/outputs/test-artifacts
-              android-app/gradlew -p android-app --build-cache --no-daemon -PmanifestEndpoint=https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/ installQaDebug installQaDebugAndroidTest
+              android-app/gradlew -p android-app --build-cache --no-daemon -PmanifestEndpoint=https://simple-review-pr-4872.herokuapp.com/api/ installQaDebug installQaDebugAndroidTest
               adb shell am instrument -w -e filter org.simple.clinic.benchmark.SelectBenchmarkTests -e benchmark_app_performance false  org.simple.clinic.qa.debug.test/org.simple.clinic.AndroidTestJUnitRunner >android-app/app/build/outputs/test-artifacts/logs.txt 2>android-app/app/build/outputs/test-artifacts/logs.txt
               cat android-app/app/build/outputs/test-artifacts/logs.txt
               adb pull /storage/emulated/0/Android/data/org.simple.clinic.qa.debug/ android-app/app/build/outputs/test-artifacts/ || true
