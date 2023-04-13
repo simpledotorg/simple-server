@@ -402,6 +402,10 @@ DashboardReports = () => {
               borderColor: colors.overdueCalledChartLineDarkYellow,
               hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
               fill: "-1",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, Object.keys(data.percentageCalled).length),
+              },
             },
           ],
         },
@@ -1283,6 +1287,31 @@ function baseBarChartConfig() {
     plugins: [intersectDataVerticalLine],
   };
 }
+
+
+// [Segment] Functions
+// 
+/**
+ * Create a dashed line for the last X segments of dynamic charts starting from the end, default is 1 segment
+ * @param {*} ctx - ChartJS object 
+ * @param {number} numberOfXAxisTicks - number of labels in x axis (.length)
+ * @param {number} [numberOfDashedSegments] - how many segments to dash starting from the last segment of the chart. A segment is the line between 2 points.
+ * @returns 
+ */
+
+const dynamicChartSegementDashed = (
+  ctx,
+  numberOfXAxisTicks,
+  numberOfDashedSegments = 1
+) => {
+  const dashStyle = [4, 3]
+  const segmentStartIndex = ctx.p0DataIndex
+  return isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, numberOfDashedSegments) ? dashStyle : undefined;
+};
+
+function isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, segmentsToDashFromEnd) {
+  return segmentStartIndex >= numberOfXAxisTicks - (segmentsToDashFromEnd + 1)
+};
 
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
