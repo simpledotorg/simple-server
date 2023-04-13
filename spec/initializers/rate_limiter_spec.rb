@@ -15,6 +15,14 @@ describe "RateLimiter", type: :controller do
     Rails.cache.clear
   end
 
+  def random_ip_address(seed)
+    "127.0.0.#{seed}"
+  end
+
+  def randomize_request_ip(seed)
+    allow_any_instance_of(Rack::Request).to receive(:ip).and_return(random_ip_address(seed))
+  end
+
   describe "throttle authentication APIs" do
     context "admin logins by IP address" do
       let(:limit) { 5 }
@@ -173,46 +181,107 @@ describe "RateLimiter", type: :controller do
       end
     end
 
-    context "user activate / resending OTPs by IP address" do
-      let(:limit) { 5 }
+    context "user activate / resending OTPs" do
       before(:each, type: :controller) do
         @request.remote_addr = "127.0.0.1"
         allow(RequestOtpSmsJob).to receive_message_chain("set.perform_later")
       end
 
-      it "does not change the request status when the number of requests is lower than the limit" do
-        stub_const("SIMPLE_SERVER_ENV", "production")
-        user = create(:user, password: "1234")
+      context "by IP address" do
+        let(:limit) { 5 }
 
-        limit.times do
-          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
-          expect(last_response.status).to eq(200)
+        it "returns 429 when over the limit" do
+          limit.times do
+            post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
+            expect(last_response.status).to eq(401)
+          end
+
+          post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
+          expect(last_response.status).to eq(429)
+          expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
         end
-      end
 
-      it "returns 429 when the number of requests is higher than the limit" do
-        stub_const("SIMPLE_SERVER_ENV", "production")
-        user = create(:user, password: "1234")
+        it "does not rate limit across IP addresses" do
+          (limit * 2).times do |i|
+            randomize_request_ip(i)
+            post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
+            if i > limit
+              expect(i > limit).to eq(true)
+              expect(last_response.status).to eq(401)
+            end
+          end
+        end
 
-        (limit * 2).times do |i|
-          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
-          if i > limit
-            expect(i > limit).to eq(true)
-            expect(last_response.status).to eq(429)
-            expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+        it "does not rate limit in non production environments" do
+          user = create(:user, password: "1234")
+          stub_const("SIMPLE_SERVER_ENV", "sandbox")
+
+          (limit * 2).times do |i|
+            post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+            if i > limit
+              expect(i > limit).to eq(true)
+              expect(last_response.status).to eq(200)
+            end
           end
         end
       end
 
-      it "does not rate limit in non production environments" do
-        stub_const("SIMPLE_SERVER_ENV", "sandbox")
-        user = create(:user, password: "1234")
+      context "by user ID" do
+        let(:limit) { 5 }
 
-        (limit * 2).times do |i|
-          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
-          if i > limit
-            expect(i > limit).to eq(true)
+        it "returns 200 when under limit, and 429 when over the limit" do
+          user = create(:user, password: "1234")
+
+          limit.times do |i|
+            randomize_request_ip(i)
+            post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
             expect(last_response.status).to eq(200)
+          end
+
+          randomize_request_ip(limit + 1)
+          post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+          expect(last_response.status).to eq(429)
+          expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
+        end
+
+        it "does not rate limit across user ids" do
+          (limit * 2).times do |i|
+            randomize_request_ip(i)
+            post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
+            if i > limit
+              expect(i > limit).to eq(true)
+              expect(last_response.status).to eq(401)
+            end
+          end
+        end
+
+        it "doesn't return a 429 when the params doesn't have a user id" do
+          bad_params = [nil, {user: {}}]
+
+          bad_params.each do |bad_param|
+            (limit * 2).times do |i|
+              randomize_request_ip(i)
+              post "/api/v4/users/activate", bad_param
+              if i > limit
+                expect(i > limit).to eq(true)
+                expect(last_response.status).to eq(400)
+              end
+            end
+          end
+        end
+
+        it "does not rate limit in non production environments" do
+          stub_const("SIMPLE_SERVER_ENV", "sandbox")
+          user = create(:user, password: "1234")
+
+          (limit * 2).times do |i|
+            post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
+            randomize_request_ip(i)
+
+            if i > limit
+              expect(i > limit).to eq(true)
+              expect(last_response.status).to eq(200)
+            end
           end
         end
       end
@@ -235,20 +304,20 @@ describe "RateLimiter", type: :controller do
       }
     end
 
-    before(:each, type: :controller) do
+    before(:each) do
       @request.remote_addr = "127.0.0.1"
     end
 
     it "returns patients when under rate limit, and 429 when over the limit" do
-      skip "failing intermittently very frequenlty"
+      limit = 5
       identifier, headers = setup_patient_lookup_request.values_at(:identifier, :headers)
 
-      5.times do
-        get "/api/v4/patients/#{identifier}", nil, headers
+      limit.times do
+        post "/api/v4/patients/lookup", {identifier: identifier}, headers
         expect(last_response.status).to eq(200)
       end
 
-      get "/api/v4/patients/#{identifier}", nil, headers
+      post "/api/v4/patients/lookup", {identifier: identifier}, headers
       expect(last_response.status).to eq(429)
     end
   end
