@@ -54,7 +54,6 @@ function createBaseTrendChartConfig() {
           radius: 0,
         },
       },
-      responsive: true,
       maintainAspectRatio: false,
       layout: {
         padding: {

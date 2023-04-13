@@ -445,10 +445,11 @@ te-IN:
         cohort_title: "%{period}లోని చివరి సందర్శన నుండి ఫలితం"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period}లో రిజిస్టర్ అయినవారు"
         cohort_bar_tooltip: "%{threshold} తో %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "పురుషుడు"
     female: "మహిళ"
     transgender: "ట్రాన్స్‌జండర్"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "30 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
     monthly_opd_visits_gt_18: "18 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
     outpatient_department_visits: "అవుట్‌పేషంట్ డిపార్ట్‌మెంట్ సందర్శనలు"
