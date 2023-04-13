@@ -3,9 +3,7 @@
 name: Android QA tests
 
 on:
-  push:
-    branches:
-    - "user-enumeration-attack-monitoring"
+  workflow_dispatch:
     inputs:
       pr_number:
         description: 'PR number'
@@ -69,7 +67,7 @@ jobs:
             script: |
               adb root
               mkdir -p android-app/app/build/outputs/test-artifacts
-              android-app/gradlew -p android-app --build-cache --no-daemon -PmanifestEndpoint=https://simple-review-pr-4872.herokuapp.com/api/ installQaDebug installQaDebugAndroidTest
+              android-app/gradlew -p android-app --build-cache --no-daemon -PmanifestEndpoint=https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/ installQaDebug installQaDebugAndroidTest
               adb shell am instrument -w -e filter org.simple.clinic.benchmark.SelectBenchmarkTests -e benchmark_app_performance false  org.simple.clinic.qa.debug.test/org.simple.clinic.AndroidTestJUnitRunner >android-app/app/build/outputs/test-artifacts/logs.txt 2>android-app/app/build/outputs/test-artifacts/logs.txt
               cat android-app/app/build/outputs/test-artifacts/logs.txt
               adb pull /storage/emulated/0/Android/data/org.simple.clinic.qa.debug/ android-app/app/build/outputs/test-artifacts/ || true
