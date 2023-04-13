@@ -46,9 +46,9 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
         called_agreed = rand(0..overdue_called)
         called_remind = rand(0..(overdue_called - called_agreed))
         called_remove = overdue_called - called_agreed - called_remind
-        called_agreed_percent = called_agreed * 100 / overdue_called
-        called_remind_percent = called_remind * 100 / overdue_called
-        called_remove_percent = called_remove * 100 / overdue_called
+        called_agreed_percent = [called_agreed, 1].max * 100 / [overdue_called, 1].max
+        called_remind_percent = [called_remind, 1].max * 100 / [overdue_called, 1].max
+        called_remove_percent = [called_remove, 1].max * 100 / [overdue_called, 1].max
         chart_proportion_called_agreed_percent = percent_called * [called_agreed_percent, 1].max / 100
         chart_proportion_called_remind_percent = percent_called * [called_remind_percent, 1].max / 100
         chart_proportion_called_remove_percent = percent_called * [called_remove_percent, 1].max / 100
