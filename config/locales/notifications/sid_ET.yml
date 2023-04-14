@@ -1,4 +1,4 @@
-sid-ET:
+sid:
   notifications:
     set01:
       basic: "%{patient_name}, eegotena la'isi %{assigned_facility_name}konne  %{appointment_date} mundeete xissorana xagichoho."
@@ -49,7 +49,10 @@ sid-ET:
       no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                       %{patient_name}."
       official_short: "Mundeekki xiiwora barrisirootto dandiitto bikkinni mundeekki xiiwora %{facility_name} towaati.dottorchikki dancha fayyimma halchannohe%{patient_name}"
       official_short_medicines: "Mundeekki xiiwora barrisirootto dandiitto bikkinni mundeekki xiiworanna xagichoho %{facility_name}%{patient_name}towaati.dootorchikki dancha fayyimma halchannohe."
-      official_you_must: "dandiitto bikkinni mundeekki xiiwora %{facility_name}%{patient_name}Dottorchikki dancha fayyimma halchannohe."
-      official_no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                        %{patient_name}. dottorikki atera dancha fayyimma halchannohe."
+      official_you_must: "dandiitto bikkinni mundeekki xiiwora daa noohe %{facility_name}%{patient_name}Dottorchikki dancha fayyimma halchannohe."
+      official_no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                        %{patient_name}. dottorchikki atera dancha fayyimma halchannohe."
     covid:
-      medication_reminder: "roodoya 1% (xiiwaminohu suuma): nnike ledohu 2% (hoorosirano suuma) atte qaaganina atte faayima kuni COVID wiinamira. loowogesha muundete xiiwaa xaagichu guufate danchaho. sinu meererimin mulla xaagicho gaaniba asse qoleno faayimate laanani meererimn. atti ANM leedeno ASHA  xaadi."
+      medication_reminder: "Ayiiradu 1% (xiiwaminohu suuma): Ninketi Loosu miila 2% (hooronsirano suuma) konni COVID wiinamu yannara atena ate woadani fayyimma daafira  qaagganni no . muundete xiiwo xaagicho hanafittoro lowo geeshsha danchaho. Muli sinu mereeriminni woy fayyima laa'nani mereerinni mulla uyinanni xaagicho ganba assiri. ANM woy  ASHA  leedeno xaadi."
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
