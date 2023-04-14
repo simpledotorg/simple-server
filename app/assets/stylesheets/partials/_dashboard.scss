@@ -304,11 +304,12 @@ th sup {
   }
 
   td.type-percent {
-    text-align: center;
+    text-align: left;
   }
 }
 
 td.type-percent {
+  white-space: nowrap;
   em {
     font-style: normal;
     background: $purple-light;
@@ -316,7 +317,8 @@ td.type-percent {
     border-radius: 100px;
     padding: 2px;
     width: 3.5em;
-    display: block;
+    display: inline-block;
+    text-align: center;
   }
 
   em.high-is-good {
@@ -445,6 +447,10 @@ td.type-percent {
     color: $orange-dark;
     background: $orange-light;
     font-weight: normal;
+  }
+
+  span {
+    margin-left: 2px;
   }
 }
 
