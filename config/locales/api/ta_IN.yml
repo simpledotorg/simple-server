@@ -1,4 +1,4 @@
-ta-IN:
+ta_IN:
   date:
     month_names: [~, "ஜனவரி", "பிப்ரவரி", "மார்ச்", "ஏப்ரல்", "மே", "ஜூன்", "ஜூலை", "ஆகஸ்ட்", "செப்டம்பர்", "அக்டோபர்", "நவம்பர்", "டிசம்பர்"]
     abbr_month_names: [~, "ஜன", "பிப்", "மார்ச்", "ஏப்", "மே", "ஜூன்", "ஜூலை", "ஆக", "செப்", "அக்", "நவ", "டிச"]
@@ -120,7 +120,7 @@ ta-IN:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: இந்தி
       bp_passports:
-        heading_html: இரத்த அழுத்த பாஸ்போர்ட்கள்
+        heading_html: "இரத்த அழுத்த பாஸ்போர்ட்கள்"
         contents_html: உங்கள் மருத்துவமனையில் இரத்த அழுத்த பாஸ்போர்ட் அட்டைகள் அல்லது இரத்த அழுத்த பாஸ்போர்ட் ஸ்டிக்கர்களை எவ்வாறு பயன்படுத்துவது என்பதை அறிக.
         video_link_html: இரத்த அழுத்த பாஸ்போர்ட்டை எவ்வாறு பயன்படுத்துவது
         video_link_subtitle_html: இந்தி வீடியோ ஆங்கில வசனங்களுடன்
@@ -449,11 +449,33 @@ ta-IN:
     male: "ஆண்"
     female: "பெண்"
     transgender: "திருநங்கை"
+    total: "மொத்தம்"
+    yes: "ஆம்"
+    no: "இல்லை"
+    comments: "கருத்துகள்"
+    instruction_1: "உங்களுக்குத் தொகை தெரியாவிட்டால் காலியாக விடவும்"
+    instruction_2: 'இருப்பு தீர்ந்திருந்தால் "0" என்று உள்ளிடவும்'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN மற்றும் DM ஸ்க்ரீனிங்"
+    # Ethiopia
+    total_bp: "செய்யப்பட்டுள்ள மொத்த BP தகுதிச்சோதனை"
+    total_bs: "செய்யப்பட்டுள்ள மொத்த இரத்தச் சர்க்கரை தகுதிச்சோதனை"
+    new_raised_cases: "புதிதாகக் கண்டறியப்பட்ட நோயாளிகள்"
+    total_bp_raised: "மொத்தம் கண்டறியப்பட்ட BP"
+    total_bs_raised: "மொத்தம் கண்டறியப்பட்ட BS"
+    total_bp_raised_ncd_linked: "NCD கிளினிக்குடன் தொடர்புடைய மொத்த BP நோயாளிகள்"
+    total_bs_raised_ncd_linked: "NCD கிளினிக்குடன் தொடர்புடைய மொத்த BS நோயாளிகள்"
+    diagnosed_cases: "கண்டறியப்பட்ட நோயாளிகள்"
+    total_htn_diagnosed: "கண்டறியப்பட்ட மொத்த HTN"
+    total_dm_diagnosed: "கண்டறியப்பட்ட மொத்த DM"
+    cervical_cancer_uc: "கர்ப்பப்பை வாய் புற்றுநோய்"
+    total_women_screened_cervical: "கர்ப்பப்பை வாய்ப் புற்றுநோய்க்கான பரிசோதனை செய்யப்பட்ட மொத்தப் பெண்கள்"
+    total_women_treated_cervical: "கர்ப்பப்பை வாய்ப் புற்றுநோய்க்காகச் சிகிச்சையளிக்கப்பட்ட மொத்தப் பெண்கள்"
+    total_women_followup_cervical: "1 வருடத்திற்குப் பிறகு தொடர்பு கொல்லப்பட்ட மொத்தப் பெண்கள்"
+    # India
     monthly_opd_visits_gt_30: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >30 வயது"
     monthly_opd_visits_gt_18: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >18 வயது"
     outpatient_department_visits: "வெளிநோயாளிகள் துறை வருகைகள்"
-    htn_and_dm_screening: "HTN மற்றும் DM ஸ்க்ரீனிங்"
     total_bp_checks: "செய்யப்பட்டுள்ள மொத்த இரத்த அழுத்தச் சரிபார்ப்புகள்"
     total_blood_sugar_checks: "செய்யப்பட்டுள்ள மொத்த இரத்தச் சர்க்கரை சரிபார்ப்புகள்"
     new_suspected_individuals: "புதிதாகச் சந்தேகிக்கப்படப்பட்டுள்ள தனிநபர்கள்"
@@ -471,4 +493,44 @@ ta-IN:
     oral_cancer: "வாய் புற்றுநோய்"
     breast_cancer: "மார்பகப் புற்றுநோய்"
     cervical_cancer: "கர்பப்பை புற்றுநோய்"
-
+  monthly_supplies_report:
+    instruction_1: "ஒவ்வொரு மாதத்தின் முடிவிலும் இருப்பில் உள்ள பொருட்களை உள்ளிடவும்"
+    stock_on_hand: "இருப்பில் உள்ளவை"
+    stock_on_hand_uc: "இருப்பில் உள்ளவை"
+    working_equipments: "வேலை செய்யும் உபகரணங்கள்"
+    glucose_strips: "இரத்தக் குளுக்கோஸ் சோதனை ஸ்ட்ரிப்கள்"
+    total_working_condition: "வேலை செய்யும் நிலையில் மொத்தம்"
+    # Bangladesh
+    patient_books: "நோயாளி புத்தகங்கள்"
+    available_bp_monitors_arm_in: "கிடைக்கும் மொத்த BP மானிட்டர்கள் (ஆர்ம்-இன்)"
+    functioning_bp_monitors_arm_in: "செயல்படும் BP மானிட்டர்கள் (ஆர்ம்-இன்)"
+    available_bp_monitors_handheld: "கிடைக்கும் மொத்த BP மானிட்டர்கள் (கையடக்க)"
+    functioning_bp_monitors_handheld: "செயல்படும் BP மானிட்டர்கள் (கையடக்க)"
+    available_blood_glucose_monitors: "மொத்தம் கிடைக்கக்கூடிய இரத்த குளுக்கோஸ் மானிட்டர்கள்"
+    functioning_blood_glucose_monitors: "செயல்படும் இரத்த குளுக்கோஸ் மானிட்டர்கள்"
+    # Ethiopia
+    bp_monitor: "BP மானிட்டர்"
+    glucose_meter: "இரத்தக் குளுக்கோஸ் மீட்டர்"
+    stethoscope: "ஸ்டெதஸ்கோப்"
+    height_weight_machine: "உயரம் மற்றும் எடை அளவிடும் எந்திரம்"
+    waist_tape: "இடுப்புச் சுற்றளவு அளவிற்கான டேப்"
+    # India
+    glucometer_strips: "குளுக்கோமீட்டர் ஸ்ட்ரிப்கள்"
+    # Sri Lanka
+    equipment: "உபகரணம்"
+    available_bp_devices: "கிடைக்கும் மொத்த BP சாதனங்கள்"
+    functioning_bp_devices: "செயல்படும் BP சாதனங்கள்"
+    available_phones: "கிடைக்கும் மொத்த மொபைல் ஃபோன்கள்"
+    functioning_phones: "செயல்படும் மொபைல் ஃபோன்கள்"
+    drug_stock: "மருந்து இருப்பு"
+    drug_stock_losartan: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: லோசார்டன்"
+    drug_stock_amlodipine: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: அம்லோடைபின்"
+    drug_stock_hct: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: HCT (ஹைட்ரோகுளோரோதியாசைடு)"
+    trained_staff: "பயிற்சி பெற்ற பணியாளர்கள்"
+    doctors_count: "மருத்துவ மையத்தில் உள்ள மருத்துவர்களின் எண்ணிக்கை"
+    nurses_count: "மருத்துவ மையத்தில் உள்ள செவிலியர்களின் எண்ணிக்கை"
+    pharmacists_count: "மருத்துவமனையில் உள்ள மருந்தாளுநர்களின் எண்ணிக்கை"
+    drug_dispensers_count: "மருத்துவமனையில் உள்ள மருந்து விநியோகிப்பாளர்களின் எண்ணிக்கை"
+    others: "பிறர்"
+    television_functional: "ஆரோக்கியக் கல்வி தொடர்பான செய்திகள் மருத்துவக் கிளினிக்கின் தொலைக்காட்சியில் காட்டப்படுகிறதா?"
+    wifi_functional: "Wi-Fi நெட்வொர்க் உள்ளதா?"
