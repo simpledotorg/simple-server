@@ -445,10 +445,11 @@ ti-ET:
         cohort_title: "ካብ ዝሓለፈ ምብዛሕ ውጽኢት ኣብ %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ዝተመዝገቡ ኣብ %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} ምስ%{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "ወዲ-ተባዕታይ"
     female: "ጓል-አነስተይቲ"
     transgender: "ፆታ-ዝቐየረ"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >30 ዓመት"
     monthly_opd_visits_gt_18: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >18 ዓመት"
     outpatient_department_visits: "ናይ ደጋዊ ተሓካሚ ምጉብናያት"

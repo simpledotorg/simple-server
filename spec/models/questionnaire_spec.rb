@@ -84,6 +84,13 @@ RSpec.describe Questionnaire, type: :model do
       questionnaire = build(:questionnaire, layout: layout)
       expect(questionnaire.localized_layout).to eq(localized_layout)
     end
+
+    it "raises an exception when key is missing" do
+      layout = {"text" => "undefined_translation_key"}
+      questionnaire = build(:questionnaire, layout: layout)
+
+      expect { questionnaire.localized_layout }.to raise_error(I18n::MissingTranslationData)
+    end
   end
 
   describe "#validate_layout" do

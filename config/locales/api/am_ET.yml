@@ -445,10 +445,11 @@ am-ET:
         cohort_title: "ለመጨረሻ ጊዜ የጎበኙት %{period} ውጤት"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} በ %{registration_period} የተመዘገቡ"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} የ %{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "ወንድ"
     female: "ሴት"
     transgender: "ወንዳገረድ"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "ወርሃዊ የ OPD ጉብኝቶች >30 አመት ለሆኑ አዋቂዎች"
     monthly_opd_visits_gt_18: "ወርሃዊ የ OPD ጉብኝቶች >18 አመት ለሆኑ አዋቂዎች"
     outpatient_department_visits: "የተመላላሽ ታካሚ ክፍል ጉብኝቶች"

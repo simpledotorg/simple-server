@@ -445,10 +445,11 @@ mr-IN:
         cohort_title: "%{period} मध्ये शेवटच्या भेटीचा परिणाम"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} मध्ये नोंदणीकृत आहेत"
         cohort_bar_tooltip: "%{threshold} सह %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "पुरुष"
     female: "स्त्री"
     transgender: "किन्नर"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "30 वर्षांपेक्षा अधिक वयाच्या प्रौढासाठी मासिक OPD भेटी"
     monthly_opd_visits_gt_18: "18 वर्षांपेक्षा अधिक वयाच्या प्रौढासाठी मासिक OPD भेटी"
     outpatient_department_visits: "बाह्यरुग्ण विभाग भेटी"

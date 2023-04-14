@@ -445,10 +445,11 @@ pa-Guru-IN:
         cohort_title: "%{period} ਵਿੱਚ ਪਿਛਲੀ ਵਿਜ਼ਿਟ ਦਾ ਨਤੀਜਾ"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} ਵਿੱਚ ਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ"
         cohort_bar_tooltip: "%{threshold} ਦੇ ਨਾਲ %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "ਮਰਦ"
     female: "ਔਰਤ"
     transgender: "ਦੁਲਿੰਗੀ"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "30 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
     monthly_opd_visits_gt_18: "18 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
     outpatient_department_visits: "ਆਉਟਪੇਸ਼ੈਂਟ ਵਿਭਾਗ ਦੀਆਂ ਮੁਲਾਕਾਤਾਂ"

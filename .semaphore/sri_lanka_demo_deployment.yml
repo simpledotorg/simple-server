@@ -24,3 +24,7 @@ promotions:
     pipeline_file: sri_lanka_production_deployment.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: Sri Lanka Production Deployment AWS
+    pipeline_file: sri_lanka_production_deployment_aws.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

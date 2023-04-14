@@ -445,10 +445,11 @@ ta-LK:
         cohort_title: "%{period} இல் கடைசி வருகையின் முடிவு"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients}, %{registration_period} இல் பதிவுசெய்தனர்"
         cohort_bar_tooltip: "%{threshold} உடன்%{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "ஆண்"
     female: "பெண்"
     transgender: "திருநங்கைகள்"
+  monthly_screening_report:
     monthly_opd_visits_gt_30: "30 வயதுக்கு மேற்பட்ட பெரியவர்களுக்கான மாதாந்திர OPD வருகைகள்"
     monthly_opd_visits_gt_18: "18 வயதுக்கு மேற்பட்ட பெரியவர்களுக்கான மாதாந்திர OPD வருகைகள்"
     outpatient_department_visits: "வெளிநோயாளர் பிரிவு வருகைகள்"
