@@ -1,4 +1,4 @@
-so-ET:
+so:
   notifications:
     set01:
       basic: "%{patient_name}, fadlan booqo %{facility_name} ee %{appointment_date} ee qiyaasta iyo dawooyinka."
@@ -43,13 +43,16 @@ so-ET:
       emotional_guilt: "Waxaad ka daahday qiyaastaada BP. Marka aan la dawayn, cadaadiska sare ee dhiigu kharash badan waxa uu ku yahay dhammaan bulshadda %{patient_name}, fadlan booqo %{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       professional_request: "Waxaad ka daahday qiyaastaada BP. Dhakhtarkaagu waxa uu rabaa inuu ku xasuusiyo in BP gaaga la qiyaaso. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP."
       response: "Waxaad ka daahday qiyaastaada BP. %{patient_name}, fadlan booqo%{facility_name} sida ug dhakhsaha badan ee suuragalka ah wixii ah qiyaasta iyo dawooyinka BP. Riix linkigan si aad noo ogaysiiso inaad soo xaadiri doonto:"
-      short: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida degdega ah ee suuragalka ah BP gaaga %{patient_name}."
-      short_medicines: "Waxaad ka daahday BP Booqashadaada %{facility_name} sida degdega ah ee suuragalka ah ee BP gaaga iyo dawooyinka %{patient_name}."
-      you_must: "Waa inaad timaado sida degdega ah ee suuragalka ah ee BP saacada %{facility_name} %{patient_name}."
-      no_date: "Maanta kaalay si %{facility_name} loo cabiro BP, %{patient_name}."
-      official_short: "Waxaad ka daahday Booqshada BP gaaga %{facility_name} sida degdega ah ee suuraglka ah BP gaaga%{patient_name} . Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
-      official_short_medicines: "Waxaad ka daahday Booqashada BP gaaga %{facility_name} sida ugu dhakhsaha badan ee suuragalka ah BP gaaga iyo dawooyinka %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
-      official_you_must: "Waa inaad u timaadaa sida dhakhsaha ah ee suuragalka BP saacada %{facility_name} %{patient_name}. Dhakhtarkaagu waxa uu kula rabaa caafimaadkaaga wanaagsan.."
-      official_no_date: "Maanta kaalay %{facility_name} si loo cabiro BP, %{patient_name}. Dhakhtarkaagu waxa uu kuu rajaynayaa caafimaad wanaagsan."
+      short: "Waxaad ka daahday BP gaaga. Booqashada %{facility_name} isla marka ay suuragal tahay BP gaaga %{patient_name}. - IHCI"
+      short_medicines: "Waxaad ka daahday BP gaaga. Booqo %{facility_name} sida dhakhsaha ah ee suuragalka ah ee BP gaaga iyo dawooyinka %{patient_name}. - IHCI"
+      you_must: "Waa inaad timaado sida degdega ah ee suuragalka ah %{facility_name} %{patient_name}. - IHCI"
+      no_date: "Maanta kaalay %{facility_name} ee qiyaasta BP, %{patient_name}. - IHCI"
+      official_short: "Waxaad ka daahday BP gaaga. Booqo %{facility_name} sida ugu degdega badan ee suuragalka ee BP gaaga %{patient_name} . Dhakhtarkaaga waxa uur abaa caafimaadka wanaagsan. - IHCI"
+      official_short_medicines: "Waxaad ka daahday BP gaaga. Booqo %{facility_name} sida degdega ah ee suuragalka ah ee BP gaaga iyo dawooyinka %{patient_name}. Dhakhtarkaaga waxa uu rabaa caafimaadkaaga fiican. - IHCI"
+      official_you_must: "Waa inaad timaado sida ugu dhakhsaha badan ee BP xaga %{facility_name} %{patient_name}. Rabitaankaaga caafimaadka wanaagsan. - IHCI"
+      official_no_date: "Kaalay maanta %{facility_name} ee qiyaasta BP, %{patient_name}. Rabitaankaaga dhakhtarka ee caafimaadkaaga wanaagsan. - IHCI"
     covid:
-      medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga jooga xaga %{facility_name} way kaa fekeriyaan adiga iyo caafimaadkaaga wadnaha muddada gurmadkan COVID. Aad ayay muhiim u tahay in la sii wado dawooyinkaaga BP. Ka qaado dawooyinkaaga blaashka ah xarunta hoose ee ugu dhow ama xarunta fayo qabka caafimaadkaaga. La xidhiidh ANM kaaga ama ASHA."
+      medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga %{facility_name} awaxay ka fekerayaan adiga iyo caafimaadka wadnahaaga muddada gurmadka COVID.  Aad ayay u muhiim tahay in la sii wado dawooyinkaaga BP. Soo qaado dawooyinkaaga ka yimid xarunta yar ee ugu dhow ama xarunta fayo qabka Caafimaadka. La xidhiidh ANM ama ASHA. - IHCI"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
