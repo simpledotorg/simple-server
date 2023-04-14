@@ -1,4 +1,4 @@
-hi-IN:
+hi_IN:
   date:
     month_names: [~, "जनवरी", "फरवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
     abbr_month_names: [~, "जनवरी", "फ़रवरी", "मार्च", "अप्रैल", "मई", "जून", "जुलाई", "अगस्त", "सितंबर", "अक्टूबर", "नवंबर", "दिसंबर"]
@@ -120,7 +120,7 @@ hi-IN:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: हिंदी
       bp_passports:
-        heading_html: बीपी पासपोर्ट
+        heading_html: "बीपी पासपोर्ट"
         contents_html: अपने अस्पताल में बीपी पासपोर्ट कार्ड या बीपी पासपोर्ट स्टिकर का उपयोग करने के बारे में सीखें।
         video_link_html: बीपी पासपोर्ट का उपयोग कैसे करें
         video_link_subtitle_html: अंग्रेज़ी उपशीर्षकों के साथ हिंदी
@@ -449,11 +449,33 @@ hi-IN:
     male: "पुरूष"
     female: "महिला"
     transgender: "ट्रांसजेंडर"
+    total: "कुल"
+    yes: "हॉं"
+    no: "नहीं"
+    comments: "टिप्‍पणी"
+    instruction_1: "अगर आप राशि नहीं जानते हैं, तो खाली छोड़ दें"
+    instruction_2: 'स्टॉक खत्म होने पर "0" डालें'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN और DM जाँच"
+    # Ethiopia
+    total_bp: "कुल बीपी स्क्रीनिंग की गई"
+    total_bs: "कुल की गई रक्त शर्करा की स्क्रीनिंग"
+    new_raised_cases: "बढ़े हुए नए मामले"
+    total_bp_raised: "कुल बढ़ा हुआ बीपी"
+    total_bs_raised: "कुल बढ़ा हुआ BS"
+    total_bp_raised_ncd_linked: "NCD क्लिनिक से जुड़े कुल बढ़े हुए बीपी के मामले"
+    total_bs_raised_ncd_linked: "NCD क्लिनिक से जुड़े कुल बढ़े हुए BS के मामले"
+    diagnosed_cases: "पहचाने गए मामले"
+    total_htn_diagnosed: "HTN के कुल पहचाने गए मामले"
+    total_dm_diagnosed: "DM के कुल पहचाने गए मामले"
+    cervical_cancer_uc: "सर्वाइकल कैंसर"
+    total_women_screened_cervical: "कुल महिलाएं, जिनमें सर्वाइकल कैंसर की जांच की गई"
+    total_women_treated_cervical: "कुल महिलाएं, जिनका सर्वाइकल कैंसर का उपचार किया गया"
+    total_women_followup_cervical: "कुल महिलाएं, जिनका 1 साल के बाद फॉलो अप लिया गया"
+    # India
     monthly_opd_visits_gt_30: "30 साल से अधिक उम्र के लोगों के लिए हर महीने OPD की विज़िट"
     monthly_opd_visits_gt_18: "18 साल से अधिक उम्र के लोगों के लिए हर महीने OPD की विज़िट"
     outpatient_department_visits: "बाह्य-रोगी विभाग की विज़िट"
-    htn_and_dm_screening: "HTN और DM जाँच"
     total_bp_checks: "ब्लड प्रेशर की कुल की गई जाँचें"
     total_blood_sugar_checks: "रक्त शर्करा की कुल की गई जाँचें"
     new_suspected_individuals: "नए संदिग्ध मरीज़"
@@ -471,4 +493,44 @@ hi-IN:
     oral_cancer: "मुँह का कैंसर"
     breast_cancer: "स्तन कैंसर"
     cervical_cancer: "सर्वाइकल कैंसर"
-
+  monthly_supplies_report:
+    instruction_1: "हर महीने के अंत में स्टॉक में बची आपूर्ति डालें"
+    stock_on_hand: "कितना स्‍टॉक बचा है"
+    stock_on_hand_uc: "कितना स्‍टॉक बचा है"
+    working_equipments: "काम करने वाले उपकरण"
+    glucose_strips: "रक्त ग्लूकोज परीक्षण स्ट्रिप्स"
+    total_working_condition: "कुल चालू हालत में"
+    # Bangladesh
+    patient_books: "रोगी पुस्तकें"
+    available_bp_monitors_arm_in: "कुल उपलब्ध बीपी मॉनिटर (आर्म-इन)"
+    functioning_bp_monitors_arm_in: "कार्यशील बीपी मॉनिटर (आर्म-इन)"
+    available_bp_monitors_handheld: "कुल उपलब्ध बीपी मॉनिटर (हैंडहेल्ड)"
+    functioning_bp_monitors_handheld: "कार्यशील बीपी मॉनिटर (हैंडहेल्ड)"
+    available_blood_glucose_monitors: "कुल उपलब्ध रक्त ग्लूकोज मॉनिटर लक्ष्य"
+    functioning_blood_glucose_monitors: "कार्यशील रक्त ग्लूकोज मॉनिटर लक्ष्य"
+    # Ethiopia
+    bp_monitor: "बीपी मॉनिटर"
+    glucose_meter: "रक्त ग्लूकोज मीटर"
+    stethoscope: "स्टेथोस्कोप"
+    height_weight_machine: "ऊंचाई और वजन मापने की मशीन"
+    waist_tape: "कमर की परिधि को मापने के लिए टेप"
+    # India
+    glucometer_strips: "ग्लूकोमीटर स्ट्रिप्स"
+    # Sri Lanka
+    equipment: "उपकरण"
+    available_bp_devices: "कुल उपलब्ध बीपी डिवाइस"
+    functioning_bp_devices: "कार्यशील बीपी डिवाइस"
+    available_phones: "कुल उपलब्ध मोबाइल फ़ोन"
+    functioning_phones: "कार्यशील मोबाइल फ़ोन"
+    drug_stock: "ड्रग का स्‍टॉक"
+    drug_stock_losartan: "अगले महीने के लिए पर्याप्त ड्रग्‍स: लोसार्टन"
+    drug_stock_amlodipine: "अगले महीने के लिए पर्याप्त ड्रग्‍स: अम्लोडिपाइन"
+    drug_stock_hct: "अगले महीने के लिए पर्याप्त ड्रग्‍स: HCT (हाइड्रोक्लोरोथियाजाइड)"
+    trained_staff: "प्रशिक्षित स्‍टाफ़"
+    doctors_count: "चिकित्सा क्लिनिक में उपस्थित चिकित्सकों की संख्या"
+    nurses_count: "चिकित्सा क्लिनिक में उपस्थित नर्सों की संख्या"
+    pharmacists_count: "अस्पताल में उपलब्ध फार्मासिस्ट की संख्या"
+    drug_dispensers_count: "अस्पताल में उपलब्ध ड्रग डिस्पेंसरों की संख्या"
+    others: "अन्‍य"
+    television_functional: "क्या चिकित्सा क्लिनिक में टेलीविज़न स्क्रीन का इस्‍तेमाल करके स्वास्थ्य शिक्षा संदेश दिखाए जाते हैं?"
+    wifi_functional: "क्या Wi-Fi नेटवर्क उपलब्ध है?"
