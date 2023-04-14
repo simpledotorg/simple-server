@@ -29,4 +29,11 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     start_period = @period.advance(months: -2)
     Range.new(start_period, @period)
   end
+
+  def is_not_facility
+    if region.child_region_type != 'facility'
+      return true
+    end
+    false
+  end
 end
