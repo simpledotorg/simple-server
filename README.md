@@ -425,14 +425,6 @@ server "ec2-12-222-67-89.ap-south-1.compute.amazonaws.com", user: "deploy", role
 
 The first server runs the web application and cron tasks, the second server runs Sidekiq to process background jobs.
 
-#### 2. Install Sidekiq
-
-A one-time installation of Sidekiq is required in new environments. Run the following command:
-
-```bash
-bundle exec cap <environment> sidekiq:install
-```
-
 #### 2. Deploy
 
 You can now run a regular Capistrano deployment:
