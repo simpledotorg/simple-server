@@ -53,3 +53,6 @@ sid-ET:
       official_no_date: "Techo amo %{facility_name} mundeete xiiwo bikkirate,                        %{patient_name}. dottorikki atera dancha fayyimma halchannohe."
     covid:
       medication_reminder: "roodoya 1% (xiiwaminohu suuma): nnike ledohu 2% (hoorosirano suuma) atte qaaganina atte faayima kuni COVID wiinamira. loowogesha muundete xiiwaa xaagichu guufate danchaho. sinu meererimin mulla xaagicho gaaniba asse qoleno faayimate laanani meererimn. atti ANM leedeno ASHA  xaadi."
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
