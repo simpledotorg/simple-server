@@ -1,4 +1,4 @@
-sid-ET:
+sid:
   date:
     month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "birra", "Bocaasa ", "Sadaasa"]
     abbr_month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "Birra", "Bocaasa", "Sadaasa"]
@@ -120,7 +120,7 @@ sid-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindete afoo
       bp_passports:
-        heading_html: Mundeete xiiwo passporte
+        heading_html: "Mundeete xiiwo passporte"
         contents_html: Hosipitaalete giddo Mundeete xiiwo passporte karduwa woyi Mundeete xiiwo passporte xallaasinuwa Hiittoonni horonsi’nayiro afi.
         video_link_html: Hiittoonni horonsi’nayiro Mundeete xiiwo passporte
         video_link_subtitle_html: Hindete afoo Ingilezete afiinni cinaancho handaara
@@ -449,11 +449,33 @@ sid-ET:
     male: "Labbaaha"
     female: "Meyaa beeetto"
     transgender: "lamenka koo/te "
+    total: "Bala"
+    yes: "Ee"
+    no: "deni'"
+    comments: "Hedubba"
+    instruction_1: "Bikka afa hoogginiro fano agurtine sa'e"
+    instruction_2: 'Kuuso gooffiniro "0" borreesse'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM buuxa"
+    # Ethiopia
+    total_bp: "Xaphoomu mundeete xiiwo buuxo ka'noonni"
+    total_bs: "Xaphoomu mundeete sukkaare buuxo ka'noonni"
+    new_raised_cases: "Haaro kaino hajubba"
+    total_bp_raised: "Xaphoomunni kaino mundeete xiiwo"
+    total_bs_raised: "xaphoomunni kaino mundeete sukkaare"
+    total_bp_raised_ncd_linked: "xaphoomunni kaino mundeete xiiwo hajo NCD kiliinike ledo xaadinsoonniti"
+    total_bs_raised_ncd_linked: "xaphoomunni kaino mundeete sukkaare hajo NCD kiliinike ledo xaadinsoonniti"
+    diagnosed_cases: "Buuxo assinoonni hajubba"
+    total_htn_diagnosed: "xaphooma buuxo assinoonni HTN "
+    total_dm_diagnosed: "xaphooma buuxo assinoonni DM"
+    cervical_cancer_uc: "Otoottote kaansere"
+    total_women_screened_cervical: "xaphooma otoottote kaansere noonsa meento"
+    total_women_treated_cervical: "xaphooma otoottote kaansere xagisirino meento"
+    total_women_followup_cervical: "1 diri gedenanni harunso assinoonninsa meento"
+    # India
     monthly_opd_visits_gt_30: "aganunita OPD laooshe wede'laho >30 diro. "
     monthly_opd_visits_gt_18: "aganunita OPD laooshe wede'laho >18 diro."
     outpatient_department_visits: "hare giganni xagisirano xiwamasine base laooshe"
-    htn_and_dm_screening: "HTN & DM buuxa"
     total_bp_checks: "xa'pooma BP la'nooni"
     total_blood_sugar_checks: "xa'pooma mundeete sukaare deerra lanooni"
     new_suspected_individuals: "haarro huluulo noo mancho"
@@ -471,4 +493,44 @@ sid-ET:
     oral_cancer: "afuu kaansere"
     breast_cancer: "unuunu kaansere"
     cervical_cancer: "ur'chu bir'xe kaansere"
-
+  monthly_supplies_report:
+    instruction_1: "kuusote mine gatinoha irkote uduunne aganu goofimarchi kiiro eessi"
+    stock_on_hand: "Gooffinokki kuuso"
+    stock_on_hand_uc: "GOOFFINOKKI KUUSO"
+    working_equipments: "LOONSANNI UDUUNNE"
+    glucose_strips: "Mundeete guokoose buunxanni uduunne"
+    total_working_condition: "Xaphooma loosu ikkito"
+    # Bangladesh
+    patient_books: "Xissamaanote taje borreessinoonni maxaafa"
+    available_bp_monitors_arm_in: "Xaphooma qixxaabbino mundeete xiiiwo bikkinanni uduunnicho (cigilete-giddo)"
+    functioning_bp_monitors_arm_in: "loosu aana noo mundeete xiiiwo bikkinanni uduunnicho (cigilete-giddo)"
+    available_bp_monitors_handheld: "Xaphooma qixxaabbino mundeete xiiiwo bikkinanni uduunnicho (amandanniha)"
+    functioning_bp_monitors_handheld: "loosu aana noo mundeete xiiiwo bikkinanni uduunnicho (amandanniha)"
+    available_blood_glucose_monitors: "Xaphooma qixxaawino mundeete gulukoose bikkinanni udunnicho"
+    functioning_blood_glucose_monitors: " loosanno mundeete gulukoose bikkinanni udunnicho"
+    # Ethiopia
+    bp_monitor: "Mundeete xiiwo bikkinanni uduunnicho"
+    glucose_meter: "Mundeete gulukoose meetire"
+    stethoscope: "Isteetosikope"
+    height_weight_machine: "Hojjanna qelpheepho bikkinanni maashine"
+    waist_tape: "Hallu hala'linye bikkinanni Teeppe"
+    # India
+    glucometer_strips: "Gulukomeetirete uduunnicho"
+    # Sri Lanka
+    equipment: "Uduunnicho"
+    available_bp_devices: "Xaphooma qixaawino mundeete xiiwo uduunne"
+    functioning_bp_devices: "loosu aana noo mundeete xiiwo uduunne"
+    available_phones: "xaphooma noo mobayilete bilbilla"
+    functioning_phones: "loossanno mobayilete bilbilla"
+    drug_stock: "Xagichu duuno"
+    drug_stock_losartan: "Daanno aganira ikkanno xagicho: Losartaane"
+    drug_stock_amlodipine: "Daanno aganira ikkanno xagicho: Amilodipine"
+    drug_stock_hct: "Daanno aganira ikkanno xagicho: HCT (Haydrokiloratiazayide)"
+    trained_staff: "QAJEELTINO ISTAAFETE MIILLA"
+    doctors_count: "Medikaalete kiliinike dagganno dottorrate kiiro"
+    nurses_count: "Medikaalete kiliinike dagganno nersubbate kiiro"
+    pharmacists_count: "Hospitaalete noo faarmasistooti kiiro"
+    drug_dispensers_count: "Hospittaalete giddo noo xagicho horoonsi'nanni amaale uyitannori kiiro"
+    others: "Wolootano"
+    television_functional: "Medikaale kiliinike giddo, Televizhiinete iskriine horoonsi'ne babbaxxinoha keereaanchimmate rosi sokka sayinsoonni?"
+    wifi_functional: "Wi-Fi netiworke qinaabbino?"
