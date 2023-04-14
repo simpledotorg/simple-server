@@ -53,3 +53,6 @@ en:
       official_no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}. Your doctor wishes for your good health. - IHCI"
     covid:
       medication_reminder: "Dear %{patient_name}: Our staff at %{facility_name} are thinking of you and your heart health during this COVID emergency. It is very important to continue your BP medicines. Collect your free medicine from the nearest sub center or health wellness center. Contact your ANM or ASHA. - IHCI"
+    sri_lanka:
+      one_day_before_appointment: "Tomorrow is your medical clinic day. Please drink your morning drug dose before coming to the clinic."
+      three_days_missed_appointment: "You have missed your medical clinic visit. It is necessary to take medical clinic drugs continuously. Please visit the medical clinic next week without fail."

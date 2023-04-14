@@ -53,3 +53,6 @@ mr-IN:
       official_no_date: "%{patient_name} बीपी तपासणीसाठी आजच %{facility_name} येथे या. आपले डॉक्टर आपल्या उत्तम आरोग्याची कामना करत आहेत."
     covid:
       medication_reminder: "Dear %{patient_name}: सध्याच्या कोरोना आकस्मिक संकटात, %{facility_name} येथील आमचे कर्मचारी,आपण व आपल्या हृदयाच्या आरोग्याबाबत विचार करत आहेत. आपले उच्च रक्तदाबाचे औषध चालू ठेवणे आवश्यक आहे. आपली मोफत औषधे नजिकच्या शासकीय आरोग्यवर्धिनी केंद्रामधून प्राप्त करा. अधिक माहितीसाठी आरोग्यसेविका किंवा आशा यांचेशी संपर्क करावा"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
