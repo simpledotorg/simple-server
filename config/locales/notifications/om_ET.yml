@@ -1,4 +1,4 @@
-om-ET:
+om:
   notifications:
     set01:
       basic: "%{patient_name}, maaloo %{facility_name} gaafa %{appointment_date} irratti safaraa fi dawaadhaf akka argamtan. "
@@ -43,13 +43,16 @@ om-ET:
       emotional_guilt: "Safara BP irraa barfattee jirta. Yoo hin yaalamne ta'e, BP ol ka'aan hawaasa hunda gatii baasisuu mala. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       professional_request: "Safara BP irraa barfattee jirta. Haakimni kee akka BP kee safaratti si yaadachiisuu barbaada. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu."
       response: "Safara BP irraa barfattee jirta. %{patient_name}, maaloo safaraa fi dawaa BP tiif dafii %{facility_name} daawwadhu. akka dhuftu akka nnuti beeknuuf geessituu kana irratti cuqaasi."
-      short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
-      short_medicines: "Beellama kee BP fi dawaawwan keetif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali."
-      you_must: "BP dhaaf hanga danda'ameen daddaffiin dirqama %{facility_name}%{patient_name} tti dhufuu qabda."
-      no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu."
-      official_short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
-      official_short_medicines: "Beellama kee BP fi dawaawwaniitif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa."
-      official_you_must: "BP dhaaf hanga danda'ameen daddaffiidhan dirqama %{facility_name}%{patient_name} irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa."
-      official_no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu. Haakimni kee waan gaarii siif hawwa."
+      short: "Isin daawwannaa keessan BPtiif barfattanii jirtu. Bleemma keessan BP %{patient_name}. - IHCI hanga danda'ameen dafaa %{facility_name} qunnamaa"
+      short_medicines: "Beellama kee BP fi dawaawwan keetif barfattee jirta. Dawaawwan keessan %{patient_name}tiif dafii %{facility_name} ilaali."
+      you_must: "BP dhaaf hanga danda'ameen saffisaan %{facility_name}%{patient_name}tti dhufaa. - IHCI"
+      no_date: "Safara BPdhaatiif har'a %{facility_name} tti koottaa, %{patient_name}. - IHCI"
+      official_short: "Beellama kee BP dhaatif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa. - IHCI"
+      official_short_medicines: "Beellama kee BP fi dawaawwaniitif barfattee jirta. BP kee %{patient_name}tiif dafii %{facility_name} ilaali. Haakimni kee fayyaa gaarii siif hawwa. - IHCI"
+      official_you_must: "BP dhaaf hanga danda'ameen daddaffiidhan dirqama %{facility_name}%{patient_name} irratti dhufuu qabda. Haakimni kee fayyaa gaarii siif hawwa. - IHCI"
+      official_no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu. Haakimni kee waan gaarii siif hawwa. - IHCI"
     covid:
-      medication_reminder: "Kabajamoo %{patient_name}: Hojjattootni keenya kan %{facility_name} yeroo fayyaa hatattamaa COVUD kanatti waa'ee fayyaa onnee keetii yaadu. Dawaa BPP itti fufuun kee baayyee murteessaadha. Jiddugala fayyaa dhihoo fi eeggumsa fayyaa irraa dawaawwan kee fudhadhu. ANM yookan ASHA kee qunnami."
+      medication_reminder: "Kabajamoo %{patient_name}: Hojjattootni keenya kan %{facility_name} yeroo fayyaa hatattamaa COVUD kanatti waa'ee fayyaa onnee keetii yaadu. Dawaa BPP itti fufuun kee baayyee murteessaadha. Jiddugala fayyaa dhihoo fi eeggumsa fayyaa irraa dawaawwan kee fudhadhu. ANM yookan ASHA kee qunnami. - IHCI"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
