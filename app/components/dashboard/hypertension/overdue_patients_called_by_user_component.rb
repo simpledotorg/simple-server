@@ -26,7 +26,7 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
   end
 
   def periods
-    start_period = @period.advance(months: -3)
+    start_period = @period.advance(months: -2)
     Range.new(start_period, @period)
   end
 end
