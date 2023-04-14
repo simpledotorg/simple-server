@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   notifications:
     set01:
       basic: "%{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች %{facility_name} በ %{appointment_date}ይጎብኙ።"
@@ -43,13 +43,16 @@ am-ET:
       emotional_guilt: "ለደም ግፊትዎ መለካት ዘግይተዋል። በማይታከምበት ጊዜ ከፍተኛ የደም ግፊት ለሙሉ ማህበረሰብ ከፍተኛ ወጪዎች አሉት። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች  %{facility_name} ይጎብኙ።"
       professional_request: "ዛሬ እንጠብቅዎታለን። የደም ግፊትዎ እንዲለካ ሐኪምዎ እርስዎን ለማስታወስ ይመኛል።  %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና መድሃኒቶች በተቻለ መጠን%{facility_name}ይጎብኙ። "
       response: "ለደም ግፊትዎ መለካት ዘግይተዋል። %{patient_name}፣ እባክዎ ለደም ግፊት ልኬት እና ለመድሃኒቶች በተቻለ መጠን %{facility_name} ይጎብኙ። እንደሚሳተፉ እንድናውቅ ይህንን አገናኝ ጠቅ ያድርጉ፦"
-      short: "ለእርስዎ BP ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}።"
-      short_medicines: "ለእርስዎ BP እና መድሃኒቶችዎ ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}።"
-      you_must: "ለ BPዎ በ %{facility_name}%{patient_name}የግድ መምጣት ይኖርብዎታል።"
-      no_date: "ለ BPዎ ልኬት ዛሬ %{patient_name} በ  %{facility_name} ዛሬ ይምጡ።"
-      official_short: "ለእርስዎ BP ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። ሃክምዎ ጤናዎን ይመኝልዎታል።"
-      official_short_medicines: "ለእርስዎ BP እና መድሃኒቶችዎ ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። ሃክምዎ ጤናዎን ይመኝልዎታል።"
-      official_you_must: "ለ BP ይግድ በተቻለ ፍጥነት በ %{facility_name} ላይ %{patient_name}መምጣት አለብህ። ሃክምዎ ጤናዎን ይመኝልዎታል።"
-      official_no_date: "ለ BP ይግድ ዛሬ %{facility_name} በ ላይ %{patient_name}ይጎብኙ። ሃክምዎ ጤናዎን ይመኝልዎታል።"
+      short: "ለእርስዎ BP ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። - IHCI"
+      short_medicines: "ለእርስዎ BP እና መድሃኒቶችዎ ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። - IHCI"
+      you_must: "ለ BPዎ በ %{facility_name}%{patient_name}የግድ መምጣት ይኖርብዎታል። - IHCI"
+      no_date: "ለ BPዎ ልኬት ዛሬ %{patient_name} በ  %{facility_name} ዛሬ ይምጡ። - IHCI"
+      official_short: "ለእርስዎ BP ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። ሃክምዎ ጤናዎን ይመኝልዎታል። - IHCI"
+      official_short_medicines: "ለእርስዎ BP እና መድሃኒቶችዎ ዘግይተሃል። ለBPዎ%{facility_name} በተቻለ ፍጥነት ይጎብኙ%{patient_name}። ሃክምዎ ጤናዎን ይመኝልዎታል። - IHCI"
+      official_you_must: "ለ BP ይግድ በተቻለ ፍጥነት በ %{facility_name} ላይ %{patient_name}መምጣት አለብህ። ሃክምዎ ጤናዎን ይመኝልዎታል. - IHCI"
+      official_no_date: "ለ BP ይግድ ዛሬ %{facility_name} በ ላይ %{patient_name}ይጎብኙ። ሃክምዎ ጤናዎን ይመኝልዎታል። - IHCI"
     covid:
-      medication_reminder: "ውድ%{patient_name}፡ የእኛ ሰራተኞች በ%{facility_name}በዚህ የኮቪድ ድንገተኛ አደጋ ወቅት ስለእርስዎ እና የልብ ጤናዎ እያሰቡ ነው። የBP መድሃኒቶችዎን መቀጠል በጣም አስፈላጊ ነው። ነጻ መድሃኒትዎን በአቅራቢያዎ ከሚገኝ ንዑስ ማእከል ወይም የጤና ደህንነት ማእከል ይሰብስቡ። የእርስዎን ANM ወይም ASHA ያግኙ።"
+      medication_reminder: "ውድ%{patient_name}፡ የእኛ ሰራተኞች በ%{facility_name}በዚህ የኮቪድ ድንገተኛ አደጋ ወቅት ስለእርስዎ እና የልብ ጤናዎ እያሰቡ ነው። የBP መድሃኒቶችዎን መቀጠል በጣም አስፈላጊ ነው። ነጻ መድሃኒትዎን በአቅራቢያዎ ከሚገኝ ንዑስ ማእከል ወይም የጤና ደህንነት ማእከል ይሰብስቡ። የእርስዎን ANM ወይም ASHA ያግኙ። - IHCI"
+    sri_lanka:
+      one_day_before_appointment: " [Do Not Translate] Only meant for si-LK Sinhala (Sri Lanka) "
+      three_days_missed_appointment: "Do Not Translate Only meant for si-LK Sinhala (Sri Lanka) "
