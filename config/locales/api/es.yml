@@ -57,7 +57,7 @@ es:
     hypertension_cohort_report_desc: "Los reportes de cohortes muestran las medidas de los pacientes hipertensos recién registrados en los primeros meses de su tratamiento."
     patients_with_controlled_bp: "Pacientes visitados con PA &lt;140/90"
     patients_with_uncontrolled_bp: "Pacientes visitados con PA &ge;140/90"
-    patients_with_no_bp_measure: "Pacientes sin medición de PA"
+    patients_with_no_bp_measure: "Pacientes sin medida de PA"
     patients_with_missed_visits: "Pacientes con una visita perdida"
     registered_in: "registrado en"
     result_from_last_visit_in: "Resultado de la última visita"
@@ -224,12 +224,12 @@ es:
         step_2_html: "Después, añada las medicinas para la hipertensión del paciente."
         step_3_html: "Seleccione las medicinas correctas y sus dosis. Para eliminar una medicina, pulse la dosis y seleccione <span class=\"code\">Ninguna</span>."
         step_4_html: "Pulse <span class=\"code\">Guardar</span> y elija la fecha de la siguiente visita. Opcional: Presione \"Cambiar\" debajo de la unidad del paciente para cambiar la unidad de la siguiente visita."
-        step_5_html: Listo. La visita del paciente fue guardada
+        step_5_html: Listo. La visita del paciente fue guardada.
       medicine_refills:
         heading_html: Resurtido de medicamentos
         contents_html: "Si está resurtiendo los medicamentos actuales de un paciente:"
-        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+ Medicinas</span>"
-        step_2_html: "Pulse <span class=\"code\">Resurtir medicinas</span>"
+        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+ Medicamentos </span>"
+        step_2_html: "Pulse <span class=\"code\">Resurtir medicamentos</span>"
         step_3_html: ¡Listo!
         english_video_link_html: Cómo resurtir los medicamentos de un paciente
         english_video_link_language_html: Inglés
@@ -239,7 +239,7 @@ es:
         heading_html: Tips
         tip_1_html: "Puede seleccionar la fecha de la siguiente visita en un calendario, pulsando <span class=\"code\">CAMBIAR</span> cuando esté programando la visita."
         tip_2_html: "Si selecciona <span class=\"code\">NO AHORA</span>, el paciente no tendrá una visita programada."
-        tip_3_html: "Puede ingresar la PA de una visita anterior. Ingrese la PA como normalmente lo hace y pulse en <span class=\"code\">CAMBIAR</span> la fecha."
+        tip_3_html: "Puede ingresar la PA de una visita anterior. Ingrese la PA como normalmente lo hace y <span class=\"code\">CAMBIE</span> la fecha."
     overdue:
       heading_html: Llamar pacientes atrasados
       what_is_overdue:
