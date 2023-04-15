@@ -57,7 +57,7 @@ es:
     hypertension_cohort_report_desc: "Los reportes de cohortes muestran las medidas de los pacientes hipertensos recién registrados en los primeros meses de su tratamiento."
     patients_with_controlled_bp: "Pacientes visitados con PA &lt;140/90"
     patients_with_uncontrolled_bp: "Pacientes visitados con PA &ge;140/90"
-    patients_with_no_bp_measure: "Pacientes sin medición de PA"
+    patients_with_no_bp_measure: "Pacientes sin medida de PA"
     patients_with_missed_visits: "Pacientes con una visita perdida"
     registered_in: "registrado en"
     result_from_last_visit_in: "Resultado de la última visita"
@@ -224,12 +224,12 @@ es:
         step_2_html: "Después, añada las medicinas para la hipertensión del paciente."
         step_3_html: "Seleccione las medicinas correctas y sus dosis. Para eliminar una medicina, pulse la dosis y seleccione <span class=\"code\">Ninguna</span>."
         step_4_html: "Pulse <span class=\"code\">Guardar</span> y elija la fecha de la siguiente visita. Opcional: Presione \"Cambiar\" debajo de la unidad del paciente para cambiar la unidad de la siguiente visita."
-        step_5_html: Listo. La visita del paciente fue guardada
+        step_5_html: Listo. La visita del paciente fue guardada.
       medicine_refills:
         heading_html: Resurtido de medicamentos
         contents_html: "Si está resurtiendo los medicamentos actuales de un paciente:"
-        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+ Medicinas</span>"
-        step_2_html: "Pulse <span class=\"code\">Resurtir medicinas</span>"
+        step_1_html: "En la pantalla de resumen del paciente, pulse <span class=\"code\">+ Medicamentos </span>"
+        step_2_html: "Pulse <span class=\"code\">Resurtir medicamentos</span>"
         step_3_html: ¡Listo!
         english_video_link_html: Cómo resurtir los medicamentos de un paciente
         english_video_link_language_html: Inglés
@@ -239,7 +239,7 @@ es:
         heading_html: Tips
         tip_1_html: "Puede seleccionar la fecha de la siguiente visita en un calendario, pulsando <span class=\"code\">CAMBIAR</span> cuando esté programando la visita."
         tip_2_html: "Si selecciona <span class=\"code\">NO AHORA</span>, el paciente no tendrá una visita programada."
-        tip_3_html: "Puede ingresar la PA de una visita anterior. Ingrese la PA como normalmente lo hace y pulse en <span class=\"code\">CAMBIAR</span> la fecha."
+        tip_3_html: "Puede ingresar la PA de una visita anterior. Ingrese la PA como normalmente lo hace y <span class=\"code\">CAMBIE</span> la fecha."
     overdue:
       heading_html: Llamar pacientes atrasados
       what_is_overdue:
@@ -248,7 +248,7 @@ es:
         contents_2_html: Los pacientes en la parte superior de la lista de pacientes atrasados son los más críticos. Empieze llamando a los pacientes en la parte superior de esta lista.
       calling:
         heading_html: Llamando pacientes
-        contents_html: "Llame a los pacientes pulsando el icono de teléfono. Podrá ver dos opciones:  Llamada normal</span> y <span class=\"code\">Llamada segura</span>. Una llamada \"segura\" es gratuita y ocultará su número telefónico."
+        contents_html: "Llame a los pacientes pulsando el ícono de teléfono. Podrá ver dos opciones: <span class=\"code\">Llamada normal</span> y <span class=\"code\">Llamada segura</span>. Una llamada \"segura\" es gratuita y ocultará su número telefónico."
       result_of_call:
         heading_html: Ingrese el "resultado de la llamada"
         contents_html: "Por favor ingrese el resultado de cada llamada telefónica que haga. Pulse en la tarjeta del paciente para ver las siguientes opciones:"
@@ -267,7 +267,7 @@ es:
       app_crash_question_html: "¿Qué debo hacer si mi aplicación falla?"
       app_crash_answer_html: "Primero intente reiniciar su dispositivo. Si Simple sigue fallando y no puede arreglarlo, por favor vaya a la pantalla de <span class=\"help\">Ayuda</span> y contacte a su supervisor o a nuestro equipo."
       scan_not_working_question_html: "No es posible escanear. ¿Qué debo hacer?"
-      scan_not_working_answer_html: "Ingree el número de BP Passport en la parte inferior de su pantalla. Si el problema persiste, reinicie su teléfono. Si aún así no funciona, contacte a su supervisor."
+      scan_not_working_answer_html: "Ingrese el número de BP Passport en la parte inferior de su pantalla. Si el problema persiste, reinicie su teléfono. Si aún así no funciona, contacte a su supervisor."
       udpate_app_question_html: "¿Cómo actualizo la aplicación?"
       udpate_app_answer_html: "Actualice la aplicación pulsando el icono de ajustes y pulsando <span class=\"code\">Actualizar</span>. Es importante siempre tener la versión más reciente de Simple en su dispositivo."
       cant_find_followup_question_html: No puedo encontrar a un paciente de seguimiento
@@ -277,7 +277,7 @@ es:
       no_more_bp_passports_question_html: Se me terminaron los BP Passports
       no_more_bp_passports_answer_html: Por favor pida a su supervisor que ordene más BP Passports antes de que se le acaben. Recuerde que usted puede seguir registrando pacientes incluso si no tiene BP Passport &#8212; podrá asignarles uno después.
       what_is_sync_question_html: "¿Qué es \"sincronización\"?"
-      what_is_sync_answer_html: "Una \"sincronización\" guarda su información en un servidor central. Por favor asegúrese de que su información se ha guardado por lo menos una vez al día. Si su conexión a internet no es buena, su información puede tomar algo de tiempo para sincronizar."
+      what_is_sync_answer_html: "Una \"sincronización\" guarda sus datos en un servidor central. Por favor asegúrese de que sus datos se hayan guardado por lo menos una vez al día. Si su conexión a internet no es buena, sus datos puede tomar algo de tiempo para sincronizar."
       data_usage_question_html: "¿Cuántos datos usa Simple?"
       data_usage_answer_html: Simple usa muy pocos datos. En promedio utiliza 20 MB cada mes.
       access_my_info_question_html: "¿Simple puede acceder a mi información?"
@@ -373,7 +373,7 @@ es:
         other: "pacientes"
     period_report:
       registered_patients_card:
-        title: "Pacientes registrado"
+        title: "Pacientes registrados"
         subtitle: "Pacientes registrados en %{facility_name}."
       follow_up_patients_card:
         title: "Pacientes de seguimiento"
@@ -385,7 +385,7 @@ es:
         title: '¿Dónde están los datos de los "Pacientes en tratamiento"?'
         main_text: 'Use "Pacientes registrados", siempre equivale al número de "Pacientes en tratamiento" registrados en Simple.'
       more_patient_data_coming_soon_card:
-        title: "Pronto estará disponible más información de pacientes."
+        title: "Pronto serán disponibles más datos de pacientes."
         main_text: "Pronto se agregará registro diario e información de seguimiento segmentada por enfermedad y sexo."
     diagnosis_report:
       diagnosis_thresholds:
