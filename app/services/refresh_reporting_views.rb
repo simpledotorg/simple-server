@@ -19,12 +19,12 @@ class RefreshReportingViews
     Reports::PatientBloodPressure
     Reports::PatientBloodSugar
     Reports::OverdueCalls
-    Reports::OverduePatient
     Reports::PatientVisit
     Reports::Prescriptions
     Reports::PatientFollowUp
     Reports::PatientState
     Reports::FacilityAppointmentScheduledDays
+    Reports::OverduePatient
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::FacilityDailyFollowUpAndRegistration
