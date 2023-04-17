@@ -81,8 +81,8 @@ module Seed
         :monthly_screening_reports,
         :follow_ups_v2_progress_tab,
         :notifications,
-        (:auto_approve_users if SimpleServer.env.android_review?),
-        (:fixed_otp if SimpleServer.env.android_review?)
+        (:auto_approve_users if SimpleServer.env.android_review? || SimpleServer.env.review?),
+        (:fixed_otp if SimpleServer.env.android_review? || SimpleServer.env.review?)
       ].compact
     end
 
