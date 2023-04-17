@@ -315,3 +315,160 @@ te-IN:
         language_tigrinya_html: టిగ్రినియా
     privacy_policy_html: గోప్యతా విధానం
     terms_of_service_html: సేవా నిబంధనలు
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "రిజిస్ట్రేషన్లు మరియు అనుసరణీయతలు"
+    daily_report_title: "ప్రతిరోజూ"
+    monthly_report_title: "నెలవారీగా"
+    yearly_report_title: "సంవత్సరం వారీ"
+    hypertension_report_title: "అధిక రక్తపోటు"
+    diabetes_report_title: "మధుమేహం"
+    report: "నివేదిక"
+    last_updated_at: "డేటా చివరగా %{date}నాడు %{time}వద్ద అప్‌డేట్ చేయబడింది"
+    coming_soon: "త్వరలో రాబోతుంది"
+    no_data_card:
+      title: "ఈ నివేదిక త్వరలో రాబోతుంది"
+      subtitle: "మీరు ఇప్పకిటీ మునుపటి నివేదికలను వీక్షించగలరు"
+    update_required_card:
+      title: "అప్‌డేట్ అవసరం"
+      subtitle: "ఈ నివేదికను వీక్షించడానికి యాప్‌ని అప్‌డేట్ చేయండి"
+    diagnoses:
+      all: "అధిక రక్తపోటు మరియు మధుమేహం ఉన్న వారు అందరూ"
+      hypertension: "అధిక రక్తపోటు"
+      diabetes: "మధుమేహం"
+      hypertension_only: "హైపర్‌టెన్షన్ మాత్రమే"
+      diabetes_only: "మధుమేహం మాత్రమే"
+      hypertension_and_diabetes: "హైపర్‌టెన్షన్ మరియు మధుమేహం"
+    genders:
+      male: "పురుషుడు"
+      female: "మహిళ"
+      transgender: "ట్రాన్స్‌జండర్"
+    period_card:
+      title: "రిజిస్ట్రేషన్లు మరియు అనుసరణీయతలు"
+    reports_card:
+      title: "రిపోర్టులు"
+      subtitle: "రోగులు తమ హైపర్‌టెన్షన్ మరియు మధుమేహం చికిత్స చేసుకోవడానికి %{facility_name} ఎలా సహాయపడుతున్నది."
+    drug_stock_report_card:
+      title: "ఔషధాల నిల్వ నివేదిక"
+      subtitle: "%{facility_name}యొక్క ఔషధాల నిల్వ నివేదికను %{period}కి గాను సమర్పించండి."
+      button_title: "ఔషధాల నిల్వను ఎంటర్ చేయండి"
+    achievements_card:
+      title: "కార్యసాధనములు"
+      follow_up_visits_section_title: "అనుసరణీయత %{visit_or_visits} రికార్డు చేయబడింది"
+      visit:
+        one: "సందర్శన"
+        other: "సందర్శనలు"
+      overdue_patients_section_title: "మిగిలియున్న రోగులకు %{call_or_calls}"
+      call:
+        one: "కాల్"
+        other: "కాల్లు"
+      registered_patients_title: "రిజిస్టర్ అయిన %{patient_or_patients}"
+      patient:
+        one: "పేషంట్"
+        other: "పేషంట్లు"
+    period_report:
+      registered_patients_card:
+        title: "నమోదు చేయబడిన రోగులు"
+        subtitle: "%{facility_name} వద్ద రిజిస్టర్ అయిన రోగులు."
+      follow_up_patients_card:
+        title: "ఫాలో-అప్ చేసిన రోగులు"
+        subtitle: "బిపి తీసుకున్న, బ్లడ్ షుగర్ తీసుకున్న, ఒక అపాయింట్‌మెంట్ షెడ్యూల్ చేయబడిన, లేదా %{facility_name}వద్ద వారి మందులు అప్‌డేట్ చేయబడిన రోగుల సంఖ్య."
+      follow_up_visits_card:
+        title: "అనుసరణీయ సందర్శనలు"
+        subtitle: "%{facility_name} వద్ద రికార్డు చేయబడిన అనుసరణీయ సందర్శనలు. అనుసరణీయత అనేది, ఒక రోగి బిపి తీసుకోబడి, బ్లడ్ షుగర్ తీసుకోబడి, ఒక అపాయింట్‌మెంట్ షెడ్యూల్ చేయబడి, లేదా మందులు అప్‌డేట్ చేయబడిన రోగి యొక్క ఒక సందర్శన."
+      patients_initiated_on_treatment_card:
+        title: '"చికిత్స ప్రారంభించబడిన రోగులు" యొక్క డేటా ఎక్కడ ఉంది?'
+        main_text: '"రిజిస్టర్ చేయబడిన రోగులు" ను ఉపయోగించండి, అది ఎల్లప్పుడూ సింపుల్ పై రిజిస్టర్ చేయబడిన "చికిత్స ప్రారంభించబడిన రోగులు" కు సమానంగా ఉంటుంది.'
+      more_patient_data_coming_soon_card:
+        title: "మరింత రోగుల డేటా త్వరలో వస్తోంది"
+        main_text: "వ్యాధి మరియు లింగం వారీగా విడగొట్టబడిన రోజువారీ రిజిస్ట్రేషన్ మరియు అనుసరణీయత డేటా త్వరలో జోడించబడుతుంది."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "బిపి అదుపు చేయబడింది"
+        hypertension_controlled_long: "బిపి <140/90"
+        diabetes_controlled_short: "బ్లడ్ షుగర్ <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, లేదా HbA1c <7.0"
+        hypertension_uncontrolled_short: "బిపి అదుపు కాలేదు"
+        hypertension_uncontrolled_long: "బిపి ≥140/90"
+        diabetes_uncontrolled_short: "బ్లడ్ షుగర్ 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, లేదా HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "బ్లడ్ షుగర్ ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, లేదా HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "సందర్శించారు ఐతే బిపి తీసుకోలేదు"
+        hypertension_visited_but_no_bp_taken_long: "ఏ బిపి తీసుకోలేదు"
+        missed_visits_short: "తప్పిన సందర్శనలు"
+        missed_visits_long: "ఏ సందర్శన లేదు"
+      assigned_patients_card:
+        title: "కేటాయించబడిన రోగులు"
+        subtitle: "%{diagnosis} చికిత్సను అందుకోవడానికి %{facility_name} వద్ద అనుసరణీయత ఆశించబడుతున్న రోగులు."
+        assigned_patients_breakdown:
+          registered_patients: "నమోదు చేయబడిన రోగులు"
+          transferred_in_patients: "లోనికి బదిలీ అయినవారు"
+          transferred_out_patients: "బయటికి బదిలీ అయినవారు"
+      total_registered_patients:
+        title: "మొత్తం రిజిస్టర్ అయిన రోగులు"
+        subtitle: "రోగులు %{diagnosis} అందరూ %{facility_name} వద్ద రిజిస్టర్ అయినవారు."
+      monthly_follow_up_patients:
+        title: "నెలవారీ అనుసరణీయత రోగులు"
+        subtitle: "బిపి తీసుకున్న, బ్లడ్ షుగర్ తీసుకున్న, ఒక అపాయింట్‌మెంట్ షెడ్యూల్ చేయబడిన, లేదా %{facility_name}వద్ద వారి మందులు అప్‌డేట్ చేయబడిన రోగుల %{diagnosis}."
+      patient_treatment_outcomes:
+        section_title: "రోగుల చికిత్స యొక్క స్థితి"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} %{threshold}తో %{start_period} మరియు %{end_period} మధ్య %{number_of_registered_patients} %{number_of_registered_patient_or_patients} %{registration_period}వరకూ రిజిస్టర్ చేసుకున్న రోగులు."
+        controlled_card:
+          subtitle: "%{facility_name} వద్ద >3 నెలల క్రితం %{controlled_threshold} తో చివరి 3 నెలలలో తమ చివరి సందర్శనలో రిజిస్టర్ చేసుకున్న రోగుల %{diagnosis}."
+          help_tooltip:
+            numerator: "చివరి 3 నెలలలో తమ చివరి సందర్శనలో %{controlled_threshold} తో ఉన్న రోగులు."
+            denominator: "చివరి 3 నెలలకు ముందు రిజిస్టర్ చేసుకోబడి %{facility_name} కి కేటాయించబడిన రోగుల %{diagnosis}. మరణించిన మరియు అనుసరణీయత కోల్పోయిన రోగులు మినహాయించబడ్డారు."
+        uncontrolled_card:
+          subtitle: "%{facility_name} వద్ద >3 నెలల క్రితం %{uncontrolled_threshold} తో చివరి 3 నెలలలో తమ చివరి సందర్శనలో రిజిస్టర్ చేసుకున్న రోగుల %{diagnosis}."
+          help_tooltip:
+            numerator: "చివరి 3 నెలలలో తమ చివరి సందర్శనలో %{uncontrolled_threshold} తో ఉన్న రోగులు."
+            denominator: "చివరి 3 నెలలకు ముందు రిజిస్టర్ చేసుకోబడి %{facility_name} కి కేటాయించబడిన రోగుల %{diagnosis}. మరణించిన మరియు అనుసరణీయత కోల్పోయిన రోగులు మినహాయించబడ్డారు."
+        very_uncontrolled_card:
+          subtitle: ">3 నెలల క్రితం %{very_uncontrolled_threshold} తో గడచిన 3 నెలలలో తమ చివరి సందర్శనలో %{facility_name}వద్ద రిజిస్టర్ చేసుకున్న మధుమేహం రోగులు."
+          help_tooltip:
+            numerator: "%{very_uncontrolled_threshold} తో గడచిన 3 నెలలలో తమ చివరి సందర్శనలో మధుమేహంతో ఉన్న రోగులు."
+            denominator: "గడచిన 3 నెలల ముందుగా రిజిస్టర్ చేయబడి %{facility_name}కు కేటాయించబడిన మధుమేహం రోగులు. మరణించిన మరియు అనుసరణీయత కోల్పోయిన రోగులు మినహాయించబడ్డారు."
+        missed_visits_card:
+          subtitle: "> 3 నెలల క్రితం 3 నెలల లోపున ఎటువంటి సందర్శనలు లేకుండా %{facility_name} వద్ద రిజిస్టర్ చేసుకున్నరోగుల %{diagnosis}."
+          help_tooltip:
+            numerator: "గడచిన 3 నెలలలో ఎటువంటి సందర్శన చేయని రోగుల %{diagnosis}"
+            denominator: "చివరి 3 నెలలకు ముందు రిజిస్టర్ చేసుకోబడి %{facility_name} కి కేటాయించబడిన రోగుల %{diagnosis}. మరణించిన మరియు అనుసరణీయత కోల్పోయిన రోగులు మినహాయించబడ్డారు."
+      drug_stock_report:
+        section_title: "ఔషధాల నిల్వ నివేదిక"
+        card_subtitle: "నిల్వలో ఉన్న%{number_of_days} %{day_or_days} యొక్క మాత్రలు"
+      cohort_report:
+        section_title: "సమిష్టి రిపోర్టులు"
+        card_title: "త్రైమాసిక సమిష్టి రిపోర్టులు"
+        card_subtitle: "ఈ క్రింది త్రైమాసికంలో తమ అనుసరణీయ సందర్శన యొక్క త్రైమాసికంలో రిజిస్టర్ చేసుకున్న కేటాయిత హైపర్‌టెన్షన్ రోగులందరి కొరకు ఫలితము."
+        cohort_title: "%{period}లోని చివరి సందర్శన నుండి ఫలితం"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period}లో రిజిస్టర్ అయినవారు"
+        cohort_bar_tooltip: "%{threshold} తో %{total_patients} %{patient_or_patients}"
+  questionnaire_layout:
+    male: "పురుషుడు"
+    female: "మహిళ"
+    transgender: "ట్రాన్స్‌జండర్"
+  monthly_screening_report:
+    monthly_opd_visits_gt_30: "30 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
+    monthly_opd_visits_gt_18: "18 సంవత్సరాల కంటే ఎక్కువ వయస్సుగల వయోజనులకు నెలవారీ OPD సందర్శనలు"
+    outpatient_department_visits: "అవుట్‌పేషంట్ డిపార్ట్‌మెంట్ సందర్శనలు"
+    htn_and_dm_screening: "HTN మరియు DM స్క్రీనింగ్"
+    total_bp_checks: "మొత్తం బిపి తనిఖీలు పూర్తయ్యాయి"
+    total_blood_sugar_checks: "మొత్తం బ్లడ్ షుగర్ తనిఖీలు పూర్తయ్యాయి"
+    new_suspected_individuals: "కొత్త అనుమానాస్పద వ్యక్తులు"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ఇద్దరు)"
+    diagnosed_cases_on_follow_up: "ఫాలో-అప్‌లో నిర్ధారణ చేసిన కేసులు"
+    diagnosed_cases_on_follow_up_htn: "ఫాలో-అప్ సందర్శనతో HTN పేషంట్‌లు"
+    diagnosed_cases_on_follow_up_dm: "ఫాలో-అప్ సందర్శనతో DM పేషంట్‌లు"
+    diagnosed_cases_on_follow_up_htn_and_dm: "ఫాలో-అప్ సందర్శనతో HTN+DM (ఇద్దరు) పేషంట్‌లు"
+    cancer_screening: "క్యాన్సర్ స్క్రీనింగ్"
+    total_cancer_screening_oral: "నోటి క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    total_cancer_screening_breast: "రొమ్ము క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    total_cancer_screening_cervical: "గర్భాశయ క్యాన్సర్ తనిఖీలు మొత్తం పూర్తయ్యాయి"
+    oral_cancer: "నోటి క్యాన్సర్"
+    breast_cancer: "రొమ్ము క్యాన్సర్"
+    cervical_cancer: "గర్భాశయ క్యాన్సర్"
+

@@ -9,19 +9,27 @@ module Reports
     attr_reader :facility
     attr_reader :range
     attr_reader :region
+    attr_reader :diabetes_enabled
 
-    def initialize(facility, period)
+    def initialize(facility, period, current_user: nil)
       @facility = facility
       @region = facility.region
       @period = period
       @range = Range.new(@period.advance(months: MONTHS), @period)
       @control_range = Range.new(@period.advance(months: CONTROL_MONTHS), @period.previous)
       @diabetes_enabled = facility.enable_diabetes_management
+      @current_user = current_user
       @daily_facility_data =
         Reports::FacilityDailyFollowUpAndRegistration
           .for_region(region)
           .where("visit_date >= ?", DAYS_AGO.days.ago.to_date)
           .load
+      @monthly_facility_data =
+        Reports::FacilityMonthlyFollowUpAndRegistration
+          .for_region(region)
+          .where("month_date > ?", 6.months.ago.beginning_of_month.to_date)
+          .load
+      @yearly_facility_data = FacilityYearlyFollowUpsAndRegistrationsQuery.new(facility, @current_user).call
     end
 
     # we use the daily timestamp for the purposes of the last updated at,
@@ -40,126 +48,168 @@ module Reports
       daily_total_follow_ups[date]
     end
 
-    def daily_statistics
-      {
-        daily: {
-          grouped_by_date: {
-            follow_ups: daily_total_follow_ups,
-            registrations: daily_total_registrations
-          }
-        },
-        metadata: {
-          is_diabetes_enabled: @diabetes_enabled,
-          last_updated_at: last_updated_at,
-          formatted_next_date: (Time.current + 1.day).to_s(:mon_year),
-          today_string: I18n.t(:today_str)
-        }
-      }
+    def total_registrations
+      repository.cumulative_registrations[@facility.region.slug][@period] +
+        repository.cumulative_diabetes_registrations[@facility.region.slug][@period] -
+        repository.cumulative_hypertension_and_diabetes_registrations[@facility.region.slug][@period]
+    end
+
+    def total_follow_ups
+      total_counts[:monthly_follow_ups_htn_or_dm]
+    end
+
+    memoize def total_overdue_calls
+      CallResult.where(facility_id: @facility.id).count
     end
 
     def total_counts
-      @total_counts ||= Reports::FacilityStateDimension.totals(facility)
+      @total_counts ||= Reports::FacilityMonthlyFollowUpAndRegistration.totals(facility)
     end
 
-    def monthly_counts
-      @monthly_counts ||= repository.facility_progress[facility.region.slug]
+    memoize def repository
+      Reports::Repository.new(facility, periods: @range)
     end
 
-    def repository
-      @repository ||= Reports::Repository.new(facility, periods: @range)
+    def hypertension_reports_data
+      {
+        monthly_follow_ups: repository.hypertension_follow_ups[@region.slug],
+        total_registrations: repository.cumulative_registrations[@region.slug],
+        assigned_patients: repository.cumulative_assigned_patients[@region.slug][@period],
+        missed_visits_rates: repository.missed_visits_rate[@region.slug],
+        missed_visits: repository.missed_visits[@region.slug],
+        uncontrolled_rates: repository.uncontrolled_rates[@region.slug],
+        uncontrolled: repository.uncontrolled[@region.slug],
+        controlled_rates: repository.controlled_rates[@region.slug],
+        controlled: repository.controlled[@region.slug],
+        adjusted_patients: repository.adjusted_patients[@region.slug],
+        period_info: repository.period_info(@region),
+        region: @region,
+        current_user: @current_user
+      }
     end
-
-    def control_rates_repository
-      @control_rates_repository ||= Reports::Repository.new(facility, periods: control_range)
-    end
-
-    # Returns all possible combinations of FacilityProgressDimensions for displaying
-    # the different slices of progress data.
-    def dimension_combinations_for(indicator)
-      dimensions = [create_dimension(indicator, diagnosis: :all, gender: :all)] # special case first
-      combinations = [indicator].product([:diabetes, :hypertension]).product([:all, :male, :female, :transgender])
-      combinations.each do |c|
-        indicator, diagnosis = *c.first
-        gender = c.last
-        dimensions << create_dimension(indicator, diagnosis: diagnosis, gender: gender)
-      end
-      dimensions
-    end
-
-    attr_reader :diabetes_enabled
 
     memoize def daily_total_follow_ups
-      @daily_facility_data.each_with_object({}) do |record, hsh|
-        hsh[record.period] = if region.diabetes_management_enabled?
-          record[:daily_follow_ups_htn_or_dm]
-        else
-          record[:daily_follow_ups_htn_only] + record[:daily_follow_ups_htn_and_dm]
-        end
-      end
+      total_follow_ups_per_period(period_type: "daily", facility_data: @daily_facility_data)
     end
 
     memoize def daily_total_registrations
-      @daily_facility_data.each_with_object({}) do |record, hsh|
-        hsh[record.period] = if diabetes_enabled
-          record[:daily_registrations_htn_or_dm]
+      total_registrations_per_period(period_type: "daily", facility_data: @daily_facility_data)
+    end
+
+    memoize def monthly_total_follow_ups
+      total_follow_ups_per_period(period_type: "monthly", facility_data: @monthly_facility_data)
+    end
+
+    memoize def monthly_total_registrations
+      total_registrations_per_period(period_type: "monthly", facility_data: @monthly_facility_data)
+    end
+
+    memoize def yearly_total_follow_ups
+      total_follow_ups_per_period(period_type: "yearly", facility_data: @yearly_facility_data)
+    end
+
+    memoize def yearly_total_registrations
+      total_registrations_per_period(period_type: "yearly", facility_data: @yearly_facility_data)
+    end
+
+    memoize def daily_registrations_breakdown
+      registrations_breakdown(period_type: "daily", facility_data: @daily_facility_data)
+    end
+
+    memoize def daily_follow_ups_breakdown
+      follow_ups_breakdown(period_type: "daily", facility_data: @daily_facility_data)
+    end
+
+    memoize def monthly_registrations_breakdown
+      registrations_breakdown(period_type: "monthly", facility_data: @monthly_facility_data)
+    end
+
+    memoize def monthly_follow_ups_breakdown
+      follow_ups_breakdown(period_type: "monthly", facility_data: @monthly_facility_data)
+    end
+
+    memoize def yearly_registrations_breakdown
+      registrations_breakdown(period_type: "yearly", facility_data: @yearly_facility_data)
+    end
+
+    memoize def yearly_follow_ups_breakdown
+      follow_ups_breakdown(period_type: "yearly", facility_data: @yearly_facility_data)
+    end
+
+    private
+
+    memoize def total_registrations_per_period(period_type:, facility_data:)
+      facility_data.each_with_object({}) do |record, hsh|
+        period = period_type == "yearly" ? record["year"] : record.period
+        hsh[period] = if diabetes_enabled
+          record["#{period_type}_registrations_htn_or_dm"]
         else
-          record[:daily_registrations_htn_only] + record[:daily_registrations_htn_and_dm]
+          record["#{period_type}_registrations_htn_only"] + record["#{period_type}_registrations_htn_and_dm"]
         end
       end
     end
 
-    memoize def daily_registrations_breakdown
-      @daily_facility_data.each_with_object({}) do |record, hsh|
-        hsh[record.period] = {
+    memoize def total_follow_ups_per_period(period_type:, facility_data:)
+      facility_data.each_with_object({}) do |record, hsh|
+        period = period_type == "yearly" ? record["year"] : record.period
+        hsh[period] = if diabetes_enabled
+          record["#{period_type}_follow_ups_htn_or_dm"]
+        else
+          record["#{period_type}_follow_ups_htn_only"] + record["#{period_type}_follow_ups_htn_and_dm"]
+        end
+      end
+    end
+
+    memoize def registrations_breakdown(period_type:, facility_data:)
+      facility_data.each_with_object({}) do |record, hsh|
+        period = period_type == "yearly" ? record["year"] : record.period
+        hsh[period] = {
           hypertension: {
-            all: record[:daily_registrations_htn_only],
-            male: record[:daily_registrations_htn_only_male],
-            female: record[:daily_registrations_htn_only_female],
-            transgender: record[:daily_registrations_htn_only_transgender]
+            all: record["#{period_type}_registrations_htn_only"],
+            male: record["#{period_type}_registrations_htn_only_male"],
+            female: record["#{period_type}_registrations_htn_only_female"],
+            transgender: record["#{period_type}_registrations_htn_only_transgender"]
           },
           diabetes: {
-            all: record[:daily_registrations_dm_only],
-            male: record[:daily_registrations_dm_only_male],
-            female: record[:daily_registrations_dm_only_female],
-            transgender: record[:daily_registrations_dm_only_transgender]
+            all: record["#{period_type}_registrations_dm_only"],
+            male: record["#{period_type}_registrations_dm_only_male"],
+            female: record["#{period_type}_registrations_dm_only_female"],
+            transgender: record["#{period_type}_registrations_dm_only_transgender"]
           },
           hypertension_and_diabetes: {
-            all: record[:daily_registrations_htn_and_dm],
-            male: record[:daily_registrations_htn_and_dm_male],
-            female: record[:daily_registrations_htn_and_dm_female],
-            transgender: record[:daily_registrations_htn_and_dm_transgender]
+            all: record["#{period_type}_registrations_htn_and_dm"],
+            male: record["#{period_type}_registrations_htn_and_dm_male"],
+            female: record["#{period_type}_registrations_htn_and_dm_female"],
+            transgender: record["#{period_type}_registrations_htn_and_dm_transgender"]
           }
         }
       end
     end
 
-    memoize def daily_follow_ups_breakdown
-      @daily_facility_data.each_with_object({}) do |record, hsh|
-        hsh[record.period] = {
+    memoize def follow_ups_breakdown(period_type:, facility_data:)
+      facility_data.each_with_object({}) do |record, hsh|
+        period = period_type == "yearly" ? record["year"] : record.period
+        hsh[period] = {
           hypertension: {
-            all: record[:daily_follow_ups_htn_only],
-            male: record[:daily_follow_ups_htn_only_male],
-            female: record[:daily_follow_ups_htn_only_female],
-            transgender: record[:daily_follow_ups_htn_only_transgender]
+            all: record["#{period_type}_follow_ups_htn_only"],
+            male: record["#{period_type}_follow_ups_htn_only_male"],
+            female: record["#{period_type}_follow_ups_htn_only_female"],
+            transgender: record["#{period_type}_follow_ups_htn_only_transgender"]
           },
           diabetes: {
-            all: record[:daily_follow_ups_dm_only],
-            male: record[:daily_follow_ups_dm_only_male],
-            female: record[:daily_follow_ups_dm_only_female],
-            transgender: record[:daily_follow_ups_dm_only_transgender]
+            all: record["#{period_type}_follow_ups_dm_only"],
+            male: record["#{period_type}_follow_ups_dm_only_male"],
+            female: record["#{period_type}_follow_ups_dm_only_female"],
+            transgender: record["#{period_type}_follow_ups_dm_only_transgender"]
           },
           hypertension_and_diabetes: {
-            all: record[:daily_follow_ups_htn_and_dm],
-            male: record[:daily_follow_ups_htn_and_dm_male],
-            female: record[:daily_follow_ups_htn_and_dm_female],
-            transgender: record[:daily_follow_ups_htn_and_dm_transgender]
+            all: record["#{period_type}_follow_ups_htn_and_dm"],
+            male: record["#{period_type}_follow_ups_htn_and_dm_male"],
+            female: record["#{period_type}_follow_ups_htn_and_dm_female"],
+            transgender: record["#{period_type}_follow_ups_htn_and_dm_transgender"]
           }
         }
       end
-    end
-
-    def create_dimension(*args)
-      Reports::FacilityProgressDimension.new(*args)
     end
   end
 end

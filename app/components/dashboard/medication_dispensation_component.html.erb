@@ -24,7 +24,8 @@
       </div>
     </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@1"></script>
-  <script> DashboardReports().ReportsGraph("MedicationsDispensation", <%= graph_data.to_json.html_safe %>)</script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js" integrity="sha256-IMCPPZxtLvdt9tam8RJ8ABMzn+Mq3SQiInbDmMYwjDg=" crossorigin="anonymous"></script>
+  <script>
+    DashboardReports().ReportsGraph("MedicationsDispensation", <%= graph_data.to_json.html_safe %>)
+  </script>
 </div>

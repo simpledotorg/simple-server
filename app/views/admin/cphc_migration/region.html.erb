@@ -1,0 +1,144 @@
+<div class="page-header">
+  <h1 class="page-title">CPHC Migration</h1>
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="col-md-8">
+      <h2><span class="heading"><%= @region.name %></span></h2>
+      <h2 class="mb-16px">
+        <span class="heading-label">
+          <% @region.ancestors.order(:path).all.each do |ancestor| %>
+            <%= link_to ancestor.name, admin_cphc_migration_region_path(region_type: ancestor.region_type, slug: ancestor.slug) %> |
+          <% end %>
+        </span>
+      </h2>
+    </div>
+
+    <div class="col-md-4">
+      <%= render "admin/cphc_migration/progress_bar", progress: @region_progress %>
+    </div>
+  </div>
+
+  <% if @region.facility_region? %>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
+            <%= render "migration_summary",
+              summary: @region_summary,
+              region: @region %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="col-md-12">
+            <%= render "facility_summary",
+              summary: @region_summary,
+              region: @region %>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% @region.children.each do |child| %>
+    <div class="card">
+      <div class="row">
+        <div class="col-md-8">
+          <h3><%= link_to child.name, admin_cphc_migration_region_path(region_type: child.region_type, slug: child.slug) %></h3>
+        </div>
+
+        <% if @child_summary && @child_summary[child.slug] %>
+          <div class="col-md-4">
+            <%= render "admin/cphc_migration/progress_bar", progress: @child_summary[child.slug][:progress] %>
+          </div>
+        <% end %>
+      </div>
+      <div class="row">
+        <div class="col-md-12">
+          <%= render "action",
+            method: :post,
+            active: false,
+            fa_icon: "download",
+            btn_type: :info,
+            path: admin_cphc_migration_error_line_list_path(region_type: child.region_type, region_slug: child.slug),
+            btn_contents: "Errored patients" %>
+          <% if !child.facility_region? && @child_summary && @child_summary[child.slug] %>
+            <%= render "action",
+              method: :get,
+              active: false,
+              fa_icon: "download",
+              btn_type: :info,
+              path: "#",
+              btn_contents: "#{@child_summary[child.slug][:mapped_facilities] || 0} mapped facilities" %>
+            <%= render "action",
+              method: :get,
+              active: false,
+              fa_icon: "download",
+              btn_type: :info,
+              path: "#",
+              btn_contents: "#{@child_summary[child.slug][:unmapped_facilities] || 0} unmapped facilities" %>
+          <% end %>
+          <% if child.facility_region? && CphcFacilityMapping.where(facility: child.source).exists? %>
+            <%= render "action",
+              method: :post,
+              active: false,
+              fa_icon: "user",
+              btn_type: :warning,
+              path: admin_cphc_migration_update_credentials_path(region_type: child.region_type, slug: child.slug),
+              btn_contents: "Create users" %>
+          <% end %>
+          <% if migratable_region?(child) %>
+            <%= render "action",
+              method: :post,
+              active: false,
+              fa_icon: "cloud-exclamation",
+              btn_type: :danger,
+              path: admin_cphc_migration_migrate_region_path(region_type: child.region_type, slug: child.slug),
+              btn_contents: "Migrate #{child.region_type.humanize}",
+              confirm: "Are you sure you want to migrate #{migratable_patients(child).count} patients for #{child.region_type.humanize} #{child.name}?" %>
+            <%= render "action",
+              method: :post,
+              active: false,
+              fa_icon: "ban",
+              btn_type: :danger,
+              path: admin_cphc_migration_cancel_region_migration_path(
+                region_type: child.region_type,
+                slug: child.slug,
+              ),
+              btn_contents: "Cancel migration",
+              confirm: "Are you sure you want to cancel migrating patients for #{child.region_type.humanize} #{child.name}?" %>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <%= render "migration_summary",
+                summary: region_summary(child),
+                region: child %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <% unless child.facility_region? %>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="row">
+              <div class="col-md-12">
+                <%= render "children_summary", region: child %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

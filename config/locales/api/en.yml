@@ -120,7 +120,7 @@ en:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
       bp_passports:
-        heading_html: BP Passports
+        heading_html: "BP Passports"
         contents_html: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
         video_link_html: How to use a BP Passport
         video_link_subtitle_html: Hindi with English subtitles
@@ -315,3 +315,222 @@ en:
         language_tigrinya_html: Tigrinya
     privacy_policy_html: Privacy Policy
     terms_of_service_html: Terms of Service
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "Registrations and follow-ups"
+    daily_report_title: "Daily"
+    monthly_report_title: "Monthly"
+    yearly_report_title: "Yearly"
+    hypertension_report_title: "Hypertension"
+    diabetes_report_title: "Diabetes"
+    report: "report"
+    last_updated_at: "Data last updated on %{date} at %{time}"
+    coming_soon: "Coming soon"
+    no_data_card:
+      title: "This report is coming soon"
+      subtitle: "You can still view previous reports"
+    update_required_card:
+      title: "Update required"
+      subtitle: "Update app to view this report"
+    diagnoses:
+      all: "All hypertension and diabetes"
+      hypertension: "Hypertension"
+      diabetes: "Diabetes"
+      hypertension_only: "Hypertension only"
+      diabetes_only: "Diabetes only"
+      hypertension_and_diabetes: "Hypertension and diabetes"
+    genders:
+      male: "Male"
+      female: "Female"
+      transgender: "Transgender"
+    period_card:
+      title: "Registrations and follow-ups"
+    reports_card:
+      title: "Reports"
+      subtitle: "How %{facility_name} is helping patients treat their hypertension and diabetes."
+    drug_stock_report_card:
+      title: "Drug stock report"
+      subtitle: "Submit %{facility_name}'s drug stock report for %{period}."
+      button_title: "Enter drug stock"
+    achievements_card:
+      title: "Achievements"
+      follow_up_visits_section_title: "follow-up %{visit_or_visits} recorded"
+      visit:
+        one: "visit"
+        other: "visits"
+      overdue_patients_section_title: "%{call_or_calls} to overdue patients"
+      call:
+        one: "call"
+        other: "calls"
+      registered_patients_title: "registered %{patient_or_patients}"
+      patient:
+        one: "patient"
+        other: "patients"
+    period_report:
+      registered_patients_card:
+        title: "Registered patients"
+        subtitle: "Patients registered at %{facility_name}."
+      follow_up_patients_card:
+        title: "Follow-up patients"
+        subtitle: "Patients that had a BP taken, a blood sugar taken, an appointment scheduled, or their medications updated at %{facility_name}."
+      follow_up_visits_card:
+        title: "Follow-up visits"
+        subtitle: "Follow-up visits recorded at %{facility_name}. A follow-up is a visit when a patient had a BP taken, a blood sugar taken, an appointment scheduled, or medications were updated."
+      patients_initiated_on_treatment_card:
+        title: 'Where is the "Patients initiated on treatment" data?'
+        main_text: 'Use "Registered patients", it will always equal "Patients initiated on treatment" for patients registered on Simple.'
+      more_patient_data_coming_soon_card:
+        title: "More patient data coming soon"
+        main_text: "Daily registration and follow-up data broken down by disease and gender will be added soon."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "BP controlled"
+        hypertension_controlled_long: "BP <140/90"
+        diabetes_controlled_short: "Blood sugar <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+        hypertension_uncontrolled_short: "BP not controlled"
+        hypertension_uncontrolled_long: "BP ≥140/90"
+        diabetes_uncontrolled_short: "Blood sugar 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "Blood sugar ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Visited but no BP taken"
+        hypertension_visited_but_no_bp_taken_long: "no BP taken"
+        missed_visits_short: "Missed visits"
+        missed_visits_long: "no visit"
+      assigned_patients_card:
+        title: "Assigned patients"
+        subtitle: "Patients expected to follow-up at %{facility_name} to receive %{diagnosis} treatment."
+        assigned_patients_breakdown:
+          registered_patients: "Registered patients"
+          transferred_in_patients: "Transferred-in"
+          transferred_out_patients: "Transferred-out"
+      total_registered_patients:
+        title: "Total registered patients"
+        subtitle: "All %{diagnosis} patients registered at %{facility_name}."
+      monthly_follow_up_patients:
+        title: "Monthly follow-up patients"
+        subtitle: "%{diagnosis} patients with a BP taken, a blood sugar taken, an appointment scheduled, or a medication updated at %{facility_name} during a month."
+      patient_treatment_outcomes:
+        section_title: "Patient treatment status"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} with %{threshold} between %{start_period} and %{end_period} of %{number_of_registered_patients} %{number_of_registered_patient_or_patients} registered till %{registration_period}."
+        controlled_card:
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{controlled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "Patients with %{controlled_threshold} at their last visit in the last 3 months."
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+        uncontrolled_card:
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with %{uncontrolled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "Patients with %{uncontrolled_threshold} at their last visit in the last 3 months."
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+        very_uncontrolled_card:
+          subtitle: "Diabetes patients at %{facility_name} registered >3 months ago with %{very_uncontrolled_threshold} at their last visit in the last 3 months."
+          help_tooltip:
+            numerator: "Diabetes patients in %{very_uncontrolled_threshold} at their last visit in the last 3 months."
+            denominator: "Diabetes patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+        missed_visits_card:
+          subtitle: "%{diagnosis} patients at %{facility_name} registered >3 months ago with no visit in the last 3 months."
+          help_tooltip:
+            numerator: "%{diagnosis} patients with no visit in the last 3 months"
+            denominator: "%{diagnosis} patients assigned to %{facility_name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded."
+      drug_stock_report:
+        section_title: "Drug stock report"
+        card_subtitle: "%{number_of_days} %{day_or_days} of tablets in stock"
+      cohort_report:
+        section_title: "Cohort reports"
+        card_title: "Quarterly cohort reports"
+        card_subtitle: "The result for all assigned hypertensive patients registered in a quarter at their follow-up visit in the following quarter."
+        cohort_title: "Result from last visit in %{period}"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
+  questionnaire_layout:
+    male: "Male"
+    female: "Female"
+    transgender: "Transgender"
+    total: "Total"
+    yes: "Yes"
+    no: "No"
+    comments: "Comments"
+    instruction_1: "Leave blank if you don't know an amount"
+    instruction_2: 'Enter "0" if stock is out'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM SCREENING"
+    # Ethiopia
+    total_bp: "Total BP screening done"
+    total_bs: "Total blood sugar screening done"
+    new_raised_cases: "NEW RAISED CASES"
+    total_bp_raised: "Total raised BP"
+    total_bs_raised: "Total raised BS"
+    total_bp_raised_ncd_linked: "Total raised BP cases linked to NCD clinic"
+    total_bs_raised_ncd_linked: "Total raised BS cases linked to NCD clinic"
+    diagnosed_cases: "DIAGNOSED CASES"
+    total_htn_diagnosed: "Total HTN Diagnosed"
+    total_dm_diagnosed: "Total DM Diagnosed"
+    cervical_cancer_uc: "CERVICAL CANCER"
+    total_women_screened_cervical: "Total women screened for Cervical Cancer"
+    total_women_treated_cervical: "Total women treated for Cervical Cancer"
+    total_women_followup_cervical: "Total women followed up after 1 year"
+    # India
+    monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
+    monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
+    outpatient_department_visits: "Outpatient department visits"
+    total_bp_checks: "Total BP checks done"
+    total_blood_sugar_checks: "Total blood sugar checks done"
+    new_suspected_individuals: "NEW SUSPECTED INDIVIDUALS"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (both)"
+    diagnosed_cases_on_follow_up: "DIAGNOSED CASES ON FOLLOW-UP"
+    diagnosed_cases_on_follow_up_htn: "HTN patients with a follow-up visit"
+    diagnosed_cases_on_follow_up_dm: "DM patients with a follow-up visit"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM (both) patients with a follow-up visit"
+    cancer_screening: "CANCER SCREENING"
+    total_cancer_screening_oral: "Total oral cancer checks done"
+    total_cancer_screening_breast: "Total breast cancer checks done"
+    total_cancer_screening_cervical: "Total cervical cancer checks done"
+    oral_cancer: "Oral cancer"
+    breast_cancer: "Breast cancer"
+    cervical_cancer: "Cervical cancer"
+  monthly_supplies_report:
+    instruction_1: "Enter the supplies left in stock at the end of every month"
+    stock_on_hand: "Stock on hand"
+    stock_on_hand_uc: "STOCK ON HAND"
+    working_equipments: "WORKING EQUIPMENTS"
+    glucose_strips: "Blood Glucose Test strips"
+    total_working_condition: "Total in working condition"
+    # Bangladesh
+    patient_books: "Patient books"
+    available_bp_monitors_arm_in: "Total available BP monitors (arm-in)"
+    functioning_bp_monitors_arm_in: "Functioning BP monitors (arm-in)"
+    available_bp_monitors_handheld: "Total available BP monitors (handheld)"
+    functioning_bp_monitors_handheld: "Functioning BP monitors (handheld)"
+    available_blood_glucose_monitors: "Total available Blood Glucose monitors"
+    functioning_blood_glucose_monitors: "Functioning Blood Glucose monitors"
+    # Ethiopia
+    bp_monitor: "BP monitor"
+    glucose_meter: "Blood glucose meter"
+    stethoscope: "Stethoscope"
+    height_weight_machine: "Height & Weight Measuring Machine"
+    waist_tape: "Tape for waist circumference measure"
+    # India
+    glucometer_strips: "Glucometer strips"
+    # Sri Lanka
+    equipment: "EQUIPMENT"
+    available_bp_devices: "Total available BP devices"
+    functioning_bp_devices: "Functioning BP devices"
+    available_phones: "Total available Mobile phones"
+    functioning_phones: "Functioning Mobile phones"
+    drug_stock: "DRUG STOCK"
+    drug_stock_losartan: "Enough drugs for next month: Losartan"
+    drug_stock_amlodipine: "Enough drugs for next month: Amlodipine"
+    drug_stock_hct: "Enough drugs for next month: HCT (Hydrochlorathiazide)"
+    trained_staff: "TRAINED STAFF"
+    doctors_count: "Number of Doctors attending medical clinic"
+    nurses_count: "Number of Nurses attending medical clinic"
+    pharmacists_count: "Number of Pharmacists available at the hospital"
+    drug_dispensers_count: "Number of Drug Dispensers available at the hospital"
+    others: "OTHERS"
+    television_functional: "Are health education messages displayed at the Medical Clinic using a television screen?"
+    wifi_functional: "Is Wi-Fi network available?"

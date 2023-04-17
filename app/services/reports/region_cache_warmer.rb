@@ -1,69 +1,41 @@
 module Reports
   class RegionCacheWarmer
     prepend SentryHandler
+    BATCH_SIZE = 250
 
-    def self.call
-      new.call
+    def self.call(*args)
+      new(*args).call
     end
 
-    attr_reader :name
-    attr_reader :period
+    attr_reader :batch_size
 
-    def initialize(period: Reports.default_period)
-      @period = period
-      @name = self.class.name.to_s
-      notify "Starting #{name} warming"
+    def initialize(batch_size: BATCH_SIZE)
+      @batch_size = batch_size
     end
 
     def call
       if Flipper.enabled?(:disable_region_cache_warmer)
-        notify "disabled via flipper - exiting"
+        Rails.logger.info "Cache warmer disabled via flipper - exiting"
         return
       end
-      RequestStore.store[:bust_cache] = true
 
-      warm_caches
+      Rails.logger.info "Starting queuing cache warming jobs"
 
-      notify "Finished all caching for #{name}"
-    ensure
-      RequestStore.store[:bust_cache] = false
-    end
-
-    private
-
-    def warm_caches
-      Time.use_zone(Period::REPORTING_TIME_ZONE) do
-        Region::REGION_TYPES.reject { |t| t == "root" }.each do |region_type|
-          Datadog::Tracing.trace("region_cache_warmer.warm_repository_cache", resource: region_type) do |span|
-            Region.public_send("#{region_type}_regions").find_in_batches do |batch|
-              warm_repository_caches(batch)
-            end
-            Statsd.instance.flush
-          end
+      Region::REGION_TYPES.excluding("root").each do |region_type|
+        Region.where(region_type: region_type).in_batches(of: batch_size).each_with_index do |_, batch_index|
+          queue_job(region_type, batch_index)
         end
       end
-    end
 
-    def warm_repository_caches(regions)
-      region_type = regions.first.region_type
-      notify "Starting warming cache for repository cache for batch of #{region_type} regions"
-      range = (period.advance(months: -23)..period)
-      repo = Repository.new(regions, periods: range)
-      repo.warm_cache
-      Statsd.instance.increment("region_cache_warmer.#{region_type}.warm_repository_cache.region_count", regions.count)
+      Rails.logger.info "Finished queueing cache warming jobs"
     end
 
     private
 
-    def notify(msg, extra = {})
-      data = {
-        logger: {
-          name: name
-        },
-        class: name,
-        module: "reports"
-      }.merge(extra).merge(msg: msg)
-      Rails.logger.info data
+    def queue_job(region_type, batch_index)
+      limit = batch_size
+      offset = batch_index * batch_size
+      RegionCacheWarmerJob.perform_async(region_type, limit, offset)
     end
   end
 end

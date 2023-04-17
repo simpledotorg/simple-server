@@ -96,7 +96,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every :day, at: local("02:30 am"), roles: [:cron] do
+every :day, at: local("04:30 am"), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
@@ -121,6 +121,10 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
+  rake "questionnaires:pre_fill_monthly_screening_reports"
+end
+
+every 1.month, at: local("07:00 am"), roles: [:cron] do
   if Flipper.enabled?(:automated_telemed_report)
     rake "reports:telemedicine"
   end

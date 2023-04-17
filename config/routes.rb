@@ -148,6 +148,15 @@ Rails.application.routes.draw do
         post "/sync", to: "call_results#sync_from_user"
       end
 
+      scope :questionnaires do
+        get "/sync", to: "questionnaires#sync_to_user"
+      end
+
+      scope :questionnaire_responses do
+        get "/sync", to: "questionnaire_responses#sync_to_user"
+        post "/sync", to: "questionnaire_responses#sync_from_user"
+      end
+
       namespace :analytics do
         resource :overdue_list, only: [:show]
       end
@@ -266,11 +275,18 @@ Rails.application.routes.draw do
     resources :error_traces, only: [:index, :create]
 
     authenticate :email_authentication, ->(a) { a.user.power_user? } do
-      get "cphc_migration", to: "cphc_migration#index", as: "cphc_migration"
-      post "update_cphc_mapping/:facility_id", to: "cphc_migration#update_cphc_mapping", as: "update_cphc_mapping"
-      post "migrate_to_cphc/facility/:facility_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_to_cphc"
-      post "migrate_to_cphc/facility_group/:facility_group_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_facility_group_to_cphc"
-      post "migrate_to_cphc/patient/:patient_id", to: "cphc_migration#migrate_to_cphc", as: "migrate_patient_to_cphc"
+      scope :cphc_migration do
+        get "/", to: "cphc_migration#index", as: "cphc_migration"
+        get "district/:district_slug", to: "cphc_migration#district", as: "cphc_migration_district"
+        get "region/:region_type/:slug", to: "cphc_migration#region", as: "cphc_migration_region"
+        post "region/:region_type/:slug/migrate", to: "cphc_migration#migrate_region", as: "cphc_migration_migrate_region"
+        post "region/:region_type/:slug/migrate/cancel", to: "cphc_migration#cancel_region_migration", as: "cphc_migration_cancel_region_migration"
+        post "facility/:facility_slug/update_mapping", to: "cphc_migration#update_cphc_mapping", as: "cphc_migration_update_facility_mapping"
+        post "region/:region_type/:slug/update_credentials", to: "cphc_migration#update_credentials", as: "cphc_migration_update_credentials"
+        post "/patient/:patient_id/migrate", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
+
+        post "error_line_list/:region_type/:region_slug", to: "cphc_migration#error_line_list", as: "cphc_migration_error_line_list"
+      end
     end
   end
 

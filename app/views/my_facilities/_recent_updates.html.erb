@@ -3,8 +3,89 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated 22-Sep-2022. For feedback, email us: help@simple.org
+    Last updated 4-Apr-2023. For feedback, email us: help@simple.org
   </p>
+  <section class="update">
+    <div class="update-date">
+      Apr <b class="d-block">2023</b>
+    </div>
+    <p>
+      <b>Simple App:</b>
+      Simple now has the ability report aggregate monthly screening data for hypertension, diabetes, and cancers. Please reach out to the Simple team for a demo and how it could be used in your state or country.
+    </p>
+    <a href="https://docs.google.com/presentation/d/1_qJX90VlkjWOyDZ20ggFfQL2eUUCP0T-s9pXTJK0AnA/edit#slide=id.p" class="d-flex align-center p-3 fs-16px br-8px bg-blue-light" style="border: 0px rgba(0, 117, 235, 0.5) solid; grid-gap: 20px; margin-top:8px;">
+      <span style="max-width: 40px; padding: 4px; width: 100%; margin-left:12px; margin-top:4px; fill: #0075eb;">
+        <i class="fa-light fa-file" style="font-size: 36px; display: block; text-align: center;" title="Document link"></i>
+      </span>
+      <span>
+        Tracking HTN, DM & cancer screening with Simple
+        <span class="d-block tt-uppercase tt-bold fw-bold" style="font-size: 10px; margin-top:4px;">
+          Google docs <i class="fa-solid fa-up-right-from-square" style="margin-left:4px;"></i>
+        </span>
+      </span>
+    </a>
+  </section>
+  <section class="update">
+    <div class="update-date">
+      Feb <b class="d-block">2023</b>
+    </div>
+    <p>
+      <b>Simple Dashboard:</b>
+      Estimated hypertension population coverage has been added to the dashboard. Viewable inside 'Hypertension indicators' table.
+    </p>
+  </section>
+  <section class="update">
+    <div class="update-date">
+      Jan <b class="d-block">2023</b>
+    </div>
+    <p>
+      <b>Simple publication:</b>
+      Simple published an article in the British Medical Journal.
+    </p>
+    <a href="https://informatics.bmj.com/content/30/1/e100641.full" class="d-flex align-start p-3 fs-16px br-8px bg-blue-light" style="border: 0px rgba(0, 117, 235, 0.5) solid; grid-gap: 20px; margin-top:8px;">
+      <span style="max-width: 40px; padding: 4px; padding-top: 0; width: 100%; margin-left:12px; margin-top:4px; fill: #0075eb; text-align: center;">
+        <i class="fa-light fa-newspaper" style="font-size: 34px;" title="Article link"></i>
+      </span>
+      <span>
+        Keep it simple: designing a user-centred digital information system to support chronic disease management in low/middle-income countries
+        <span class="d-block tt-uppercase tt-bold fw-bold" style="font-size: 10px; margin-top:4px;">
+          british medical journal <i class="fa-solid fa-up-right-from-square" style="margin-left:4px;"></i>
+        </span>
+      </span>
+    </a>
+  </section>
+  <section class="update">
+    <div class="update-date">
+      <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
+        Nov <b class="d-block">2022</b>
+      <% else %>
+        Dec <b class="d-block">2022</b>
+      <% end %>
+    </div>
+    <p>
+      <b>Simple app:</b> Progress tab has been updated with a new design and includes several new reports:
+      <ul>
+        <li>Daily, monthly and yearly reports - showing activity at your facility</li>
+        <li>Hypertension report - overview of hypertension control at your facility</li>
+        <li>New facility achievements - 'calls made to overdue patients'</li>
+      </ul>
+    </p>
+    <p class="d-block bg-grey-lightest br-4px" style="margin-top: 8px; padding: 6px 10px;">
+      Please use this <a href="https://drive.google.com/file/d/1l5Mqyv-FzmRHVA-jsZFvIBZ44Q6gHRI2/view?usp=share_link">one pager</a> to train your users.
+    </p>
+  </section>
+  <section class="update">
+    <div class="update-date">
+      Oct <b class="d-block">2022</b>
+    </div>
+    <p>
+      <b>Simple dashboard:</b>
+      <ul>
+        <li>Diabetes drug stock tracking is now live!</li>
+        <li>The graphs on the reports dashboard have been improved making it easier to view detailed information.</li>
+      </ul>
+    </p>
+  </section>
   <section class="update">
     <div class="update-date">
       Sep <b class="d-block">2022</b>
@@ -31,45 +112,7 @@
       Jun <b class="d-block">2022</b>
     </div>
     <p>
-      <b>Dashboard:</b> Diabetes reports are now available for dashboard users in regions where blood sugar measures are being taken. Users can view DM registrations, follow-ups, missed visits and lost to follow-up for patients with diabetes. If your region does not use the diabetes feature, please talk to your leadership team and Simple team about enabling it.
-    </p>
-  </section>
-  <section class="update">
-    <div class="update-date">
-      May <b class="d-block">2022</b>
-    </div>
-    <p>
-      <b>Android</b> users will be notified to update their Simple app if the app becomes too old. If the app is more than several months old, they may get locked out of the app until they upgrade &#8212; this is important for security. <% if CountryConfig.current[:name] == "India" %><b>Android</b> users also now see a message on the Simple home screen to remind them to fill in drug stock. <% end %>
-    </p>
-    <p>
-      <b>BP Passports PDFs</b> can now be created using a special application on your PC. You can create BP Passport cards or stickers and send them to your local printing company. <a href="/resources#card-bp-passport-creator">Get the app in Resources</a>.
-    </p>
-  </section>
-  <section class="update">
-    <div class="update-date">
-      Apr <b class="d-block">2022</b>
-    </div>
-    <p>
-      <b>Definition change:</b> "Inactive facilities" are facilities where 0 BPs were recorded in the last month. The old definition was &gt;10 BPs recorded per month.
-    </p>
-    <% if CountryConfig.current[:name] == "India" %>
-      <p>
-        <b>SMS Patient reminders:</b> Simple is again sending text messages to all patients with upcoming appointments to remind them to return to care &#8212; patients receive a message 1 day before, day of, and 3 days after their appointment, if they don't come. We are also messaging patients who are late for their visits to see if we can reduced Missed Visit rates.
-      </p>
-    <% end %>
-    <p>
-      <b>Bug fix:</b> When you print reports, the charts no longer go over the edge of the cards.
-    </p>
-    <p>
-      The <b>Dashboard</b> now defines lost-to-follow-up patients more accurately. Previously a patient was LTFU if they did not have a BP measure in &gt;1 year. Now a patient is LTFU if they didn't have a BP measure, a blood sugar measure, a medication refill, or a new appointment scheduled in &gt;1 year.
-    </p>
-  </section>
-  <section class="update">
-    <div class="update-date">
-      Mar <b class="d-block">2022</b>
-    </div>
-    <p>
-      The <b>Dashboard</b> report card for "Days of medications dispensed to follow-up patients" now displays when patients receive &gt;2 months of medications. Also, the <b>Simple Android app</b> has performance changes to make Search and Overdue features much faster, especially in facilities with many assigned patients.
+      <b>Simple dashboard:</b> Diabetes reports are now available for dashboard users in regions where blood sugar measures are being taken. Users can view DM registrations, follow-ups, missed visits and lost to follow-up for patients with diabetes. If your region does not use the diabetes feature, please talk to your leadership team and Simple team about enabling it.
     </p>
   </section>
 </div>

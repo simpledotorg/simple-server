@@ -4,18 +4,14 @@ class ProgressTab::Hypertension::ControlComponent < ApplicationComponent
   include AssetsHelper
   include ActionView::Helpers::NumberHelper
 
-  attr_reader :control_range, :repository, :current_user
+  attr_reader :control_rates, :controlled, :adjusted_patients, :period_info, :region
 
-  def initialize(service, current_user)
-    @repository = service.control_rates_repository
-    @control_range = repository.range
-    @region = service.region
-    @current_user = current_user
-  end
-
-  def render?
-    Flipper.enabled?(:new_progress_tab_v2, current_user) || Flipper.enabled?(:new_progress_tab_v2) ||
-      Flipper.enabled?(:new_progress_tab_v1, current_user) || Flipper.enabled?(:new_progress_tab_v1)
+  def initialize(controlled_rates:, controlled:, adjusted_patients:, period_info:, region:)
+    @control_rates = controlled_rates
+    @controlled = controlled
+    @adjusted_patients = adjusted_patients
+    @period_info = period_info
+    @region = region
   end
 
   def control_summary
@@ -27,21 +23,5 @@ class ProgressTab::Hypertension::ControlComponent < ApplicationComponent
 
   def format(number)
     number_with_delimiter(number)
-  end
-
-  def control_rates
-    repository.controlled_rates[@region.slug]
-  end
-
-  def controlled
-    repository.controlled[@region.slug]
-  end
-
-  def adjusted_patients
-    repository.adjusted_patients[@region.slug]
-  end
-
-  def period_info
-    repository.period_info(@region)
   end
 end

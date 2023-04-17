@@ -1,9 +1,19 @@
 module OneOff::CphcEnrollment
   FACILITY_TYPE_ID = {
+    "SUBCENTER" => 3100,
     "PHC" => 3200,
     "CHC" => 3300,
     "DH" => 3400,
     "TERTIARY" => 3500
+  }
+
+  FACILITY_TYPE_MAPPING = {
+    "SDH" => "DH",
+    "PHC" => "PHC",
+    "CHC" => "CHC",
+    "UPHC" => "PHC",
+    "UCHC" => "CHC",
+    "DH" => "DH"
   }
 
   CPHC_MIGRATION_WINDOW_START = "cphc_migration_window_start_hours"

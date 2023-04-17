@@ -31,6 +31,7 @@ class Facility < ApplicationRecord
   has_many :teleconsultations
   has_many :drug_stocks
   has_many :call_results
+  has_many :questionnaire_responses
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -58,6 +59,7 @@ class Facility < ApplicationRecord
   has_many :facility_states, class_name: "Reports::FacilityState"
 
   has_many :cphc_facility_mappings
+  has_one :cphc_facility
   has_many :cphc_migration_error_logs
   has_many :cphc_migration_audit_logs
 
@@ -120,6 +122,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
+  validates :enable_monthly_screening_reports, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
   validates :short_name, presence: true
   validates :short_name, length: {minimum: 1, maximum: SHORT_NAME_MAX_LENGTH}

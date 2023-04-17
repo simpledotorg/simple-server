@@ -4,6 +4,7 @@ RSpec.describe User, type: :model do
   describe "Associations" do
     it { is_expected.to have_many(:user_authentications) }
     it { is_expected.to have_many(:accesses) }
+    it { is_expected.to have_many(:questionnaire_responses) }
     it { is_expected.to have_and_belong_to_many(:teleconsultation_facilities) }
   end
 

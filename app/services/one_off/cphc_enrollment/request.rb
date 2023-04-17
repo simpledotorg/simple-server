@@ -11,14 +11,13 @@ class OneOff::CphcEnrollment::Request
 
   def post
     HTTP.headers(headers)
-      .auth(user[:user_authorization])
-      .post(path, json: payload&.payload)
+      .post(path, json: payload&.payload || nil)
   end
 
   def headers
     {txnUser: user[:user_id],
      facilityTypeId: user[:facility_type_id],
      statecode: user[:state_code],
-     isCdssFacility: false}
+     isCdssFacility: false}.merge(payload&.headers || {})
   end
 end

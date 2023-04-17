@@ -24,18 +24,26 @@ module ApplicationHelper
   end
 
   def display_date(date_time)
-    if date_time.is_a? String
-      DateTime.parse(date_time).strftime(STANDARD_DATE_DISPLAY_FORMAT)
+    if date_time.present?
+      if date_time.is_a? String
+        DateTime.parse(date_time).strftime(STANDARD_DATE_DISPLAY_FORMAT)
+      else
+        date_time&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+      end
     else
-      date_time&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+      date_time
     end
   end
 
   def display_time(date_time)
-    if date_time.is_a? String
-      DateTime.parse(date_time).strftime(STANDARD_TIME_DISPLAY_FORMAT)
+    if date_time.present?
+      if date_time.is_a? String
+        DateTime.parse(date_time).strftime(STANDARD_TIME_DISPLAY_FORMAT)
+      else
+        date_time&.strftime(STANDARD_TIME_DISPLAY_FORMAT)
+      end
     else
-      date_time&.strftime(STANDARD_TIME_DISPLAY_FORMAT)
+      date_time
     end
   end
 

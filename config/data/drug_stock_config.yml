@@ -486,3 +486,93 @@ Tigray:
       '858816': 2
       '314076': 1
       '314077': 2
+Sylhet:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
+Mymensingh:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
+Rajshahi:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
+Dhaka:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
+Barishal:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
+Chattogram:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_ace:
+      new_patient_coefficient: 0.35
+      '316049': 1
+      '316051': 1
