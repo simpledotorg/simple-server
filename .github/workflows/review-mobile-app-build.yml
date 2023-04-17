@@ -3,15 +3,15 @@ name: Review Mobile App Build
 on:
   workflow_dispatch:
     inputs:
-      heroku_url:
-        description: "Simple server URL (https prefixed, no trailing slash)"
+      pr_number:
+        description: 'PR number'
         required: true
 
 jobs:
   build_app:
     runs-on: [ ubuntu-latest ]
     env:
-      HEROKU_URL: ${{ github.event.inputs.heroku_url }}
+      PR_NUMBER: ${{ github.event.inputs.pr_number }}
     steps:
       - name: Checkout simple-android
         uses: actions/checkout@v2
@@ -25,7 +25,7 @@ jobs:
           java-version: '11'
 
       - name: Build APK
-        run: simple-android/gradlew -p simple-android -PmanifestEndpoint="$HEROKU_URL/api/" app:assembleQaDebug
+        run: simple-android/gradlew -p simple-android -PmanifestEndpoint="https://simple-review-pr-$PR_NUMBER.herokuapp.com/api/" app:assembleQaDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v1
