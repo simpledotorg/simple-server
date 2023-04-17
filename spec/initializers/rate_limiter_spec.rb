@@ -15,12 +15,8 @@ describe "RateLimiter", type: :controller do
     Rails.cache.clear
   end
 
-  def random_ip_address(seed)
-    "127.0.0.#{seed}"
-  end
-
-  def randomize_request_ip(seed)
-    allow_any_instance_of(Rack::Request).to receive(:ip).and_return(random_ip_address(seed))
+  def stub_request_ip(host_id)
+    allow_any_instance_of(Rack::Request).to receive(:ip).and_return("127.0.0.#{host_id}")
   end
 
   describe "throttle authentication APIs" do
@@ -203,7 +199,7 @@ describe "RateLimiter", type: :controller do
 
         it "does not rate limit across IP addresses" do
           (limit * 2).times do |i|
-            randomize_request_ip(i)
+            stub_request_ip(i)
             post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
             if i > limit
               expect(i > limit).to eq(true)
@@ -233,12 +229,12 @@ describe "RateLimiter", type: :controller do
           user = create(:user, password: "1234")
 
           limit.times do |i|
-            randomize_request_ip(i)
+            stub_request_ip(i)
             post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
             expect(last_response.status).to eq(200)
           end
 
-          randomize_request_ip(limit + 1)
+          stub_request_ip(limit + 1)
           post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
           expect(last_response.status).to eq(429)
           expect(last_response.body).to eq("Too many requests. Please wait and try again later.\n")
@@ -246,7 +242,7 @@ describe "RateLimiter", type: :controller do
 
         it "does not rate limit across user ids" do
           (limit * 2).times do |i|
-            randomize_request_ip(i)
+            stub_request_ip(i)
             post "/api/v4/users/activate", {user: {id: SecureRandom.uuid, password: "1234"}}
             if i > limit
               expect(i > limit).to eq(true)
@@ -260,7 +256,7 @@ describe "RateLimiter", type: :controller do
 
           bad_params.each do |bad_param|
             (limit * 2).times do |i|
-              randomize_request_ip(i)
+              stub_request_ip(i)
               post "/api/v4/users/activate", bad_param
               if i > limit
                 expect(i > limit).to eq(true)
@@ -276,7 +272,7 @@ describe "RateLimiter", type: :controller do
 
           (limit * 2).times do |i|
             post "/api/v4/users/activate", {user: {id: user.id, password: "1234"}}
-            randomize_request_ip(i)
+            stub_request_ip(i)
 
             if i > limit
               expect(i > limit).to eq(true)
