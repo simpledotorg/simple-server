@@ -30,7 +30,7 @@ om-ET:
   analytics:
     page_title: "Xiinxala Dhuunfa"
     updated: "Haaromfameera: %{time}"
-    tap_sync: "Ragaa haaraadhaf \"Sync\"  fuulmanaa irratti cuqaasi."
+    tap_sync: "Ragaa haaraadhaf \"Sync\"  fuulmanaa irratti cuqaasi."
     registered: "Galmaa'eera"
     follow_up: "Hordoffii"
     patient:
@@ -90,7 +90,7 @@ om-ET:
     bp_passport_app_summary:
       new_html: HAARAA!
       heading_html: Appii dhukkubsatoota keetiif
-      contents_1_html: Dhukkubsattootni appii salphaa "BP Passport"  jedhamu fayyyadamuudhaan BPwwan fi sukkaara isaanii ilaaluu ni danda'au.
+      contents_1_html: Dhukkubsattootni appii salphaa "BP Passport"  jedhamu fayyyadamuudhaan BPwwan fi sukkaara isaanii ilaaluu ni danda'au.
       contents_2_html: Dhukkubsatootni kee gara Google Play Store yookan Apple App Store adeemudhaan "BP Passport" akka buufatan taasisi.
       learn_more_html: Caalmaatti bari...
     videos:
@@ -120,7 +120,7 @@ om-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
       bp_passports:
-        heading_html: Paaspoortiiwwan BP
+        heading_html: "Paaspoortiiwwan BP"
         contents_html: Akkaataa itti fayyadama kardii BP Passport yookan istiikarii BP Passport  hospitaala kee keessatti baradhu.
         video_link_html: BP Passport akkamiin fayyadami
         video_link_subtitle_html: Hindi barreeffama English tiin
@@ -449,11 +449,33 @@ om-ET:
     male: "Dhiira"
     female: "Dubara"
     transgender: "Saaldarbaa"
+    total: "Dimshaasha"
+    yes: "Eyyee"
+    no: "Lakkii"
+    comments: "Yaadota"
+    instruction_1: "Hanga isaa hin beektu taanaan bakka duwwaa dhiisi"
+    instruction_2: 'Yoo kuusaan duwwaa ta’e “0” galchi'
   monthly_screening_report:
+    htn_and_dm_screening: "QORANNOO HTN & DM"
+    # Ethiopia
+    total_bp: "Calallii BP hojjetame dimshaashaan"
+    total_bs: "Calallii sukkaara dhiiga keessaa hojjetame dimshaashaan "
+    new_raised_cases: "DHIMMOOTA KA’AN HAARAA"
+    total_bp_raised: "BP haarawa ka’e"
+    total_bs_raised: "BP haarawa ka’e"
+    total_bp_raised_ncd_linked: "Dhimmoota BP haarawa ka’e kan kilinika NCD n wal qabate"
+    total_bs_raised_ncd_linked: "Dhimmoota BP haarawa ka’e kan kilinika NCD n wal qabate"
+    diagnosed_cases: "DHIMMOOTA QORATAMAN"
+    total_htn_diagnosed: "HTN Qoratame dimshaashaan"
+    total_dm_diagnosed: "DM Qoratame dimshaashaan"
+    cervical_cancer_uc: "KAANSERII ULAA GADAMEESSAA"
+    total_women_screened_cervical: "Dubartoota Kanserii Ulaa gadameessaaf Qorataman Dimshaashaan "
+    total_women_treated_cervical: "Dubartoota Kanserii Ulaa gadameessaaf Yaalaman Dimshaashaan"
+    total_women_followup_cervical: "Wagga 1 booda dimshaasha dubartoota hordofamanii"
+    # India
     monthly_opd_visits_gt_30: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >30 "
     monthly_opd_visits_gt_18: "Qorannoo ji'aa kan OPD ga'eessotaa kan ganna >18"
     outpatient_department_visits: "Daawwannaawwan muummee deddeebi'anii yaalamuu"
-    htn_and_dm_screening: "QORANNOO HTN & DM"
     total_bp_checks: "Qorannoowwan BP taasifaman dimshaasha"
     total_blood_sugar_checks: "Qorannoowwan sukkaaraa taasifaman dimshaasha"
     new_suspected_individuals: "NAMOOTA HAARAA SHAKKAMAN"
@@ -471,4 +493,44 @@ om-ET:
     oral_cancer: "Kaansarii afaanii"
     breast_cancer: "Kaansarii harmaa"
     cervical_cancer: "Kaansarii afaan gadaamessaa"
-
+  monthly_supplies_report:
+    instruction_1: "Dhuma ji’aa irratti dhiheessii kuusaa irratti hafe galchi"
+    stock_on_hand: "Kuusaa harka irra jiru"
+    stock_on_hand_uc: "KUUSAA HARKA IRRA JIRU"
+    working_equipments: "MEESHAALEE HOJII"
+    glucose_strips: "Meeshaalee Qorannoo Giluukoosii Dhiigaa"
+    total_working_condition: "Kanneen haala hojiirra jiran dimshaashaan"
+    # Bangladesh
+    patient_books: "Galmeewwan dhukkubsataa"
+    available_bp_monitors_arm_in: "Meeshaalee to’annoo BP jiran dhiimshaashaan (aarm- iin)"
+    functioning_bp_monitors_arm_in: "Meeshaalee to’annoo BP tajaajila irra jiran walii galaan (aarm- iin)"
+    available_bp_monitors_handheld: "Meeshaalee to’annoo BP jiran dimshaashaan (hand heeld)"
+    functioning_bp_monitors_handheld: "Meeshaalee to’annoo BP tajaajila irra jiran walii galaan (hand-heeld)"
+    available_blood_glucose_monitors: "Meeshaalee to’annoo Giluukoosii Dhiigaa jiran dimshaashaan"
+    functioning_blood_glucose_monitors: "Meeshaalee to’annoo Giluukoosii Dhiigaa  hojii irra jiran  dimshaashaan"
+    # Ethiopia
+    bp_monitor: "To’attuu BP"
+    glucose_meter: "Safartuu Giluukoosii Dhiigaa"
+    stethoscope: "Isteetooskooppii"
+    height_weight_machine: "Maashina Safartuu Dheerinaa fi Ulfaatinaa"
+    waist_tape: "Teeppii safartuu bal’ina mudhii"
+    # India
+    glucometer_strips: "Istiriippiiwwan Kiluukoomeetirii"
+    # Sri Lanka
+    equipment: "MEESHAA"
+    available_bp_devices: "Meeshaalee BP jiran dimshaashaan "
+    functioning_bp_devices: "Meeshaalee BP hojii irra jiran dimshaashaan"
+    available_phones: "Bilbiloota harkaa jiran dimshaashaan"
+    functioning_phones: "Bilbiloota harkaa hojii irra jiran dimshaashaan"
+    drug_stock: "KUUSAA QORICHAA"
+    drug_stock_losartan: "Qoricha baatii dhufuuf gahu: loozaartaan"
+    drug_stock_amlodipine: "Qoricha baatii dhufuuf gahu: Amiloodipiinii"
+    drug_stock_hct: "Qoricha baatii dhufuuf gahu: HCT (Haayidiriikilooraatiyaazaayidii)"
+    trained_staff: "HOJJETTOOTA LEEJII QABAN"
+    doctors_count: "Lakkoofsa Dookteroota kilinika fayyaa hordofanii"
+    nurses_count: "Lakkoofsa Dookteroota kilinika fayyaa hordofanii"
+    pharmacists_count: "Lakkoofsa faarmaasistoota hospitaala keessa jiranii"
+    drug_dispensers_count: "Lakkoofsa kennitoota qorichaa hospitaala keessa jiranii"
+    others: "KANNEEN BIROO"
+    television_functional: "Ergaan barnoota fayyaa agarsiistuu televijiizii Kilinika fayyaa irratti ni agarsiifamaa?"
+    wifi_functional: "Wi-Fi jirra?"
