@@ -178,8 +178,17 @@ module Seed
           user_id: user_id)
       end.compact
 
-      call_result_attributes = appointment_attributes.map do |appointment|
-        number_of_calls = config.rand_or_max(0..1) # you can get more than 1 call if you are overdue
+      call_result_attributes = create_call_results_for_appointments(appointment_attributes, user_ids: user_ids)
+
+      appointments_creation_info = Appointment.import(appointment_attributes)
+      call_results_creation_info = CallResult.import(call_result_attributes)
+      {appointments_creation_info: appointments_creation_info,
+       call_results_creation_info: call_results_creation_info}
+    end
+
+    def create_call_results_for_appointments(appointment_attributes, user_ids:)
+      appointment_attributes.map do |appointment|
+        number_of_calls = config.rand_or_max(0..1)
         next if number_of_calls.zero?
 
         device_created_at = Faker::Time.between(from: appointment[:scheduled_date], to: Time.now)
@@ -191,10 +200,6 @@ module Seed
           device_created_at: device_created_at,
           device_updated_at: device_created_at)
       end.compact
-      appointments_creation_info = Appointment.import(appointment_attributes)
-      call_results_creation_info = CallResult.import(call_result_attributes)
-      {appointments_creation_info: appointments_creation_info,
-       call_results_creation_info: call_results_creation_info}
     end
   end
 end
