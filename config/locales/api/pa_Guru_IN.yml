@@ -120,7 +120,7 @@ pa-Guru-IN:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ਹਿੰਦੀ
       bp_passports:
-        heading_html: ਬੀਪੀ ਪਾਸਪੋਰਟ
+        heading_html: "ਬੀਪੀ ਪਾਸਪੋਰਟ"
         contents_html: ਆਪਣੇ ਹਸਪਤਾਲ ਵਿੱਚ ਬੀਪੀ ਪਾਸਪੋਰਟ ਕਾਰਡ ਜਾਂ ਬੀਪੀ ਪਾਸਪੋਰਟ ਸਟੀਕਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਸਿੱਖੋ।
         video_link_html: ਬੀਪੀ ਪਾਸਪੋਰਟ ਦੀ ਵਰਤੋਂ ਕਿਵੇਂ ਕਰੀਏ
         video_link_subtitle_html: ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਉਪ-ਸਿਰਲੇਖਾਂ ਨਾਲ ਹਿੰਦੀ
@@ -449,11 +449,33 @@ pa-Guru-IN:
     male: "ਮਰਦ"
     female: "ਔਰਤ"
     transgender: "ਦੁਲਿੰਗੀ"
+    total: "ਕੁੱਲ"
+    yes: "ਹਾਂ"
+    no: "ਨਹੀਂ"
+    comments: "ਟਿੱਪਣੀਆਂ"
+    instruction_1: "ਜੇਕਰ ਤੁਹਾਨੂੰ ਕੋਈ ਰਕਮ ਨਹੀਂ ਪਤਾ ਤਾਂ ਖਾਲੀ ਛੱਡੋ"
+    instruction_2: 'ਜੇ ਸਟਾਕ ਨਹੀਂ ਹੈ ਤਾਂ "0" ਦਰਜ ਕਰੋ'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN ਅਤੇ DM ਸਕ੍ਰੀਨਿੰਗ"
+    # Ethiopia
+    total_bp: "ਸਕ੍ਰੀਨਿੰਗ ਕੀਤਾ ਗਿਆ ਕੁੱਲ BP"
+    total_bs: "ਸਕ੍ਰੀਨਿੰਗ ਕੀਤੀ ਗਈ ਕੁੱਲ ਬਲੱਡ ਸ਼ੂਗਰ"
+    new_raised_cases: "ਨਵੇਂ ਉਠਾਏ ਗਏ ਮਾਮਲੇ"
+    total_bp_raised: "ਕੁੱਲ ਵਧਿਆ BP"
+    total_bs_raised: "ਕੁੱਲ ਵਧਿਆ BS"
+    total_bp_raised_ncd_linked: "NCD ਕਲੀਨਿਕ ਨਾਲ ਜੁੜੇ ਵਧੇ ਹੋਏ BP ਦੇ ਕੁੱਲ ਮਾਮਲੇ"
+    total_bs_raised_ncd_linked: "NCD ਕਲੀਨਿਕ ਨਾਲ ਜੁੜੇ ਵਧੇ ਹੋਏ BS ਦੇ ਕੁੱਲ ਮਾਮਲੇ"
+    diagnosed_cases: "ਨਿਦਾਨ ਕੀਤੇ ਮਾਮਲੇ"
+    total_htn_diagnosed: "ਨਿਦਾਨ ਕੀਤਾ ਗਿਆ ਕੁੱਲ HTN"
+    total_dm_diagnosed: "ਨਿਦਾਨ ਕੀਤਾ ਗਿਆ ਕੁੱਲ DM"
+    cervical_cancer_uc: "ਸਰਵਾਈਕਲ ਕੈਂਸਰ"
+    total_women_screened_cervical: "ਸਰਵਾਈਕਲ ਕੈਂਸਰ ਲਈ ਜਾਂਚ ਕੀਤੀਆਂ ਕੁੱਲ ਔਰਤਾਂ"
+    total_women_treated_cervical: "ਸਰਵਾਈਕਲ ਕੈਂਸਰ ਲਈ ਇਲਾਜ ਕੀਤੀਆਂ ਕੁੱਲ ਔਰਤਾਂ"
+    total_women_followup_cervical: "1 ਸਾਲ ਬਾਅਦ ਫਾਲੋ-ਅੱਪ ਕੀਤੀਆਂ ਕੁੱਲ ਔਰਤਾਂ"
+    # India
     monthly_opd_visits_gt_30: "30 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
     monthly_opd_visits_gt_18: "18 ਸਾਲ ਤੋਂ ਵੱਧ ਉਮਰ ਦੇ ਬਾਲਗਾਂ ਵਾਸਤੇ ਮਹੀਨਾਵਾਰ OPD ਮੁਲਾਕਾਤਾਂ"
     outpatient_department_visits: "ਆਉਟਪੇਸ਼ੈਂਟ ਵਿਭਾਗ ਦੀਆਂ ਮੁਲਾਕਾਤਾਂ"
-    htn_and_dm_screening: "HTN ਅਤੇ DM ਸਕ੍ਰੀਨਿੰਗ"
     total_bp_checks: "ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ ਦੀਆਂ ਕੁੱਲ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
     total_blood_sugar_checks: "ਕੁੱਲ ਬਲੱਡ ਸ਼ੂਗਰ ਜਾਂਚਾਂ ਕੀਤੀਆਂ ਗਈਆਂ"
     new_suspected_individuals: "ਕੁੱਝ ਸ਼ੱਕੀ ਵਿਅਕਤੀ"
@@ -471,4 +493,44 @@ pa-Guru-IN:
     oral_cancer: "ਮੂੰਹ ਦਾ ਕੈਂਸਰ"
     breast_cancer: "ਛਾਤੀ ਦਾ ਕੈਂਸਰ"
     cervical_cancer: "ਸਰਵਾਈਕਲ ਦਾ ਕੈਂਸਰ"
-
+  monthly_supplies_report:
+    instruction_1: "ਹਰ ਮਹੀਨੇ ਦੇ ਅੰਤ ਵਿੱਚ ਸਟਾਕ ਵਿੱਚ ਬਚੀ ਸਪਲਾਈ ਦਾਖਲ ਕਰੋ"
+    stock_on_hand: "ਹੱਥ ਵਿੱਚ ਸਟਾਕ"
+    stock_on_hand_uc: "ਹੱਥ ਵਿੱਚ ਸਟਾਕ"
+    working_equipments: "ਚੱਲ ਰਹੇ ਉਪਕਰਨ"
+    glucose_strips: "ਬਲੱਡ ਗਲੂਕੋਜ਼ ਟੈਸਟ ਦੀਆਂ ਪੱਟੀਆਂ"
+    total_working_condition: "ਚਾਲੂ ਹਾਲਤ ਵਿੱਚ ਕੁੱਲ"
+    # Bangladesh
+    patient_books: "ਮਰੀਜ਼ ਕਿਤਾਬਾਂ"
+    available_bp_monitors_arm_in: "ਕੁੱਲ ਉਪਲਬਧ BP ਮਾਨੀਟਰ (ਆਰਮ-ਇਨ)"
+    functioning_bp_monitors_arm_in: "ਕੰਮ ਵਿੱਚ ਆਉਣ ਵਾਲੇ BP ਮਾਨੀਟਰ (ਆਰਮ-ਇਨ)"
+    available_bp_monitors_handheld: "ਕੁੱਲ ਉਪਲਬਧ BP ਮਾਨੀਟਰ (ਹੈਂਡਹੇਲਡ)"
+    functioning_bp_monitors_handheld: "ਕੰਮ ਵਿੱਚ ਆਉਣ ਵਾਲੇ BP ਮਾਨੀਟਰ (ਹੈਂਡਹੇਲਡ)"
+    available_blood_glucose_monitors: "ਕੁੱਲ ਉਪਲਬਧ ਬਲੱਡ ਗਲੂਕੋਜ਼ ਮਾਨੀਟਰ"
+    functioning_blood_glucose_monitors: "ਕੰਮ ਵਿੱਚ ਆਉਣ ਵਾਲੇ ਬਲੱਡ ਗਲੂਕੋਜ਼ ਮਾਨੀਟਰ"
+    # Ethiopia
+    bp_monitor: "BP ਮਾਨੀਟਰ"
+    glucose_meter: "ਬਲੱਡ ਗਲੂਕੋਜ਼ ਮੀਟਰ"
+    stethoscope: "ਸਟੇਥੋਸਕੋਪ"
+    height_weight_machine: "ਉਚਾਈ ਅਤੇ ਭਾਰ ਮਾਪਣ ਵਾਲੀ ਮਸ਼ੀਨ"
+    waist_tape: "ਕਮਰ ਦੇ ਘੇਰੇ ਦੇ ਮਾਪ ਲਈ ਟੇਪ"
+    # India
+    glucometer_strips: "ਗਲੂਕੋਮੀਟਰ ਦੀਆਂ ਪੱਟੀਆਂ"
+    # Sri Lanka
+    equipment: "ਉਪਕਰਨ"
+    available_bp_devices: "ਕੁੱਲ ਉਪਲਬਧ BP ਡਿਵਾਈਸਾਂ"
+    functioning_bp_devices: "ਕੰਮ ਵਿੱਚ ਆਉਣ ਵਾਲੀਆਂ BP ਡਿਵਾਈਸਾਂ"
+    available_phones: "ਕੁੱਲ ਉਪਲਬਧ ਮੋਬਾਈਲ ਫ਼ੋਨ"
+    functioning_phones: "ਕੰਮ ਵਿੱਚ ਆਉਣ ਵਾਲੇ ਮੋਬਾਈਲ ਫ਼ੋਨ"
+    drug_stock: "ਡਰੱਗ ਸਟਾਕ"
+    drug_stock_losartan: "ਅਗਲੇ ਮਹੀਨੇ ਲਈ ਕਾਫ਼ੀ ਦਵਾਈਆਂ: ਲੋਸਾਰਟਨ"
+    drug_stock_amlodipine: "ਅਗਲੇ ਮਹੀਨੇ ਲਈ ਕਾਫ਼ੀ ਦਵਾਈਆਂ: ਅਮਲੋਡੀਪੀਨ"
+    drug_stock_hct: "ਅਗਲੇ ਮਹੀਨੇ ਲਈ ਕਾਫ਼ੀ ਦਵਾਈਆਂ: HCT (ਹਾਈਡ੍ਰੋਕਲੋਰੋਥਿਆਜ਼ਾਈਡ)"
+    trained_staff: "ਸਿਖਲਾਈ ਪ੍ਰਾਪਤ ਸਟਾਫ"
+    doctors_count: "ਮੈਡੀਕਲ ਕਲੀਨਿਕ ਵਿੱਚ ਹਾਜ਼ਰ ਡਾਕਟਰਾਂ ਦੀ ਗਿਣਤੀ"
+    nurses_count: "ਮੈਡੀਕਲ ਕਲੀਨਿਕ ਵਿੱਚ ਹਾਜ਼ਰ ਨਰਸਾਂ ਦੀ ਗਿਣਤੀ"
+    pharmacists_count: "ਹਸਪਤਾਲ ਵਿੱਚ ਉਪਲਬਧ ਫਾਰਮਾਸਿਸਟਾਂ ਦੀ ਗਿਣਤੀ"
+    drug_dispensers_count: "ਹਸਪਤਾਲ ਵਿੱਚ ਉਪਲਬਧ ਡਰੱਗ ਡਿਸਪੈਂਸਰਾਂ ਦੀ ਗਿਣਤੀ"
+    others: "ਹੋਰ"
+    television_functional: "ਕੀ ਟੈਲੀਵਿਜ਼ਨ ਸਕ੍ਰੀਨ ਦੀ ਵਰਤੋਂ ਕਰਕੇ ਮੈਡੀਕਲ ਕਲੀਨਿਕ ਵਿੱਚ ਸਿਹਤ ਸਿੱਖਿਆ ਦੇ ਸੰਦੇਸ਼ ਪ੍ਰਦਰਸ਼ਿਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ?"
+    wifi_functional: "ਕੀ Wi-Fi ਨੈੱਟਵਰਕ ਉਪਲਬਧ ਹੈ?"

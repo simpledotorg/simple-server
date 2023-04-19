@@ -53,3 +53,6 @@ om-ET:
       official_no_date: "%{patient_name}, Safafa BPdhaaf har'a gara %{facility_name}tti koottu. Haakimni kee waan gaarii siif hawwa."
     covid:
       medication_reminder: "Kabajamoo %{patient_name}: Hojjattootni keenya kan %{facility_name} yeroo fayyaa hatattamaa COVUD kanatti waa'ee fayyaa onnee keetii yaadu. Dawaa BPP itti fufuun kee baayyee murteessaadha. Jiddugala fayyaa dhihoo fi eeggumsa fayyaa irraa dawaawwan kee fudhadhu. ANM yookan ASHA kee qunnami."
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
