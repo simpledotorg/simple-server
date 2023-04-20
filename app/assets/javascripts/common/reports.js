@@ -22,6 +22,8 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
+    orange: 'rgb(223,104,15)',
+    lightOrange: 'rgba(255,156,8,0.15)'
   };
 }
 
@@ -339,6 +341,42 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
+
+    overdueTrend: function (data) {
+      console.log(data.overduePatientsPercentage);
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsPercentage),
+          datasets: [
+            {
+              label: "Overdue Patients",
+              data: Object.values(data.overduePatientsPercentage),
+              backgroundColor: colors.lightOrange,
+              borderColor: colors.orange,
+            }
+          ]
+        }
+      };
+      return withBaseLineConfig(config)
+    },
+
+    overdueCalledTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsRates),
+          datasets: [
+            {
+              label: "Called Overdue Patients",
+              data: Object.values(data.overduePatientsRates),
+              backgroundColor: colors.lightRed,
+              borderColor: colors.darkRed,
+            }
+          ]
+        }
+      };
+      return withBaseLineConfig(config)
+    }
+
   };
 
   return {
@@ -357,7 +395,10 @@ DashboardReports = () => {
         const dataKeyNodes = container.querySelectorAll("[data-key]");
 
         const populateDynamicComponents = (period) => {
+          console.log(period);
+          console.log('---- datanodes ------');
             dataKeyNodes.forEach(dataNode => {
+              console.log(dataNode);
                 const format = dataNode.dataset.format;
                 const key = dataNode.dataset.key;
 
