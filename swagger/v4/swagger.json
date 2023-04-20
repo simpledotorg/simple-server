@@ -2740,7 +2740,8 @@
         "questionnaire_type": {
           "type": "string",
           "enum": [
-            "monthly_screening_reports"
+            "monthly_screening_reports",
+            "monthly_supplies_reports"
           ]
         },
         "layout": {
@@ -2781,7 +2782,8 @@
         "questionnaire_type": {
           "type": "string",
           "enum": [
-            "monthly_screening_reports"
+            "monthly_screening_reports",
+            "monthly_supplies_reports"
           ]
         },
         "facility_id": {

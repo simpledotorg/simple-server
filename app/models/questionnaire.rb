@@ -2,7 +2,8 @@ class Questionnaire < ApplicationRecord
   has_many :questionnaire_responses
 
   enum questionnaire_type: {
-    monthly_screening_reports: "monthly_screening_reports"
+    monthly_screening_reports: "monthly_screening_reports",
+    monthly_supplies_reports: "monthly_supplies_reports"
   }
 
   validates :dsl_version, uniqueness: {
