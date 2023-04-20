@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_app:
-    runs-on: [ ubuntu-latest ]
+    runs-on: [ ubuntu-22.04 ]
     env:
       PR_NUMBER: ${{ github.event.inputs.pr_number }}
     steps:
