@@ -458,7 +458,8 @@ Reports = function (withLtfu) {
             },
           },
         },
-      }
+      },
+      plugins: [targetLine(65)],
     };
 
     const populateControlledGraph = (period) => {
@@ -542,8 +543,8 @@ Reports = function (withLtfu) {
           },
         },
       },
+      plugins: [targetLine(30, true)],
     };
-    uncontrolledGraphConfig.plugins.push(targetLine(10));
 
     const populateUncontrolledGraph = (period) => {
       const cardNode = document.getElementById("bp-uncontrolled");
@@ -1239,10 +1240,10 @@ const intersectDataVerticalLine = {
 };
 
 // target line plugin
-function targetLine(target, color) {
+function targetLine(target, belowTarget = false, color) {
   return {
     id: "targetLine",
-    beforeDraw: (chart) => {
+    afterDraw: (chart) => {
       const ctx = chart.ctx;
       console.log(chart);
       ctx.save();
@@ -1255,10 +1256,47 @@ function targetLine(target, color) {
       ctx.beginPath();
       ctx.moveTo(chartArea.left, targetLineYPosition);
       ctx.lineTo(chartArea.right, targetLineYPosition);
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
+      ctx.lineCap = "round";
       ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
-      ctx.setLineDash([5, 4]);
+      // ctx.strokeStyle = "#090909";
+      ctx.setLineDash([1, 6]);
       ctx.stroke();
+      let aboveOrBelow = "above";
+      if (belowTarget) {
+        aboveOrBelow = "below";
+      }
+      // let yPosition = targetLineYPosition - 8;
+      // if (belowTarget) {
+      //   yPosition += 24;
+      // }
+      let yPosition = targetLineYPosition + 4;
+      // if (belowTarget) {
+      //   yPosition += 24;
+      // }
+      // const textString = `Target ${aboveOrBelow} ${target}%`;
+      const textString = `${target}`;
+      // text bg box
+      // const textMeasure = ctx.measureText(textString);
+      // const fontHeight =
+      //   textMeasure.fontBoundingBoxAscent + textMeasure.fontBoundingBoxDescent;
+      // console.log(textMeasure.width, "x", fontHeight);
+      // ctx.beginPath();
+      // ctx.fillStyle = "rgba(255, 255, 255, 1)"
+      // ctx.fillRect(chartArea.left, yPosition, textMeasure.width, fontHeight);
+
+      // text
+      // ctx.font = "9pt Roboto Condensed";
+      ctx.font = "11px Roboto Condensed";
+      ctx.fillStyle = chart.config.data.datasets[0].borderColor;
+      // ctx.fillStyle = "#090909";
+      // let aboveOrBelow = '▲'
+      // if (belowTarget) {
+      //   aboveOrBelow = '▼'
+      // }
+      // ctx.fillText(textString, chartArea.left, yPosition);
+      ctx.fillText(textString, chartArea.left - 27, yPosition -1 );
+      // ctx.fillText(`Target ${target}% ${aboveOrBelow} `, chartArea.left, yPosition);
       ctx.restore();
     },
   };
