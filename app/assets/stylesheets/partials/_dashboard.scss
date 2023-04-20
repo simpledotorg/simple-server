@@ -219,6 +219,10 @@ th sup {
       min-width: 40px;
     }
 
+    th.align-right {
+      text-align: right;
+    }
+
     .row-medicine {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -710,7 +714,8 @@ th {
 //
 // Table sorting styles (override tablesort.css)
 //
-th[role="columnheader"]:not(.no-sort):after {
+th[role="columnheader"]:not(.no-sort)::before,
+th[role="columnheader"]:not(.no-sort)::after {
   border-color: $blue transparent;
   display: inline-block;
   float: none;
@@ -718,21 +723,32 @@ th[role="columnheader"]:not(.no-sort):after {
   vertical-align: middle;
 }
 
+th[role="columnheader"]:not(.no-sort)::before {
+  opacity: 0,
+}
+
+
+th[role="columnheader"]:not(.no-sort):hover::before,
 th[role="columnheader"]:not(.no-sort):hover:after {
   opacity: 0.5;
 }
 
+th[aria-sort]:not(.no-sort)::before,
 th[aria-sort]:not(.no-sort)::after,
-th[aria-sort]:not(.no-sort):hover:after {
-  opacity: 1;
+th[aria-sort]:not(.no-sort):hover::before,
+th[aria-sort]:not(.no-sort):hover::after {
+    opacity: 1;
 }
 
 // Reverse the arrows since we default to descending
+th[role="columnheader"]:not(.no-sort)::before,
+th[aria-sort="descending"]:not(.no-sort)::before,
 th[role="columnheader"]:not(.no-sort):after,
 th[aria-sort="descending"]:not(.no-sort):after {
   border-width: 4px 4px 0;
 }
 
+th[aria-sort="ascending"]:not(.no-sort)::before,
 th[aria-sort="ascending"]:not(.no-sort):after {
   border-bottom: 4px solid;
   border-width: 0 4px 4px;
