@@ -459,7 +459,7 @@ Reports = function (withLtfu) {
           },
         },
       },
-      plugins: [targetLine(65)],
+      plugins: [targetLine(70)],
     };
 
     const populateControlledGraph = (period) => {
