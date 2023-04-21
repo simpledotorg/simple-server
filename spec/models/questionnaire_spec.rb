@@ -24,7 +24,7 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "validates the specimen layout using the swagger schema" do
-      questionnaire = build(:questionnaire, layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
+      questionnaire = build(:questionnaire, layout: Api::V4::Models::Questionnaires::SpecimenLayout.version_1)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!

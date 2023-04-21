@@ -5,9 +5,9 @@ module Seed
   class QuestionnaireSeeder
     def self.call
       FactoryBot.create(:questionnaire,
-        questionnaire_type: "monthly_screening_reports",
-        is_active: true,
-        layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
+                        questionnaire_type: "monthly_screening_reports",
+                        is_active: true,
+                        layout: Api::V4::Models::Questionnaires::SpecimenLayout.version_1)
 
       (1..3).map { |n| PreFillMonthlyScreeningReports.call(n.month.ago) }
     end
