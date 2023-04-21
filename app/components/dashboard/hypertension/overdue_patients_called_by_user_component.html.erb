@@ -1,7 +1,7 @@
 <div class="card mb-16px mt-0 w-full">
   <%= render Dashboard::Card::TitleComponent.new(
     title: "Overdue patients called",
-    subtitle: t("overdue_patients.overdue_patients_activity.reports_card_subtitle") 
+    subtitle: t("overdue_patients_call_activity.reports_card_subtitle") 
   ) do |c| %>
     <%= c.tooltip({ "Patients called" => t("overdue_patients_call_activity.patients_called"),
                     "Percent called" => "",
