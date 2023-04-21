@@ -1,6 +1,6 @@
 <!--Implementation Pending - Overdue Patients Graph-->
 <div id="overdue-patients-called-trend" class="d-lg-flex w-lg-50 pl-lg-2">
-  <%= render Dashboard::Card::GraphComponent.new(id: "overduePatientsCalledTrend", data: graph_data, period: @period) do |c| %>
+  <%= render Dashboard::Card::GraphComponent.new(id: "overdueCalledTrend", data: graph_data, period: @period) do |c| %>
     <%# <%= c.title(title: "Overdue Patients Called".html_safe)do |title| %>
       <%= c.title(title: "Overdue patients called".html_safe, subtitle: t("overdue_patients_called.reports_card_subtitle")) do |title| %>
         <%= title.tooltip({ "Numerator" => t("overdue_patients_called.numerator"),

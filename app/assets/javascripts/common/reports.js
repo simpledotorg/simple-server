@@ -23,7 +23,7 @@ function dashboardReportsChartJSColors() {
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
     orange: 'rgb(223,104,15)',
-    lightOrange: 'rgba(255,156,8,0.15)'
+    lightOrange: 'rgba(255,156,8,0.15)',
     overdueCalledChartLineDarkYellow: "rgba(228, 180, 57, 1)",
     overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
     overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
