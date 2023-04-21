@@ -160,13 +160,11 @@ en:
       numerator: "Unique patients with at least one ‘Result of call...’ marked during the month."
       numerator_note: "Note: This number includes patients that become overdue during the month and received a call, they may not be part of the denominator."
       denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
-
-  overdue_patients:
-    overdue_patients_activity: 
-      reports_card_subtitle: "The number of unique overdue hypertension patients that were called during the month."
-      patients_called: "Unique patients with at least one ‘Result of call...’ marked during the month."
-      percent_called_numerator: "Unique patients with at least one ‘Result of call...’ marked by user during the month."
-      percent_called_denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
+  overdue_patients_call_activity: 
+    reports_card_subtitle: "The number of unique overdue hypertension patients that were called during the month."
+    patients_called: "Unique patients with at least one ‘Result of call...’ marked during the month."
+    percent_called_numerator: "Unique patients with at least one ‘Result of call...’ marked by user during the month."
+    percent_called_denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
 
   admin:
     reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
