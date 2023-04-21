@@ -1,4 +1,4 @@
-module PatientSates
+module PatientStates
   class DeadPatientsQuery
     attr_reader :region, :period
 

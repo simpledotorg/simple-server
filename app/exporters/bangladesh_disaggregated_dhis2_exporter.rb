@@ -27,7 +27,9 @@ class BangladeshDisaggregatedDhis2Exporter
   end
 
   def self.disaggregated_counts(patient_states)
-    transform_gender_age_group_names(gender_age_bucket_counts(patient_states))
+    gender_age_bucket_counts(patient_states).transform_keys do |(gender, age_bucket_index)|
+      gender_age_range(gender, age_bucket_index)
+    end
   end
 
   def self.gender_age_bucket_counts(patient_states)
@@ -37,17 +39,13 @@ class BangladeshDisaggregatedDhis2Exporter
     ).count
   end
 
-  def self.transform_gender_age_group_names(groups)
-    groups.transform_keys do |(gender, age_bucket_index)|
-      age_range_start, age_range_end =
-        PatientStates::DisaggregatedPatientCountQuery
-          .bucket_index_to_range(BUCKETS, STEP, age_bucket_index)
-
-      if age_range_start == 75
-        "#{gender}_#{age_range_start}_plus"
-      else
-        "#{gender}_#{age_range_start}_#{age_range_end}"
-      end
+  def self.gender_age_range(gender, age_bucket_index)
+    age_range_start = BUCKETS[age_bucket_index - 1]
+    if age_range_start == BUCKETS.last
+      "#{gender}_#{age_range_start}_plus"
+    else
+      age_range_end = BUCKETS[age_bucket_index] - 1
+      "#{gender}_#{age_range_start}_#{age_range_end}"
     end
   end
 
