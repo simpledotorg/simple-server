@@ -65,7 +65,9 @@ module RateLimit
   end
 
   ActiveSupport::Notifications.subscribe(/throttle.rack_attack/) do |name, start, finish, request_id, payload|
+    next unless payload[:request].path == "/api/v4/users/activate"
+
     request = ActionDispatch::Request.new(payload[:request].env)
-    RateLimit.logger.info "Too many login attempts for user #{request.params.dig(:user, :id)}"
+    RateLimit.logger.info "Too many login attempts for user #{request.params.dig(:user, :id)} from IP: #{request.ip}"
   end
 end
