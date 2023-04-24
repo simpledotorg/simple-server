@@ -40,12 +40,12 @@ describe BangladeshDisaggregatedDhis2Exporter do
       expect_any_instance_of(PatientStates::MonthlyRegistrationsQuery).to receive(:call).and_return(htn_monthly_registered_patients)
       expect_any_instance_of(PatientStates::CumulativeAssignedPatientsQuery).to receive(:excluding_recent_registrations).and_return(htn_cumulative_assigned_patients_adjusted)
 
-      allow(described_class).to receive(:disaggregated_counts) do |value|
+      allow(described_class).to receive(:disaggregated_patient_states) do |value|
         value
       end
 
       expected_result_from_block = {
-            htn_cumulative_assigned_patients: htn_cumulative_assigned_patients,
+        htn_cumulative_assigned_patients: htn_cumulative_assigned_patients,
         htn_controlled_patients: htn_controlled_patients,
         htn_uncontrolled_patients: htn_uncontrolled_patients,
         htn_patients_who_missed_visits: htn_patients_who_missed_visits,
@@ -65,7 +65,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
     end
   end
 
-  describe ".disaggregated_counts" do
+  describe ".disaggregated_patient_states" do
     it 'should take patient states and return their counts disaggregated by gender and age' do
       _patient1 = create(:patient, gender: :male, age: 77)
       _patient2 = create(:patient, gender: :male, age: 64)
@@ -76,13 +76,29 @@ describe BangladeshDisaggregatedDhis2Exporter do
 
       patient_states = Reports::PatientState.all
       expected_disaggregated_counts = {
-        "male_75_plus" => 1,
-        "male_60_64" => 1,
-        "female_50_54" => 1,
-        "transgender_25_29" => 1
+        male_75_plus: 1,
+        male_60_64: 1,
+        female_50_54: 1,
+        transgender_25_29: 1
       }
 
-      expect(described_class.disaggregated_counts(patient_states)).to eq(expected_disaggregated_counts)
+      expect(described_class.disaggregated_patient_states(patient_states)).to eq(expected_disaggregated_counts)
+      expect(described_class.disaggregated_patient_states(patient_states)).not_to have_key(:female_15_19)
+    end
+  end
+
+  describe '.gender_age_disaggregation' do
+    it 'should take patient states and d' do
+
+    end
+  end
+
+  describe '.gender_age_range_symbol' do
+    it 'should take a gender and age bucket index and return a symbol concatenating the gender and age range' do
+      gender = "male"
+      age_buckets = (15..75).step(5).to_a
+      age_bucket_index = age_buckets.find_index(20) + 1
+      expect(described_class.gender_age_range_symbol(gender, age_bucket_index)).to eq(:male_20_24)
     end
   end
 end

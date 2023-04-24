@@ -22,30 +22,30 @@ class BangladeshDisaggregatedDhis2Exporter
         htn_cumulative_registered_patients: PatientStates::CumulativeRegistrationsQuery.new(region, period).call,
         htn_monthly_registered_patients: PatientStates::MonthlyRegistrationsQuery.new(region, period).call,
         htn_cumulative_assigned_patients_adjusted: PatientStates::CumulativeAssignedPatientsQuery.new(region, period).excluding_recent_registrations
-      }.transform_values { |patient_states| disaggregated_counts(patient_states) }
+      }.transform_values { |patient_states| disaggregated_patient_states(patient_states) }
     end
   end
 
-  def self.disaggregated_counts(patient_states)
-    gender_age_bucket_counts(patient_states).transform_keys do |(gender, age_bucket_index)|
-      gender_age_range(gender, age_bucket_index)
+  def self.disaggregated_patient_states(patient_states)
+    gender_age_disaggregation(patient_states).transform_keys do |(gender, age_bucket_index)|
+      gender_age_range_symbol(gender, age_bucket_index)
     end
   end
 
-  def self.gender_age_bucket_counts(patient_states)
+  def self.gender_age_disaggregation(patient_states)
     PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
       BUCKETS,
       PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(patient_states)
     ).count
   end
 
-  def self.gender_age_range(gender, age_bucket_index)
+  def self.gender_age_range_symbol(gender, age_bucket_index)
     age_range_start = BUCKETS[age_bucket_index - 1]
     if age_range_start == BUCKETS.last
-      "#{gender}_#{age_range_start}_plus"
+      "#{gender}_#{age_range_start}_plus".to_sym
     else
       age_range_end = BUCKETS[age_bucket_index] - 1
-      "#{gender}_#{age_range_start}_#{age_range_end}"
+      "#{gender}_#{age_range_start}_#{age_range_end}".to_sym
     end
   end
 
