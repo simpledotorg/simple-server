@@ -1,5 +1,5 @@
 class BangladeshDhis2Exporter
-  require 'dhis2'
+  require "dhis2"
 
   def self.export
     periods = (current_month_period.advance(months: -24)..current_month_period)

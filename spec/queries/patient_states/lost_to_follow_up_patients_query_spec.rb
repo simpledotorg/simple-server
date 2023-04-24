@@ -50,8 +50,8 @@ describe PatientStates::LostToFollowUpPatientsQuery do
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .lost_to_follow_up)
       puts Reports::FacilityState
-              .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
-              .inspect
+        .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
+        .inspect
     end
   end
 end

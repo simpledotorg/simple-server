@@ -1,5 +1,5 @@
 class Dhis2Exporter
-  require 'dhis2'
+  require "dhis2"
   attr_reader :facility_identifiers, :periods, :data_elements_map, :category_option_combo_ids
 
   def initialize(facility_identifiers:, periods:, data_elements_map:, category_option_combo_ids: [])
@@ -9,10 +9,10 @@ class Dhis2Exporter
     @category_option_combo_ids = category_option_combo_ids
 
     Dhis2.configure do |config|
-      config.url = ENV.fetch('DHIS2_URL')
-      config.user = ENV.fetch('DHIS2_USERNAME')
-      config.password = ENV.fetch('DHIS2_PASSWORD')
-      config.version = ENV.fetch('DHIS2_VERSION')
+      config.url = ENV.fetch("DHIS2_URL")
+      config.user = ENV.fetch("DHIS2_USERNAME")
+      config.password = ENV.fetch("DHIS2_PASSWORD")
+      config.version = ENV.fetch("DHIS2_VERSION")
     end
   end
 
@@ -61,7 +61,7 @@ class Dhis2Exporter
         org_unit: facility_identifier.identifier,
         category_option_combo: id,
         period: reporting_period(period),
-        value: values[combo] || 0
+        value: values.with_indifferent_access[combo] || 0
       }
     end
   end

@@ -42,10 +42,10 @@ class BangladeshDisaggregatedDhis2Exporter
   def self.gender_age_range_symbol(gender, age_bucket_index)
     age_range_start = BUCKETS[age_bucket_index - 1]
     if age_range_start == BUCKETS.last
-      "#{gender}_#{age_range_start}_plus".to_sym
+      "#{gender}_#{age_range_start}_plus"
     else
       age_range_end = BUCKETS[age_bucket_index] - 1
-      "#{gender}_#{age_range_start}_#{age_range_end}".to_sym
+      "#{gender}_#{age_range_start}_#{age_range_end}"
     end
   end
 

@@ -1,9 +1,8 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe BangladeshDisaggregatedDhis2Exporter do
-
   describe ".export" do
-    it 'should pass the correct config to the main exporter object' do
+    it "should pass the correct config to the main exporter object" do
       expected_arguments = {
         facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
         periods: (Period.current.previous.advance(months: -24)..Period.current.previous),
@@ -16,7 +15,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
       described_class.export
     end
 
-    it 'should call export_disaggregated with a block that generates correct facility-period data for each facility-period combination' do
+    it "should call export_disaggregated with a block that generates correct facility-period data for each facility-period combination" do
       facility_identifier = create(:facility_business_identifier)
       period = Period.current
 
@@ -66,7 +65,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
   end
 
   describe ".disaggregated_patient_states" do
-    it 'should take patient states and return their counts disaggregated by gender and age' do
+    it "should take patient states and return their counts disaggregated by gender and age" do
       _patient1 = create(:patient, gender: :male, age: 77)
       _patient2 = create(:patient, gender: :male, age: 64)
       _patient3 = create(:patient, gender: :female, age: 50)
@@ -87,14 +86,13 @@ describe BangladeshDisaggregatedDhis2Exporter do
     end
   end
 
-  describe '.gender_age_disaggregation' do
-    it 'should take patient states and d' do
-
+  describe ".gender_age_disaggregation" do
+    it "should take patient states and d" do
     end
   end
 
-  describe '.gender_age_range_symbol' do
-    it 'should take a gender and age bucket index and return a symbol concatenating the gender and age range' do
+  describe ".gender_age_range_symbol" do
+    it "should take a gender and age bucket index and return a symbol concatenating the gender and age range" do
       gender = "male"
       age_buckets = (15..75).step(5).to_a
       age_bucket_index = age_buckets.find_index(20) + 1
