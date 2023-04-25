@@ -46,6 +46,7 @@ SELECT DISTINCT ON (reporting_patient_states.month_date, reporting_patient_state
     WHEN previous_call_results.result_type = 'removed_from_overdue_list' THEN 'yes'
     ELSE 'no'
   END AS removed_from_overdue_list,
+  -- Todo: Remove `removed_from_overdue_list_during_the_month`
   CASE
     WHEN next_call_results.result_type = 'removed_from_overdue_list' THEN 'yes'
     ELSE 'no'
@@ -72,10 +73,12 @@ FROM reporting_patient_states
         FROM prescription_drugs
         WHERE deleted_at IS NULL AND patient_id = reporting_patient_states.patient_id AND appointments.device_created_at < prescription_drugs.device_created_at)
   ) visits ON reporting_patient_states.patient_id = visits.patient_id
+  -- Used to determine if the patient was removed from overdue list at the beginning of the month
   LEFT JOIN call_results AS previous_call_results
     ON reporting_patient_states.patient_id = previous_call_results.patient_id
       AND previous_call_results.device_created_at < reporting_patient_states.month_date
       AND previous_call_results.device_created_at > appointments.scheduled_date FULL
+  -- Used to determine the outcome of a call and how it affects the rate of patients returing to care
   JOIN call_results AS next_call_results
     ON reporting_patient_states.patient_id = next_call_results.patient_id
       AND next_call_results.device_created_at >= reporting_patient_states.month_date
