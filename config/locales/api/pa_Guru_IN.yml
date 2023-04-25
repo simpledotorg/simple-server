@@ -446,6 +446,7 @@ pa-Guru-IN:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} ਵਿੱਚ ਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ"
         cohort_bar_tooltip: "%{threshold} ਦੇ ਨਾਲ %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "ਮਰਦ"
     female: "ਔਰਤ"
     transgender: "ਦੁਲਿੰਗੀ"

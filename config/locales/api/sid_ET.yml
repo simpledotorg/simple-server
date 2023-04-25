@@ -446,6 +446,7 @@ sid-ET:
         cohort_subtitle: "%{number_of_patients} \n%{patient_or_patients} borreessantinori \n%{registration_period}"
         cohort_bar_tooltip: "%{total_patients} \n%{patient_or_patients} ledo \n%{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "Labbaaha"
     female: "Meyaa beeetto"
     transgender: "lamenka koo/te "
