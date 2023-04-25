@@ -4,11 +4,11 @@ SELECT DISTINCT ON (reporting_patient_states.month_date, reporting_patient_state
   reporting_patient_states.assigned_facility_id AS assigned_facility_id,
   reporting_patient_states.assigned_facility_region_id AS assigned_facility_region_id,
   appointments.id AS previous_appointment_id,
-  appointments.device_created_at AS previous_appointment_date,
-  appointments.scheduled_date AS previous_appointment_scheduled_date,
-  visits.visited_at_after_appointment AS visited_at_after_appointment,
-  next_call_results.device_created_at AS next_called_at,
-  previous_call_results.device_created_at AS previous_called_at,
+  appointments.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS previous_appointment_date,
+  appointments.scheduled_date AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS previous_appointment_scheduled_date,
+  visits.visited_at_after_appointment AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS visited_at_after_appointment,
+  next_call_results.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS next_called_at,
+  previous_call_results.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS previous_called_at,
   reporting_patient_states.hypertension AS hypertension,
   reporting_patient_states.diabetes AS diabetes,
   next_call_results.result_type AS next_call_result_type,
@@ -48,7 +48,7 @@ SELECT DISTINCT ON (reporting_patient_states.month_date, reporting_patient_state
   END AS removed_from_overdue_list
 FROM reporting_patient_states
   LEFT JOIN appointments ON reporting_patient_states.patient_id = appointments.patient_id
-  AND appointments.device_created_at < reporting_patient_states.month_date
+  AND appointments.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) < reporting_patient_states.month_date
   LEFT JOIN patient_phone_numbers ON patient_phone_numbers.patient_id = reporting_patient_states.patient_id
   LEFT JOIN lateral (
     -- Merging BS, BP, Appointments & PD
@@ -71,13 +71,13 @@ FROM reporting_patient_states
   -- Used to determine if the patient was removed from overdue list at the beginning of the month
   LEFT JOIN call_results AS previous_call_results
     ON reporting_patient_states.patient_id = previous_call_results.patient_id
-      AND previous_call_results.device_created_at < reporting_patient_states.month_date
-      AND previous_call_results.device_created_at > appointments.scheduled_date FULL
+      AND previous_call_results.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) < reporting_patient_states.month_date
+      AND previous_call_results.device_created_at > appointments.scheduled_date
   -- Used to determine the outcome of a call and how it affects the rate of patients returing to care
-  JOIN call_results AS next_call_results
+  FULL JOIN call_results AS next_call_results
     ON reporting_patient_states.patient_id = next_call_results.patient_id
-      AND next_call_results.device_created_at >= reporting_patient_states.month_date
-      AND next_call_results.device_created_at < reporting_patient_states.month_date + interval '1 month'
+      AND next_call_results.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) >= reporting_patient_states.month_date
+      AND next_call_results.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) < reporting_patient_states.month_date + interval '1 month'
 WHERE
   reporting_patient_states.status <> 'dead'
 ORDER BY

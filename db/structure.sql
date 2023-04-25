@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: public; Type: SCHEMA; Schema: -; Owner: -
+--
+
+-- *not* creating schema, since initdb creates it
+
+
+--
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -4560,11 +4567,11 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
     reporting_patient_states.assigned_facility_id,
     reporting_patient_states.assigned_facility_region_id,
     appointments.id AS previous_appointment_id,
-    appointments.device_created_at AS previous_appointment_date,
-    appointments.scheduled_date AS previous_appointment_scheduled_date,
-    visits.visited_at_after_appointment,
-    next_call_results.device_created_at AS next_called_at,
-    previous_call_results.device_created_at AS previous_called_at,
+    ((appointments.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_appointment_date,
+    ((appointments.scheduled_date AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_appointment_scheduled_date,
+    ((visits.visited_at_after_appointment AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS visited_at_after_appointment,
+    ((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS next_called_at,
+    ((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_called_at,
     reporting_patient_states.hypertension,
     reporting_patient_states.diabetes,
     next_call_results.result_type AS next_call_result_type,
@@ -4600,13 +4607,9 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
         CASE
             WHEN ((previous_call_results.result_type)::text = 'removed_from_overdue_list'::text) THEN 'yes'::text
             ELSE 'no'::text
-        END AS removed_from_overdue_list,
-        CASE
-            WHEN ((next_call_results.result_type)::text = 'removed_from_overdue_list'::text) THEN 'yes'::text
-            ELSE 'no'::text
-        END AS removed_from_overdue_list_during_the_month
+        END AS removed_from_overdue_list
    FROM (((((public.reporting_patient_states
-     LEFT JOIN public.appointments ON (((reporting_patient_states.patient_id = appointments.patient_id) AND (appointments.device_created_at < reporting_patient_states.month_date))))
+     LEFT JOIN public.appointments ON (((reporting_patient_states.patient_id = appointments.patient_id) AND (((appointments.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < reporting_patient_states.month_date))))
      LEFT JOIN public.patient_phone_numbers ON ((patient_phone_numbers.patient_id = reporting_patient_states.patient_id)))
      LEFT JOIN LATERAL ( SELECT blood_sugars.id AS visit_id,
             blood_sugars.patient_id,
@@ -4635,8 +4638,8 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
             'Prescription Drugs'::text AS visit_type
            FROM public.prescription_drugs
           WHERE ((prescription_drugs.deleted_at IS NULL) AND (prescription_drugs.patient_id = reporting_patient_states.patient_id) AND (appointments.device_created_at < prescription_drugs.device_created_at))) visits ON ((reporting_patient_states.patient_id = visits.patient_id)))
-     LEFT JOIN public.call_results previous_call_results ON (((reporting_patient_states.patient_id = previous_call_results.patient_id) AND (previous_call_results.device_created_at < reporting_patient_states.month_date) AND (previous_call_results.device_created_at > appointments.scheduled_date))))
-     FULL JOIN public.call_results next_call_results ON (((reporting_patient_states.patient_id = next_call_results.patient_id) AND (next_call_results.device_created_at >= reporting_patient_states.month_date) AND (next_call_results.device_created_at < (reporting_patient_states.month_date + '1 mon'::interval)))))
+     LEFT JOIN public.call_results previous_call_results ON (((reporting_patient_states.patient_id = previous_call_results.patient_id) AND (((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < reporting_patient_states.month_date) AND (previous_call_results.device_created_at > appointments.scheduled_date))))
+     FULL JOIN public.call_results next_call_results ON (((reporting_patient_states.patient_id = next_call_results.patient_id) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) >= reporting_patient_states.month_date) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < (reporting_patient_states.month_date + '1 mon'::interval)))))
   WHERE ((reporting_patient_states.status)::text <> 'dead'::text)
   ORDER BY reporting_patient_states.month_date, reporting_patient_states.patient_id, appointments.device_created_at DESC, visits.visited_at_after_appointment, next_call_results.device_created_at, previous_call_results.device_created_at DESC
   WITH NO DATA;
