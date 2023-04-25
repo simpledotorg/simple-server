@@ -45,12 +45,7 @@ SELECT DISTINCT ON (reporting_patient_states.month_date, reporting_patient_state
   CASE
     WHEN previous_call_results.result_type = 'removed_from_overdue_list' THEN 'yes'
     ELSE 'no'
-  END AS removed_from_overdue_list,
-  -- Todo: Remove `removed_from_overdue_list_during_the_month`
-  CASE
-    WHEN next_call_results.result_type = 'removed_from_overdue_list' THEN 'yes'
-    ELSE 'no'
-  END AS removed_from_overdue_list_during_the_month
+  END AS removed_from_overdue_list
 FROM reporting_patient_states
   LEFT JOIN appointments ON reporting_patient_states.patient_id = appointments.patient_id
   AND appointments.device_created_at < reporting_patient_states.month_date
