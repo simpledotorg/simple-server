@@ -1,6 +1,15 @@
 require "rails_helper"
 
 describe BangladeshDisaggregatedDhis2Exporter do
+
+  before do
+    Rails.application.config.country = CountryConfig.for(:BD)
+  end
+
+  after do
+    Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))
+  end
+
   describe ".export" do
     it "should pass the correct config to the main exporter object" do
       expected_arguments = {
@@ -75,10 +84,10 @@ describe BangladeshDisaggregatedDhis2Exporter do
 
       patient_states = Reports::PatientState.all
       expected_disaggregated_counts = {
-        male_75_plus: 1,
-        male_60_64: 1,
-        female_50_54: 1,
-        transgender_25_29: 1
+        "male_75_plus" => 1,
+        "male_60_64" => 1,
+        "female_50_54" => 1,
+        "transgender_25_29" => 1
       }
 
       expect(described_class.disaggregated_patient_states(patient_states)).to eq(expected_disaggregated_counts)
@@ -96,7 +105,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
       gender = "male"
       age_buckets = (15..75).step(5).to_a
       age_bucket_index = age_buckets.find_index(20) + 1
-      expect(described_class.gender_age_range_symbol(gender, age_bucket_index)).to eq(:male_20_24)
+      expect(described_class.gender_age_range_symbol(gender, age_bucket_index)).to eq("male_20_24")
     end
   end
 end
