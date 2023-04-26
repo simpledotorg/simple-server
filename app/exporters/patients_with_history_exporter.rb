@@ -90,7 +90,6 @@ class PatientsWithHistoryExporter
         ["Latest Blood Sugar Date",
           "Latest Blood Sugar Value",
           "Latest Blood Sugar Type"]
-
     ].compact.flatten
   end
 
@@ -119,9 +118,10 @@ class PatientsWithHistoryExporter
       patient_summary.street_address,
       patient_summary.village_or_colony,
       patient_summary.district,
-      (patient_summary.zone if Rails.application.config.country[:patient_line_list_show_zone]),
       patient_summary.state
-    ].compact
+    ]
+
+    patient_address_details.insert(-2, patient_summary.zone) if Rails.application.config.country[:patient_line_list_show_zone]
 
     facility_details = [
       patient_summary.assigned_facility_name,
