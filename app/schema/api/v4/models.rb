@@ -397,7 +397,7 @@ class Api::V4::Models
          layout: {
            oneOf: [
              {"$ref" => "#/definitions/questionnaire_view_group_dsl_2"},
-             {"$ref" => "#/definitions/questionnaire_view_group_dsl_1"},
+             {"$ref" => "#/definitions/questionnaire_view_group_dsl_1"}
            ]
          },
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}

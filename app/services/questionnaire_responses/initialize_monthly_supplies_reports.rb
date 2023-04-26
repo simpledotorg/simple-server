@@ -7,7 +7,7 @@ class QuestionnaireResponses::InitializeMonthlySuppliesReports
     facility_ids = Facility.select("id").pluck(:id)
 
     reports_exist = false
-    questionnaire = Questionnaire.monthly_supplies_reports.active.order(:dsl_version).last
+    questionnaire = latest_active_supplies_reports_questionnaire
 
     facility_ids.each do |facility_id|
       if monthly_supplies_report_exists?(facility_id, month_date_str)
@@ -28,6 +28,10 @@ class QuestionnaireResponses::InitializeMonthlySuppliesReports
     end
   end
 
+  def self.latest_active_supplies_reports_questionnaire
+    Questionnaire.monthly_supplies_reports.active.order(:dsl_version).last
+  end
+
   def self.monthly_supplies_report_exists?(facility_id, month_date_str)
     QuestionnaireResponse
       .where(facility_id: facility_id)
@@ -37,7 +41,7 @@ class QuestionnaireResponses::InitializeMonthlySuppliesReports
       .any?
   end
 
-  def supplies_report_content(month_date_str)
+  def self.supplies_report_content(month_date_str)
     {
       "month_date" => month_date_str,
       "submitted" => false
