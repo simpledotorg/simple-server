@@ -13,7 +13,6 @@ describe PatientStates::LostToFollowUpPatientsQuery do
       facility_1_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       facility_1_lost_to_follow_up_patients = create(:patient, :lost_to_follow_up, assigned_facility: regions[:facility_1])
       facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
-
       refresh_views
 
       expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
@@ -49,9 +48,6 @@ describe PatientStates::LostToFollowUpPatientsQuery do
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .lost_to_follow_up)
-      puts Reports::FacilityState
-        .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
-        .inspect
     end
   end
 end

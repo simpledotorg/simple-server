@@ -46,9 +46,9 @@ describe BangladeshDisaggregatedDhis2Exporter do
       expect_any_instance_of(PatientStates::DeadPatientsQuery).to receive(:call).and_return(htn_dead_patients)
       expect_any_instance_of(PatientStates::CumulativeRegistrationsQuery).to receive(:call).and_return(htn_cumulative_registered_patients)
       expect_any_instance_of(PatientStates::MonthlyRegistrationsQuery).to receive(:call).and_return(htn_monthly_registered_patients)
-      expect_any_instance_of(PatientStates::CumulativeAssignedPatientsQuery).to receive(:excluding_recent_registrations).and_return(htn_cumulative_assigned_patients_adjusted)
+      expect_any_instance_of(PatientStates::AdjustedAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients_adjusted)
 
-      allow(described_class).to receive(:disaggregated_patient_states) do |value|
+      allow(described_class).to receive(:disaggregate_by_gender_age) do |value|
         value
       end
 
@@ -73,7 +73,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
     end
   end
 
-  describe ".disaggregated_patient_states" do
+  describe ".disaggregate_by_gender_age" do
     it "should take patient states and return their counts disaggregated by gender and age" do
       _patient1 = create(:patient, gender: :male, age: 77)
       _patient2 = create(:patient, gender: :male, age: 64)
@@ -90,12 +90,12 @@ describe BangladeshDisaggregatedDhis2Exporter do
         "transgender_25_29" => 1
       }
 
-      expect(described_class.disaggregated_patient_states(patient_states)).to eq(expected_disaggregated_counts)
-      expect(described_class.disaggregated_patient_states(patient_states)).not_to have_key(:female_15_19)
+      expect(described_class.disaggregate_by_gender_age(patient_states)).to eq(expected_disaggregated_counts)
+      expect(described_class.disaggregate_by_gender_age(patient_states)).not_to have_key(:female_15_19)
     end
   end
 
-  describe ".gender_age_disaggregation" do
+  describe ".gender_age_counts" do
     it "should take patient states and d" do
     end
   end
@@ -105,7 +105,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
       gender = "male"
       age_buckets = (15..75).step(5).to_a
       age_bucket_index = age_buckets.find_index(20) + 1
-      expect(described_class.gender_age_range_symbol(gender, age_bucket_index)).to eq("male_20_24")
+      expect(described_class.gender_age_range_key(gender, age_bucket_index)).to eq("male_20_24")
     end
   end
 end

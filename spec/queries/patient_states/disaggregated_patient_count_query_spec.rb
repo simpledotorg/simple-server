@@ -11,14 +11,12 @@ describe PatientStates::DisaggregatedPatientCountQuery do
 
   describe ".disaggregate_by_gender" do
     it "returns the query disaggregated by gender" do
-      _facility_1_patient_1 = create(:patient, gender: :male)
-      _facility_1_patient_2 = create(:patient, gender: :female)
-      _facility_1_patient_3 = create(:patient, gender: :transgender)
-
+      Patient::GENDERS.each { |gender| create(:patient, gender: gender) }
       refresh_views
+      expected_disaggregated_counts = Patient::GENDERS.map { |gender| [gender, 1] }.to_h
 
       expect(PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(query).count)
-        .to eq({"female" => 1, "male" => 1, "transgender" => 1})
+        .to eq(expected_disaggregated_counts)
     end
   end
 

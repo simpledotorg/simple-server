@@ -16,9 +16,5 @@ module PatientStates
         .where(hypertension: "yes")
         .where.not(htn_care_state: "dead")
     end
-
-    def excluding_recent_registrations
-      call.where("months_since_registration >= ?", 3)
-    end
   end
 end
