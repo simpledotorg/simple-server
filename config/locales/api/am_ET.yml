@@ -120,7 +120,7 @@ am-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ሂንዱ
       bp_passports:
-        heading_html: የደም ግፊት ፓስፖርቶች
+        heading_html: "የደም ግፊት ፓስፖርቶች"
         contents_html: የደም ግፊት ፓስፖርት ካርዶች ወይም የደም ግፊት ፓስፖርት ስቲከሮች በሆስፒታሎ ውስጥ እንዴት እንደሚጠቀሙ ይወቁ።
         video_link_html: የደም ግፊት ፓስፖርት እንዴት መጠቀም ይችላሉ
         video_link_subtitle_html: ሂንዱ ከእንግሊዘኛ ንዑስ ርዕስ ጋር
@@ -428,7 +428,7 @@ am-ET:
         very_uncontrolled_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ ስኳር ታካሚዎች ባለፉት 3 ወራት ውስጥ%{very_uncontrolled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
           help_tooltip:
-            numerator: " \n\n \nባለፉት 3 ወራት ውስጥ %{very_uncontrolled_threshold} የመጨረሻ ጉብኝታቸው ላይ የገቡት የስኳር ህመምተኞች።"
+            numerator: " \n\n \nባለፉት 3 ወራት ውስጥ %{very_uncontrolled_threshold} የመጨረሻ ጉብኝታቸው ላይ የገቡት የስኳር ህመምተኞች።"
             denominator: "ወደ %{facility_name} ተመደቡት የ  ስኳር ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
         missed_visits_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ በ %{facility_name} ምንም ጉብኝት ሳያደርጉ"
@@ -449,11 +449,33 @@ am-ET:
     male: "ወንድ"
     female: "ሴት"
     transgender: "ወንዳገረድ"
+    total: "ጠቅላላ"
+    yes: "አዎ"
+    no: "አይ"
+    comments: "አስተያየቶች"
+    instruction_1: "መጠኑን ካላወቁ ባዶውን ይተዉት"
+    instruction_2: 'በክምችት ውስጥ ከሌለ "0" ያስገቡ'
   monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM SCREENING"
+    # Ethiopia
+    total_bp: "አጠቃላይ የBP ምርመራዎች ተደርገዋል"
+    total_bs: "አጠቃላይ የደም ስኳር ምርመራዎች ተደርገዋል"
+    new_raised_cases: "አዲስ የተነሱ ጉዳዮች"
+    total_bp_raised: "አጠቃላይ የተነሱ BP"
+    total_bs_raised: "አጠቃላይ የተነሱ BS"
+    total_bp_raised_ncd_linked: "ከNCD ክሊኒክ ጋር የተገናኘ አጠቃላይ የተነሱ የBP ጉዳዮች"
+    total_bs_raised_ncd_linked: "ከNCD ክሊኒክ ጋር የተገናኘ አጠቃላይ የተነሱ የBS ጉዳዮች"
+    diagnosed_cases: "ምርመራ የተካሄደባቸው ጉዳዮች"
+    total_htn_diagnosed: "ጠቅላላ ምርመራ የተካሄደባቸው HTN"
+    total_dm_diagnosed: "ጠቅላላ ምርመራ የተካሄደባቸው DM"
+    cervical_cancer_uc: "የማህጸን ጫፍ ካንሰር"
+    total_women_screened_cervical: "ለማህጸን ጫፍ ካንሰር ምርመራ ያካሄዱ ሴቶች ብዛት"
+    total_women_treated_cervical: "ለማህጸን ጫፍ ካንሰር ህክምና ያካሄዱ ሴቶች ብዛት"
+    total_women_followup_cervical: "ከ1 አመት በኋላ ክትትል ያደረጉ ሴቶች ብዛት"
+    # India
     monthly_opd_visits_gt_30: "ወርሃዊ የ OPD ጉብኝቶች >30 አመት ለሆኑ አዋቂዎች"
     monthly_opd_visits_gt_18: "ወርሃዊ የ OPD ጉብኝቶች >18 አመት ለሆኑ አዋቂዎች"
     outpatient_department_visits: "የተመላላሽ ታካሚ ክፍል ጉብኝቶች"
-    htn_and_dm_screening: "HTN & DM SCREENING"
     total_bp_checks: "አጠቃላይ የ BP ፍተሻዎች ተከናውነዋል"
     total_blood_sugar_checks: "አጠቃላይ የደም ስኳር ምርመራዎች ተደርገዋል"
     new_suspected_individuals: "አዲስ የተጠረጠሩ ግለሰቦች"
@@ -471,4 +493,44 @@ am-ET:
     oral_cancer: "የአፍ ካንሰር"
     breast_cancer: "የጡት ካንሰር"
     cervical_cancer: "የማኅጸን ካንሰር"
-
+  monthly_supplies_report:
+    instruction_1: "በየወሩ መጨረሻ ላይ በክምችት ውስጥ የቀሩትን አቅርቦቶች ያስገቡ"
+    stock_on_hand: "በእጅ ላይ ያለ ክምችት"
+    stock_on_hand_uc: "በእጅ ላይ ያለ ክምችት"
+    working_equipments: "የሥራ መሣሪያዎች"
+    glucose_strips: "የደም ግሉኮስ የምርመራ ስትሪፖች"
+    total_working_condition: "በመስራት ሁኔታ ላይ ያሉ ብዛት"
+    # Bangladesh
+    patient_books: "የታካሚ መፅሃፍት"
+    available_bp_monitors_arm_in: "ጠቅላላ የሚገኙ የBP መከታተያዎች ብዛት (ክንድ የሚገባባቸው)"
+    functioning_bp_monitors_arm_in: "የሚሰሩ የBP መከታተያዎች (ክንድ የሚገባባቸው)"
+    available_bp_monitors_handheld: "ጠቅላላ የሚገኙ የBP መከታተያዎች ብዛት (በእጅ የሚያዙ)"
+    functioning_bp_monitors_handheld: "የሚሰሩ የBP መከታተያዎች (በእጅ የሚያዙ)"
+    available_blood_glucose_monitors: "ጠቅላላ የሚገኙ የደም ግሉኮስ መከታተያዎች ብዛት"
+    functioning_blood_glucose_monitors: "የሚሰሩ የደም ግሉኮስ መከታተያዎች"
+    # Ethiopia
+    bp_monitor: "የBP መከታተያ"
+    glucose_meter: "የደም ግሉኮስ ሜትር"
+    stethoscope: "ስቴቶስኮፕ"
+    height_weight_machine: "የቁመት እና ክብደት መለኪያ ማሽን"
+    waist_tape: "የወገብ ዙሪያ መለኪያ ቴፕ"
+    # India
+    glucometer_strips: "የግሉኮሜትር ስትሪፖች"
+    # Sri Lanka
+    equipment: "መሳሪያ"
+    available_bp_devices: "ጠቅላላ የሚገኙ የBP መሳሪያዎች ብዛት"
+    functioning_bp_devices: "የሚሰሩ የBP መሳሪያዎች"
+    available_phones: "ጠቅላላ የሚገኙ የሞባይል ስልኮች"
+    functioning_phones: "የሚሰሩ የሞባይል ስልኮች"
+    drug_stock: "የመድሃኒት ማከማቻ"
+    drug_stock_losartan: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ ሎሳርታን"
+    drug_stock_amlodipine: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ አምሎዲፓይን"
+    drug_stock_hct: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ HCT (ሃይድሮክሎራቲያዛይድ)"
+    trained_staff: "የሰለጠኑ ሰራተኞች"
+    doctors_count: "በሕክምና ክሊኒክ ውስጥ የሚከታተሉ የዶክተሮች ብዛት"
+    nurses_count: "በሕክምና ክሊኒክ ውስጥ የሚከታተሉ የነርሶች ብዛት"
+    pharmacists_count: "በሕክምና ክሊኒክ ውስጥ የሚገኙ የፋርማሲስቶች ብዛት"
+    drug_dispensers_count: "በሆስፒታል ውስጥ የሚገኙ የመድሃኒት ማከፋፈያዎች ብዛት"
+    others: "ሌሎች"
+    television_functional: "በሕክምና ክሊኒክ ውስጥ የጤና ትምህርት መልዕክቶች የቴሌቪዥን ማያ ገፅን በመጠቀም ይታያሉ?"
+    wifi_functional: "የዋይ-ፋይ አውታረ መረብ ይገኛል?"
