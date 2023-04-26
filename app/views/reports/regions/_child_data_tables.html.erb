@@ -10,6 +10,7 @@
         <col>
         <% if @region.state_region? %>
           <col class="table-divider">
+          <col>
         <% end %>
         <col class="table-divider">
         <col>
@@ -70,40 +71,40 @@
         </th>
       </tr>
       <tr class="sorts" data-sort-method="thead">
-        <th class="row-label sort-label sort-label-small" data-sort-default>
+        <th class="row-label sort-label sort-label-small reverse" data-sort-default>
           <%= localized_region_type.capitalize %>
         </th>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
-          <%= @period.to_s %>
-        </th>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
+        <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
           Total
         </th>
+        <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
+          <%= @period.to_s %>
+        </th>
         <% if @region.state_region? %>
+          <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
+            Total
+          </th>
           <th class="row-label sort-label sort-label-small" data-sort-method="number">
             Percent
           </th>
-            <th class="row-label sort-label sort-label-small" data-sort-method="number">
-              Total
-            </th>
         <% end %>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
-          Percent
-        </th>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
+        <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
           Total
         </th>
         <th class="row-label sort-label sort-label-small" data-sort-method="number">
           Percent
         </th>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
+        <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
           Total
         </th>
         <th class="row-label sort-label sort-label-small" data-sort-method="number">
           Percent
         </th>
-        <th class="row-label sort-label sort-label-small" data-sort-method="number">
+        <th class="row-label sort-label sort-label-small align-right" data-sort-method="number">
           Total
+        </th>
+        <th class="row-label sort-label sort-label-small" data-sort-method="number">
+          Percent
         </th>
       </tr>
       </thead>
@@ -113,11 +114,26 @@
           <%= @region.name %>
         </td>
         <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
-        </td>
-        <td class="ta-right">
           <%= number_with_delimiter(@data.dig(:cumulative_registrations, @period)) %>
         </td>
+        <td class="ta-right">
+          <%= number_with_delimiter(@data.dig(:registrations, @period)) %>
+        </td>
+        <% if @region.state_region? %>
+          <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
+            <% estimated_population = number_with_delimiter(@region.estimated_population.population) %>
+            <td class="ta-right">
+              <%= estimated_population %>
+            </td>
+          <% else %>
+            <td class="ta-right"
+            data-sort-column-key="estimated_population"
+            data-sort="<%= estimated_population %>"
+            data-toggle="tooltip"
+            title="<%= t("population_coverage.add_missing_child_estimate.accessible_region", diagnosis: :hypertension, child_type: @region.child_region_type.pluralize) %>">-
+            </td>
+          <% end %>
+        <% end %>
         <% if @region.state_region? %>
             <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? && @region.estimated_population.population > 0 %>
             <% coverage_rate = number_to_percentage(@region.estimated_population.patient_coverage_rate(@data.dig(:cumulative_registrations, @period)), precision: 0) %>
@@ -138,21 +154,9 @@
             </td>
           <% end %>
         <% end %>
-          <% if @region.state_region? %>
-            <% if @region.estimated_population && @region.estimated_population.population_available_for_all_districts? %>
-              <% estimated_population = number_with_delimiter(@region.estimated_population.population) %>
-              <td class="ta-right">
-                <%= estimated_population %>
-              </td>
-            <% else %>
-              <td class="ta-right"
-              data-sort-column-key="estimated_population"
-              data-sort="<%= estimated_population %>"
-              data-toggle="tooltip"
-              title="<%= t("population_coverage.add_missing_child_estimate.accessible_region", diagnosis: :hypertension, child_type: @region.child_region_type.pluralize) %>">-
-              </td>
-            <% end %>
-          <% end %>
+        <td class="ta-right">
+          <%= number_with_delimiter(@data.dig(:controlled_patients, @period), precision: 0) %>
+        </td>
         <td
           class="type-percent"
           data-sort-column-key="total-patients-<%= @period %>"
@@ -165,7 +169,7 @@
           </em>
         </td>
         <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:controlled_patients, @period), precision: 0) %>
+          <%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %>
         </td>
         <td
           class="type-percent"
@@ -179,7 +183,7 @@
           </em>
         </td>
         <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:uncontrolled_patients, @period)) %>
+          <%= number_with_delimiter(@data.dig(:missed_visits, @period)) %>
         </td>
         <td
           class="type-percent"
@@ -192,9 +196,6 @@
             <%= number_to_percentage(@data.dig(:missed_visits_rate, @period) || 0, precision: 0) %>
           </em>
         </td>
-        <td class="ta-right">
-          <%= number_with_delimiter(@data.dig(:missed_visits, @period)) %>
-        </td>
       </tr>
       <% data.each do |result| %>
         <% child = result[:region] %>
@@ -206,11 +207,29 @@
             <% end %>
           </td>
           <td class="ta-right">
-            <%= number_with_delimiter(result.dig(:registrations, @period)) %>
-          </td>
-          <td class="ta-right">
             <%= number_with_delimiter(result.dig(:cumulative_registrations, @period)) %>
           </td>
+          <td class="ta-right">
+            <%= number_with_delimiter(result.dig(:registrations, @period)) %>
+          </td>
+          <% if @region.state_region? %>
+            <% if child.estimated_population.present? %>
+              <% estimated_population = number_with_delimiter(child.estimated_population.population) %>
+              <td class="ta-right">
+                <%= estimated_population %>
+              </td>
+            <% else %>
+              <td
+              class="ta-right"
+              data-sort-column-key="population-coverage"
+              data-sort="0"
+              data-toggle="tooltip"
+              title="<%= accessible_region?(child, :manage) ?
+                            t("population_coverage.add_missing_estimate.accessible_region_with_region_name", diagnosis: :hypertension, region_name: child.name) :
+                            t("population_coverage.add_missing_estimate.inaccessible_region", diagnosis: :hypertension, region_name: @region.name) %>">-
+              </td>
+            <% end %>
+          <% end %>
           <% if @region.state_region? %>
               <% if child.estimated_population.present? && child.estimated_population.population > 0 %>
               <% coverage_rate = number_to_percentage(child.estimated_population.patient_coverage_rate(result.dig(:cumulative_registrations, @period)), precision: 0) %>
@@ -233,24 +252,9 @@
               </td>
             <% end %>
           <% end %>
-            <% if @region.state_region? %>
-              <% if child.estimated_population.present? %>
-                <% estimated_population = number_with_delimiter(child.estimated_population.population) %>
-                <td class="ta-right">
-                  <%= estimated_population %>
-                </td>
-              <% else %>
-                <td
-                class="ta-right"
-                data-sort-column-key="population-coverage"
-                data-sort="0"
-                data-toggle="tooltip"
-                title="<%= accessible_region?(child, :manage) ?
-                             t("population_coverage.add_missing_estimate.accessible_region_with_region_name", diagnosis: :hypertension, region_name: child.name) :
-                             t("population_coverage.add_missing_estimate.inaccessible_region", diagnosis: :hypertension, region_name: @region.name) %>">-
-                </td>
-              <% end %>
-            <% end %>
+          <td class="ta-right">
+            <%= number_with_delimiter(result.dig(:controlled_patients, @period)) %>
+          </td>
           <td
             class="type-percent"
             data-sort-column-key="total-patients-<%= @period %>"
@@ -263,7 +267,7 @@
             </em>
           </td>
           <td class="ta-right">
-            <%= number_with_delimiter(result.dig(:controlled_patients, @period)) %>
+            <%= number_with_delimiter(result.dig(:uncontrolled_patients, @period)) %>
           </td>
           <td
             class="type-percent"
@@ -277,7 +281,7 @@
             </em>
           </td>
           <td class="ta-right">
-            <%= number_with_delimiter(result.dig(:uncontrolled_patients, @period)) %>
+            <%= number_with_delimiter(result.dig(:missed_visits, @period)) %>
           </td>
           <td
             class="type-percent"
@@ -289,9 +293,6 @@
             <em data-rate="<%= result.dig(:missed_visits_rate, @period) %>" class="low-is-good">
               <%= number_to_percentage(result.dig(:missed_visits_rate, @period) || 0, precision: 0) %>
             </em>
-          </td>
-          <td class="ta-right">
-            <%= number_with_delimiter(result.dig(:missed_visits, @period)) %>
           </td>
         </tr>
       <% end %>
