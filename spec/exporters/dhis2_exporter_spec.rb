@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Dhis2Exporter do
   let(:facilities) { create_list(:facility, 2) }
@@ -8,11 +8,11 @@ describe Dhis2Exporter do
     end.to_a
   }
   let(:periods) { (Period.current.previous.advance(months: -1)..Period.current.previous).to_a }
-  let(:data_elements_map) { { indicator1: 'indicator id 1', indicator2: 'indicator id 2' } }
-  let(:category_option_combo_ids) { { category_option_combo1: 'combo id 1', category_option_combo2: 'combo id 2' } }
+  let(:data_elements_map) { {indicator1: "indicator id 1", indicator2: "indicator id 2"} }
+  let(:category_option_combo_ids) { {category_option_combo1: "combo id 1", category_option_combo2: "combo id 2"} }
 
-  describe '#export' do
-    it 'sends data element values for all facilities, given facility identifiers, periods and data elements' do
+  describe "#export" do
+    it "sends data element values for all facilities, given facility identifiers, periods and data elements" do
       exporter = described_class.new(
         facility_identifiers: facility_identifiers,
         periods: periods,
@@ -44,8 +44,8 @@ describe Dhis2Exporter do
     end
   end
 
-  describe '#export_disaggregated' do
-    it 'sends disaggregated data element values for all facilities, given facility identifiers, periods and data elements' do
+  describe "#export_disaggregated" do
+    it "sends disaggregated data element values for all facilities, given facility identifiers, periods and data elements" do
       exporter = described_class.new(
         facility_identifiers: facility_identifiers,
         periods: periods,
@@ -82,16 +82,16 @@ describe Dhis2Exporter do
     end
   end
 
-  describe '#disaggregate_data_values' do
-    it 'should return a list of disaggregated data values for each category-option combo for the given data element and period' do
+  describe "#disaggregate_data_values" do
+    it "should return a list of disaggregated data values for each category-option combo for the given data element and period" do
       facility_identifier = facility_identifiers.first
       period =
-      exporter = described_class.new(
-        facility_identifiers: [facility_identifier],
-        periods: periods,
-        data_elements_map: data_elements_map,
-        category_option_combo_ids: category_option_combo_ids
-      )
+        exporter = described_class.new(
+          facility_identifiers: [facility_identifier],
+          periods: periods,
+          data_elements_map: data_elements_map,
+          category_option_combo_ids: category_option_combo_ids
+        )
       indicator1_disaggregated_values = category_option_combo_ids.transform_values { |_value| dummy_value }
       expected_disaggregated_values = category_option_combo_ids.map do |combo, id|
         {
@@ -118,8 +118,8 @@ describe Dhis2Exporter do
 
     it "should set value to zero for category-option combos that don't have values for a given data element" do
       dummy_value = 5
-      dummy_period = 'dummy2020'
-      indicator1_disaggregated_values = { category_option_combo_ids.keys.first => dummy_value }
+      dummy_period = "dummy2020"
+      indicator1_disaggregated_values = {category_option_combo_ids.keys.first => dummy_value}
       expected_disaggregated_values = category_option_combo_ids.map do |combo, id|
         {
           data_element: data_elements_map.keys.first,
@@ -149,8 +149,8 @@ describe Dhis2Exporter do
     end
   end
 
-  describe '#reporting_period' do
-    it 'should format month_date to DHIS2 format by the Ethiopian calendar if Flipper flag is enabled' do
+  describe "#reporting_period" do
+    it "should format month_date to DHIS2 format by the Ethiopian calendar if Flipper flag is enabled" do
       Flipper.enable(:dhis2_use_ethiopian_calendar)
       expected_month_date = EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(periods.first).to_s(:dhis2)
       exporter = described_class.new(
@@ -162,7 +162,7 @@ describe Dhis2Exporter do
       expect(exporter.reporting_period(periods.first)).to eq(expected_month_date)
     end
 
-    it 'should format month_date to DHIS2 format by the Gregorian calendar if Flipper flag is disabled' do
+    it "should format month_date to DHIS2 format by the Gregorian calendar if Flipper flag is disabled" do
       Flipper.disable(:dhis2_use_ethiopian_calendar)
       expected_month_date = periods.first.to_s(:dhis2)
       exporter = described_class.new(

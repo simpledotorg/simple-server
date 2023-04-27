@@ -1,7 +1,6 @@
 require "rails_helper"
 
 describe BangladeshDisaggregatedDhis2Exporter do
-
   before do
     Rails.application.config.country = CountryConfig.for(:BD)
   end
