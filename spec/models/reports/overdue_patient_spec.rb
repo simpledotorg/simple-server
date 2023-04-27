@@ -115,7 +115,7 @@ RSpec.describe Reports::OverduePatient, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(patient_id: patient.id, month_date: month_date, month_date: month_date).previous_appointment_id).to eq(appointment_2.id)
+          expect(described_class.find_by(patient_id: patient.id, month_date: month_date).previous_appointment_id).to eq(appointment_2.id)
         end
       end
     end
