@@ -5,8 +5,10 @@ module PatientStates
       @region = region
       @period = period
     end
+
     def call
       PatientStates::CumulativeAssignedPatientsQuery
+        .new(region, period)
         .call
         .where("months_since_registration >= ?", 3)
     end
