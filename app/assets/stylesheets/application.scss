@@ -732,3 +732,24 @@ span.inactive {
 .w-full {
   width: 100%;
 }
+.jc-space-between { justify-content: space-between; }
+
+.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::before {
+  background-color: #ADB2B8; /* Change the background color of the checkbox when it is not checked */
+  border-color: #ADB2B8; /* Change the border color of the checkbox when it is not checked */
+}
+
+.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::after {
+  background-color: #fff; /* Change the background color of the radio button when it is checked */
+  border: 2px solid purple;
+}
+
+.checkbox-outside-card.custom-control-input:checked ~ .custom-control-label::after {
+  background-color: pink; /* Change the background color of the radio button when it is checked */
+  border: 2px solid violet;
+}
+
+// .checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::after {
+// }
+
+// #2f363d
