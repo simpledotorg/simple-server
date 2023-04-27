@@ -34,8 +34,10 @@ class PreFillMonthlyScreeningReports
       month_date: month_date_str
     ).select(
       "facility_id",
+      "monthly_follow_ups_htn_all",
       "monthly_follow_ups_htn_male",
       "monthly_follow_ups_htn_female",
+      "monthly_follow_ups_dm_all",
       "monthly_follow_ups_dm_male",
       "monthly_follow_ups_dm_female",
       "monthly_follow_ups_htn_and_dm_male",
@@ -53,15 +55,32 @@ class PreFillMonthlyScreeningReports
   end
 
   def self.prefilled_responses(month_date_str, facility_report)
-    {
+    content = {
       "month_date" => month_date_str,
-      "submitted" => false,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => facility_report.monthly_follow_ups_htn_male,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_htn.female" => facility_report.monthly_follow_ups_htn_female,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_dm.male" => facility_report.monthly_follow_ups_dm_male,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_dm.female" => facility_report.monthly_follow_ups_dm_female,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.male" => facility_report.monthly_follow_ups_htn_and_dm_male,
-      "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => facility_report.monthly_follow_ups_htn_and_dm_female
+      "submitted" => false
     }
+    case Rails.application.config.country[:name]
+    when CountryConfig::CONFIGS[:IN]["name"]
+      content.merge(
+        {
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => facility_report.monthly_follow_ups_htn_male,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.female" => facility_report.monthly_follow_ups_htn_female,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.male" => facility_report.monthly_follow_ups_dm_male,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.female" => facility_report.monthly_follow_ups_dm_female,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.male" => facility_report.monthly_follow_ups_htn_and_dm_male,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => facility_report.monthly_follow_ups_htn_and_dm_female
+        }
+      )
+
+    when CountryConfig::CONFIGS[:ET]["name"]
+      content.merge(
+        {
+          "monthly_screening_report.total_htn_diagnosed" => facility_report.monthly_follow_ups_htn_all,
+          "monthly_screening_report.total_dm_diagnosed" => facility_report.monthly_follow_ups_dm_all
+        }
+      )
+    else
+      content
+    end
   end
 end

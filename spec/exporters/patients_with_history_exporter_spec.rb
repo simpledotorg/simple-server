@@ -368,5 +368,15 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
         expect { subject.csv(Patient.all) }.not_to raise_error
       end
     end
+
+    it "maintains the order when patient doesn't have a BP passport assigned" do
+      patient.business_identifiers.destroy_all
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+
+        expect(fields[3]).to be_nil
+        expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + measurement_headers.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
+      end
+    end
   end
 end
