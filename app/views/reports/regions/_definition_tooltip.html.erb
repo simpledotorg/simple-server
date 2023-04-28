@@ -5,9 +5,23 @@
     data-placement="right"
     data-trigger="hover click"
     data-html="true"
-    title="<% definitions.each do |name, description| %>
-             <p class='mb-4px'><strong><%= name %>:</strong> <%= description %></p>
-           <% end %>"
+    title="
+          <% definitions.each do |name, description| %>
+            <% if name == 'list' %>
+              <ul>
+                <% description.split(", ").each do |str| %>
+                  <li><%= str %></li>
+                <% end %>
+              </ul>
+            <% else %>
+              <p class='mb-4px'>
+              <% if name != '' %>
+                <strong><%= name %>:</strong>
+              <% end %>
+               <%= description %></p>
+            <% end %>
+          <% end %>"
   >
   </i>
 </span>
+
