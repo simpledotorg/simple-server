@@ -216,13 +216,6 @@
     ))
     %>
 <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
-
-    <%= render(ProgressTab::DrugStockComponent.new(
-      drug_stocks_query: @drug_stocks_query,
-      drugs_by_category: @drugs_by_category,
-      current_facility: @current_facility
-    )) %>
-
   </body>
   <%= inline_js("standalone/progress_tab.js") %>
 </html>
