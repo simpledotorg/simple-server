@@ -344,12 +344,14 @@ td.type-percent {
     text-align: center;
   }
 
-  em.high-is-good {
+  em.high-is-good,
+  em.overdue-high-is-good {
     background: $green-mid;
     color: $green-dark;
   }
 
-  em[data-rate="0"].high-is-good {
+  em[data-rate="0"].high-is-good,
+  em[data-rate="0"].overdue-high-is-good {
     color: $grey-dark;
     background: $grey-light;
   }
@@ -373,7 +375,32 @@ td.type-percent {
   em[data-rate="17"].high-is-good,
   em[data-rate="18"].high-is-good,
   em[data-rate="19"].high-is-good,
-  em[data-rate="20"].high-is-good {
+  em[data-rate="20"].high-is-good,
+  em[data-rate="1"].overdue-high-is-good,
+  em[data-rate="2"].overdue-high-is-good,
+  em[data-rate="3"].overdue-high-is-good,
+  em[data-rate="4"].overdue-high-is-good,
+  em[data-rate="5"].overdue-high-is-good,
+  em[data-rate="6"].overdue-high-is-good,
+  em[data-rate="7"].overdue-high-is-good,
+  em[data-rate="8"].overdue-high-is-good,
+  em[data-rate="9"].overdue-high-is-good,
+  em[data-rate="10"].overdue-high-is-good,
+  em[data-rate="11"].overdue-high-is-good,
+  em[data-rate="12"].overdue-high-is-good,
+  em[data-rate="13"].overdue-high-is-good,
+  em[data-rate="14"].overdue-high-is-good,
+  em[data-rate="15"].overdue-high-is-good,
+  em[data-rate="16"].overdue-high-is-good,
+  em[data-rate="17"].overdue-high-is-good,
+  em[data-rate="18"].overdue-high-is-good,
+  em[data-rate="19"].overdue-high-is-good,
+  em[data-rate="20"].overdue-high-is-good,
+  em[data-rate="21"].overdue-high-is-good,
+  em[data-rate="22"].overdue-high-is-good,
+  em[data-rate="23"].overdue-high-is-good,
+  em[data-rate="24"].overdue-high-is-good
+  {
     color: $red-dark;
     background: $red-light;
   }
@@ -392,7 +419,33 @@ td.type-percent {
   em[data-rate="32"].high-is-good,
   em[data-rate="33"].high-is-good,
   em[data-rate="34"].high-is-good,
-  em[data-rate="35"].high-is-good {
+  em[data-rate="35"].high-is-good,
+  em[data-rate="25"].overdue-high-is-good,
+  em[data-rate="26"].overdue-high-is-good,
+  em[data-rate="27"].overdue-high-is-good,
+  em[data-rate="28"].overdue-high-is-good,
+  em[data-rate="29"].overdue-high-is-good,
+  em[data-rate="30"].overdue-high-is-good,
+  em[data-rate="31"].overdue-high-is-good,
+  em[data-rate="32"].overdue-high-is-good,
+  em[data-rate="33"].overdue-high-is-good,
+  em[data-rate="34"].overdue-high-is-good,
+  em[data-rate="35"].overdue-high-is-good,
+  em[data-rate="36"].overdue-high-is-good,
+  em[data-rate="37"].overdue-high-is-good,
+  em[data-rate="38"].overdue-high-is-good,
+  em[data-rate="39"].overdue-high-is-good,
+  em[data-rate="40"].overdue-high-is-good,
+  em[data-rate="41"].overdue-high-is-good,
+  em[data-rate="42"].overdue-high-is-good,
+  em[data-rate="43"].overdue-high-is-good,
+  em[data-rate="44"].overdue-high-is-good,
+  em[data-rate="45"].overdue-high-is-good,
+  em[data-rate="46"].overdue-high-is-good,
+  em[data-rate="47"].overdue-high-is-good,
+  em[data-rate="48"].overdue-high-is-good,
+  em[data-rate="49"].overdue-high-is-good
+  {
     color: $orange-dark;
     background: $orange-light;
   }
@@ -410,7 +463,34 @@ td.type-percent {
   em[data-rate="46"].high-is-good,
   em[data-rate="47"].high-is-good,
   em[data-rate="48"].high-is-good,
-  em[data-rate="49"].high-is-good {
+  em[data-rate="49"].high-is-good,
+  em[data-rate="50"].overdue-high-is-good,
+  em[data-rate="51"].overdue-high-is-good,
+  em[data-rate="52"].overdue-high-is-good,
+  em[data-rate="53"].overdue-high-is-good,
+  em[data-rate="54"].overdue-high-is-good,
+  em[data-rate="55"].overdue-high-is-good,
+  em[data-rate="56"].overdue-high-is-good,
+  em[data-rate="57"].overdue-high-is-good,
+  em[data-rate="58"].overdue-high-is-good,
+  em[data-rate="59"].overdue-high-is-good,
+  em[data-rate="60"].overdue-high-is-good,
+  em[data-rate="61"].overdue-high-is-good,
+  em[data-rate="62"].overdue-high-is-good,
+  em[data-rate="63"].overdue-high-is-good,
+  em[data-rate="64"].overdue-high-is-good,
+  em[data-rate="65"].overdue-high-is-good,
+  em[data-rate="66"].overdue-high-is-good,
+  em[data-rate="67"].overdue-high-is-good,
+  em[data-rate="68"].overdue-high-is-good,
+  em[data-rate="69"].overdue-high-is-good,
+  em[data-rate="70"].overdue-high-is-good,
+  em[data-rate="71"].overdue-high-is-good,
+  em[data-rate="72"].overdue-high-is-good,
+  em[data-rate="73"].overdue-high-is-good,
+  em[data-rate="74"].overdue-high-is-good,
+
+  {
     color: $yellow-darkest;
     background: $yellow-light;
     font-weight: normal;
