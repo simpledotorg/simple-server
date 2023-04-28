@@ -167,7 +167,7 @@ en:
     percent_called_numerator: "Unique patients with at least one ‘Result of call...’ marked by user during the month."
     percent_called_denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
   overdue_toggle_tooltip:
-    description: "Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded."
+    main: "Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded."
     additional: "‘Remove from overdue list‘ reason must be one of following:"
     list: "‘Patient not responding’, ‘Phone number does not work’, ‘Transferred to another public health facility’, ‘Moved to a private practitioner’, ‘Refused to visit’, ‘Other reason’"
 
