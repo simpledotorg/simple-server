@@ -5,6 +5,7 @@
       <%= c.title(title: "Overdue patients called".html_safe, subtitle: t("overdue_patients_called.reports_card_subtitle")) do |title| %>
         <%= title.tooltip({ "Numerator" => t("overdue_patients_called.numerator"),
                             "Note" => t("overdue_patients_called.numerator_note"),
+                            "divider" => "",
                             "Denominator" => t("overdue_patients_called.denominator", region_name: @region.name) }) %>
       <%end%>
       <%= c.summary do %>
