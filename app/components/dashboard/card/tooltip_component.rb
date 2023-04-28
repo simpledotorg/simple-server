@@ -17,7 +17,7 @@ class Dashboard::Card::TooltipComponent < ApplicationComponent
         tag :hr, class: 'bg-white o-65 mt-4px mb-4px'
       else
         content_tag :p, class: "mb-4px" do
-          if name == "Note"
+          if name == "note"
             content_tag :i, description
           elsif name == ""
             description
