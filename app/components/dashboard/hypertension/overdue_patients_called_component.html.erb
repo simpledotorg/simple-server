@@ -26,16 +26,21 @@
           </div>
         </div>
         <div class="pb-8px">
-          <p style="font-weight: 600; margin-bottom: 4px;">'Result of call' percentage</p>
+          <p class="fw-bold mb-4px">
+            Call results <span data-key="endDate"></span>
+          </p>
           <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
-            <p style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
+            <p data-title="percentageCalledWithResultRemindToCallLater" 
+                style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
               <span data-key="percentageCalledWithResultAgreedToVisit"></span>%
               'Agreed to visit'
             </p>
-            <p style="border-radius: 30px; text-align: center; background: rgba(252, 247, 193, 0.8); color:rgb(118, 93, 3); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
+            <p title="<%= graph_external_hover_data[:percentageCalledWithResultRemoveFromOverdueList] %>% 'Remind to call'"
+                style="border-radius: 30px; text-align: center; background: rgba(252, 247, 193, 0.8); color:rgb(118, 93, 3); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
               <span data-key="percentageCalledWithResultRemindToCallLater"></span>%
               'Remind to call'</p>
-            <p title="28% of 'Removed from overdue list'" style="background: rgba(232, 144, 80, 0.15); color:rgb(143,17,12 ); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
+            <p title="<%= graph_external_hover_data[:percentageCalledWithResultRemoveFromOverdueList] %>% 'Remove from overdue list'" 
+                style="background: rgba(232, 144, 80, 0.15); color:rgb(143,17,12 ); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
               <span data-key="percentageCalledWithResultRemoveFromOverdueList"></span>%
               'Remove from...'
             </p>
