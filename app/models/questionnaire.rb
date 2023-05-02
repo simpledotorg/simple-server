@@ -43,10 +43,20 @@ class Questionnaire < ApplicationRecord
   private
 
   def layout_schema
-    # TODO: When dsl_version is incremented, insert a switch here.
-    Api::V4::Models::Questionnaires::Version1.view_group.merge(
-      definitions: Api::V4::Schema.all_definitions
-    )
+    case dsl_version
+    when 1
+      Api::V4::Models::Questionnaires::Version1.view_group.merge(
+        definitions: Api::V4::Schema.all_definitions
+      )
+    when 2
+      Api::V4::Models::Questionnaires::Version2.view_group.merge(
+        definitions: Api::V4::Schema.all_definitions
+      )
+    else
+      Api::V4::Models::Questionnaires::Version1.view_group.merge(
+        definitions: Api::V4::Schema.all_definitions
+      )
+    end
   end
 
   def apply_recursively_to_layout(sub_layout, &blk)
