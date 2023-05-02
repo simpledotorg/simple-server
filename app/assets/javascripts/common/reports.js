@@ -459,7 +459,7 @@ Reports = function (withLtfu) {
           },
         },
       },
-      plugins: [targetLine(70)],
+      plugins: [targetLine(18)],
     };
 
     const populateControlledGraph = (period) => {
@@ -629,6 +629,7 @@ Reports = function (withLtfu) {
           },
         }
       },
+      plugins: [targetLine(20)],
     };
 
     const populateMissedVisitsGraph = (period) => {
@@ -1271,11 +1272,65 @@ function targetLine(target, belowTarget = false, color) {
       //   yPosition += 24;
       // }
       let yPosition = targetLineYPosition + 4;
+      // let yPosition = 17;
+      ctx.fillStyle = chart.config.data.datasets[0].borderColor;
+      console.log(chart.config.data.datasets[0].borderColor);
+
+      // Get the current RGBA value
+      const currentRGBA = chart.config.data.datasets[0].borderColor;
+      // Split the RGBA value into an array of values
+      const rgbaArray = currentRGBA.match(/\d+/g);
+
+      // Change the alpha value to 0.8
+      rgbaArray[3] = 0.15;
+
+      // Set the new RGBA value to the element's background color
+      bgColorString = `rgba(${rgbaArray.join(", ")})`;
+      const containerWidth = 90;
+      const xPos = chart.width - containerWidth;
+      // ctx.fillRect(chart.width - containerWidth, 0, 100, 100)
+      console.log(chart.width - containerWidth);
+      // roundRect(ctx, xPos, 0, 200, 100, 10, 'red');
+
+      // v1
+      // roundedText({
+      //   ctx,
+      //   x: xPos,
+      //   y: 0,
+      //   text: `Goal: ${target}%`,
+      //   font: "12px Roboto Condensed",
+      //   radius: 10,
+      //   xPadding: 7,
+      //   yPadding: 3,
+      //   fillStyle: bgColorString,
+      //   textColor: chart.config.data.datasets[0].borderColor,
+      // });
+
+      // Split the RGBA value into an array of values
+      const rgbaArray2 = currentRGBA.match(/\d+/g);
+
+      // Change the alpha value to 0.8
+      rgbaArray2[3] = 0.30;
+
+      // Set the new RGBA value to the element's background color
+      bgColorString2 = `rgba(${rgbaArray2.join(", ")})`;
+
+      // lineGoalToRoundedText({
+      //   ctx,
+      //   x: chart.width - 60,
+      //   yStart: 18,
+      //   yEnd: targetLineYPosition,
+      //   color: bgColorString2,
+      // });
+      // function roundedText(ctx, x, y, text, font, radius, xPadding, yPadding, fillStyle, textColor) {
+
+      // roundedText(ctx, 100, 100, 'Hello, world!', '16px Arial', 10, 10, 'red', 'white');
+
       // if (belowTarget) {
       //   yPosition += 24;
       // }
       // const textString = `Target ${aboveOrBelow} ${target}%`;
-      const textString = `${target}`;
+      const textString = `${target}%`;
       // text bg box
       // const textMeasure = ctx.measureText(textString);
       // const fontHeight =
@@ -1287,20 +1342,145 @@ function targetLine(target, belowTarget = false, color) {
 
       // text
       // ctx.font = "9pt Roboto Condensed";
-      ctx.font = "11px Roboto Condensed";
-      ctx.fillStyle = chart.config.data.datasets[0].borderColor;
+      ctx.font = "15px Roboto Condensed";
+      // ctx.fillStyle = chart.config.data.datasets[0].borderColor;
+      ctx.fillStyle = "#000000";
       // ctx.fillStyle = "#090909";
       // let aboveOrBelow = '▲'
       // if (belowTarget) {
       //   aboveOrBelow = '▼'
       // }
       // ctx.fillText(textString, chartArea.left, yPosition);
-      ctx.fillText(textString, chartArea.left - 27, yPosition -1 );
+      // ctx.fillText(textString, chartArea.left - 27, yPosition - 1);
+
+      // Text right side
+      ctx.font = "12px Roboto Condensed";
+      const textSize = ctx.measureText(textString);
+      const textWidth1 = textSize.width;
+      console.log(textWidth1);
+      ctx.fillStyle = chart.config.data.datasets[0].borderColor;
+      const rightAlignXPos = chart.width;
+      console.log(rightAlignXPos);
+      // ctx.textBaseline = "bottom"; // not needed if using this method
+      ctx.fillText(textString, rightAlignXPos - textWidth1, yPosition);
+      console.log("ctx", chart.config._config);
       // ctx.fillText(`Target ${target}% ${aboveOrBelow} `, chartArea.left, yPosition);
       ctx.restore();
     },
   };
 }
+
+//
+function roundRect(ctx, x, y, width, height, radius, fillStyle) {
+  const cornerRadius = radius || 5;
+
+  ctx.beginPath();
+  ctx.moveTo(x + cornerRadius, y);
+  ctx.lineTo(x + width - cornerRadius, y);
+  ctx.arcTo(x + width, y, x + width, y + cornerRadius, cornerRadius);
+  ctx.lineTo(x + width, y + height - cornerRadius);
+  ctx.arcTo(
+    x + width,
+    y + height,
+    x + width - cornerRadius,
+    y + height,
+    cornerRadius
+  );
+  ctx.lineTo(x + cornerRadius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - cornerRadius, cornerRadius);
+  ctx.lineTo(x, y + cornerRadius);
+  ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+  ctx.closePath();
+
+  ctx.fillStyle = fillStyle || "black";
+  ctx.fill();
+}
+
+function lineGoalToRoundedText({ ctx, x, yStart, yEnd, color }) {
+  ctx.beginPath();
+  ctx.moveTo(x, yStart);
+  ctx.lineTo(x, yEnd);
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineCap = "square";
+  ctx.setLineDash([]);
+  ctx.stroke();
+}
+
+function roundedText({
+  ctx,
+  x,
+  y,
+  text,
+  font,
+  radius = 10,
+  xPadding = 5,
+  yPadding = 5,
+  fillStyle = "black",
+  textColor = "black",
+}) {
+  ctx.font = font;
+  console.log(ctx.font);
+  const textSize = ctx.measureText(text);
+  const textWidth = textSize.width;
+  const textHeight = parseInt(font, 10);
+  const cornerRadius = radius || 5;
+  const xTextPadding = xPadding || 10;
+  const yTextPadding = yPadding || 10;
+
+  ctx.fillStyle = fillStyle;
+  ctx.strokeStyle = fillStyle;
+  roundRect(
+    ctx,
+    x,
+    y,
+    textWidth + xTextPadding * 2,
+    textHeight + yTextPadding * 2,
+    cornerRadius,
+    fillStyle
+  );
+
+  ctx.fillStyle = textColor || "white";
+  ctx.fillText(text, x + xTextPadding, y + textHeight + yPadding / 2);
+}
+
+// function roundedText(
+//   ctx,
+//   x,
+//   y,
+//   text,
+//   font,
+//   radius,
+//   xPadding,
+//   yPadding,
+//   fillStyle,
+//   textColor
+// ) {
+//   ctx.font = font;
+//   console.log(ctx.font);
+//   const textSize = ctx.measureText(text);
+//   const textWidth = textSize.width;
+//   const textHeight = parseInt(font, 10);
+//   // ctx.textBaseline = "center";
+//   const cornerRadius = radius || 5;
+//   const xTextPadding = xPadding || 10;
+//   const yTextPadding = yPadding || 10;
+
+//   ctx.fillStyle = fillStyle || "black";
+//   ctx.strokeStyle = fillStyle || "black";
+//   roundRect(
+//     ctx,
+//     x,
+//     y,
+//     textWidth + xTextPadding * 2,
+//     textHeight + yTextPadding * 2,
+//     cornerRadius,
+//     fillStyle
+//   );
+
+//   ctx.fillStyle = textColor || "white";
+//   ctx.fillText(text, x + xTextPadding, y + textHeight + yPadding / 2);
+// }
 
 function withBaseLineConfig(config) {
   return _.mergeWith(
