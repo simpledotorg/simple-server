@@ -151,6 +151,7 @@ class Admin::FacilitiesController < AdminController
       :latitude,
       :longitude,
       :enable_diabetes_management,
+      :enable_monthly_screening_reports,
       :monthly_estimated_opd_load,
       :zone,
       :enable_teleconsultation,

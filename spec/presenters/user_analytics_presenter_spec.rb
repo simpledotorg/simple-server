@@ -114,22 +114,19 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
       let(:current_facility) { create(:facility, facility_group: current_user.facility.facility_group) }
 
       context "last_updated_at" do
-        it "has date for today if request was made today" do
+        it "has the date when the reporting views were last refreshed" do
+          time = 1.day.ago.to_time
+          allow(RefreshReportingViews).to receive(:last_updated_at).and_return(time)
           data = described_class.new(current_facility).statistics
 
-          expect(data.dig(:metadata, :last_updated_at).to_date)
-            .to eq(Time.current.to_date)
+          expect(data.dig(:metadata, :last_updated_at)).to eq(I18n.l(time))
         end
 
-        it "has the date at which the request was made" do
-          two_days_ago = 2.days.ago.to_date
+        it "is blank when the last refresh time is unavailable" do
+          allow(RefreshReportingViews).to receive(:last_updated_at).and_return(nil)
+          data = described_class.new(current_facility).statistics
 
-          data = travel_to(two_days_ago) {
-            described_class.new(current_facility).statistics
-          }
-
-          expect(data.dig(:metadata, :last_updated_at).to_date)
-            .to eq(two_days_ago)
+          expect(data.dig(:metadata, :last_updated_at)).to eq("")
         end
       end
 
@@ -160,7 +157,7 @@ RSpec.describe UserAnalyticsPresenter, type: :model do
         }
 
         expect(data.dig(:metadata, :formatted_next_date))
-          .to eq("02-JAN-2020")
+          .to eq("2-Jan-2020")
       end
     end
   end

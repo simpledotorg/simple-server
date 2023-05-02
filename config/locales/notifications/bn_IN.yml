@@ -53,3 +53,6 @@ bn-IN:
       official_no_date: "%{patient_name} %{facility_name}-এ ব্লাড প্রেসার ও সুগার মাপার জন্য আজ আসুন। আপনার ডাক্তার আপনার সুস্বাস্থ্য কামনা করেন।"
     covid:
       medication_reminder: "প্রিয় %{patient_name}: আমাদের %{facility_name}-এর স্বাস্থ্য কর্মীরা, এই কোভিড-১৯ সংক্রমণের আপৎকালীন পরিস্থিতিতে আপনার এবং আপনার হার্টের স্বাস্থ্যের কথা ভাবছেন । এই সময়ে আপনার ব্লাড প্রেসারের ওষুধ নিয়মিত সেবন করা অত্যন্ত জরুরী। আপনার নিকটবর্তী প্রাথমিক স্বাস্থ্যকেন্দ্র অথবা সুস্বাস্থ্য কেন্দ্র থেকে বিনামূল্যে ব্লাড প্রেসারের ওষুধ সংগ্রহ করুন। আশাকর্মী অথবা এ.এন.এম. দিদির সঙ্গে যোগাযোগ করুন।"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

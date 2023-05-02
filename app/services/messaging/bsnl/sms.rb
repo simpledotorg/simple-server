@@ -17,7 +17,7 @@ class Messaging::Bsnl::Sms < Messaging::Channel
     track_metrics do
       create_communication(
         recipient_number,
-        send_bsnl_message(recipient_number, template, variable_content),
+        send_bsnl_message(recipient_number, template, variable_content)["Message_Id"],
         template.id,
         &with_communication_do
       )
@@ -47,10 +47,10 @@ class Messaging::Bsnl::Sms < Messaging::Channel
     end
   end
 
-  def create_communication(recipient_number, response, template_id, &with_communication_do)
+  def create_communication(recipient_number, message_id, template_id, &with_communication_do)
     ActiveRecord::Base.transaction do
       BsnlDeliveryDetail.create_with_communication!(
-        message_id: response["Message_Id"],
+        message_id: message_id,
         recipient_number: recipient_number,
         dlt_template_id: template_id
       ).tap do |communication|

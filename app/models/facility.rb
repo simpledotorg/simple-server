@@ -30,6 +30,8 @@ class Facility < ApplicationRecord
   has_many :appointments
   has_many :teleconsultations
   has_many :drug_stocks
+  has_many :call_results
+  has_many :questionnaire_responses
 
   has_many :registered_patients,
     class_name: "Patient",
@@ -49,8 +51,17 @@ class Facility < ApplicationRecord
     -> { with_hypertension },
     class_name: "Patient",
     foreign_key: "assigned_facility_id"
+  has_many :assigned_diabetes_patients,
+    -> { with_diabetes },
+    class_name: "Patient",
+    foreign_key: "assigned_facility_id"
 
   has_many :facility_states, class_name: "Reports::FacilityState"
+
+  has_many :cphc_facility_mappings
+  has_one :cphc_facility
+  has_many :cphc_migration_error_logs
+  has_many :cphc_migration_audit_logs
 
   pg_search_scope :search_by_name, against: {name: "A", slug: "B"}, using: {tsearch: {prefix: true}}
   scope :with_block_region_id, -> {
@@ -66,7 +77,7 @@ class Facility < ApplicationRecord
 
   scope :active, ->(month_date: Date.today) {
     joins(:facility_states)
-      .merge(Reports::FacilityState.with_patients)
+      .merge(Reports::FacilityState.with_htn_or_diabetes_patients)
       .merge(Reports::FacilityState.where(month_date: month_date.at_beginning_of_month))
       .distinct
   }
@@ -111,6 +122,7 @@ class Facility < ApplicationRecord
       message: "must be added to enable teleconsultation"
     }
   validates :enable_diabetes_management, inclusion: {in: [true, false]}
+  validates :enable_monthly_screening_reports, inclusion: {in: [true, false]}
   validate :valid_block, if: -> { !generating_seed_data && facility_group.present? }
   validates :short_name, presence: true
   validates :short_name, length: {minimum: 1, maximum: SHORT_NAME_MAX_LENGTH}
@@ -306,6 +318,7 @@ class Facility < ApplicationRecord
       "telangana" => "te-IN",
       "uttar pradesh" => "hi-IN",
       "west bengal" => "bn-IN"
-    }
+    },
+    "sri lanka" => {"default" => "si-LK"}
   }.freeze
 end

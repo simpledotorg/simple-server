@@ -52,6 +52,10 @@ class Patient < ApplicationRecord
   has_many :encounters
   has_many :observations, through: :encounters
 
+  has_many :call_results
+
+  has_one :cphc_migration_audit_log, as: :cphc_migratable
+
   belongs_to :registration_facility, class_name: "Facility", optional: true
   belongs_to :assigned_facility, class_name: "Facility", optional: true
   belongs_to :registration_user, class_name: "User"

@@ -179,6 +179,41 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(eligible_patient)
     end
 
+    it "only includes patients from states in India production" do
+      included_facility = create(:facility, state: "included_state")
+      excluded_facility = create(:facility, state: "excluded_state")
+      included_patient = create(:patient, age: 18, assigned_facility: included_facility)
+      excluded_patient = create(:patient, age: 18, assigned_facility: excluded_facility)
+      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("India")
+      stub_const("SIMPLE_SERVER_ENV", "production")
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(included_facility.state)
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return(included_facility.state)
+
+      expect(described_class.eligible_patients).not_to include(excluded_patient)
+      expect(described_class.eligible_patients).to include(included_patient)
+    end
+
+    it "includes patients from all states in non-IHCI envs" do
+      patient = create(:patient, age: 18)
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(patient.assigned_facility.state)
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return(patient.assigned_facility.state)
+
+      expect(described_class.eligible_patients).to include(patient)
+    end
+
+    it "includes patients from all states if the config isn't supplied" do
+      patient = create(:patient, age: 18)
+      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("India")
+      stub_const("SIMPLE_SERVER_ENV", "production")
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(nil)
+      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return("")
+
+      expect(described_class.eligible_patients).to include(patient)
+    end
+
     it "includes all patients if a country is not in the excluded blocks list" do
       eligible_patient = create(:patient, age: 18)
       allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("Bangladesh")

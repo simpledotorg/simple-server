@@ -10,7 +10,7 @@
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
       <colgroup>
-          <col class="table-first-col">
+        <col class="table-first-col">
           <col>
           <col class="table-divider">
           <col class="table-divider">
@@ -33,9 +33,11 @@
           <th colspan="6">
             Monthly registered patients
           </th>
+          <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
           <th colspan="6">
             Follow-up patients per user
           </th>
+          <% end %>
         </tr>
         <tr class="sorts" data-sort-method="thead">
           <th class="row-label sort-label sort-label-small sticky" data-sort-default>
@@ -49,10 +51,12 @@
               <%= period %>
             </th>
           <% end %>
-          <% @details_period_range.each do |period| %>
-            <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
-              <%= period %>
-            </th>
+          <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
+            <% @details_period_range.each do |period| %>
+              <th class="row-label sort-label sort-label-small sticky" data-sort-method="number">
+                <%= period %>
+              </th>
+            <% end %>
           <% end %>
         </tr>
       </thead>
@@ -72,11 +76,13 @@
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
-            <% @details_period_range.each do |period| %>
-              <td class="ta-right">
-                <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
-                  number_or_dash_with_delimiter(val) %>
-              </td>
+            <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
+              <% @details_period_range.each do |period| %>
+                <td class="ta-right">
+                  <%= val = @repository.hypertension_follow_ups(group_by: "blood_pressures.user_id").dig(@region.slug, period, resource.id)
+                      number_or_dash_with_delimiter(val) %>
+                </td>
+              <% end %>
             <% end %>
           </tr>
         <% end %>
@@ -92,7 +98,7 @@
       Healthcare worker activity
     </h3>
     <%= render "definition_tooltip",
-                definitions: { "Overdue patients contacted" => t("call_results_copy.monthly_overdue_calls_made", region_name: @region.name),
+                definitions: { "Calls made to overdue patients" => t("call_results_copy.monthly_overdue_calls_made", region_name: @region.name),
                               "BP measures taken" => t("bp_measures_taken_copy", region_name: @region.name) } %>
   </div>
   <div class="table-responsive-md">
@@ -117,7 +123,7 @@
         <tr>
           <th></th>
           <th colspan="6">
-            Overdue Patients Contacted
+            Calls made to overdue patients
           </th>
           <th colspan="6">
             BP measures taken
@@ -176,7 +182,7 @@
     <div class="table-responsive-md">
       <table class="analytics-table table-compact">
         <colgroup>
-          <col>
+          <col class="table-first-col">
           <col>
           <col class="table-divider">
           <col class="table-divider">
@@ -230,16 +236,16 @@
             <td class="row-title">
               <%= link_to resource.full_name, admin_user_path(resource, period: @period) %>
             </td>
-            <td class="ta-center">
+              <td class="ta-right">
               <%= number_or_dash_with_delimiter(sum_registration_counts(@repository, slug: @region.slug, user_id: resource.id, diagnosis: :hypertension)) %>
             </td>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+                <td class="ta-right">
                 <%= number_or_dash_with_delimiter(@repository.monthly_registrations_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>
             <% @details_period_range.each do |period| %>
-              <td class="ta-center">
+                <td class="ta-right">
                 <%= number_or_dash_with_delimiter(@repository.bp_measures_by_user.dig(@region.slug, period, resource.id)) %>
               </td>
             <% end %>

@@ -7,6 +7,12 @@ class Api::V4::Schema
        description: "Token containing all the information needed to process batch requests from the user"}
     end
 
+    def limit_query_param
+      {name: :limit,
+       type: :integer,
+       description: "Number of record to retrieve (a.k.a batch-size)"}
+    end
+
     def error
       {type: :object,
        properties: {
@@ -38,8 +44,7 @@ class Api::V4::Schema
 
     def sync_to_user_request
       [process_token.merge(in: :query),
-        {in: :query, name: :limit, type: :integer,
-         description: "Number of record to retrieve (a.k.a batch-size)"}]
+        limit_query_param.merge(in: :query)]
     end
 
     def sync_to_user_response(response_key, schema_type = response_key)
@@ -209,6 +214,10 @@ class Api::V4::Schema
       sync_to_user_response(:medications)
     end
 
+    def call_result_sync_to_user_response
+      sync_to_user_response(:call_results)
+    end
+
     def call_result_sync_from_user_request
       sync_from_user_request(:call_results)
     end
@@ -219,6 +228,18 @@ class Api::V4::Schema
                              items: {type: :object,
                                      properties: {name: {type: :string}}}}},
        description: "List of available state names"}
+    end
+
+    def questionnaire_responses_sync_from_user_request
+      sync_from_user_request(:questionnaire_responses)
+    end
+
+    def questionnaire_responses_sync_to_user_response
+      sync_to_user_response(:questionnaire_responses)
+    end
+
+    def questionnaires_sync_to_user_response
+      sync_to_user_response(:questionnaires)
     end
 
     def definitions

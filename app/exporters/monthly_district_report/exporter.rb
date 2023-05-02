@@ -1,21 +1,16 @@
 module MonthlyDistrictReport
   class Exporter
-    attr_reader :repo, :district, :month
+    attr_reader :facility_data, :block_data, :district_data
 
-    def initialize(district, period_month)
-      @district = district
-      @month = period_month
-      @repo = Reports::Repository.new(district.facility_regions, periods: period_month)
+    def initialize(facility_data:, block_data:, district_data:)
+      @facility_data = facility_data
+      @block_data = block_data
+      @district_data = district_data
     end
 
     def export
-      facility_data = FacilityData.new(district, month)
       facility_csv = to_csv(facility_data.header_rows, facility_data.content_rows)
-
-      block_data = BlockData.new(district, month)
       block_csv = to_csv(block_data.header_rows, block_data.content_rows)
-
-      district_data = DistrictData.new(district, month)
       district_csv = to_csv(district_data.header_rows, district_data.content_rows)
 
       zip(facility_csv, block_csv, district_csv)

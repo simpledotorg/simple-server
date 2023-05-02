@@ -94,7 +94,7 @@ module ExternalLinksHelper
   SIMPLE_DOCUMENTARY_LONG_YOUTUBE_LINK = "https://youtu.be/G0Pj_2aFGCQ"
 
   ONE_PAGER_INDIA_LINK = "https://drive.google.com/a/resolvetosavelives.org/file/d/1M2BpHYZALN8UAOaLZUfwFKCRvmq0fI7s/view?usp=sharing"
-  ONE_PAGER_SIMPLE_LINK = "https://drive.google.com/open?id=1LzGcSK5nPS0izJT4kV7B3y6syl84ACqo&authuser=dburka%40resolvetosavelives.org&usp=drive_fs"
+  ONE_PAGER_SIMPLE_LINK = "https://drive.google.com/file/d/12bo_H82Jk8k9cBmN4ta0OGcHP988rDeo/view"
 
   APP_USERS_GUIDE_AMHARIC_DOWNLOAD_LINK = "https://drive.google.com/file/d/1_RemdV7sOgTPsihXOxRp9Ud_ZV8DP1U_/view?usp=sharing"
   APP_USERS_GUIDE_BENGALI_DOWNLOAD_LINK = "https://drive.google.com/file/d/1yHBxU1gifqqDbwhkc1vgd-fg6NxKTj9i/view?usp=sharing"

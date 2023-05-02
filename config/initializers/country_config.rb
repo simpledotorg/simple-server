@@ -13,7 +13,7 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+91",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
-      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic],
+      custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic diabetes],
       maharashtra_dhis2_data_elements: {
         monthly_registrations_male: "F0cPY1T9lNs.tY82VK3LTQq",
         monthly_registrations_female: "F0cPY1T9lNs.VHbljVQ8REF",
@@ -45,7 +45,7 @@ class CountryConfig
         monthly_registrations: "tI9g0mtCzOv"
       },
       enabled_diabetes_population_coverage: true,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::AlphaSms::Sms"
     },
     ET: {
       abbreviation: "ET",
@@ -60,7 +60,7 @@ class CountryConfig
       patient_line_list_show_zone: false,
       dhis2_data_elements: {
         cumulative_assigned: "nrK3Yj6ELl0",
-        cumulative_assigned_adjusted: "YKsRrnjBiVE",
+        cumulative_assigned_adjusted: "DxHkdQjTpXC",
         controlled: "ZCkeHFQETzb",
         uncontrolled: "z4mVPviB8OH",
         missed_visits: "tNRBsYt0ZOK",

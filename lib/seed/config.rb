@@ -106,6 +106,10 @@ module Seed
       Integer(ENV["MAX_BLOOD_SUGARS_TO_CREATE"])
     end
 
+    def max_prescription_drugs_to_create_per_encounter
+      Integer(ENV["MAX_PRESCRIPTION_DRUGS_TO_CREATE_PER_ENCOUNTER"])
+    end
+
     def skip_encounters
       ENV.fetch("SKIP_ENCOUNTERS", false)
     end

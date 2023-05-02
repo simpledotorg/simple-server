@@ -120,7 +120,7 @@ ti-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ህንዲ
       bp_passports:
-        heading_html: ናይ BP ፓስፖርትታት
+        heading_html: "ናይ BP ፓስፖርትታት"
         contents_html: ኣብ ናትካ ሆስፒታል BP ፓስፖርት ካርድታት ወይ BP ፓስፖርት ስቲከር ብኸመይ ከምእትጥቀመሎም ተማሃር።
         video_link_html: ናይ BP ፓስፖርት ብኸመይ ትጥቀም
         video_link_subtitle_html: ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ
@@ -315,3 +315,222 @@ ti-ET:
         language_tigrinya_html: ትግርኛ
     privacy_policy_html: ናይ ብሕታውነት ፖሊሲ
     terms_of_service_html: ናይ ኣገልግሎት ውዕላት
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "ግህጅግህጅ"
+    daily_report_title: "መዓልታዊ"
+    monthly_report_title: "ወርሓዊ"
+    yearly_report_title: "ዓመታዊ"
+    hypertension_report_title: "ልዑል ጸቕጢ ደም"
+    diabetes_report_title: "ሕማም ሽኮር"
+    report: "ጸብጻብ"
+    last_updated_at: "ሓበሬታ ንመወዳእታ ግዜ ዝተሓደሰሉ ዕለት ኣብ %{date} ኣብ %{time}"
+    coming_soon: "ኣብ መጻኢ"
+    no_data_card:
+      title: "እዚ ጸብጻብ ኣብ ቀረባ እዋን ይመጽእ ኣሎ።"
+      subtitle: "ሕጂ ውን ቅድሚ ሕጂ ዝቐረቡ ጸብጻባት ክትዕዘቡ ትኽእሉ ኢኹም።"
+    update_required_card:
+      title: "ምሕዳስ የድሊ"
+      subtitle: "ነዚ ጸብጻብ ንምርኣይ ነቲ ኣፕ ኣሐድሶ"
+    diagnoses:
+      all: "ኩሎም ጸቕጢ ደም ከምኡውን ሕማም ሽኮር"
+      hypertension: "ልዑል ጸቕጢ ደም"
+      diabetes: "ሕማም ሽኮር"
+      hypertension_only: "ልዑል ጸቕጢ ደም ጥራይ"
+      diabetes_only: "ሕማም ሽኮር ጥራይ"
+      hypertension_and_diabetes: "ልዑል ጸቕጢ ደምን ሕማም ሽኮርን"
+    genders:
+      male: "ወዲ-ተባዕታይ"
+      female: "ጓል-አነስተይቲ"
+      transgender: "ፆታ-ዝቐየረ"
+    period_card:
+      title: "ግህጅግህጅ"
+    reports_card:
+      title: "ጸብጻባት"
+      subtitle: "%{facility_name} ንሕሙማት ልዑል ጸቕጢ ደምን ሕማም ሽኮርን ንኽሕክሙ ብከመይ ይሕግዝ ከምዘሎ።"
+    drug_stock_report_card:
+      title: "ጸብጻብ መሸጣ መድሃኒት"
+      subtitle: "ናይ %{facility_name} ጸብጻብ መሸጣ መድሃኒት ናይ %{period} ኣቕርብ።"
+      button_title: "ዝሽየጥ መድሃኒት ኣእትው"
+    achievements_card:
+      title: "ዓወታት"
+      follow_up_visits_section_title: "ክትትል %{visit_or_visits} ተመዝጊቡ ኣሎ"
+      visit:
+        one: "ምብጻሓት"
+        other: "ምብጻሓት"
+      overdue_patients_section_title: "%{call_or_calls} ንዝጽበዩ ዘለዉ ተሓከምቲ"
+      call:
+        one: "ደወላት"
+        other: "ደወላት"
+      registered_patients_title: "ተመዝጊቡ%{patient_or_patients}"
+      patient:
+        one: "ተሓከምቲ"
+        other: "ተሓከምቲ"
+    period_report:
+      registered_patients_card:
+        title: "ዝተመዝገቡ ተሓከምቲ"
+        subtitle: "ኣብ %{facility_name} ዝተመዝገቡ ተሓከምቲ።"
+      follow_up_patients_card:
+        title: "ናይ ክትትል ተሓከምቲ"
+        subtitle: "ኣብ%{facility_name} ዓቐን ጸቕጢ ደሞም ዝተወስደ፡ መጠን ሽኮር ኣብ ደሞም ዝተወስደ፡ ቆጸራ ዝተታሕዘሎም፡ ወይመድሃኒታቶም ዝተሓደሱሎም ተሓከምቲ።"
+      follow_up_visits_card:
+        title: "ናይ ክትትል ምብጻሓት"
+        subtitle: "ኣብ %{facility_name} ዝተመዝገቡ ናይ ምክትታል ምብጻሕ። ናይ ክትትል ምብጻሕ ዝበሃል ሓደ ተሓካሚ ዓቐን ጸቕጢ ደም ክውሰደሉ ከሎ፡ ሽኮር ደም ክውሰደሉ፡ ቆጸራ  ክተሓዘሉ ከሎ፡ ወይ መድሃኒት ክመሓየሸሉ ከሎ ዝግበር ምብጻሕ እዩ።"
+      patients_initiated_on_treatment_card:
+        title: 'እቲ "ሕክምና ዝጀምሩ ተሓከምቲ" ዝብል ሓበሬታ ኣበይ ኣሎ?'
+        main_text: '"ዝተመዝገቡ ሕሙማት" ተጠቐም፣ ኩሉ ግዜ ማዕረ "ሕክምና ዝተጀመረሎም ተሓከምቲ" ንሕሙማት ብቐሊል ንዝተመዝገቡ ክኸውን እዩ።'
+      more_patient_data_coming_soon_card:
+        title: "ተወሳኺ መረዳእታ ተሓከምቲ ኣብ ቀረባ እዋን ክመጽእ እዩ"
+        main_text: "ብሕማምን ጾታን ዝተመቓቐለ ናይ መዓልታዊ ምዝገባን ምክትታልን ሓበሬታ  ኣብ ቀረባ እዋን ክውሰኽ እዩ።"
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "ጸቕጢ ደም ኣብ ትሕቲ ቁጽጽር ኣትዩ"
+        hypertension_controlled_long: "ጸቕጢ ደም <140/90"
+        diabetes_controlled_short: "መጠን ሽኮር ኣብ ደም <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+        hypertension_uncontrolled_short: "ጸቕጢ ደም ኣብ ትሕቲ ቁጽጽር ኣይኣተወን"
+        hypertension_uncontrolled_long: "ጸቕጢ ደም ≥140/90"
+        diabetes_uncontrolled_short: "መጠን ሽኮር ደም 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "መጠን ሽኮር ደም  ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "ከይዱ፡ ጸቕጢ ደም ግን ኣይተዓቀነን"
+        hypertension_visited_but_no_bp_taken_long: "ጸቕጢ ደም ኣይተዓቀነን"
+        missed_visits_short: "ዝሓለፉ  ምብጻሓት"
+        missed_visits_long: "ምብጻሕ የለን"
+      assigned_patients_card:
+        title: "ዝተመደቡ ተሓከምቲ"
+        subtitle: "ን%{diagnosis} ሕክምና ንኽረኽቡ ኣብ %{facility_name} ክትትል ክገብሩ ትጽቢት ዝግበረሎም ተሓከምቲ።"
+        assigned_patients_breakdown:
+          registered_patients: "ዝተመዝገቡ ተሓከምቲ"
+          transferred_in_patients: "ተመሓላሊፉ ናብ"
+          transferred_out_patients: "ተመሓላሊፉ ካብ"
+      total_registered_patients:
+        title: "ጠቕላላ ዝተመዝገቡ ተሓከምቲ"
+        subtitle: "ኩሎም%{diagnosis} ተሓከምቲ ኣብ %{facility_name} ተመዝጊቦም።"
+      monthly_follow_up_patients:
+        title: "ወርሓዊ ክትትል ዝገብሩ ተሓከምቲ"
+        subtitle: "ኣብ %{facility_name} ንወርሒ ጸቕጢ ደሞም ዝተዓቀኑ፡ መጠን ሽኮር ደሞም ዝተዓቀኑ፡ ቆጸራ ዝተታሕዘሎም፡ ወይ መድሃኒቶም ዝተመሓየሸሎም ናይ %{diagnosis} ተሓከምቲ።"
+      patient_treatment_outcomes:
+        section_title: "ናይ ተሓካሚ ኩነታት ሕክምና "
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} ምስ%{threshold} ካብ%{start_period} ክሳብ%{end_period} ናይ%{number_of_registered_patients} %{number_of_registered_patient_or_patients} ዝተመዝገቡ ክሳብ %{registration_period}."
+        controlled_card:
+          subtitle: "ኣብ ዝሓለፉ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ ኣብ %{controlled_threshold}> 3 ኣዋርሕ ዝተመዝገቡ ናይ %{diagnosis} ተሓከምቲ ኣብ %{facility_name} "
+          help_tooltip:
+            numerator: "ኣብ ዝሓለፉ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ %{controlled_threshold} ዝለዎም ተሓከምቲ። "
+            denominator: " ቅድሚ 3 ኣዋርሕ ን%{diagnosis} ናብ %{facility_name} ዝተመደቡ ተሓከምቲ። ዝሞቱን ካብ ክትትል ዘወኡን ተሓከምቲ ኣይጥቓለሉን።"
+        uncontrolled_card:
+          subtitle: "ኣብ ዝሓለፉ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ ኣብ %{uncontrolled_threshold}> 3 ኣዋርሕ ዝተመዝገቡ ናይ %{diagnosis} ተሓከምቲ ኣብ %{facility_name} "
+          help_tooltip:
+            numerator: "ኣብ ዝሓለፉ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ %{uncontrolled_threshold} ዝለዎም ተሓከምቲ።"
+            denominator: " ቅድሚ 3 ኣዋርሕ ን%{diagnosis} ናብ %{facility_name} ዝተመደቡ ተሓከምቲ። ዝሞቱን ካብ ክትትል ዘወኡን ተሓከምቲ ኣይጥቓለሉን።"
+        very_uncontrolled_card:
+          subtitle: "ኣብ ናይ መወዳእታ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ ኣብ %{facility_name} ን%{very_uncontrolled_threshold} ዝተመዝገቡ ናይ ሕማም ሽኮር ተሓከምቲ።"
+          help_tooltip:
+            numerator: "ናይ ሕማም ሽኮር ተሓከምቲ ኣብ %{very_uncontrolled_threshold} ኣብተን ናይ መወዳእታ 3 ኣዋርሕ ኣብ ናይ መወዳእታ ምብጻሕ።"
+            denominator: "ቅድሚ 3 ኣዋርሕ ተመዝጊቦም ኣብ %{facility_name} ዝተመደቡ ናይ ሕማም ሽኮር ተሓከምቲ። ዝሞቱን ክትትል ዘቋረጹን ተሓከምቲ ዘየጠቓልል፡"
+        missed_visits_card:
+          subtitle: "ኣብ ዝሓለፉ 3 ኣዋርሕ ምብጻሕ ዘይገበሩ > 3 ኣዋርሕ ዝተመዝገቡ ኣብ %{facility_name} ዝርከቡ ናይ %{diagnosis} ተሓከምቲ።"
+          help_tooltip:
+            numerator: "ኣብ ዝሓለፉ 3 ኣዋርሕ ዝኾነ ምብጻሕ ዘይገበሩ ናይ%{diagnosis} ተሓከምቲ።"
+            denominator: " ቅድሚ 3 ኣዋርሕ ን%{diagnosis} ናብ %{facility_name} ዝተመደቡ ተሓከምቲ። ዝሞቱን ካብ ክትትል ዘወኡን ተሓከምቲ ኣይጥቓለሉን።"
+      drug_stock_report:
+        section_title: "ጸብጻብ መሸጣ መድሃኒት"
+        card_subtitle: "%{number_of_days} %{day_or_days} ናይ ኣብ መሸጣ ዝርከቡ ከኒናታት"
+      cohort_report:
+        section_title: "ጸብጻብ ጕጅለ"
+        card_title: "ናይ ርብዒ ዓመት ጸብጻብ ጉጅለ"
+        card_subtitle: "ናይ ኩሎም ተመዲቦም ኣብ ዝቕጽል ርብዒ ዓመት ኣብ ዝገበርዎ ናይ ምክትታል ምብጻሕ ዝተመዝገቡ ናይ ጸቕጢ ደም ተሓከምቲ ውጽኢት።"
+        cohort_title: "ካብ ዝሓለፈ ምብዛሕ ውጽኢት ኣብ %{period}"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ዝተመዝገቡ ኣብ %{registration_period}"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} ምስ%{threshold}"
+  questionnaire_layout:
+    male: "ወዲ-ተባዕታይ"
+    female: "ጓል-አነስተይቲ"
+    transgender: "ፆታ-ዝቐየረ"
+    total: "ጠቕላላ"
+    yes: "እወ"
+    no: "ኣይፋል"
+    comments: "ርኢቶታት"
+    instruction_1: "መጠን ዘይትፈልጡ እንተኾይንኩም ባዶ ግደፉዎ"
+    instruction_2: 'መኽዘን እንተተወዲኡ “0”  ኣእቱዉ'
+  monthly_screening_report:
+    htn_and_dm_screening: "ናይ HTNን DMን መርመራታት"
+    # Ethiopia
+    total_bp: "ጠቕላላ መርመራ ናይ BP ተገይሩ እዩ"
+    total_bs: "ጠቕላላ መርመራ ናይ ሽኮር ተገይሩ እዩ"
+    new_raised_cases: "ሓደሽቲ ዝወሰኹ ጉዳያት"
+    total_bp_raised: "ጠቕላላ ዝወሰኹ BP"
+    total_bs_raised: "ጠቕላላ ዝወሰኹ BS"
+    total_bp_raised_ncd_linked: "ምስ ክሊኒክ NCD ዝተሓሓዙ ጠቕላላ ዝወሰኹ BP"
+    total_bs_raised_ncd_linked: "ምስ ክሊኒክ NCD ዝተሓሓዙ ጠቕላላ ዝወሰኹ BS"
+    diagnosed_cases: "ዝተመርመሩ ጉዳያት"
+    total_htn_diagnosed: "ዝተመርመሩ ጠቕላላ HTN"
+    total_dm_diagnosed: "ዝተመርመሩ ጠቕላላ DM"
+    cervical_cancer_uc: "ናይ ማህጸን ምንሽሮ"
+    total_women_screened_cervical: "ናይ ማህጸን ምንሽሮ ዝተመርመሩ ጠቕላላ ኣንስቲ"
+    total_women_treated_cervical: "ናይ ማህጸን ምንሽሮ ሕክምና ዝረኸቡ ጠቕላላ ኣንስቲ"
+    total_women_followup_cervical: "ድሕሪ 1 ዓመት ክትትል ዝተገበረሎም ጠቕላላ ኣንስቲ"
+    # India
+    monthly_opd_visits_gt_30: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >30 ዓመት"
+    monthly_opd_visits_gt_18: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >18 ዓመት"
+    outpatient_department_visits: "ናይ ደጋዊ ተሓካሚ ምጉብናያት"
+    total_bp_checks: "ጠቕላላ ናይ BP ምርግጋፃት ተዛዚሞም እዮም"
+    total_blood_sugar_checks: "ጠቕላላ ናይ ደም ሽኮር ምርግጋፃት ተዛዚሞም እዮም"
+    new_suspected_individuals: "ሓደሽቲ ዝጥርጠሩ ውልቀ ሰባት"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ክልቲኡ)"
+    diagnosed_cases_on_follow_up: "ኣብ ክትትል ዘለዉ ዝተመርመሩ ጉዳያት"
+    diagnosed_cases_on_follow_up_htn: "HTN patients with a follow-up visit"
+    diagnosed_cases_on_follow_up_dm: "ናይ ክትትል ምጉብናይ ዘለዎም ሕሙማት DM"
+    diagnosed_cases_on_follow_up_htn_and_dm: "ናይ ክትትል ምጉብናይ ዘለዎም ሕሙማት HTN+DM (ክልቲኡ)"
+    cancer_screening: "መርመራ ካንሰር"
+    total_cancer_screening_oral: "ጠቕላላ ናይ ኣፍ ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    total_cancer_screening_breast: "ጠቕላላ ናይ ጡብ ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    total_cancer_screening_cervical: "ጠቕላላ ናይ ማህፀን ካንሰር ምርግጋፃት ተዛዚሞም አለዉ"
+    oral_cancer: "ናይ ኣፍ ካንሰር"
+    breast_cancer: "ናይ ጡብ ካንሰር"
+    cervical_cancer: "ናይ ማህፀን ካንሰር"
+  monthly_supplies_report:
+    instruction_1: "ኣብ ሕድሕድ መወዳእታ ወርሒ ኣብ መኽዘን ዝተረፉ ቀረባት ኣእቱዉ"
+    stock_on_hand: "ኣብ ኢድ ዘሎ በዝሒ"
+    stock_on_hand_uc: "ኣብ ኢድ ዘሎ በዝሒ"
+    working_equipments: "ናይ መስርሕ ናውቲ"
+    glucose_strips: "ናይ ደም ግሉኮስ መርመራ ተቐንጠጥቲ"
+    total_working_condition: "ጠቕላላ ኣብ ጽቡቕ ናይ ምስራሕ ኩነታት ዘለዉ"
+    # Bangladesh
+    patient_books: "መጻሕፍቲ ተሓካማይ"
+    available_bp_monitors_arm_in: "ጠቕላላ ዝርከቡ መቆጻጸሪታት BP (ናይ ኢድ)"
+    functioning_bp_monitors_arm_in: "ይሰርሑ ዘለዉ መቆጻጸሪታት BP (ናይ ኢድ)"
+    available_bp_monitors_handheld: "ጠቕላላ ዝርከቡ መቆጻጸሪታት BP (ብኢድ ዝተሓዝ)"
+    functioning_bp_monitors_handheld: "ይሰርሑ ዘለዉ መቆጻጸሪታት BP (ብኢድ ዝተሓዝ)"
+    available_blood_glucose_monitors: "ጠቕላላ ዝርከቡ መቆጻጸሪታት ግሉኮስ ደም"
+    functioning_blood_glucose_monitors: "ይሰርሑ ዘለዉ መቆጻጸሪታት ግሉኮስ ደም"
+    # Ethiopia
+    bp_monitor: "መቆጻጸሪ BP"
+    glucose_meter: "መዐቀኒ ግሉኮስ ደም"
+    stethoscope: "መዳመጺ ሓኪም"
+    height_weight_machine: "ናይ ንውሓትን ክብደትን መዐቀኒ ማሽን"
+    waist_tape: "ዙሪያ ሽምጢ መዐቀኒ ሸሪጥ"
+    # India
+    glucometer_strips: "ተቐንጠጥቲ መዐቀኒ ግሉኮስ"
+    # Sri Lanka
+    equipment: "ናውቲ"
+    available_bp_devices: "ጠቕላላ ዝርከቡ መሳርሒታት BP"
+    functioning_bp_devices: "ይሰርሑ ዘለዉ መሳርሒታት BP"
+    available_phones: "ጠቕላላ ዝርከቡ ተንቀሳቓሲ ስልክታት"
+    functioning_phones: "ይሰርሑ ዘለዉ ተንቀሳቓሲ ስልክታት"
+    drug_stock: "መኽዘን መድሓኒት"
+    drug_stock_losartan: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ Losartan"
+    drug_stock_amlodipine: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ Amlodipine"
+    drug_stock_hct: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ HCT (Hydrochlorathiazide)"
+    trained_staff: "ዝሰልጠኑ ሰራሕተኛታት"
+    doctors_count: "በዝሒ ኣብ ናይ ሕክምና ክሊኒክ ዝሳተፉ ሓኻይም"
+    nurses_count: "በዝሒ ኣብ ናይ ሕክምና ክሊኒክ ዝሳተፉ ነርስታት"
+    pharmacists_count: "በዝሒ ኣብ ሆስፒታል ዝሳተፉ ፋርማሰኛታት"
+    drug_dispensers_count: "በዝሒ ኣብ ሆስፒታል ዝርከቡ መዓደሊታት መድሓኒት"
+    others: "ካልኦት"
+    television_functional: "ናይ ጥዕና ትምህርቲ መልእኽትታት ኣብ’ቲ ናይ ሕክምና ክሊኒክ ብተለቭዥን ስክሪን ይረኣዩ ዶ?"
+    wifi_functional: "ናይ ዋይፋይ ኔትወርክ ይርከብ ዶ?"

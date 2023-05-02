@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe Csv::FacilitiesParser do
   describe ".parse" do
-    let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+    let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
     it "parses the facilities" do
       facilities = described_class.parse(upload_file)
@@ -14,7 +14,8 @@ RSpec.describe Csv::FacilitiesParser do
         district: "Bhatinda",
         country: "India",
         facility_size: "community",
-        enable_diabetes_management: true)
+        enable_diabetes_management: true,
+        enable_monthly_screening_reports: true)
 
       expect(facilities.second).to have_attributes(organization_name: "OrgOne",
         facility_group_name: "FGTwo",
@@ -46,7 +47,7 @@ RSpec.describe Csv::FacilitiesParser do
         end
       end
 
-      let(:upload_file) { fixture_file_upload("files/upload_facilities_test.csv", "text/csv") }
+      let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
       it "parses the facilities" do
         facilities = described_class.parse(upload_file)

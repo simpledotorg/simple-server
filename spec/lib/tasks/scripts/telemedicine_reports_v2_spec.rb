@@ -3,7 +3,7 @@ require "tasks/scripts/telemedicine_reports_v2"
 
 RSpec.describe TelemedicineReportsV2 do
   before do
-    allow(Flipper).to receive(:enabled?).with(:weekly_telemed_report).and_return(true)
+    allow(Flipper).to receive(:enabled?).with(:automated_telemed_report).and_return(true)
     allow(ENV).to receive(:fetch).with("TELEMED_REPORT_EMAILS").and_return("test@example.com")
     allow_any_instance_of(ActionMailer::MessageDelivery).to receive(:deliver_later)
   end

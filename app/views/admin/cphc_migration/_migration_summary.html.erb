@@ -1,0 +1,64 @@
+<table class="table table-hover mt-24px">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="text-right">Patients</th>
+      <th class="text-right">Encounters</th>
+      <th class="text-right">Blood pressures</th>
+      <th class="text-right">Blood sugars</th>
+      <th class="text-right">Prescription drugs</th>
+      <th class="text-right">Appointments</th>
+    </tr>
+    <tr class="text-danger">
+      <th>Errors</th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'Patient')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'Encounter')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'BloodPressure')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'BloodSugar')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'PrescriptionDrug')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:errors, 'Appointment')) %></th>
+    </tr>
+    <tr>
+      <th>Migrated</th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'Patient')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'Encounter')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'BloodPressure')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'BloodSugar')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'PrescriptionDrug')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:migrated, 'Appointment')) %></th>
+    </tr>
+    <tr>
+      <th>Totals</th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'Patient')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'Encounter')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'BloodPressure')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'BloodSugar')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'PrescriptionDrug')) %></th>
+      <th class="text-right"><%= number_or_dash_with_delimiter(summary.dig(:totals, 'Appointment')) %></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if summary[:daily].present? %>
+      <% summary[:daily].each do |date, daily_summary| %>
+        <tr style="background: #eee">
+          <td><%= I18n.l(date) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Patient", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Encounter", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodPressure", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["BloodSugar", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["PrescriptionDrug", region.id]]) %></td>
+          <td><%= number_or_dash_with_delimiter(daily_summary[["Appointment", region.id]]) %></td>
+        </tr>
+      <% end %>
+    <% end %>
+    <tr>
+      <th>Totals</th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :patients, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :encounters, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :blood_pressures, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :blood_sugars, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :prescription_drugs, region.id)) %></th>
+      <th><%= number_or_dash_with_delimiter(summary.dig(:total, :appointments, region.id)) %></th>
+    </tr>
+  </tbody>
+</table>

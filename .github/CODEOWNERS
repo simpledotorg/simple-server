@@ -1,8 +1,11 @@
-# Ensure Claudio gets requested review for reporting queries
-/app/queries/ @claudiovallejo
+# Ensure Jamie gets requested review for reporting queries
+
+/app/queries/ @jamiecarter7
 
 # Ensure Hari gets requested review canonical medications
+
 /config/data/medications.yml @harimohanraj89
 
 # See docs and examples for this file at
+
 # https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/about-code-owners

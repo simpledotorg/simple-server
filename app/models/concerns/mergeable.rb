@@ -10,26 +10,14 @@ module Mergeable
       new_record = new(attributes)
       existing_record = with_discarded.find_by(id: attributes["id"])
 
-      if new_record.invalid?
-        :invalid
-      elsif existing_record.nil?
-        :new
-      elsif existing_record.discarded?
-        :discarded
-      elsif new_record.device_updated_at > existing_record.device_updated_at
-        :updated
-      elsif new_record.device_updated_at == existing_record.device_updated_at
-        :identical
-      else
-        :old
-      end
+      merge_status(new_record, existing_record)
     end
 
     def merge(attributes)
       new_record = new(attributes)
       existing_record = with_discarded.find_by(id: attributes["id"])
 
-      case compute_merge_status(attributes)
+      case merge_status(new_record, existing_record)
       when :discarded
         discarded_record(existing_record)
       when :invalid
@@ -46,6 +34,22 @@ module Mergeable
     end
 
     private
+
+    def merge_status(new_record, existing_record)
+      if new_record.invalid?
+        :invalid
+      elsif existing_record.nil?
+        :new
+      elsif existing_record.discarded?
+        :discarded
+      elsif new_record.device_updated_at > existing_record.device_updated_at
+        :updated
+      elsif new_record.device_updated_at == existing_record.device_updated_at
+        :identical
+      else
+        :old
+      end
+    end
 
     def existing_record(attributes)
       find(attributes["id"])

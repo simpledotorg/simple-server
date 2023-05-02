@@ -9,6 +9,7 @@
   "scripts": {
     "postdeploy": "./bin/heroku-setup"
   },
+  "stack": "heroku-20",
   "env": {
     "SECRET_KEY_BASE": {
       "description": "A secret key for verifying the integrity of signed cookies.",
@@ -96,6 +97,9 @@
     "LANG": {
       "value": "en_US.UTF-8"
     },
+    "NODE_OPTIONS" : {
+      "value": "--openssl-legacy-provider"
+    },
     "OWNER_EMAILS": {
       "value": "Test Owner <test.owner@example.com>"
     },
@@ -172,16 +176,16 @@
   "formation": {
     "web": {
       "quantity": 1,
-      "size": "Hobby"
+      "size": "Basic"
     },
     "worker": {
       "quantity": 1,
-      "size": "Hobby"
+      "size": "Basic"
     }
   },
   "addons": [
-    "heroku-postgresql:hobby-dev",
-    "heroku-redis:hobby-dev"
+    "heroku-postgresql:mini",
+    "heroku-redis:mini"
   ],
   "buildpacks": [
     {

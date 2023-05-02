@@ -59,7 +59,7 @@ class TelemedicineReports
   end
 
   def generate
-    if Flipper.enabled?(:weekly_telemed_report) && ENV.fetch("MIXPANEL_API_SECRET")
+    if Flipper.enabled?(:automated_telemed_report) && ENV.fetch("MIXPANEL_API_SECRET")
       parse_mixpanel
       assemble_report_data
       email_report

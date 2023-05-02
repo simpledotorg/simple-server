@@ -180,7 +180,7 @@ module Reports
     end
 
     def trace(name, resource, error_info)
-      Datadog.tracer.trace(name, resource: resource) do |span|
+      Datadog::Tracing.trace(name, resource: resource) do |span|
         error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
       end
     end

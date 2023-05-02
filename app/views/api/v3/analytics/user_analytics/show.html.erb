@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" style="scroll-behavior: auto;">
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
     <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,shrink-to-fit=no"/>
     <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <title>
@@ -13,153 +15,214 @@
     </title>
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
-  <body class="bgc-grey-lightest">
-    <div id="progress-start">
-      <div class="mb-8px">
-        <% if Flipper.enabled?(:new_progress_tab) %>
-          <%= render partial: "api/v3/analytics/user_analytics/progress_period_card" %>
-        <% else %>
-          <p class="fs-14px mt-8px">
-            <%= raw t("analytics.updated", time: DateTime.parse(@user_analytics.last_updated_at).to_date.strftime("%d-%b-%y at %I:%M %P")) %>
+  <body>
+    <div id="home-page">
+      <div class="mb-8px p-16px bgc-white bs-card">
+        <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
+          <%= t("progress_tab.registrations_and_follow_ups_card.title") %>
+        </h1>
+        <div class="d-flex ai-center jc-space-between">
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-10px p-12px bgc-blue-green-light bs-blue-green-light-button br-8px"
+             href="#"
+             onclick="goToPage('home-page', 'daily-report-page'); return false;">
+
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-green"></div>
+            </div>
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue-green">
+              <%= t("progress_tab.daily_report_title") %>
+            </p>
+          </a>
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-4px ml-4px p-12px bgc-blue-light bs-blue-light-button br-8px" href="#" onclick="goToPage('home-page', 'monthly-report-page'); return false;">
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue"></div>
+            </div>
+            <p class="m-0px p-0px ta-center fw-medium fs-16px c-blue">
+              <%= t("progress_tab.monthly_report_title") %>
+            </p>
+          </a>
+          <a class="f-1 d-flex fd-column ai-center jc-center td-none h-96px mr-4px ml-4px p-12px bgc-navy-light bs-navy-light-button br-8px"
+             href="#" onclick="goToPage('home-page', 'yearly-report-page'); return false;">
+            <div class="p-relative d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px o-hidden">
+              <div class="p-absolute t-0 l-0 w-100 h-6px bgc-blue-new"></div>
+            </div>
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-navy">
+              <%= t("progress_tab.yearly_report_title") %>
+            </p>
+          </a>
+        </div>
+      </div>
+      <div class="mb-8px p-16px bgc-white bs-card">
+        <h1 class="m-0px mb-4px fw-bold fs-24px c-black">
+          <%= t("progress_tab.reports_card.title") %>
+        </h1>
+        <p class="m-0px mb-16px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+          <%= t("progress_tab.reports_card.subtitle", facility_name: current_facility.name) %>
+        </p>
+        <div class="d-flex ai-center jc-space-between">
+          <a
+            class="f-1 d-flex fd-column ai-center jc-center h-96px mr-8px p-12px td-none bgc-red-light bs-red-light-button br-8px"
+            href="#"
+            onclick="goToPage('home-page', 'hypertension-report'); return false;"
+          >
+            <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+              <%= inline_file("graph-red.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-red">
+              <%= t("progress_tab.hypertension_report_title") %>
+            </p>
+          </a>
+          <a
+            class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
+            href="#"
+          >
+            <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
+              <%= inline_file("graph-grey.svg") %>
+            </div>
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
+              <%= t("progress_tab.diabetes_report_title") %>
+            </p>
+            <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
+              <%= t("progress_tab.coming_soon") %>
+            </p>
+          </a>
+        </div>
+      </div>
+      <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
+        <div class="mb-8px p-16px bgc-white bs-card">
+        <div class="d-flex ai-flex-start jc-space-between mb-16px">
+          <div class="f-1">
+            <h1 class="m-0px mb-8px fw-bold fs-24px">
+              <%= t("progress_tab.drug_stock_report_card.title") %>
+            </h1>
+            <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+              <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
+            </p>
+          </div>
+          <div class="w-76px h-76px">
+            <%= inline_svg("drug-stock.svg") %>
+          </div>
+        </div>
+        <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
+          access_token: current_user.access_token,
+          facility_id: current_facility.id),
+          style: "font-weight: 500;",
+          class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bgc-blue-light bs-secondary-button br-2px"
+        %>
+      </div>
+      <% end %>
+      <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+        <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
+          <%= t("progress_tab.achievements_card.title") %>
+        </h1>
+        <div class="mb-24px">
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <% visit_or_visits = t("progress_tab.achievements_card.visit", count: @service.total_follow_ups)%>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: visit_or_visits) %>
           </p>
-         <%= content_tag :div,
-                         id: "statistics",
-                         data: { statistics: @service.daily_statistics },
-                         style: "display: none" do %>
-         <% end %>
-          <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
-          <div class="mb-8px p-16px bgc-white bs-card">
-            <div class="d-flex ai-center">
-              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-                <%= raw t("analytics.registered_patients") %>
-              </h3>
-              <a
-                class="d-flex ai-center w-32px h-32px"
-                href="#"
-                onclick="openWindow('progress-registrations-help', 'progress-start'); return false"
-              >
-                <%= inline_file("help-circle.svg") %>
-              </a>
-            </div>
-            <% registrations_table_name = 'registrations' %>
-            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                      locals: { data_table_name: registrations_table_name,
-                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-            <% @service.dimension_combinations_for(:registrations).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+            <% follow_up_badge_goals = create_badge_array(@service.total_follow_ups) %>
+            <% follow_up_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          text_color: "c-lavander",
+                          circle_color: "bgc-lavander",
+                          badge_color: "bgc-lavander-light",
+                          icon_completed: "refresh-arrow-white.svg",
+                          icon_goal: "refresh-arrow-grey.svg"
+              } %>
             <% end %>
           </div>
-          <div class="mb-8px p-16px bgc-white bs-card">
-            <div class="d-flex ai-center">
-              <h3 class="m-0px mr-4px fw-bold fs-24px c-black">
-                <%= raw t("analytics.follow_up_patients") %>
-              </h3>
-              <a
-                class="d-flex ai-center w-32px h-32px"
-                href="#"
-                onclick="openWindow('progress-follow-ups-help', 'progress-start'); return false"
-              >
-                <%= inline_file("help-circle.svg") %>
-              </a>
-            </div>
-            <% follow_ups_table_name = 'follow_ups' %>
-            <%= render partial: 'api/v3/analytics/user_analytics/gender_filter',
-                      locals: { data_table_name: follow_ups_table_name,
-                                is_diabetes_enabled: current_facility.diabetes_enabled? } %>
-            <% @service.dimension_combinations_for(:follow_ups).each do |dimension| %>
-              <%= render(Reports::MonthlyProgressComponent.new(dimension, service: @service)) %>
+        </div>
+        <div class="mb-24px">
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <% call_or_calls = t("progress_tab.achievements_card.call", count: @service.total_overdue_calls)%>
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_overdue_calls) %></span> <%= t("progress_tab.achievements_card.overdue_patients_section_title", call_or_calls: call_or_calls) %>
+          </p>
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+            <% overdue_call_badge_goals = create_badge_array(@service.total_overdue_calls) %>
+            <% overdue_call_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          text_color: "c-baby-blue",
+                          circle_color: "bgc-baby-blue",
+                          badge_color: "bgc-baby-blue-light",
+                          icon_completed: "phone-white.svg",
+                          icon_goal: "phone-grey.svg"
+              } %>
             <% end %>
           </div>
-        <% end %>
-        <% if Flipper.enabled?(:new_progress_tab) %>
-          <%= render partial: "api/v3/analytics/user_analytics/progress_reports_card" %> 
-        <% end %>
-        <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
-          <div class="mb-16px p-16px bgc-white br-4px bs-card">
-            <div class="d-flex ai-flex-start jc-space-between mb-16px">
-              <div class="f-1">
-                <h3 class="m-0px mb-8px fw-bold fs-24px">
-                  Drug stock report
-                </h3>
-                <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-                  Submit <%= current_facility.name %>'s drug stock report for end of <%= @period.to_s(:mon_year) %>
-                </p>
-              </div>
-              <div>
-                <%= inline_svg("drug-stock.svg") %>
-              </div>
-            </div>
-            <%= link_to "Enter drug stock", new_webview_drug_stock_url(user_id: current_user.id,
-              access_token: current_user.access_token,
-              facility_id: current_facility.id),
-              style: "font-weight: 500;",
-              class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bb-blue-mid br-1px bgc-blue-light bs-secondary-button"
-            %>
-          </div>
-        <% end %>
-        <% unless Flipper.enabled?(:new_progress_tab) %>
-          <%= render(Reports::ProgressControlComponent.new(@service)) %>
-          <div class="card">
-            <a href="#" onclick="openWindow('progress-cohort-report', 'progress-start'); return false" class="nav-next">
-              Cohort report
-            </a>
-          </div>
-        <% end %>
-        <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
-          <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
-            <%= t("progress_tab.achievements_card.title") %>
-          </h1>
-          <div class="mb-24px">
-            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-              <span class="fw-bold"><%= number_with_delimiter(@total_follow_ups) %></span> <%= t("progress_tab.achievements_card.follow_up_visits_section_title", visit_or_visits: "visit".pluralize(@total_follow_ups)) %>
-            </p>
-            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-              <% follow_up_badge_goals = create_badge_array(@total_follow_ups) %>
-              <% follow_up_badge_goals.each do |badge| %>
-                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
-                  locals: { value: badge["goal_value"],
-                            is_goal_completed: badge["is_goal_completed"],
-                            text_color: "c-lavander",
-                            circle_color: "bgc-lavander",
-                            badge_color: "bgc-lavander-light",
-                            icon_completed: "refresh-arrow-white.svg",
-                            icon_goal: "refresh-arrow-grey.svg"
-                } %>
-              <% end %>
-            </div>
-          </div>
-          <div>
-            <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
-              <span class="fw-bold"><%= number_with_delimiter(@total_registrations) %></span> <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: "patient".pluralize(@total_registrations)) %>
-            </p>
-            <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
-              <% registered_patients_badge_goals = create_badge_array(@total_registrations) %>
-              <% registered_patients_badge_goals.each do |badge| %>
-                <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
-                  locals: { value: badge["goal_value"],
-                            is_goal_completed: badge["is_goal_completed"],
-                            text_color: "c-yellow-dark-new",
-                            circle_color: "bgc-yellow-new",
-                            badge_color: "bgc-yellow-light",
-                            icon_completed: "face-yellow-darkest.svg",
-                            icon_goal: "face-grey.svg"
-                } %>
-              <% end %>
-            </div>
+        </div>
+        <div>
+          <p class="m-0px mb-8px p-0px pl-16px ta-left fw-normal fs-16px c-black">
+            <span class="fw-bold"><%= number_with_delimiter(@service.total_registrations) %></span>
+            <% patient_or_patients = t("progress_tab.achievements_card.patient", count: @service.total_registrations)%>
+            <%= t("progress_tab.achievements_card.registered_patients_title", patient_or_patients: patient_or_patients) %>
+          </p>
+          <div class="d-flex ai-center jc-space-between pt-4px pb-4px pr-16px pl-16px">
+            <% registered_patients_badge_goals = create_badge_array(@service.total_registrations) %>
+            <% registered_patients_badge_goals.each do |badge| %>
+              <%= render partial: "api/v3/analytics/user_analytics/achievement_badge",
+                locals: { value: badge["goal_value"],
+                          is_goal_completed: badge["is_goal_completed"],
+                          text_color: "c-yellow-dark-new",
+                          circle_color: "bgc-yellow-new",
+                          badge_color: "bgc-yellow-light",
+                          icon_completed: "face-yellow-darkest.svg",
+                          icon_goal: "face-grey.svg"
+              } %>
+            <% end %>
           </div>
         </div>
       </div>
     </div>
-    <% if Flipper.enabled?(:new_progress_tab) %>
-      <%= render(Reports::DailyProgressComponent.new(@service, @user_analytics.last_updated_at)) %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_monthly_report" %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_hypertension_report" %>
-    <% else %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_controlled_help" %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_cohort_report" %>
-      <%= render partial: "api/v3/analytics/user_analytics/progress_registrations_help" %> 
-      <%= render partial: "api/v3/analytics/user_analytics/progress_follow_ups_help" %> 
-    <% end %>
+
+    <%= render(ProgressTab::DailyProgressComponentV2.new(
+      service: @service,
+      current_user: @current_user,
+      title: t("progress_tab.daily_report_title"),
+      subtitle: t("progress_tab.last_updated_at",
+                   date: display_date(@service.last_updated_at),
+                   time:  display_time(@service.last_updated_at))
+       ))
+    %>
+
+    <%= render(ProgressTab::MonthlyReportComponentV2.new(
+      service: @service,
+      current_user: @current_user,
+      title: t("progress_tab.monthly_report_title"),
+      subtitle: t("progress_tab.last_updated_at",
+                  date: display_date(@service.last_updated_at),
+                  time:  display_time(@service.last_updated_at))
+    ))
+    %>
+
+    <%= render(ProgressTab::YearlyReportComponentV2.new(
+      @service,
+      @current_user,
+      title: t("progress_tab.yearly_report_title"),
+      subtitle: t("progress_tab.last_updated_at",
+                  date: display_date(@service.last_updated_at),
+                  time:  display_time(@service.last_updated_at))
+    ))
+    %>
+
+    <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
+      hypertension_reports_data: @service.hypertension_reports_data,
+      cohort_data: @user_analytics.statistics.dig(:cohorts),
+      last_updated_at: @user_analytics.last_updated_at
+    ))
+    %>
+<!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
+
+    <%= render(ProgressTab::DrugStockComponent.new(
+      drug_stocks_query: @drug_stocks_query,
+      drugs_by_category: @drugs_by_category,
+      current_facility: @current_facility
+    )) %>
+
   </body>
-  <%= inline_js("standalone/user_analytics.js") %>
+  <%= inline_js("standalone/progress_tab.js") %>
 </html>

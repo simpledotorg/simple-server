@@ -114,12 +114,14 @@
 
 <% if current_admin.feature_enabled?(:show_call_results) %>
   <div class="card w-100pt mt-0 pr-0 pr-md-3 pb-inside-avoid">
-    <div class="d-flex flex-1 mb-8px">
-      <h3 class="mb-0px mr-8px">
-        Overdue patients contacted
+    <div class="mb-24px mb-lg-24px">
+      <h3>
+        Calls made to overdue patients
       </h3>
+        <p class="mb-0px c-grey-dark c-print-black">
+          <%= t("call_results_copy.monthly_overdue_calls_made") %>
+        </p>
     </div>
-    <p><%= t("call_results_copy.monthly_overdue_calls_made") %></p>
     <div class="table-responsive-md">
       <table class="analytics-table table-compact">
         <colgroup>

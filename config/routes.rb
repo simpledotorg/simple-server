@@ -3,11 +3,11 @@ Rails.application.routes.draw do
 
   devise_scope :email_authentication do
     authenticated :email_authentication do
-      root to: "admin#root"
+      get "/", to: "admin#root", as: :root
     end
 
     unauthenticated :email_authentication do
-      root to: "devise/sessions#new"
+      get "/", to: "devise/sessions#new"
     end
   end
 
@@ -144,7 +144,17 @@ Rails.application.routes.draw do
       end
 
       scope :call_results do
+        get "/sync", to: "call_results#sync_to_user"
         post "/sync", to: "call_results#sync_from_user"
+      end
+
+      scope :questionnaires do
+        get "/sync", to: "questionnaires#sync_to_user"
+      end
+
+      scope :questionnaire_responses do
+        get "/sync", to: "questionnaire_responses#sync_to_user"
+        post "/sync", to: "questionnaire_responses#sync_from_user"
       end
 
       namespace :analytics do
@@ -189,21 +199,28 @@ Rails.application.routes.draw do
     get "regions/:report_scope/:id", to: "regions#show", as: :region
     get "regions/:report_scope/:id/details", to: "regions#details", as: :region_details
     get "regions/:report_scope/:id/cohort", to: "regions#cohort", as: :region_cohort
-    get "regions/:report_scope/:id/diabetes", to: "regions#diabetes", as: :region_diabetes
     get "regions/:report_scope/:id/download", to: "regions#download", as: :region_download
     get "regions/:report_scope/:id/monthly_state_data_report",
-      to: "regions#monthly_state_data_report", as: :region_monthly_state_data
+      to: "regions#hypertension_monthly_state_data", as: :region_hypertension_monthly_state_data
     get "regions/:report_scope/:id/monthly_district_report",
-      to: "regions#monthly_district_report", as: :region_monthly_district_report
+      to: "regions#hypertension_monthly_district_report", as: :region_hypertension_monthly_district_report
     get "regions/:report_scope/:id/monthly_district_data_report",
-      to: "regions#monthly_district_data_report", as: :region_monthly_district_data
+      to: "regions#hypertension_monthly_district_data", as: :region_hypertension_monthly_district_data
     get "regions/:report_scope/:id/graphics", to: "regions#whatsapp_graphics", as: :graphics
+
+    get "regions/:report_scope/:id/diabetes", to: "regions#diabetes", as: :region_diabetes
+    get "regions/:report_scope/:id/diabetes/monthly_state_data_report",
+      to: "regions#diabetes_monthly_state_data", as: :region_diabetes_monthly_state_data
+    get "regions/:report_scope/:id/diabetes/monthly_district_report",
+      to: "regions#diabetes_monthly_district_report", as: :region_diabetes_monthly_district_report
+    get "regions/:report_scope/:id/diabetes/monthly_district_data_report",
+      to: "regions#diabetes_monthly_district_data", as: :region_diabetes_monthly_district_data
   end
 
   resource :regions_search, controller: "regions_search"
 
   namespace :my_facilities do
-    root to: "/my_facilities#index", as: "overview"
+    get "/", to: "/my_facilities#index", as: "overview"
     get "blood_pressure_control", to: redirect("/my_facilities/bp_controlled")
     get "csv_maker", to: "csv_maker" ##################### DO I KEEP THIS ROUTE I MADE
     get "bp_controlled", to: "bp_controlled"
@@ -256,6 +273,21 @@ Rails.application.routes.draw do
     post "deduplication", to: "deduplicate_patients#merge"
 
     resources :error_traces, only: [:index, :create]
+
+    authenticate :email_authentication, ->(a) { a.user.power_user? } do
+      scope :cphc_migration do
+        get "/", to: "cphc_migration#index", as: "cphc_migration"
+        get "district/:district_slug", to: "cphc_migration#district", as: "cphc_migration_district"
+        get "region/:region_type/:slug", to: "cphc_migration#region", as: "cphc_migration_region"
+        post "region/:region_type/:slug/migrate", to: "cphc_migration#migrate_region", as: "cphc_migration_migrate_region"
+        post "region/:region_type/:slug/migrate/cancel", to: "cphc_migration#cancel_region_migration", as: "cphc_migration_cancel_region_migration"
+        post "facility/:facility_slug/update_mapping", to: "cphc_migration#update_cphc_mapping", as: "cphc_migration_update_facility_mapping"
+        post "region/:region_type/:slug/update_credentials", to: "cphc_migration#update_credentials", as: "cphc_migration_update_credentials"
+        post "/patient/:patient_id/migrate", to: "cphc_migration#migrate_to_cphc", as: "cphc_migration_migrate_patient"
+
+        post "error_line_list/:region_type/:region_slug", to: "cphc_migration#error_line_list", as: "cphc_migration_error_line_list"
+      end
+    end
   end
 
   authenticate :email_authentication, ->(a) { a.user.power_user? } do

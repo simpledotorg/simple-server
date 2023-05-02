@@ -1,6 +1,7 @@
 module ApplicationHelper
   DEFAULT_PROGRAM_INCEPTION_DATE = Time.new(2018, 0o1, 0o1)
-  STANDARD_DATE_DISPLAY_FORMAT = "%d-%^b-%Y"
+  STANDARD_DATE_DISPLAY_FORMAT = Time::DATE_FORMATS[:day_mon_year]
+  STANDARD_TIME_DISPLAY_FORMAT = Time::DATE_FORMATS[:time]
 
   def page_title
     title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title")
@@ -22,8 +23,28 @@ module ApplicationHelper
     end
   end
 
-  def display_date(date)
-    date&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+  def display_date(date_time)
+    if date_time.present?
+      if date_time.is_a? String
+        DateTime.parse(date_time).strftime(STANDARD_DATE_DISPLAY_FORMAT)
+      else
+        date_time&.strftime(STANDARD_DATE_DISPLAY_FORMAT)
+      end
+    else
+      date_time
+    end
+  end
+
+  def display_time(date_time)
+    if date_time.present?
+      if date_time.is_a? String
+        DateTime.parse(date_time).strftime(STANDARD_TIME_DISPLAY_FORMAT)
+      else
+        date_time&.strftime(STANDARD_TIME_DISPLAY_FORMAT)
+      end
+    else
+      date_time
+    end
   end
 
   def rounded_time_ago_in_words(date)

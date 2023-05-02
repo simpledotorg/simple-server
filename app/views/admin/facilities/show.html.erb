@@ -57,8 +57,9 @@
   <div class="col-md-3 d-flex">
     <div class="card flex-fill">
       <h3>Features</h3>
-      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled" %>
-      Teleconsultation:    <%= @facility.teleconsultation_enabled? ? "Enabled" : "Disabled" %>
+      Diabetes Management: <%= @facility.diabetes_enabled? ? "Enabled" : "Disabled" %><br>
+      Teleconsultation:    <%= @facility.teleconsultation_enabled? ? "Enabled" : "Disabled" %><br>
+      Monthly Screening Reports: <%= @facility.enable_monthly_screening_reports ? "Enabled" : "Disabled" %>
     </div>
   </div>
 </div>
@@ -110,4 +111,9 @@
   <% else %>
     <div><i class="fas fa-angle-left light"></i> No users <i class="fas fa-angle-right light"></i></div>
   <% end %>
+</div>
+
+<div class="card">
+  <h2>Simple facility ID</h2>
+  <div><%= @facility.id %></div>
 </div>

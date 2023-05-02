@@ -1,0 +1,64 @@
+<div id="hypertension-report" class="d-none">
+  <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+    <a
+      class="d-inline-flex ai-center h-24px mb-24px pl-16px tt-uppercase"
+      href="#"
+      onclick="goToPage('hypertension-report', 'home-page'); return false;"
+    >
+      <%= inline_file("chevron-left.svg") %>
+      back
+    </a>
+    <div class="pr-16px pl-16px">
+      <h1 class="m-0px mb-8px fw-bold fs-24px">
+        <%= t("progress_tab.hypertension_report_title") %> <%= t("progress_tab.report") %>
+      </h1>
+      <p class="m-0px p-0px ta-left fw-normal fs-16px c-grey-dark">
+        <%= t("progress_tab.last_updated_at",
+              date: display_date(@last_updated_at),
+              time: display_time(@last_updated_at))
+        %>
+      </p>
+    </div>
+  </div>
+  <%= render(Reports::ProgressAssignedPatientsComponent.new(
+    assigned_patients: hypertension_reports_data[:assigned_patients],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(Reports::ProgressTotalRegistrationsComponent.new(
+    total_registrations: hypertension_reports_data[:total_registrations],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(
+    monthly_follow_ups: hypertension_reports_data[:monthly_follow_ups],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <div class="mt-48px mb-16px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
+    </h3>
+  </div>
+  <%= render(ProgressTab::Hypertension::ControlComponent.new(
+    controlled_rates: hypertension_reports_data[:controlled_rates],
+    controlled: hypertension_reports_data[:controlled],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Hypertension::UncontrolledComponent.new(
+    uncontrolled_rates: hypertension_reports_data[:uncontrolled_rates],
+    uncontrolled: hypertension_reports_data[:uncontrolled],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Hypertension::MissedVisitsComponent.new(
+    missed_visits_rates: hypertension_reports_data[:missed_visits_rates],
+    missed_visits: hypertension_reports_data[:missed_visits],
+    adjusted_patients: hypertension_reports_data[:adjusted_patients],
+    period_info: hypertension_reports_data[:period_info],
+    region: hypertension_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::CohortReportsComponent.new(data: @cohort_data)) %>
+</div>

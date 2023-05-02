@@ -120,7 +120,7 @@ ta-IN:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: இந்தி
       bp_passports:
-        heading_html: இரத்த அழுத்த பாஸ்போர்ட்கள்
+        heading_html: "இரத்த அழுத்த பாஸ்போர்ட்கள்"
         contents_html: உங்கள் மருத்துவமனையில் இரத்த அழுத்த பாஸ்போர்ட் அட்டைகள் அல்லது இரத்த அழுத்த பாஸ்போர்ட் ஸ்டிக்கர்களை எவ்வாறு பயன்படுத்துவது என்பதை அறிக.
         video_link_html: இரத்த அழுத்த பாஸ்போர்ட்டை எவ்வாறு பயன்படுத்துவது
         video_link_subtitle_html: இந்தி வீடியோ ஆங்கில வசனங்களுடன்
@@ -315,3 +315,222 @@ ta-IN:
         language_tigrinya_html: டிக்ரின்யா
     privacy_policy_html: தனியுரிமைக் கொள்கை
     terms_of_service_html: சேவை விதிமுறைகள்
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "பதிவுகள் மற்றும் பின்தொடர்தல்கள்"
+    daily_report_title: "தினமும்"
+    monthly_report_title: "மாதந்தோறும்"
+    yearly_report_title: "ஆண்டுதோறும்"
+    hypertension_report_title: "உயர் இரத்த அழுத்தம்"
+    diabetes_report_title: "நீரிழிவு"
+    report: "அறிக்கை"
+    last_updated_at: "%{date} அன்று %{time} மணிக்குத் தரவு கடைசியாகப் புதுப்பிக்கப்பட்டது"
+    coming_soon: "விரைவில் கிடைக்கும்"
+    no_data_card:
+      title: "இந்த அறிக்கை விரைவில் கிடைக்கும்"
+      subtitle: "நீங்கள் இப்போதும் முந்தைய அறிக்கைகளைப் பார்க்கலாம்"
+    update_required_card:
+      title: "அப்டேட் தேவைப்படுகிறது"
+      subtitle: "இந்த அறிக்கையைப் பார்ப்பதற்குச் செயலியை அப்டேட் செய்யவும்"
+    diagnoses:
+      all: "அனைத்து உயர் இரத்த அழுத்தம் மற்றும் நீரிழிவு நோயாளிகள்"
+      hypertension: "உயர் இரத்த அழுத்தம்"
+      diabetes: "நீரிழிவு"
+      hypertension_only: "உயர் இரத்த அழுத்தம் மட்டும்"
+      diabetes_only: "நீரிழிவு நோய் மட்டும்"
+      hypertension_and_diabetes: "உயர் இரத்த அழுத்தம் மற்றும் நீரிழிவு நோய்"
+    genders:
+      male: "ஆண்"
+      female: "பெண்"
+      transgender: "திருநங்கை"
+    period_card:
+      title: "பதிவுகள் மற்றும் பின்தொடர்தல்கள்"
+    reports_card:
+      title: "அறிக்கைகள்"
+      subtitle: "நோயாளிகளின் உயர் இரத்த அழுத்தம் மற்றும் நீரிழிவு நோய்க்கு %{facility_name} எவ்வாறு உதவுகிறது."
+    drug_stock_report_card:
+      title: "மருந்து இருப்பு அறிக்கை"
+      subtitle: "%{period}-க்கான %{facility_name}-இன் மருந்து இருப்பு அறிக்கையைச் சமர்ப்பிக்கவும்."
+      button_title: "மருந்து இருப்பை உள்ளிடவும்"
+    achievements_card:
+      title: "சாதனைகள்"
+      follow_up_visits_section_title: "பின்தொடர் %{visit_or_visits} பதிவுசெய்யப்பட்டது"
+      visit:
+        one: "வருகை"
+        other: "வருகைகள்"
+      overdue_patients_section_title: "வருகை தவறிய நோயாளிகளுக்கான %{call_or_calls}"
+      call:
+        one: "அழைப்பு"
+        other: "அழைப்புகள்"
+      registered_patients_title: "பதிவுசெய்த %{patient_or_patients}"
+      patient:
+        one: "நோயாளி"
+        other: "நோயாளிகள்"
+    period_report:
+      registered_patients_card:
+        title: "பதிவு செய்த நோயாளிகள்"
+        subtitle: "%{facility_name}-இல் பதிவு செய்த நோயாளிகள்."
+      follow_up_patients_card:
+        title: "மீண்டும் வர வேண்டிய நோயாளிகள்"
+        subtitle: "பிபி அளவு எடுத்த, இரத்தச் சர்க்கரை அளவு எடுத்த, ஒரு சந்திப்பு திட்டமிடப்பட்ட அல்லது அவர்களின் மருந்துகள் %{facility_name}-இல் புதுப்பிக்கப்பட்ட நோயாளிகள்."
+      follow_up_visits_card:
+        title: "பின்தொடர் வருகைகள்"
+        subtitle: "%{facility_name}-இல் பின்தொடர்தல் வருகைகள் பதிவு செய்யப்பட்டுள்ளன. பின்தொடர்தல் என்பது ஒரு நோயாளிக்கு பிபி எடுக்கப்பட்டு, இரத்தத்தில் சர்க்கரை அளவு எடுக்கப்பட்டு, ஒரு சந்திப்பு திட்டமிடப்பட்ட அல்லது மருந்துகள் புதுப்பிக்கப்பட்ட போதைய வருகை ஆகும்."
+      patients_initiated_on_treatment_card:
+        title: '"சிகிச்சை தொடங்கப்பட்ட நோயாளிகள்" தரவு எங்கே உள்ளது?'
+        main_text: '"பதிவுசெய்த நோயாளிகள்" தரவைப் பயன்படுத்தவும், இது எப்போதும் சிம்பிள் செயலியில் பதிவுசெய்துள்ள "சிகிச்சை தொடங்கப்பட்ட நோயாளிகளுக்குச்" சமமாக இருக்கும்.'
+      more_patient_data_coming_soon_card:
+        title: "மேலும் நோயாளிகளின் தரவு விரைவில் கிடைக்கும்"
+        main_text: "நோய் மற்றும் பாலினம் வாரியாகப் பிரிக்கப்பட்ட தினசரிப் பதிவு மற்றும் பின்தொடர்தல் தரவு விரைவில் சேர்க்கப்படும்."
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "பிபி கட்டுப்பாட்டில் உள்ளது"
+        hypertension_controlled_long: "பிபி <140/90"
+        diabetes_controlled_short: "இரத்தச் சர்க்கரை <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126 அல்லது HbA1c <7.0"
+        hypertension_uncontrolled_short: "பிபி கட்டுப்பாட்டில் இல்லை"
+        hypertension_uncontrolled_long: "பிபி ≥140/90"
+        diabetes_uncontrolled_short: "இரத்தச் சர்க்கரை 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, அல்லது HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "இரத்தச் சர்க்கரை ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, அல்லது HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "வருகைதந்தார், ஆனால் பிபி அளவிடப்படவில்லை"
+        hypertension_visited_but_no_bp_taken_long: "பிபி அளவிடப்படவில்லை"
+        missed_visits_short: "தவறவிட்ட வருகைகள்"
+        missed_visits_long: "வருகை இல்லை"
+      assigned_patients_card:
+        title: "ஒதுக்கீடு பெற்ற நோயாளிகள்"
+        subtitle: "நோயாளிகள் %{diagnosis} சிகிச்சையைப் பெற %{facility_name}-இல் பின்தொடர் வருகைக்கு வர வேண்டும் என்று எதிர்பார்க்கப்படுகிறது."
+        assigned_patients_breakdown:
+          registered_patients: "பதிவு செய்த நோயாளிகள்"
+          transferred_in_patients: "சேர்க்கப்பட்டவர்கள்"
+          transferred_out_patients: "மாற்றப்பட்டவர்கள்"
+      total_registered_patients:
+        title: "பதிவு செய்த மொத்த நோயாளிகள்"
+        subtitle: "அனைத்து %{diagnosis} நோயாளிகளும் %{facility_name}-இல் பதிவு செய்துள்ளனர்."
+      monthly_follow_up_patients:
+        title: "மாதாந்திரப் பின்தொடர்தல் நோயாளிகள்"
+        subtitle: "%{diagnosis} நோயாளிகளுக்கு பிபி அளவிடப்பட்டது, இரத்தச் சர்க்கரை அளவு அளவிடப்பட்டது, சந்திப்பு திட்டமிடப்பட்டது அல்லது ஒரு மாதத்திற்கு %{facility_name}-இல் மருந்து புதுப்பிக்கப்பட்டது."
+      patient_treatment_outcomes:
+        section_title: "நோயாளியின் சிகிச்சை நிலை"
+        chart_tooltip: "%{threshold} அளவில் %{number_of_patients} %{number_of_patient_or_patients} %{start_period} மற்றும் %{end_period}-க்கு இடையில் %{registration_period} வரை பதிவுசெய்துள்ள %{number_of_registered_patients} %{number_of_registered_patient_or_patients}."
+        controlled_card:
+          subtitle: ">3 மாதங்களுக்கு முன்பு %{controlled_threshold} உடனான கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின்போது பதிவு செய்துள்ள %{facility_name}-இல் உள்ள %{diagnosis} நோயாளிகள்."
+          help_tooltip:
+            numerator: "கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின்போது %{controlled_threshold} உள்ள நோயாளிகள்."
+            denominator: "கடந்த 3 மாதங்களுக்கு முன் பதிவுசெய்த %{facility_name}-இல் %{diagnosis} நோயாளிகள் ஒதுக்கீடு பெற்றுள்ளனர். இறந்த மற்றும் பின்தொடர்வைத் தவறவிட்ட நோயாளிகள் விலக்கப்படுவார்கள்."
+        uncontrolled_card:
+          subtitle: ">3 மாதங்களுக்கு முன்பு %{uncontrolled_threshold} உடனான கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின்போது பதிவு செய்துள்ள %{facility_name}-இல் உள்ள %{diagnosis} நோயாளிகள்."
+          help_tooltip:
+            numerator: "கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின்போது %{uncontrolled_threshold} உள்ள நோயாளிகள்."
+            denominator: "கடந்த 3 மாதங்களுக்கு முன் பதிவுசெய்த %{facility_name}-இல் %{diagnosis} நோயாளிகள் ஒதுக்கீடு பெற்றுள்ளனர். இறந்த மற்றும் பின்தொடர்வைத் தவறவிட்ட நோயாளிகள் விலக்கப்படுவார்கள்."
+        very_uncontrolled_card:
+          subtitle: ">3 மாதங்களுக்கு முன்பு %{very_uncontrolled_threshold} உடனான கடந்த 3 மாதங்களில் தங்கள் கடைசி வருகையின்போது பதிவுசெய்த %{facility_name}-இல் உள்ள நீரிழிவு நோயாளிகள்."
+          help_tooltip:
+            numerator: "கடந்த 3 மாதங்களில் கடைசியாக வருகை தந்த %{very_uncontrolled_threshold} கொண்ட நீரிழிவு நோயாளிகள்."
+            denominator: "கடந்த 3 மாதங்களுக்கு முன் பதிவுசெய்த %{facility_name}-இல் ஒதுக்கீடு பெற்றுள்ள நீரிழிவு நோயாளிகள். இறந்த மற்றும் பின்தொடர்வைத் தவறவிட்ட நோயாளிகள் விலக்கப்படுவார்கள்."
+        missed_visits_card:
+          subtitle: ">3 மாதங்களுக்கு முன்பு பதிவுசெய்து கடந்த 3 மாதங்களில் வருகை தராத %{facility_name}-இல் உள்ள %{diagnosis} நோயாளிகள்."
+          help_tooltip:
+            numerator: "கடந்த 3 மாதங்களில் வருகை இல்லாத %{diagnosis} நோயாளிகள்"
+            denominator: "கடந்த 3 மாதங்களுக்கு முன் பதிவுசெய்த %{facility_name}-இல் %{diagnosis} நோயாளிகள் ஒதுக்கீடு பெற்றுள்ளனர். இறந்த மற்றும் பின்தொடர்வைத் தவறவிட்ட நோயாளிகள் விலக்கப்படுவார்கள்."
+      drug_stock_report:
+        section_title: "மருந்து இருப்பு அறிக்கை"
+        card_subtitle: "%{number_of_days} %{day_or_days} மாத்திரைகள் இருப்பில் உள்ளன"
+      cohort_report:
+        section_title: "கோஹார்ட் அறிக்கைகள்"
+        card_title: "காலாண்டு கோஹார்ட் அறிக்கைகள்"
+        card_subtitle: "அடுத்த காலாண்டில் அவர்களின் பின்தொடர் வருகையின்போது முந்தைய காலாண்டில் பதிவுசெய்யப்பட்ட ஒதுக்கீடு பெற்ற அனைத்து உயர் இரத்த அழுத்த நோயாளிகளுக்குமான முடிவு."
+        cohort_title: "%{period}-இல் கடந்த வருகை முதலான முடிவு"
+        cohort_subtitle: "%{registration_period}-இல் %{number_of_patients} %{patient_or_patients} பதிவுசெய்துள்ளனர்"
+        cohort_bar_tooltip: "%{threshold} உடனான %{total_patients} %{patient_or_patients}"
+  questionnaire_layout:
+    male: "ஆண்"
+    female: "பெண்"
+    transgender: "திருநங்கை"
+    total: "மொத்தம்"
+    yes: "ஆம்"
+    no: "இல்லை"
+    comments: "கருத்துகள்"
+    instruction_1: "உங்களுக்குத் தொகை தெரியாவிட்டால் காலியாக விடவும்"
+    instruction_2: 'இருப்பு தீர்ந்திருந்தால் "0" என்று உள்ளிடவும்'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN மற்றும் DM ஸ்க்ரீனிங்"
+    # Ethiopia
+    total_bp: "செய்யப்பட்டுள்ள மொத்த BP தகுதிச்சோதனை"
+    total_bs: "செய்யப்பட்டுள்ள மொத்த இரத்தச் சர்க்கரை தகுதிச்சோதனை"
+    new_raised_cases: "புதிதாகக் கண்டறியப்பட்ட நோயாளிகள்"
+    total_bp_raised: "மொத்தம் கண்டறியப்பட்ட BP"
+    total_bs_raised: "மொத்தம் கண்டறியப்பட்ட BS"
+    total_bp_raised_ncd_linked: "NCD கிளினிக்குடன் தொடர்புடைய மொத்த BP நோயாளிகள்"
+    total_bs_raised_ncd_linked: "NCD கிளினிக்குடன் தொடர்புடைய மொத்த BS நோயாளிகள்"
+    diagnosed_cases: "கண்டறியப்பட்ட நோயாளிகள்"
+    total_htn_diagnosed: "கண்டறியப்பட்ட மொத்த HTN"
+    total_dm_diagnosed: "கண்டறியப்பட்ட மொத்த DM"
+    cervical_cancer_uc: "கர்ப்பப்பை வாய் புற்றுநோய்"
+    total_women_screened_cervical: "கர்ப்பப்பை வாய்ப் புற்றுநோய்க்கான பரிசோதனை செய்யப்பட்ட மொத்தப் பெண்கள்"
+    total_women_treated_cervical: "கர்ப்பப்பை வாய்ப் புற்றுநோய்க்காகச் சிகிச்சையளிக்கப்பட்ட மொத்தப் பெண்கள்"
+    total_women_followup_cervical: "1 வருடத்திற்குப் பிறகு தொடர்பு கொல்லப்பட்ட மொத்தப் பெண்கள்"
+    # India
+    monthly_opd_visits_gt_30: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >30 வயது"
+    monthly_opd_visits_gt_18: "பெரியவர்களுக்கான மாதாந்தர OPD வருகைகள் >18 வயது"
+    outpatient_department_visits: "வெளிநோயாளிகள் துறை வருகைகள்"
+    total_bp_checks: "செய்யப்பட்டுள்ள மொத்த இரத்த அழுத்தச் சரிபார்ப்புகள்"
+    total_blood_sugar_checks: "செய்யப்பட்டுள்ள மொத்த இரத்தச் சர்க்கரை சரிபார்ப்புகள்"
+    new_suspected_individuals: "புதிதாகச் சந்தேகிக்கப்படப்பட்டுள்ள தனிநபர்கள்"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (இரண்டும்)"
+    diagnosed_cases_on_follow_up: "பின்தொடர்வில் நோயறுதி செய்யப்பட்ட நோயாளிகள்"
+    diagnosed_cases_on_follow_up_htn: "பின்தொடர்வு வருகையுடன் HTN நோயாளிகள்"
+    diagnosed_cases_on_follow_up_dm: "பின்தொடர்வு வருகையுடன் DM நோயாளிகள்"
+    diagnosed_cases_on_follow_up_htn_and_dm: "பின்தொடர்வு வருகையுடன் HTN+DM (இரண்டும்) நோயாளிகள்"
+    cancer_screening: "புற்றுநோய் ஸ்க்ரீனிங்"
+    total_cancer_screening_oral: "செய்யப்பட்டுள்ள மொத்த வாய் புற்றுநோய் சரிபார்ப்புகள்"
+    total_cancer_screening_breast: "செய்யப்பட்டுள்ள மொத்த மார்பகப் புற்றுநோய் சரிபார்ப்புகள்"
+    total_cancer_screening_cervical: "செய்யப்பட்டுள்ள மொத்த கர்ப்பப்பை புற்றுநோய் சரிபார்ப்புகள்"
+    oral_cancer: "வாய் புற்றுநோய்"
+    breast_cancer: "மார்பகப் புற்றுநோய்"
+    cervical_cancer: "கர்பப்பை புற்றுநோய்"
+  monthly_supplies_report:
+    instruction_1: "ஒவ்வொரு மாதத்தின் முடிவிலும் இருப்பில் உள்ள பொருட்களை உள்ளிடவும்"
+    stock_on_hand: "இருப்பில் உள்ளவை"
+    stock_on_hand_uc: "இருப்பில் உள்ளவை"
+    working_equipments: "வேலை செய்யும் உபகரணங்கள்"
+    glucose_strips: "இரத்தக் குளுக்கோஸ் சோதனை ஸ்ட்ரிப்கள்"
+    total_working_condition: "வேலை செய்யும் நிலையில் மொத்தம்"
+    # Bangladesh
+    patient_books: "நோயாளி புத்தகங்கள்"
+    available_bp_monitors_arm_in: "கிடைக்கும் மொத்த BP மானிட்டர்கள் (ஆர்ம்-இன்)"
+    functioning_bp_monitors_arm_in: "செயல்படும் BP மானிட்டர்கள் (ஆர்ம்-இன்)"
+    available_bp_monitors_handheld: "கிடைக்கும் மொத்த BP மானிட்டர்கள் (கையடக்க)"
+    functioning_bp_monitors_handheld: "செயல்படும் BP மானிட்டர்கள் (கையடக்க)"
+    available_blood_glucose_monitors: "மொத்தம் கிடைக்கக்கூடிய இரத்த குளுக்கோஸ் மானிட்டர்கள்"
+    functioning_blood_glucose_monitors: "செயல்படும் இரத்த குளுக்கோஸ் மானிட்டர்கள்"
+    # Ethiopia
+    bp_monitor: "BP மானிட்டர்"
+    glucose_meter: "இரத்தக் குளுக்கோஸ் மீட்டர்"
+    stethoscope: "ஸ்டெதஸ்கோப்"
+    height_weight_machine: "உயரம் மற்றும் எடை அளவிடும் எந்திரம்"
+    waist_tape: "இடுப்புச் சுற்றளவு அளவிற்கான டேப்"
+    # India
+    glucometer_strips: "குளுக்கோமீட்டர் ஸ்ட்ரிப்கள்"
+    # Sri Lanka
+    equipment: "உபகரணம்"
+    available_bp_devices: "கிடைக்கும் மொத்த BP சாதனங்கள்"
+    functioning_bp_devices: "செயல்படும் BP சாதனங்கள்"
+    available_phones: "கிடைக்கும் மொத்த மொபைல் ஃபோன்கள்"
+    functioning_phones: "செயல்படும் மொபைல் ஃபோன்கள்"
+    drug_stock: "மருந்து இருப்பு"
+    drug_stock_losartan: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: லோசார்டன்"
+    drug_stock_amlodipine: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: அம்லோடைபின்"
+    drug_stock_hct: "அடுத்த மாதத்திற்குப் போதுமான மருந்துகள்: HCT (ஹைட்ரோகுளோரோதியாசைடு)"
+    trained_staff: "பயிற்சி பெற்ற பணியாளர்கள்"
+    doctors_count: "மருத்துவ மையத்தில் உள்ள மருத்துவர்களின் எண்ணிக்கை"
+    nurses_count: "மருத்துவ மையத்தில் உள்ள செவிலியர்களின் எண்ணிக்கை"
+    pharmacists_count: "மருத்துவமனையில் உள்ள மருந்தாளுநர்களின் எண்ணிக்கை"
+    drug_dispensers_count: "மருத்துவமனையில் உள்ள மருந்து விநியோகிப்பாளர்களின் எண்ணிக்கை"
+    others: "பிறர்"
+    television_functional: "ஆரோக்கியக் கல்வி தொடர்பான செய்திகள் மருத்துவக் கிளினிக்கின் தொலைக்காட்சியில் காட்டப்படுகிறதா?"
+    wifi_functional: "Wi-Fi நெட்வொர்க் உள்ளதா?"

@@ -9,6 +9,8 @@ RSpec.describe Facility, type: :model do
     it { is_expected.to have_many(:patients).through(:encounters) }
     it { is_expected.to have_many(:appointments) }
     it { is_expected.to have_many(:teleconsultations) }
+    it { is_expected.to have_many(:call_results) }
+    it { is_expected.to have_many(:questionnaire_responses) }
     it { is_expected.to have_and_belong_to_many(:teleconsultation_medical_officers) }
 
     it { is_expected.to have_many(:registered_patients).class_name("Patient").with_foreign_key("registration_facility_id") }
@@ -229,6 +231,7 @@ RSpec.describe Facility, type: :model do
   describe "Validations" do
     it { is_expected.to validate_presence_of(:name) }
     it { is_expected.to validate_presence_of(:district) }
+    it { is_expected.to validate_inclusion_of(:enable_monthly_screening_reports).in_array([true, false]).with_message("not in #{[true, false].join(", ")}") }
 
     context "validate state presence only if facility_group exists" do
       let(:subject) { Facility.new(facility_group: create(:facility_group)) }
@@ -482,6 +485,11 @@ RSpec.describe Facility, type: :model do
     it "defaults to English if the country is not found" do
       facility = create(:facility, country: "Pakistan")
       expect(facility.locale).to eq "en"
+    end
+
+    it "is Sinhala for Sri Lanka" do
+      facility = create(:facility, country: "Sri Lanka")
+      expect(facility.locale).to eq "si-LK"
     end
   end
 

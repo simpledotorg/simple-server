@@ -4,17 +4,16 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   before_action :set_for_end_of_month
   before_action :set_bust_cache
 
+  NEW_PROGRESS_TAB_MIN_APP_VERSION = "2022-07-04-8318"
+
   layout false
 
   def show
+    @current_user = current_user
+    @region = current_facility
     @period = Period.month(Date.current)
     @user_analytics = UserAnalyticsPresenter.new(current_facility)
-    @service = Reports::FacilityProgressService.new(current_facility, @period)
-
-    @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
-    @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
-    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
+    @service = Reports::FacilityProgressService.new(current_facility, @period, current_user: @current_user)
 
     @is_diabetes_enabled = current_facility.diabetes_enabled?
 
@@ -26,11 +25,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     respond_to do |format|
-      if Flipper.enabled?(:new_progress_tab)
-        format.html { render :show_v2 }
-      else
-        format.html { render :show }
-      end
+      format.html { render :progress_update_required if less_than_min_app_version? }
       format.json { render json: @user_analytics.statistics }
     end
   end
@@ -41,5 +36,11 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
+  end
+
+  def less_than_min_app_version?
+    app_version = request.headers["HTTP_X_APP_VERSION"]
+    return true unless app_version.present?
+    app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION
   end
 end

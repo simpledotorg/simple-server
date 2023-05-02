@@ -5,17 +5,13 @@ class Reports::ProgressController < AdminController
   before_action :require_feature_flag
   before_action :set_period
   before_action :find_region
+  around_action :set_reporting_time_zone
 
   def show
+    @current_user = current_user
     @current_facility = @region
     @user_analytics = UserAnalyticsPresenter.new(@region)
-    @service = Reports::FacilityProgressService.new(current_facility, @period)
-
-    @total_follow_ups_dimension = Reports::FacilityProgressDimension.new(:follow_ups, diagnosis: :all, gender: :all)
-    @total_registrations_dimension = Reports::FacilityProgressDimension.new(:registrations, diagnosis: :all, gender: :all)
-    @total_follow_ups = Reports::MonthlyProgressComponent.new(@total_follow_ups_dimension, service: @service).total_count
-    @total_registrations = Reports::MonthlyProgressComponent.new(@total_registrations_dimension, service: @service).total_count
-    @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
+    @service = Reports::FacilityProgressService.new(current_facility, @period, current_user: @current_user)
 
     @is_diabetes_enabled = current_facility.diabetes_enabled?
 

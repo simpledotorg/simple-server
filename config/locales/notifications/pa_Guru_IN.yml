@@ -53,3 +53,6 @@ pa-Guru-IN:
       official_no_date: "%{patient_name}, ਬੀਪੀ ਮਾਪਣ ਲਈ ਅੱਜ %{facility_name} 'ਤੇ ਆਓ। ਤੁਹਾਡਾ ਡਾਕਟਰ ਤੁਹਾਡੇ ਚੰਗੇ ਸਵਸਥ ਦੀ ਕਾਮਨਾ ਕਰਦਾ ਹੈ।"
     covid:
       medication_reminder: "Dear %{patient_name}: %{facility_name} ਵਿਖੇ ਸਾਡਾ ਸਟਾਫ ਇਸ ਕੋਵਿਡ ਐਮਰਜੈਂਸੀ ਦੌਰਾਨ ਤੁਹਾਡੇ ਅਤੇ ਤੁਹਾਡੇ ਦਿਲ ਦੀ ਸਿਹਤ ਬਾਰੇ ਸੋਚ ਰਿਹਾ ਹੈ| ਤੁਹਾਡੇ ਲਈ ਬੀਪੀ ਦੀਆਂ ਦਵਾਈਆਂ ਨੂੰ ਨਿਯਮਤ ਤੌਰ ਤੇ ਖਾਣਾ ਬਹੁਤ ਜ਼ਿਆਦਾ ਜ਼ਰੂਰੀ ਹੈ| ਆਪਣੀ ਮੁਫਤ ਦਵਾਈ ਨਜ਼ਦੀਕੀ ਸਬ ਸੈਂਟਰ ਜਾਂ ਸਿਹਤ ਤੰਦਰੁਸਤੀ ਕੇਂਦਰ ਤੋਂ ਜ਼ਰੂਰ ਲਓ| ਇਸਦੇ ਲਈ ਆਪਣੀ ਏ ਐਨ ਐਮ ਜਾਂ ਆਸ਼ਾ ਵਰਕਰ ਨਾਲ ਸੰਪਰਕ ਕਰੋ|"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

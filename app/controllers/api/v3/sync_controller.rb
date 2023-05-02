@@ -35,7 +35,7 @@ class Api::V3::SyncController < APIController
   private
 
   def trace(name)
-    Datadog.tracer.trace(name, resource: datadog_resource) do |span|
+    Datadog::Tracing.trace(name, resource: datadog_resource) do |span|
       yield
     end
   end
@@ -65,6 +65,10 @@ class Api::V3::SyncController < APIController
     params
       .select { |param| error_ids.include? param[:id] }
       .map(&:to_hash)
+  end
+
+  def errors_hash(record)
+    record.errors.to_hash.merge(id: record.id)
   end
 
   def capture_errors(params, errors)

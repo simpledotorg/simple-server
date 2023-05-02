@@ -45,7 +45,7 @@ There is one possible caveat to this -- if you see any problems with google-prot
 
 ```
 gem uninstall google-protobuf
-gem install google-protobuf -v 3.17.3 --platform=ruby
+gem install google-protobuf -v 3.21.5 --platform=ruby
 ```
 
 Then rerun bundler and everything will work. This is being tracked over in https://github.com/protocolbuffers/protobuf/issues/8682, hopefully there will be a better fix soon.
@@ -53,30 +53,36 @@ Then rerun bundler and everything will work. This is being tracked over in https
 Beyond that, the setup instructions are now the same for Intel or M1 macs, as you can install homebrew normally and go from there.
 
 #### Docker Compose
+Dev environment setup using docker and docker-compose
 
-For quick development and testing, the server can be run locally using Docker Compose and the command:
+##### Prerequisite
+- [Docker](https://docs.docker.com/engine/install/)
+- [Docker compose](https://docs.docker.com/compose/install/)
 
+###### Install docker and docker-compose on Mac
 ```
-docker compose up
+brew install docker
+brew install docker-compose
 ```
 
-The Dockerfile and docker-compose.yml files replicate the steps detailed below for manual installation, including the running of ngrok for local android development.
+##### Setup
+```
+bin/docker-up
+```
 
-Once the Docker Compose server is running, the logs should provide the ngrok URL. For example: `SIMPLE_SERVER_HOST=91a705dde8c1.ngrok.io`. This is the value that should be used when setting up the Android app as described in the section below.
-
-After a successful docker installation, an admin dashboard account is automatically created.
-
-The default username and password for the dashboard account is:
-
-```bash
+After a successful docker-compose initialisation, an admin dashboard account is automatically created.
+```
 username: admin@simple.org
 password: Resolve2SaveLives
 ```
 
-To remove the server and clear the volumes of database data, run the command:
+Open http://localhost:3000 in your browser to view the simple dashboard
 
+Use below Ngrok [guide](#developing-with-the-android-app) for Android development setup
+
+##### Teardown (delete docker containers and volumes)
 ```
-docker compose down --volumes
+bin/docker-down
 ```
 
 #### Manual Setup
@@ -84,11 +90,15 @@ docker compose down --volumes
 If the included `bin/setup` script fails for some reason, you can also manually
 set up the application step by step. You can do so as follows.
 
-First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.2.29, so that is also hardcoded below.
+First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.3.22, so that is also hardcoded below.
+
+Next, [install NodeJS v18.11.0](https://nodejs.org/en/) using [nvm](https://github.com/nvm-sh/nvm).
 
 ```bash
-gem install bundler -v 2.2.29
-bundle _2.2.29_ install
+gem install bundler -v 2.3.22
+bundle _2.3.22_ install
+brew install nvm
+nvm install 18.11.0
 rake yarn:install
 rails db:setup
 ```
@@ -307,7 +317,7 @@ $ bin/rails 'create_admin_user[<name>,<email>,<password>]'
 
 ### View Sandbox data in your local environment
 
-NOTE: generating seed data locally is the recommended way to get data in your env. Sandbox data is actually just generated via `db:seed`, so the below 
+NOTE: generating seed data locally is the recommended way to get data in your env. Sandbox data is actually just generated via `db:seed`, so the below
 process really just adds SCP overhead to the process.
 
 1. Follow the steps in the "How to add an SSH key..." section [here](https://github.com/simpledotorg/deployment) to add your SSH key to the deployment repo
@@ -320,6 +330,18 @@ process really just adds SCP overhead to the process.
 ### Profiling
 
 We use the [vegeta](https://github.com/tsenart/vegeta) utility to run performance benchmarks. The suite and additional instructions are [here](./profiling/README.md).
+
+### Security audits
+
+Security audits generally require some test data to be set up in a specific way, and account credentials and other
+information to be shared with the auditor. Run the following command to set up the necessary test data and print out
+an information sheet to be shared.
+
+```
+$ bin/rails 'prepare_security_environment'
+```
+
+This task can only be executed in development and security environments.
 
 ## Documentation
 

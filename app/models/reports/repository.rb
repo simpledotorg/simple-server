@@ -5,6 +5,8 @@ module Reports
     include Memery
     include Scientist
 
+    DAYS_AGO = 29
+
     attr_reader :measures_query
     attr_reader :follow_ups_query
     attr_reader :period_type
@@ -70,6 +72,7 @@ module Reports
       earliest_patient_recorded_at
       earliest_patient_recorded_at_period
       under_care
+      diabetes_under_care
       ltfu
       diabetes_ltfu
       missed_visits
@@ -101,27 +104,44 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days
       diabetes_appts_scheduled_32_to_62_days
       diabetes_appts_scheduled_more_than_62_days
+      dead
+      diabetes_dead
+      under_care
+      diabetes_under_care
     ]
 
     DELEGATED_BREAKDOWNS = %i[
       diabetes_treatment_outcome_breakdown_rates
-      diabetes_blood_sugar_over_200_breakdown_rates
+      diabetes_treatment_outcome_breakdown_counts
       diabetes_patients_with_bs_taken_breakdown_rates
       diabetes_patients_with_bs_taken_breakdown_counts
+      diabetes_blood_sugar_over_200_breakdown_rates
+    ]
+
+    RATES_WITHOUT_LTFU = %i[
+      ltfu_rates
+      missed_visits_with_ltfu_rates
+      diabetes_ltfu_rates
+      appts_scheduled_0_to_14_days
+      appts_scheduled_15_to_31_days
+      appts_scheduled_32_to_62_days
+      appts_scheduled_more_than_62_days
+      diabetes_appts_scheduled_0_to_14_days
+      diabetes_appts_scheduled_15_to_31_days
+      diabetes_appts_scheduled_32_to_62_days
+      diabetes_appts_scheduled_more_than_62_days
     ]
 
     def warm_cache
       DELEGATED_RATES.each do |method|
         public_send(method)
-        public_send(method, with_ltfu: true) unless method.in?([:ltfu_rates, :missed_visits_with_ltfu_rates])
+        public_send(method, with_ltfu: true) unless method.in?(RATES_WITHOUT_LTFU)
       end
-      hypertension_follow_ups
       if regions.all? { |region| region.facility_region? }
-        hypertension_follow_ups(group_by: "blood_pressures.user_id")
         bp_measures_by_user
-        monthly_registrations_by_user
-        monthly_registrations_by_gender
-        controlled_by_gender
+        blood_sugar_measures_by_user
+        monthly_registrations_by_user(diagnosis: :hypertension)
+        monthly_registrations_by_user(diagnosis: :diabetes)
         overdue_calls_by_user
       end
     end
@@ -246,9 +266,19 @@ module Reports
     #   region => { period_1 => monthly_facility_progress_record, period_2 => monthly_facility_progress_1 }
     # Note that this does differ from the more standard return values returned from the Repository because
     # this data is specifically for the Progress Tab, where all the dimensions are needed at once
-    def facility_progress
+    def monthly_follow_ups_and_registrations
       regions.each_with_object({}) do |region, result|
-        records = Reports::FacilityStateDimension.for_region(region).where(month_date: periods)
+        records = Reports::FacilityMonthlyFollowUpAndRegistration.for_region(region).where(month_date: periods)
+        records_per_period = records.each_with_object({}) do |record, hsh|
+          hsh[record.period] = record
+        end
+        result[region.slug] = records_per_period
+      end
+    end
+
+    def daily_follow_ups_and_registrations
+      regions.each_with_object({}) do |region, result|
+        records = Reports::FacilityDailyFollowUpAndRegistration.for_region(region).where("visit_date > ?", DAYS_AGO.days.ago)
         records_per_period = records.each_with_object({}) do |record, hsh|
           hsh[record.period] = record
         end

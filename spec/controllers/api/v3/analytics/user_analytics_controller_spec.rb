@@ -7,6 +7,10 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
   describe "#show" do
     let(:request_facility) { create(:facility, facility_group: request_user.facility.facility_group) }
 
+    before :each do
+      request.env["HTTP_X_APP_VERSION"] = "2022-07-04-8318"
+    end
+
     context "html" do
       render_views
 
@@ -37,26 +41,6 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
         get :show, format: :html
         expect(response.status).to eq(200)
-      end
-
-      it "renders successfully for follow_ups_v2_progress_tab for facility with DM disabled" do
-        facility = create(:facility, enable_diabetes_management: false, facility_group: request_user.facility.facility_group)
-        Flipper.enable(:follow_ups_v2_progress_tab)
-        Timecop.freeze(1.month.ago) do
-          create_list(:patient, 2, registration_facility: facility)
-        end
-        refresh_views
-
-        request.env["HTTP_X_USER_ID"] = request_user.id
-        request.env["HTTP_X_FACILITY_ID"] = facility.id
-        request.env["HTTP_AUTHORIZATION"] = "Bearer #{request_user.access_token}"
-        get :show, format: :html
-
-        expect(response.status).to eq(200)
-        # This is a brittle assertion but enough to verify we are getting real output back from the v2 code
-        page = Capybara::Node::Simple.new(response.body)
-        total_td = page.find(:css, ".progress-table.registrations").find("tr.total").find("td.row-value")
-        expect(total_td).to have_content(2)
       end
 
       it "returns cohort data" do
@@ -100,14 +84,15 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
             get :show, format: :html
 
             expect(response.status).to eq(200)
-            expect(response.content_type).to eq("text/html")
+            expect(response.media_type).to eq("text/html")
 
             # ui cards
-            expect(response.body).to have_content(/Tap "Sync" on the home screen for new data/)
-            expect(response.body).to have_content(/Registered/)
-            expect(response.body).to have_content(/Follow-up patients/)
-            expect(response.body).to have_content(/Hypertension controlled/)
-            expect(response.body).to have_content(/Notes/)
+            expect(response.body).to have_content(/Registrations and follow-ups/)
+            expect(response.body).to have_content(/Daily/)
+            expect(response.body).to have_content(/Monthly/)
+            expect(response.body).to have_content(/Yearly/)
+            expect(response.body).to have_content(/Hypertension/)
+            expect(response.body).to have_content(/Achievements/)
           end
 
           context "achievements" do
@@ -158,10 +143,10 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
 
       context "html" do
         render_views
-        it "has the follow-ups card" do
+        it "has the registrations and follow-ups card" do
           get :show, format: :html
 
-          expect(response.body).to match(/Follow-up patients/)
+          expect(response.body).to match(/Registrations and follow-ups/)
         end
       end
     end

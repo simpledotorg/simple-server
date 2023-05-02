@@ -48,12 +48,12 @@ function createBaseTrendChartConfig() {
       elements: {
         line: {
           borderJoinStyle: "round",
+          tension: 0.4,
         },
         point: {
           radius: 0,
         },
       },
-      responsive: true,
       maintainAspectRatio: false,
       layout: {
         padding: {
@@ -63,12 +63,16 @@ function createBaseTrendChartConfig() {
           left: 2,
         }
       },
+      events: [],
       legend: {
         display: false
       },
+      plugins: {
+        tooltip:  false,
+      },
       scales: {
-        xAxes: [{ display: false }],
-        yAxes: [{ display: false }],
+        x: { display: false },
+        y: { display: false },
       },
     },
   };

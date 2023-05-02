@@ -120,7 +120,7 @@ am-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ሂንዱ
       bp_passports:
-        heading_html: የደም ግፊት ፓስፖርቶች
+        heading_html: "የደም ግፊት ፓስፖርቶች"
         contents_html: የደም ግፊት ፓስፖርት ካርዶች ወይም የደም ግፊት ፓስፖርት ስቲከሮች በሆስፒታሎ ውስጥ እንዴት እንደሚጠቀሙ ይወቁ።
         video_link_html: የደም ግፊት ፓስፖርት እንዴት መጠቀም ይችላሉ
         video_link_subtitle_html: ሂንዱ ከእንግሊዘኛ ንዑስ ርዕስ ጋር
@@ -315,3 +315,222 @@ am-ET:
         language_tigrinya_html: ትግርኛ
     privacy_policy_html: የግላዊነት ፖሊሲ
     terms_of_service_html: የአገልግሎት ደንቦች
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "ምዝገባዎች እና ክትትል"
+    daily_report_title: "በቀን"
+    monthly_report_title: "በወር"
+    yearly_report_title: "በአመት"
+    hypertension_report_title: "ደም ግፊት"
+    diabetes_report_title: "ደም ግፊት"
+    report: "ሪፖርቶች"
+    last_updated_at: "ውሂቡ ለመጨረሻ ጊዜ የዘመነው %{date} በ %{time} ነው"
+    coming_soon: "በቅርብ ቀን"
+    no_data_card:
+      title: "ይህ ዘገባ በቅርቡ ይመጣል"
+      subtitle: "ሪፖርቶችን"
+    update_required_card:
+      title: "ማዘመን ያስፈልጋል"
+      subtitle: "ይህንን ሪፖርት ለመመልከት መተግበሪያውን ያዘምኑ"
+    diagnoses:
+      all: "ሁሉም የደም ግፊት እና የስኳር በሽታ"
+      hypertension: "ደም ግፊት"
+      diabetes: "ደም ግፊት"
+      hypertension_only: "የደም ግፊት ብቻ"
+      diabetes_only: "የስኳር በሽታ ብቻ"
+      hypertension_and_diabetes: "የደም ግፊት እና የስኳር በሽታ"
+    genders:
+      male: "ወንድ"
+      female: "ሴት"
+      transgender: "ወንዳገረድ"
+    period_card:
+      title: "ምዝገባዎች እና ክትትል"
+    reports_card:
+      title: "ርፖርቶች"
+      subtitle: "ታካሚዎች የደም ግፊትን እና የስኳር በሽታን እንዴት እንደሚታከሙ %{facility_name}እየረዳቸው ነው።"
+    drug_stock_report_card:
+      title: "የመድኃኒት ክምችት ሪፖርት"
+      subtitle: "ለ %{facility_name} መድኃኒት ክምችት የ %{period} ሪፖርት ያቅርቡ።"
+      button_title: "የመድኃኒት ክምችት ያስገቡ"
+    achievements_card:
+      title: "ስኬቶች"
+      follow_up_visits_section_title: "ክትትል %{visit_or_visits} ተመዝግቧል"
+      visit:
+        one: "ጉብኝት"
+        other: "ጉብኝቶች"
+      overdue_patients_section_title: "%{call_or_calls}ግዜ ላለፈባቸው ታካሚዎች"
+      call:
+        one: "ጥሪ"
+        other: "ጥሪዎች"
+      registered_patients_title: "%{patient_or_patients} ተመዝግቧል"
+      patient:
+        one: "ታካሚ"
+        other: "ታካሚዎች"
+    period_report:
+      registered_patients_card:
+        title: "የተመዘገቡ ታካሚዎች"
+        subtitle: "በ %{facility_name} የተመዘገቡ ታካሚዎች"
+      follow_up_patients_card:
+        title: "ታካሚዎችን ተከታተል"
+        subtitle: "BP የተወሰደ፣ የደም ስኳር የተወሰደ፣ ቀጠሮ የተያዘላቸው ወይም መድሃኒቶቻቸው በ %{facility_name} ላይ የዘመኑ ታካሚዎች።"
+      follow_up_visits_card:
+        title: "የክትትል ጉብኝቶች"
+        subtitle: "የክትትል ጉብኝቶች በ %{facility_name} ተመዝግበዋል። ክትትል ማለት አንድ በሽተኛ BP ሲወስድ፣ የደም ስኳር ሲወስድ፣ ቀጠሮ ሲይዝ ወይም መድሃኒቶች ሲዘመኑ የሚደረግ ጉብኝት ነው።"
+      patients_initiated_on_treatment_card:
+        title: '"በሕክምና ላይ የተጀመሩ ታካሚዎች" መረጃ የት አለ?'
+        main_text: '"የተመዘገቡ ታካሚዎችን" ይጠቀሙ, ሁልጊዜም በቀላል ላይ ለተመዘገቡ ታካሚዎች "በሕክምና ላይ የተጀመሩ ታካሚዎች" እኩል ይሆናል።'
+      more_patient_data_coming_soon_card:
+        title: "ተጨማሪ የታካሚ መረጃ በቅርቡ ይመጣል"
+        main_text: "በበሽታ እና በስርዓተ-ፆታ የተከፋፈሉ እለታዊ ምዝገባ እና ክትትል መረጃዎች በቅርቡ ይታከላሉ።"
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "BP ተቆጣጥሯል"
+        hypertension_controlled_long: "BP <140/90"
+        diabetes_controlled_short: "ስኳር <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+        hypertension_uncontrolled_short: "BP አልተቆጣጠረም"
+        hypertension_uncontrolled_long: "BP ≥140/90"
+        diabetes_uncontrolled_short: "ስኳር 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "ስኳር ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "ጎብኝተዋል ነገር ግን ምንም BP አልተወሰደም።"
+        hypertension_visited_but_no_bp_taken_long: "BP አልተወሰድም"
+        missed_visits_short: "ያመለጡ ጉብኝቶች"
+        missed_visits_long: "ምንም ጉብኝት የለም"
+      assigned_patients_card:
+        title: "የተመደቡ ታካሚዎች"
+        subtitle: "የ %{diagnosis} ታካሚዎች ህክምናን ለማግኘት በ %{facility_name} ክትትል እንዲያደርጉ ይጠበቃል"
+        assigned_patients_breakdown:
+          registered_patients: "የተመዘገቡ ታካሚዎች"
+          transferred_in_patients: " ወደ ውስጥ ተላልፏል"
+          transferred_out_patients: "ወደ ውጭ ተላልፏል"
+      total_registered_patients:
+        title: "ጠቅላላ የተመዘገቡ ታካሚዎች"
+        subtitle: "ሁሉም  የ %{diagnosis} ታካሚዎች በ %{facility_name}"
+      monthly_follow_up_patients:
+        title: "ወርሃዊ ክትትል ታካሚዎች"
+        subtitle: " %{diagnosis} ታካሚዎች BP የተወሰደ፣ የደም ስኳር የተወሰደ፣ ቀጠሮ የተያዘላቸው ወይም መድሃኒቶቻቸው በ ወር %{facility_name} ላይ የዘመኑ ታካሚዎች።"
+      patient_treatment_outcomes:
+        section_title: "የታካሚ ሕክምና ሁኔታ"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} ከ %{threshold} እና %{start_period} እና %{end_period} የ %{number_of_registered_patients} %{number_of_registered_patient_or_patients} እስከ %{registration_period} የተመዘገቡ።"
+        controlled_card:
+          subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ%{controlled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
+          help_tooltip:
+            numerator: "ባለፉት 3 ወራት ውስጥ%{uncontrolled_threshold} በመጨረሻ ጉብኝታቸው ላይ ያሉ ታካሚዎች።"
+            denominator: "ወደ %{facility_name} ተመደቡት የ  %{diagnosis} ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
+        uncontrolled_card:
+          subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ%{controlled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
+          help_tooltip:
+            numerator: "ባለፉት 3 ወራት ውስጥ%{uncontrolled_threshold} በመጨረሻ ጉብኝታቸው ላይ ያሉ ታካሚዎች።"
+            denominator: "ወደ %{facility_name} ተመደቡት የ  %{diagnosis} ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
+        very_uncontrolled_card:
+          subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ ስኳር ታካሚዎች ባለፉት 3 ወራት ውስጥ%{very_uncontrolled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
+          help_tooltip:
+            numerator: " \n\n \nባለፉት 3 ወራት ውስጥ %{very_uncontrolled_threshold} የመጨረሻ ጉብኝታቸው ላይ የገቡት የስኳር ህመምተኞች።"
+            denominator: "ወደ %{facility_name} ተመደቡት የ  ስኳር ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
+        missed_visits_card:
+          subtitle: "ከ 3 ወራት በፊት የተመዘገቡ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ በ %{facility_name} ምንም ጉብኝት ሳያደርጉ"
+          help_tooltip:
+            numerator: "ባለፉት 3 ወራት ውስጥ ምንም ጉብኝት የሌላቸው %{diagnosis} ታካሚዎች"
+            denominator: "ወደ %{facility_name} ተመደቡት የ  %{diagnosis} ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
+      drug_stock_report:
+        section_title: "የመድኃኒት ክምችት ሪፖርት"
+        card_subtitle: "%{number_of_days}%{day_or_days} በክምችት ውስጥ ያሉ የጡባዊዎች"
+      cohort_report:
+        section_title: "የ ኮርት ርፖርቶች"
+        card_title: "የሩብ ጊዜ የቡድን ሪፖርቶች"
+        card_subtitle: "በቀጣዮቹ ሩብ ዓመታት ውስጥ በክትትል ጉብኝታቸው ሩብ ውስጥ ለተመዘገቡት ሁሉም የተመደቡ የደም ግፊት በሽተኞች ውጤት።"
+        cohort_title: "ለመጨረሻ ጊዜ የጎበኙት %{period} ውጤት"
+        cohort_subtitle: "%{number_of_patients} %{patient_or_patients} በ %{registration_period} የተመዘገቡ"
+        cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} የ %{threshold}"
+  questionnaire_layout:
+    male: "ወንድ"
+    female: "ሴት"
+    transgender: "ወንዳገረድ"
+    total: "ጠቅላላ"
+    yes: "አዎ"
+    no: "አይ"
+    comments: "አስተያየቶች"
+    instruction_1: "መጠኑን ካላወቁ ባዶውን ይተዉት"
+    instruction_2: 'በክምችት ውስጥ ከሌለ "0" ያስገቡ'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM SCREENING"
+    # Ethiopia
+    total_bp: "አጠቃላይ የBP ምርመራዎች ተደርገዋል"
+    total_bs: "አጠቃላይ የደም ስኳር ምርመራዎች ተደርገዋል"
+    new_raised_cases: "አዲስ የተነሱ ጉዳዮች"
+    total_bp_raised: "አጠቃላይ የተነሱ BP"
+    total_bs_raised: "አጠቃላይ የተነሱ BS"
+    total_bp_raised_ncd_linked: "ከNCD ክሊኒክ ጋር የተገናኘ አጠቃላይ የተነሱ የBP ጉዳዮች"
+    total_bs_raised_ncd_linked: "ከNCD ክሊኒክ ጋር የተገናኘ አጠቃላይ የተነሱ የBS ጉዳዮች"
+    diagnosed_cases: "ምርመራ የተካሄደባቸው ጉዳዮች"
+    total_htn_diagnosed: "ጠቅላላ ምርመራ የተካሄደባቸው HTN"
+    total_dm_diagnosed: "ጠቅላላ ምርመራ የተካሄደባቸው DM"
+    cervical_cancer_uc: "የማህጸን ጫፍ ካንሰር"
+    total_women_screened_cervical: "ለማህጸን ጫፍ ካንሰር ምርመራ ያካሄዱ ሴቶች ብዛት"
+    total_women_treated_cervical: "ለማህጸን ጫፍ ካንሰር ህክምና ያካሄዱ ሴቶች ብዛት"
+    total_women_followup_cervical: "ከ1 አመት በኋላ ክትትል ያደረጉ ሴቶች ብዛት"
+    # India
+    monthly_opd_visits_gt_30: "ወርሃዊ የ OPD ጉብኝቶች >30 አመት ለሆኑ አዋቂዎች"
+    monthly_opd_visits_gt_18: "ወርሃዊ የ OPD ጉብኝቶች >18 አመት ለሆኑ አዋቂዎች"
+    outpatient_department_visits: "የተመላላሽ ታካሚ ክፍል ጉብኝቶች"
+    total_bp_checks: "አጠቃላይ የ BP ፍተሻዎች ተከናውነዋል"
+    total_blood_sugar_checks: "አጠቃላይ የደም ስኳር ምርመራዎች ተደርገዋል"
+    new_suspected_individuals: "አዲስ የተጠረጠሩ ግለሰቦች"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM (ሁለቱም)"
+    diagnosed_cases_on_follow_up: "በክትትል ላይ ምርመራ የተደረገባቸው ጉዳዮች"
+    diagnosed_cases_on_follow_up_htn: "HTN ታካሚዎች ክትትል የሚደረግላቸው"
+    diagnosed_cases_on_follow_up_dm: "DM ታካሚዎች ክትትል የሚደረግላቸው"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM (ሁለቱም) ታካሚዎች ክትትል የሚደረግላቸው"
+    cancer_screening: "የካንሰር ምርመራ"
+    total_cancer_screening_oral: "አጠቃላይ የአፍ ካንሰር ምርመራዎች ተደርገዋል"
+    total_cancer_screening_breast: "አጠቃላይ የጡት ካንሰር ምርመራዎች ተደርገዋል"
+    total_cancer_screening_cervical: "አጠቃላይ የማህፀን በር ካንሰር ምርመራዎች ተከናውነዋል"
+    oral_cancer: "የአፍ ካንሰር"
+    breast_cancer: "የጡት ካንሰር"
+    cervical_cancer: "የማኅጸን ካንሰር"
+  monthly_supplies_report:
+    instruction_1: "በየወሩ መጨረሻ ላይ በክምችት ውስጥ የቀሩትን አቅርቦቶች ያስገቡ"
+    stock_on_hand: "በእጅ ላይ ያለ ክምችት"
+    stock_on_hand_uc: "በእጅ ላይ ያለ ክምችት"
+    working_equipments: "የሥራ መሣሪያዎች"
+    glucose_strips: "የደም ግሉኮስ የምርመራ ስትሪፖች"
+    total_working_condition: "በመስራት ሁኔታ ላይ ያሉ ብዛት"
+    # Bangladesh
+    patient_books: "የታካሚ መፅሃፍት"
+    available_bp_monitors_arm_in: "ጠቅላላ የሚገኙ የBP መከታተያዎች ብዛት (ክንድ የሚገባባቸው)"
+    functioning_bp_monitors_arm_in: "የሚሰሩ የBP መከታተያዎች (ክንድ የሚገባባቸው)"
+    available_bp_monitors_handheld: "ጠቅላላ የሚገኙ የBP መከታተያዎች ብዛት (በእጅ የሚያዙ)"
+    functioning_bp_monitors_handheld: "የሚሰሩ የBP መከታተያዎች (በእጅ የሚያዙ)"
+    available_blood_glucose_monitors: "ጠቅላላ የሚገኙ የደም ግሉኮስ መከታተያዎች ብዛት"
+    functioning_blood_glucose_monitors: "የሚሰሩ የደም ግሉኮስ መከታተያዎች"
+    # Ethiopia
+    bp_monitor: "የBP መከታተያ"
+    glucose_meter: "የደም ግሉኮስ ሜትር"
+    stethoscope: "ስቴቶስኮፕ"
+    height_weight_machine: "የቁመት እና ክብደት መለኪያ ማሽን"
+    waist_tape: "የወገብ ዙሪያ መለኪያ ቴፕ"
+    # India
+    glucometer_strips: "የግሉኮሜትር ስትሪፖች"
+    # Sri Lanka
+    equipment: "መሳሪያ"
+    available_bp_devices: "ጠቅላላ የሚገኙ የBP መሳሪያዎች ብዛት"
+    functioning_bp_devices: "የሚሰሩ የBP መሳሪያዎች"
+    available_phones: "ጠቅላላ የሚገኙ የሞባይል ስልኮች"
+    functioning_phones: "የሚሰሩ የሞባይል ስልኮች"
+    drug_stock: "የመድሃኒት ማከማቻ"
+    drug_stock_losartan: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ ሎሳርታን"
+    drug_stock_amlodipine: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ አምሎዲፓይን"
+    drug_stock_hct: "ለሚቀጥለው ወር በቂ መድሃኒቶች፦ HCT (ሃይድሮክሎራቲያዛይድ)"
+    trained_staff: "የሰለጠኑ ሰራተኞች"
+    doctors_count: "በሕክምና ክሊኒክ ውስጥ የሚከታተሉ የዶክተሮች ብዛት"
+    nurses_count: "በሕክምና ክሊኒክ ውስጥ የሚከታተሉ የነርሶች ብዛት"
+    pharmacists_count: "በሕክምና ክሊኒክ ውስጥ የሚገኙ የፋርማሲስቶች ብዛት"
+    drug_dispensers_count: "በሆስፒታል ውስጥ የሚገኙ የመድሃኒት ማከፋፈያዎች ብዛት"
+    others: "ሌሎች"
+    television_functional: "በሕክምና ክሊኒክ ውስጥ የጤና ትምህርት መልዕክቶች የቴሌቪዥን ማያ ገፅን በመጠቀም ይታያሉ?"
+    wifi_functional: "የዋይ-ፋይ አውታረ መረብ ይገኛል?"

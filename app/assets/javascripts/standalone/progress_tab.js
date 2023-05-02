@@ -15,7 +15,7 @@ function goToPage(startPageId, endPageId) {
 // Bar chart interactions
 const barCharts = document.querySelectorAll("[data-graph-type='bar-chart'][data-with-tooltip='true']");
 barCharts.forEach(barChart => {
-  const bars = barChart.querySelectorAll("[data-graph-element='bar'");
+  const bars = barChart.querySelectorAll("[data-graph-element='bar']");
 
   bars.forEach(bar => {
     bar.addEventListener("touchstart", handleBarTouchStart, false);
@@ -181,4 +181,61 @@ function removeCSSClasses(element, cssClasses) {
   cssClasses.forEach(cssClass => {
     element.classList.remove(cssClass);
   })
+}
+
+//
+// Daily report
+//
+function updateDailyReport() {
+    const dropdown = document.getElementById("daily-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const dailyCards = document.querySelectorAll("[data-element='daily-cards']");
+
+    dailyCards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
+}
+
+//
+// Monthly report
+//
+function updateMonthlyReport() {
+    const dropdown = document.getElementById("monthly-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const monthly_cards = document.querySelectorAll("[data-element='monthly-cards']");
+
+    monthly_cards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
+}
+
+function updateYearlyReport() {
+    const dropdown = document.getElementById("yearly-period-dropdown");
+    const selectValue = dropdown.value;
+
+    const monthly_cards = document.querySelectorAll("[data-element='yearly-cards']");
+
+    monthly_cards.forEach($card => {
+        if ($card.getAttribute("data-date") == selectValue) {
+            $card.classList.remove("d-none");
+            $card.classList.add("d-block");
+        } else {
+            $card.classList.remove("d-block");
+            $card.classList.add("d-none");
+        }
+    });
 }

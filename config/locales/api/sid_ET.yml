@@ -1,28 +1,28 @@
 sid-ET:
   date:
-    month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
-    abbr_month_names: [~, "Janowari", "Febiraari", "marchi", "Apirile", "Meyi", "Juni", "Julayi", "Awugeste", "Septembere", "Oktobere", "Novembere", "Disembere"]
+    month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "birra", "Bocaasa ", "Sadaasa"]
+    abbr_month_names: [~, "Arfaasa", "Ammajje", "Badheessa", "Dotteessa", "Onkoleessa", "Ella", "Maaja", "Woxawaajje", "Wocawaaro", "Birra", "Bocaasa", "Sadaasa"]
   today_str: "Techo"
   registration: "Haaro Borreesama"
   reset_password: "PIN/e Wirro hanafisiisi"
   login:
     error_messages:
       unknown_user: "Hakkoye horonsirassincho dianfoomo Buuxxe Wirro Wa’nnaali"
-      invalid_otp: "OTP/Ki Dixxaadino Wirro Wo’nnaala?"
+      invalid_otp: "OTP/Ki Dixaaddino. Wirro Wo’naala?"
       expired_otp: "OTP/KI ba’inote/yanna sa’inote Haaro Xa’mi."
       invalid_password: "Sa”ate Qaali Dixxaadino. Wirro Wo’nnaala?"
-      account_locked: "Harunseewo %{minutes} Geeshsha Xawwishshiki Cufamino. Agarte Wirro Wo’nnaali."
+      account_locked: "Harunseewo %{minutes} Geeshsha Xawwishshiki Cufamino. Agarte Wirro Wo’naali."
   communications:
     request_otp: "<#> %{otp} Tini Simple Huwatate Code/Fojote Borro/kiiro atete %{app_signature}\n"
     appointment_reminders:
-      sms: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. ANM woyi ASHA/ki ledo xaadi."
-      whatsapp: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. ANM woyi ASHA/ki ledo xaadi."
+      sms: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. "
+      whatsapp: "Ninke Borro mini %{facility_name} nni yaa ki’neranna ki’ne wodani keeri daafira hedanno yaate. Ballo! Mundeete xiiwo xagga harunse. Mulekki leeltawo Cinaanchu uurrinshini xaggichokki gamba assiri. "
     patient_request_otp: "<#> %{otp} Tini mundeekki xiiwo passporte Huwatate code/ti (Fojote kiiroti/borrooti)."
   dashboard:
     graphics:
       graphics_title_html: "<b>%{current_quarter_string}</b> te yannara borreessantu xagisiraanora <b>%{previous_quarter_string}</b> nni %{patients_in_previous_quarter} geya noote giddo mayi kalaqami?"
       report_name: "Jawa Mundeete xiiwo Reporte"
-      patients_controlled_in_quarter_html: "Xiwantino Xagisiraano &lt; Mundeete xiiwonni daa”atantu"
+      patients_controlled_in_quarter_html: "Xiwantino Xagisiraano lt nna Mundeete xiiwonni daa”atantu;"
       patients_uncontrolled_in_quarter_html: "Xiwantino Xagisiraano &ge; Mundeete xiiwonni daa”atantu"
       patients_defaulted_in_quarter_html: "Xagisiraano agaroonni harunso daa”antera dileeltino."
       new_patients_registered: "Haaro borreesuwa"
@@ -54,9 +54,10 @@ sid-ET:
     denominator: "Behamaancho ikkitewokita"
     hypertension_cohort_report: "Jawa Mundeete xiiwo ka’laanchi Reporte"
     hypertension_cohort_report_desc: "Mittimmate reporte haaro borreessantino xagisiraanora jawa Mundeete xiiwo/sao umi hikkiminnu agannubba gumansa leellishshanno."
-    patients_with_controlled_bp: "Xiwantino Xagisiraano &lt; Mundeete xiiwonni daa”atantu."
-    patients_with_uncontrolled_bp: "Xiwantino Xagisiraano &ge; Mundeete xiiwonni daa”atantu."
+    patients_with_controlled_bp: "Xiwantino Xagisiraano Mundeete xiiwonninna It  daa”atantu.140/90"
+    patients_with_uncontrolled_bp: "Xiwantino Xagisiraano Mundeete xiiwonninna ge nni daa”atantu.140/90"
     patients_with_no_bp_measure: "Mundeete xiiwo bikkaanchi noonsaki Xagisiraano."
+    patients_with_missed_visits: "towaanyo iillitinonsakki xiwamaano"
     registered_in: "Giddo Borreessantino"
     result_from_last_visit_in: "Guma Tenneeti daa’antenni"
     no_patients: "Xagisiraano dino"
@@ -73,7 +74,7 @@ sid-ET:
       all: "Baalanka"
       female: "Meyaa beeetto"
       male: "Labbaaha"
-      transgender: "Koo tee soorri’noha(Transgender)"
+      transgender: "lamenka koo/te "
   help:
     menu:
       videos_html: Viidio
@@ -108,18 +109,18 @@ sid-ET:
         chapter_5_html: "5: Garu xagisiraancho afiri"
         chapter_6_html: "6: Yanna sa’inonsa xagisiraanora bilbille/woshshe"
         chapter_7_html: "7: Hassiisseeme sonubba"
-        chapter_8_html: "8: FAQ"
+        chapter_8_html: "8: Duucha woyte Xa'mantino xa'mubba"
         chapter_9_html: "9: Hiittoonni kaa’lo afira dandiinayiro"
-        chapter_10_html: "10: Simple horonsirateyi hanafi"
+        chapter_10_html: "10: Shota horonsirateyi hanafi"
       teleconsultation:
         heading_html: Telenniha amaalete qajeelsha
-        contents_html: Hosipitaalleki Simple gari Telete-amaale horonsidhawoha ikkiro kuni qajeelshi ateraati.
-        english_video_link_html: Telete amaale Simple
+        contents_html: Hosipitaalleki Shota gari Telete-amaale horonsidhawoha ikkiro kuni qajeelshi ateraati.
+        english_video_link_html: Telete amaale Shota
         english_video_link_language_html: Ingilezete afoo
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindete afoo
       bp_passports:
-        heading_html: Mundeete xiiwo passporte
+        heading_html: "Mundeete xiiwo passporte"
         contents_html: Hosipitaalete giddo Mundeete xiiwo passporte karduwa woyi Mundeete xiiwo passporte xallaasinuwa Hiittoonni horonsi’nayiro afi.
         video_link_html: Hiittoonni horonsi’nayiro Mundeete xiiwo passporte
         video_link_subtitle_html: Hindete afoo Ingilezete afiinni cinaancho handaara
@@ -132,7 +133,7 @@ sid-ET:
         heading_html: Viidio lai
         contents_html: Ontu/5 dhiqqeessi giddo Simple qara coyibba affe
       who_to_record:
-        heading_html: "Simple ayi borreessi?"
+        heading_html: "Simple ayi hinkiili?"
         contents_1_html: Borreessate Simple Horonsiri <i>mittu mittunku Jawa Mundeete xiiwo noonsarira</i> woyi jawa Mundeete xiiwora xagga adhitayi noorira.
         contents_2_html: Xagisiraanchu layirara higiro mittu gari xiwamaancho hasi nna haaro Mundeete xiiwo eessi.
       step_1:
@@ -314,3 +315,222 @@ sid-ET:
         language_tigrinya_html: Tigirete afoo
     privacy_policy_html: Hallanshu wodho
     terms_of_service_html: Owaantete sheemaante
+
+  progress_tab:
+    registrations_and_follow_ups_card:
+      title: "borreessammenna harunso"
+    daily_report_title: "Barru tuqa"
+    monthly_report_title: "Aganuy"
+    yearly_report_title: "Diruy"
+    hypertension_report_title: "Jawa Mundeete xiiwo"
+    diabetes_report_title: "Sukaarete xibba"
+    report: "Ripoorte"
+    last_updated_at: "Jeefote haroonsinoonni barra %{date} nni %{time}"
+    coming_soon: "Mulenni shiqqanno"
+    no_data_card:
+      title: "Tini ripoorte mulenni shiqqanno."
+      subtitle: "Albaanni saino ripoorteno la\"a dandiitinani"
+    update_required_card:
+      title: "haaroonsa hasiissino"
+      subtitle: "tenne ripoorte la\"ate appe haroonse"
+    diagnoses:
+      all: "Wo’manta jawa  Mundeete xiiwo nna sukkaare"
+      hypertension: "Jawa Mundeete xiiwo"
+      diabetes: "Sukaarete xibba"
+      hypertension_only: "Jawa mundeete xiiwo callla"
+      diabetes_only: "Sukkaarete xisso calla"
+      hypertension_and_diabetes: "Jawa mundeete xiiwonna sukkaarete xisso"
+    genders:
+      male: "Labbaaha"
+      female: "Meyaa beeetto"
+      transgender: "lamenka koo/te "
+    period_card:
+      title: "borreessammenna harunso"
+    reports_card:
+      title: "Rippoortubba"
+      subtitle: "Hiittoonni %{facility_name} xissamaano jawa mundeete xiiwo nna sukaarte xissonsa xagisidhara kaa'lanno."
+    drug_stock_report_card:
+      title: "Xagichu duuno ripoorte"
+      subtitle: " %{facility_name} nnita xagichu duuno ripoorte %{period} ra sokke. "
+      button_title: "xagichu duuno eesse"
+    achievements_card:
+      title: "Guma/Loosu Gumulo"
+      follow_up_visits_section_title: "maarekkinoonnita %{visit_or_visits}  harunsa "
+      visit:
+        one: "Toyaanyubba"
+        other: "Toyaanyubba"
+      overdue_patients_section_title: "%{call_or_calls} xissamaanote barrisira"
+      call:
+        one: "Bilbilloonni kiiro"
+        other: "Bilbilloonni kiiro"
+      registered_patients_title: "borreessamino/borreessantino %{patient_or_patients}"
+      patient:
+        one: "Xissamaano"
+        other: "Xissamaano"
+    period_report:
+      registered_patients_card:
+        title: "Borreessantino Xagisiraano"
+        subtitle: " %{facility_name} ra borreessantino xissamaano. "
+      follow_up_patients_card:
+        title: "Xagisiraano harunsa"
+        subtitle: "Jawa mundeete xiiwo haa'noonni, mundeete sukkaare ha'noonni, dinye qineessinoonni, woy xagichonsa haroonsidhino xissamaano %{facility_name}."
+      follow_up_visits_card:
+        title: "harunso assinanni toyanyubba"
+        subtitle: "%{facility_name}. ra maareekkinoonni harunso assinanni toyanyubba. xissamaanote Jawa mundeete xiiwo haa'niro, mundeete sukkaare haa'niro, dinye qineessiniro, woy xagichonsa haroonsidhuro harunso toyaanyo ikkitanno. "
+      patients_initiated_on_treatment_card:
+        title: 'Taje "xissamaano xagisirate hasato leellishshinoti" mama no?'
+        main_text: '"Borreessantino xissamaano" horoonsiri, ayee woyteno "xagisirate hasatto leellishshino xissamaano" nna Simple giddo borrreessantino xissamaano taaloho.'
+      more_patient_data_coming_soon_card:
+        title: "Roore xissamaanote taje mulenni dagganno. "
+        main_text: "Barru baali boreessonna harunso taje, xissote daninninna koo/tee tenni babbande mulenni lendanni  "
+    diagnosis_report:
+      diagnosis_thresholds:
+        hypertension_controlled_short: "Mundeete xiiwo hoolloonni."
+        hypertension_controlled_long: "Mundeete xiiwo  <140/90"
+        diabetes_controlled_short: "Mundeete sukkaare <200"
+        diabetes_controlled_long: "RBS/PPBS <200, FBS <126, or HbA1c <7.0"
+        hypertension_uncontrolled_short: "Mundeete xiiwo di hoolloonni. "
+        hypertension_uncontrolled_long: "Mundeete xiiwo ≥140/90"
+        diabetes_uncontrolled_short: "Mundeete sukkaare 200-299"
+        diabetes_uncontrolled_long: "RBS/PPBS 200-99, FBS 126-199, or HbA1c 7.0-8.9"
+        diabetes_very_uncontrolled_short: "Mundeete sukkaare ≥300"
+        diabetes_very_uncontrolled_long: "RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0"
+        hypertension_visited_but_no_bp_taken_short: "Towaantoonni kayinni Mundeete xiiwo di haa'noonni. "
+        hypertension_visited_but_no_bp_taken_long: "Mundeete xiiwo di haa'noonni"
+        missed_visits_short: "Gattino towaanyo"
+        missed_visits_long: "towaanyo dino"
+      assigned_patients_card:
+        title: "gaammoonni xissamaano"
+        subtitle: " %{facility_name} te harunso assidhanno yine hendanni xissamaano %{diagnosis}  adhitara."
+        assigned_patients_breakdown:
+          registered_patients: "Borreessantino Xagisiraano"
+          transferred_in_patients: "Giddora sayinsoonni"
+          transferred_out_patients: "Gobbara sayinsoonni"
+      total_registered_patients:
+        title: "Xaphooma borreessantino xissamaano"
+        subtitle: "Wo'manta %{diagnosis} %{facility_name} ra borreessantino xissamaano"
+      monthly_follow_up_patients:
+        title: "Aganuy harunso assinanni xissamaano"
+        subtitle: "%{diagnosis} jawa mundeete xiiwo haa'noonni, mundeete sukkaare ha'noonni, dinye qineessinoonni, woy xagichonsa haroonsidhino xissamaano %{facility_name} aganu giddo."
+      patient_treatment_outcomes:
+        section_title: "Xissamaano xaginsoonni akata"
+        chart_tooltip: "%{number_of_patients} %{number_of_patient_or_patients} ledo %{threshold} mereero %{start_period} nna %{end_period} of %{number_of_registered_patients} %{number_of_registered_patient_or_patients} xaa geeshsha boorreessantino %{registration_period}."
+        controlled_card:
+          subtitle: "%{diagnosis} xissamaanchu %{facility_name} ra 3 aganinni ajjino yannara albaanni borreessamino  %{controlled_threshold} nni goofimarchu toyaanyonsa sai 3 agani giddo ikkituro."
+          help_tooltip:
+            numerator: "Sai 3 agani towaanyo giddo %{controlled_threshold} ledo noo xissamaano. "
+            denominator: "%{diagnosis}  %{facility_name} ra gaammoonni, sai 3 agani albaanni borreessantino xissamaon. Reyitinonna harunso agurooni xissamaano hoollanni."
+        uncontrolled_card:
+          subtitle: "%{diagnosis} xissamaanchu %{facility_name} ra 3 aganinni ajjino yannara albaanni borreessamino %{controlled_threshold} nni goofimarchu toyaanyonsa sai 3 agani giddo ikkituro."
+          help_tooltip:
+            numerator: "Sai 3 agani towaanyonni %{uncontrolled_threshold} ledo noo xissamaano"
+            denominator: "%{diagnosis}  %{facility_name} ra gaammoonni, sai 3 agani albaanni borreessantino xissamaano. Reyitinonna harunso agurooni xissamaano hoollanni."
+        very_uncontrolled_card:
+          subtitle: " 3 aganinni ajjino yanna giddo, %{facility_name} ra borreessantino sukkaarete xissamaano  %{very_uncontrolled_threshold} nni goofimarchu towaanyonsa sai 3 agani giddo ikkitinori."
+          help_tooltip:
+            numerator: "Sai 3 agani towaanyonsanni %{very_uncontrolled_threshold} giddo noo sukkaarete xissamaano."
+            denominator: "%{facility_name} ra gaammoonni sukkaarete xissamaano, sai 3 agani albaanni borreessantino xissamaano. Reyitinonna harunso agurooni xissamaano hoollanni."
+        missed_visits_card:
+          subtitle: "%{diagnosis}  %{facility_name} ra sai 3 agani albaanni borreessantino  nna 3 agani giddo harunso assine egenninoonninsakki xissamaano."
+          help_tooltip:
+            numerator: "%{diagnosis} sai 3 agana harunso assine egenninoonnikki xissamaano."
+            denominator: "%{diagnosis}  %{facility_name} ra gaammoonni, sai 3 agani albaanni borreessantino xissamaon. Reyitinonna harunso agurooni xissamaano hoollanni."
+      drug_stock_report:
+        section_title: "Xagichu duuno ripoorte"
+        card_subtitle: "%{number_of_days} %{day_or_days} ra kuusote noo xagga"
+      cohort_report:
+        section_title: "Gamba yitino ripoorte"
+        card_title: "Bocu bocinni gamba yitino ripoorte"
+        card_subtitle: "Mundeete xiiwo leddino, bocu bocira borreessantino nna harunsonsa bocu bocira noo xissamaano baalunku guma."
+        cohort_title: " %{period} ra jeefote towaanyo guma."
+        cohort_subtitle: "%{number_of_patients} \n%{patient_or_patients} borreessantinori \n%{registration_period}"
+        cohort_bar_tooltip: "%{total_patients} \n%{patient_or_patients} ledo \n%{threshold}"
+  questionnaire_layout:
+    male: "Labbaaha"
+    female: "Meyaa beeetto"
+    transgender: "lamenka koo/te "
+    total: "Xaphooma"
+    yes: "Ee"
+    no: "Dee'ni"
+    comments: "Hedubba"
+    instruction_1: "Bikka afa hoogginiro fano agurtine sa'e"
+    instruction_2: 'Kuuso gooffiniro "0" borreesse'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM buuxa"
+    # Ethiopia
+    total_bp: "Xaphoomu mundeete xiiwo buuxo ka'noonni"
+    total_bs: "Xaphoomu mundeete sukkaare buuxo ka'noonni"
+    new_raised_cases: "Haaro kaino hajubba"
+    total_bp_raised: "Xaphoomunni lexxitino mundeete xiiwo"
+    total_bs_raised: "Xaphoomunni lexxitino mundeete sukkaare"
+    total_bp_raised_ncd_linked: "Xaphoomunni lexxitino mundeete xiiwo hajo NCD kiliinike ledo xaadinsoonniti"
+    total_bs_raised_ncd_linked: "Xaphoomunni lexxitino mundeete sukkaare hajo NCD kiliinike ledo xaadinsoonniti"
+    diagnosed_cases: "Buuxo assinoonni hajubba"
+    total_htn_diagnosed: "Xaphooma buuxo assinoonni HTN "
+    total_dm_diagnosed: "Xaphooma buuxo assinoonni DM"
+    cervical_cancer_uc: "Otoottote kaansere"
+    total_women_screened_cervical: "Xaphooma otoottote kaansere noonsa meento"
+    total_women_treated_cervical: "Xaphooma otoottote kaansere xagisirino meento"
+    total_women_followup_cervical: "1 diri gedenanni harunso assinoonninsa meento"
+    # India
+    monthly_opd_visits_gt_30: "aganunita OPD laooshe wede'laho >30 diro. "
+    monthly_opd_visits_gt_18: "aganunita OPD laooshe wede'laho >18 diro."
+    outpatient_department_visits: "hare giganni xagisirano xiwamasine base laooshe"
+    total_bp_checks: "xa'pooma BP la'nooni"
+    total_blood_sugar_checks: "xa'pooma mundeete sukaare deerra lanooni"
+    new_suspected_individuals: "haarro huluulo noo mancho"
+    new_suspected_individuals_htn: "HTN"
+    new_suspected_individuals_dm: "DM"
+    new_suspected_individuals_htn_and_dm: "HTN+DM(lamunku)"
+    diagnosed_cases_on_follow_up: "xinxalote anfooni coye harunsote aana"
+    diagnosed_cases_on_follow_up_htn: "HTN xiwamanch harunsote laooshi aana"
+    diagnosed_cases_on_follow_up_dm: "DM xiwamanchi harunisote laooshi aana"
+    diagnosed_cases_on_follow_up_htn_and_dm: "HTN+DM(lamunku) tiwamanchi harunsote laooshi aana"
+    cancer_screening: "kanserete xi'ba xiinxallo"
+    total_cancer_screening_oral: "xa'pooma afuunita kaanserete xi'ba lanooni"
+    total_cancer_screening_breast: "xa'pooma unuununita kaanserete xi'ba lanooni"
+    total_cancer_screening_cervical: "xa'pooma ur'chu bir'xe kaansere lanooni"
+    oral_cancer: "afuu kaansere"
+    breast_cancer: "unuunu kaansere"
+    cervical_cancer: "ur'chu bir'xe kaansere"
+  monthly_supplies_report:
+    instruction_1: "Kuusote mine gatinoha irkote uduunne aganu goofimarchi kiiro eessi"
+    stock_on_hand: "Gooffinokki kuuso"
+    stock_on_hand_uc: "GOOFFINOKKI KUUSO"
+    working_equipments: "LOONSANNI UDUUNNE"
+    glucose_strips: "Mundeete guokoose buunxanni uduunne"
+    total_working_condition: "Xaphooma loosu ikkito"
+    # Bangladesh
+    patient_books: "Xissamaanote taje borreessinoonni maxaafa"
+    available_bp_monitors_arm_in: "Xaphooma qixxaabbino mundeete xiiiwo bikkinanni uduunnicho (cigilete-giddo)"
+    functioning_bp_monitors_arm_in: "Loosu aana noo mundeete xiiiwo bikkinanni uduunnicho (cigilete-giddo)"
+    available_bp_monitors_handheld: "Xaphooma qixxaabbino mundeete xiiiwo bikkinanni uduunnicho (amandanniha)"
+    functioning_bp_monitors_handheld: "Loosu aana noo mundeete xiiiwo bikkinanni uduunnicho (amandanniha)"
+    available_blood_glucose_monitors: "Xaphooma qixxaawino mundeete gulukoose bikkinanni udunnicho"
+    functioning_blood_glucose_monitors: " Loosanno mundeete gulukoose bikkinanni udunnicho"
+    # Ethiopia
+    bp_monitor: "Mundeete xiiwo bikkinanni uduunnicho"
+    glucose_meter: "Mundeete gulukoose meetire"
+    stethoscope: "Isteetoskope"
+    height_weight_machine: "Hojjanna qelpheepho bikkinanni maashine"
+    waist_tape: "Hallu hala'linye bikkinanni Teeppe"
+    # India
+    glucometer_strips: "Gulukomeetirete uduunnicho"
+    # Sri Lanka
+    equipment: "UDUUNNICHO"
+    available_bp_devices: "Xaphooma qixaawino mundeete xiiwo uduunne"
+    functioning_bp_devices: "Loosu aana noo mundeete xiiwo uduunne"
+    available_phones: "Xaphooma noo mobayilete bilbilla"
+    functioning_phones: "Loossanno mobayilete bilbilla"
+    drug_stock: "Xagichu duuno"
+    drug_stock_losartan: "Daanno aganira ikkanno xagicho: Losartaane"
+    drug_stock_amlodipine: "Daanno aganira ikkanno xagicho: Amilodipine"
+    drug_stock_hct: "Daanno aganira ikkanno xagicho: HCT (Haydrokiloratiazayide)"
+    trained_staff: "QAJEELTINO ISTAAFETE MIILLA"
+    doctors_count: "Medikaalete kiliinike dagganno dottorrate kiiro"
+    nurses_count: "Medikaalete kiliinike dagganno nersubbate kiiro"
+    pharmacists_count: "Hospitaalete noo faarmasistooti kiiro"
+    drug_dispensers_count: "Hospittaalete giddo noo xagicho horoonsi'nanni amaale uyitannori kiiro"
+    others: "WOLOOTUNO"
+    television_functional: "Medikaale kiliinike giddo, Televizhiinete iskriine horoonsi'ne babbaxxinoha keereaanchimmate rosi sokka sayinsoonni?"
+    wifi_functional: "Wi-Fi netiworke qinaabbino?"

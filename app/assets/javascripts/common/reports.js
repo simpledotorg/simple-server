@@ -1,26 +1,409 @@
+function dashboardReportsChartJSColors() {
+  return {
+    darkGreen: "rgba(0, 122, 49, 1)",
+    mediumGreen: "rgba(0, 184, 73, 1)",
+    lightGreen: "rgba(242, 248, 245, 0.5)",
+    darkRed: "rgba(184, 22, 49, 1)",
+    mediumRed: "rgba(255, 51, 85, 1)",
+    lightRed: "rgba(255, 235, 238, 0.5)",
+    darkPurple: "rgba(83, 0, 224, 1)",
+    lightPurple: "rgba(169, 128, 239, 0.5)",
+    darkBlue: "rgba(12, 57, 102, 1)",
+    mediumBlue: "rgba(0, 117, 235, 1)",
+    lightBlue: "rgba(233, 243, 255, 0.75)",
+    darkGrey: "rgba(108, 115, 122, 1)",
+    mediumGrey: "rgba(173, 178, 184, 1)",
+    lightGrey: "rgba(240, 242, 245, 0.9)",
+    white: "rgba(255, 255, 255, 1)",
+    amber: "rgba(250, 190, 70, 1)",
+    darkAmber: "rgba(223, 165, 50, 1)",
+    transparent: "rgba(0, 0, 0, 0)",
+    teal: "rgba(48, 184, 166, 1)",
+    darkTeal: "rgba(34,140,125,1)",
+    maroon: "rgba(71, 0, 0, 1)",
+    darkMaroon: "rgba(60,0,0,1)",
+  };
+}
+
+DashboardReports = () => {
+  const colors = dashboardReportsChartJSColors();
+  const formatPercentage = (number) => {
+    return (number || 0) + "%";
+  };
+
+  const formatNumberWithCommas = (value) => {
+    if (value === undefined) {
+      return 0;
+    }
+
+    if (numeral(value) !== undefined) {
+      return numeral(value).format("0,0");
+    }
+
+    return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+
+  const formatValue = (format, value) => {
+    if (!format) {
+      return value;
+    }
+
+    switch (format) {
+      case "percentage":
+        return formatPercentage(value)
+      case "numberWithCommas":
+        return formatNumberWithCommas(value)
+      default:
+        throw `Unknown format ${format}`;
+    }
+  }
+
+  const createAxisMaxAndStepSize = (data) => {
+    const maxDataValue = Math.max(...Object.values(data));
+    const maxAxisValue = Math.round(maxDataValue * 1.15);
+    const axisStepSize = Math.round(maxAxisValue / 2);
+
+    return {
+      max: maxAxisValue,
+      stepSize: axisStepSize,
+    };
+  };
+
+  const ReportsGraphConfig = {
+    bsBelow200PatientsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              backgroundColor: colors.lightGreen,
+              borderColor: colors.mediumGreen,
+              data: Object.values(data.bsBelow200Rate),
+            },
+          ],
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    cumulativeDiabetesRegistrationsTrend: function(data) {
+      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
+      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+      const config = {
+        data: {
+          labels: Object.keys(data.cumulativeDiabetesRegistrations),
+          datasets: [
+            {
+              type: "line",
+              data: Object.values(data.cumulativeDiabetesRegistrations),
+              label: "cumulative diabetes registrations",
+              yAxisID: "y",
+              backgroundColor: colors.transparent,
+              borderColor: colors.darkPurple,
+            },
+            {
+              type: "line",
+              data: Object.values(data.monthlyDiabetesFollowups),
+              label: "monthly diabetes followups",
+              yAxisID: "y",
+              backgroundColor: colors.transparent,
+              borderColor: colors.darkTeal,
+            },
+            {
+              type: "bar",
+              data: Object.values(data.monthlyDiabetesRegistrations),
+              label: "monthly diabetes registrations",
+              yAxisID: "yMonthlyDiabetesRegistrations",
+              backgroundColor: colors.lightPurple,
+              hoverBackgroundColor: colors.darkPurple,
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              grid: {
+                drawTicks: false,
+              },
+              ticks: {
+                display: false,
+                stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
+              },
+              max: cumulativeDiabetesRegistrationsYAxis.max,
+            },
+    
+            yMonthlyDiabetesRegistrations: {
+              display: false,
+              beginAtZero: true,
+              min: 0,
+              max: monthlyDiabetesRegistrationsYAxis.max,
+            },
+          }
+        }
+      };
+      return withBaseLineConfig(config);
+    },
+
+    bsOver200PatientsTrend: function (data) {
+      const config = {
+        type: "bar",
+        data: {
+          labels: Object.keys(data.bsOver300Rate),
+          datasets: [
+            {
+              label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate),
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+            },
+            {
+              label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate),
+              backgroundColor: colors.mediumRed,
+              hoverBackgroundColor: colors.darkRed,
+            },
+          ],
+        },
+        options: { 
+          scales: {
+            x: {
+              stacked: true,
+            },
+            y: {
+              stacked: true,
+            },
+          }
+        }
+      };
+      return withBaseLineConfig(config);
+    },
+
+    diabetesMissedVisitsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.diabetesMissedVisitsGraphRate),
+          datasets: [
+            {
+              label: "Missed visits",
+              backgroundColor: colors.lightBlue,
+              borderColor: colors.mediumBlue,
+              data: Object.values(data.diabetesMissedVisitsGraphRate),
+            },
+          ],
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+  
+    diabetesVisitDetails: function(data) {
+      const maxBarsToDisplay = 6;
+      const barsToDisplay = Math.min(
+          Object.keys(data.bsBelow200Rate).length,
+          maxBarsToDisplay
+      );
+      const config = {
+        data: {
+          labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
+          datasets: [
+            {
+              label: "Blood sugar <200",
+              data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
+              backgroundColor: colors.mediumGreen,
+              hoverBackgroundColor: colors.darkGreen,
+            },
+            {
+              label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+            },
+            {
+              label: "Blood sugar ≥300",
+              data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
+              backgroundColor: colors.mediumRed,
+              hoverBackgroundColor: colors.darkRed,
+            },
+            {
+              label: "Visit but no blood sugar measure",
+              data: Object.values(data.visitButNoBSMeasureRate).slice(
+                  -barsToDisplay
+              ),
+              backgroundColor: colors.mediumGrey,
+              hoverBackgroundColor: colors.darkGrey,
+            },
+            {
+              label: "Missed visits",
+              data: Object.values(data.diabetesMissedVisitsRate).slice(
+                  -barsToDisplay
+              ),
+              backgroundColor: colors.mediumBlue,
+              hoverBackgroundColor: colors.darkBlue,
+            },
+          ],
+        }
+      }
+      return withBaseBarConfig(config);
+    },
+
+    MedicationsDispensation: function(data) {
+      const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
+
+      let datasets = Object.keys(data).map(function (bucket, index) {
+        return {
+          label: bucket,
+          data: Object.values(data[bucket]["percentages"]),
+          numerators: data[bucket]["counts"],
+          denominators: data[bucket]["totals"],
+          borderColor: data[bucket]["color"],
+          backgroundColor: data[bucket]["color"],
+        };
+      });
+      const config = {
+        type: 'bar',
+        data: {
+          labels: graphPeriods,
+          datasets: datasets,
+        },
+        options: {
+          interaction: {
+            mode: "x",
+          },
+          minBarLength: 4,
+          plugins: {
+            datalabels: {
+              anchor: "end",
+              align: "end",
+              color: "black",
+              offset: 1,
+              font: {
+                family: "Roboto Condensed",
+              },
+              formatter: function (value) {
+                return value + "%";
+              },
+            },
+            tooltip: {
+              enabled: true,
+              displayColors: false,
+              xAlign: "center",
+              yAlign: "top",
+              caretSize: 4,
+              caretPadding: 4,
+
+              callbacks: {
+                title: function () {
+                  return "";
+                },
+                label: function (context) {
+                  let numerator = context.dataset.numerators[context.label];
+                  let denominator = context.dataset.denominators[context.label];
+                  return `${formatNumberWithCommas(
+                    numerator
+                  )} of ${formatNumberWithCommas(
+                    denominator
+                  )} follow-up patients`;
+                },
+              },
+            }
+          },
+          scales: {
+            y: {
+              grid: {
+                drawTicks: false,
+              },
+              ticks: {
+                display: false,
+              },
+            },
+          }
+        },
+        plugins: [ChartDataLabels],
+      }
+      return withBaseLineConfig(config)
+    },
+    
+    lostToFollowUpTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.ltfuPatientsRate),
+          datasets: [
+            {
+              label: "Lost to follow-up",
+              data: Object.values(data.ltfuPatientsRate),
+              backgroundColor: colors.lightBlue,
+              borderColor: colors.darkBlue,
+            },
+          ],
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+  };
+
+  return {
+      ReportsTable: (id) => {
+        const tableSortAscending = { descending: false };
+        const table = document.getElementById(id);
+
+        if (table) {
+            new Tablesort(table, tableSortAscending);
+        }
+      },
+      ReportsGraph: (id, data) => {
+        const container = document.querySelector(`#${id}`);
+        const graphCanvas = container.querySelector('canvas')
+        const defaultPeriod = container.getAttribute("data-period");
+        const dataKeyNodes = container.querySelectorAll("[data-key]");
+
+        const populateDynamicComponents = (period) => {
+            dataKeyNodes.forEach(dataNode => {
+                const format = dataNode.dataset.format;
+                const key = dataNode.dataset.key;
+
+                if(!data[key]) {
+                    throw `${key}: Key not present in data.`
+                }
+
+                dataNode.innerHTML = formatValue(format, data[key][period]);
+            })
+        };
+
+        if(!ReportsGraphConfig[id]) {
+            throw `Config for ${id} is not defined`;
+        }
+
+        const graphConfig = ReportsGraphConfig[id](data);
+        if(!graphConfig) {
+            throw `Graph config not known for ${id}`
+        }
+
+        // comeback and improve
+        if (!graphConfig.options.plugins.tooltip.enabled) {
+          graphConfig.options.plugins.tooltip = {
+            enabled: false,
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateDynamicComponents(hoveredDatapoint[0].label);
+              }
+              else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
+            },
+          };
+        }
+
+        if(graphCanvas) {
+            // Assumes ChartJS is already imported
+            new Chart(graphCanvas.getContext("2d"), graphConfig);
+            populateDynamicComponents(defaultPeriod);
+        }
+      }
+  }
+}
+
 Reports = function (withLtfu) {
-  this.darkGreenColor = "rgba(0, 122, 49, 1)";
-  this.mediumGreenColor = "rgba(0, 184, 73, 1)";
-  this.lightGreenColor = "rgba(242, 248, 245, 0.5)";
-  this.darkRedColor = "rgba(184, 22, 49, 1)";
-  this.mediumRedColor = "rgba(255, 51, 85, 1)";
-  this.lightRedColor = "rgba(255, 235, 238, 0.5)";
-  this.darkPurpleColor = "rgba(83, 0, 224, 1)";
-  this.lightPurpleColor = "rgba(169, 128, 239, 0.5)";
-  this.darkBlueColor = "rgba(12, 57, 102, 1)";
-  this.mediumBlueColor = "rgba(0, 117, 235, 1)";
-  this.lightBlueColor = "rgba(233, 243, 255, 0.75";
-  this.darkGreyColor = "rgba(108, 115, 122, 1)";
-  this.mediumGreyColor = "rgba(173, 178, 184, 1)";
-  this.lightGreyColor = "rgba(240, 242, 245, 0.9)";
-  this.whiteColor = "rgba(255, 255, 255, 1)";
-  this.amberColor = "rgba(250, 190, 70, 1)";
-  this.darkAmberColor = "rgba(223, 165, 50, 1)";
-  this.transparent = "rgba(0, 0, 0, 0)";
-  this.tealColor = "rgba(48, 184, 166, 1)";
-  this.darkTealColor = "rgba(34,140,125,1)";
-  this.maroonColor = "rgba(71, 0, 0, 1)";
-  this.darkMaroonColor = "rgba(60,0,0,1)";
+  const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
     this.initializeCharts();
@@ -39,11 +422,6 @@ Reports = function (withLtfu) {
     this.setupMissedVisitsGraph(data);
     this.setupCumulativeRegistrationsGraph(data);
     this.setupVisitDetailsGraph(data);
-    this.setupBSBelow200Graph(data);
-    this.setupCumulativeDiabetesRegistrationsGraph(data);
-    this.setupBSOver200Graph(data);
-    this.setupDiabetesMissedVisitsGraph(data);
-    this.setupDiabetesVisitDetailsGraph(data);
   };
 
   this.setupControlledGraph = (data) => {
@@ -55,72 +433,32 @@ Reports = function (withLtfu) {
       ? data.controlWithLtfuRate
       : data.controlRate;
 
-    const controlledGraphConfig = this.createBaseGraphConfig();
-    controlledGraphConfig.data = {
-      labels: Object.keys(controlledGraphRate),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.lightGreenColor,
-          borderColor: this.mediumGreenColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(controlledGraphRate),
-        },
-      ],
-    };
-    controlledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(controlledGraphRate),
+        datasets: [
+          {
+            label: "BP controlled",
+            data: Object.values(controlledGraphRate),
+            backgroundColor: colors.lightGreen,
+            borderColor: colors.mediumGreen,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    controlledGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateControlledGraph(hoveredDatapoint[0].label);
-        else populateControlledGraphDefault();
+        ],
       },
+      options: {
+        plugins: {
+          tooltip: {
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateControlledGraph(hoveredDatapoint[0].label);
+              }
+              else populateControlledGraphDefault();
+            },
+          },
+        },
+      }
     };
 
     const populateControlledGraph = (period) => {
@@ -161,7 +499,10 @@ Reports = function (withLtfu) {
       "controlledPatientsTrend"
     );
     if (controlledGraphCanvas) {
-      new Chart(controlledGraphCanvas.getContext("2d"), controlledGraphConfig);
+      new Chart(
+        controlledGraphCanvas.getContext("2d"),
+        withBaseLineConfig(config)
+      );
       populateControlledGraphDefault();
     }
   };
@@ -175,72 +516,31 @@ Reports = function (withLtfu) {
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
-    const uncontrolledGraphConfig = this.createBaseGraphConfig();
-    uncontrolledGraphConfig.data = {
-      labels: Object.keys(uncontrolledGraphRate),
-      datasets: [
-        {
-          label: "BP uncontrolled",
-          backgroundColor: this.lightRedColor,
-          borderColor: this.mediumRedColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(uncontrolledGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(uncontrolledGraphRate),
+        datasets: [
+          {
+            label: "BP uncontrolled",
+            data: Object.values(uncontrolledGraphRate),
+            backgroundColor: colors.lightRed,
+            borderColor: colors.mediumRed,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateUncontrolledGraph(hoveredDatapoint[0].label);
+              }
+              else populateUncontrolledGraphDefault();
+            },
           },
         },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    uncontrolledGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateUncontrolledGraph(hoveredDatapoint[0].label);
-        else populateUncontrolledGraphDefault();
       },
     };
 
@@ -284,7 +584,7 @@ Reports = function (withLtfu) {
     if (uncontrolledGraphCanvas) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
-        uncontrolledGraphConfig
+        withBaseLineConfig(config)
       );
       populateUncontrolledGraphDefault();
     }
@@ -301,72 +601,31 @@ Reports = function (withLtfu) {
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
-    const missedVisitsConfig = this.createBaseGraphConfig();
-    missedVisitsConfig.data = {
-      labels: Object.keys(missedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(missedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    missedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
+    const config = {
+      data: {
+        labels: Object.keys(missedVisitsGraphRate),
+        datasets: [
+          {
+            label: "Missed visits",
+            data: Object.values(missedVisitsGraphRate),
+            backgroundColor: colors.lightBlue,
+            borderColor: colors.mediumBlue,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+        ],
+      },
+      options: {
+        plugins: {
+          tooltip: {
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateMissedVisitsGraph(hoveredDatapoint[0].label);
+              }
+              else populateMissedVisitsGraphDefault();
+            },
           },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    missedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateMissedVisitsGraphDefault();
+        }
       },
     };
 
@@ -407,7 +666,10 @@ Reports = function (withLtfu) {
     const missedVisitsGraphCanvas =
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
-      new Chart(missedVisitsGraphCanvas.getContext("2d"), missedVisitsConfig);
+      new Chart(
+        missedVisitsGraphCanvas.getContext("2d"), 
+        withBaseLineConfig(config)
+      );
       populateMissedVisitsGraphDefault();
     }
   };
@@ -420,114 +682,60 @@ Reports = function (withLtfu) {
       data.monthlyRegistrations
     );
 
-    const cumulativeRegistrationsGraphConfig = this.createBaseGraphConfig();
-    cumulativeRegistrationsGraphConfig.type = "bar";
-    cumulativeRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeRegistrations",
-          label: "cumulative registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyRegistrations",
-          label: "monthly registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
-          data: Object.values(data.monthlyRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      data: {
+        labels: Object.keys(data.cumulativeRegistrations),
+        datasets: [
+          {
+            type: "line",
+            label: "cumulative registrations",
+            data: Object.values(data.cumulativeRegistrations),
+            yAxisID: "y",
+            backgroundColor: colors.transparent,
+            borderColor: colors.darkPurple,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            type: "bar",
+            label: "monthly registrations",
+            data: Object.values(data.monthlyRegistrations),
+            yAxisID: "yMonthlyRegistrations",
+            backgroundColor: colors.lightPurple,
+            hoverBackgroundColor: colors.darkPurple,
           },
-        },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeRegistrationsYAxis.stepSize,
-            max: cumulativeRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyRegistrationsYAxis.stepSize,
-            max: monthlyRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-    cumulativeRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-        else populateCumulativeRegistrationsGraphDefault();
+        ],
       },
+      options: {
+        plugins: {
+          tooltip: {
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
+              }
+              else populateCumulativeRegistrationsGraphDefault();
+            },
+          },
+        },
+        scales: {
+          y: {
+            grid: {
+              drawTicks: false,
+            },
+            ticks: {
+              display: false,
+              stepSize: cumulativeRegistrationsYAxis.stepSize,
+            },
+            max: cumulativeRegistrationsYAxis.max,
+          },
+          yMonthlyRegistrations: {
+            display: false,
+            beginAtZero: true,
+            min: 0,
+            max: monthlyRegistrationsYAxis.max,
+          }
+        }
+      }
     };
 
     const populateCumulativeRegistrationsGraph = (period) => {
@@ -564,14 +772,17 @@ Reports = function (withLtfu) {
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
 
+      if(hypertensionOnlyRegistrationsNode) {
+        hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+            cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
+        );
+      }
 
-      hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-      );
-
-      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeHypertensionAndDiabetesRegistrations
-      );
+      if(hypertensionAndDiabetesOnlyRegistrationsNode) {
+        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+            cumulativeHypertensionAndDiabetesRegistrations
+        );
+      }
     };
 
     const populateCumulativeRegistrationsGraphDefault = () => {
@@ -587,107 +798,65 @@ Reports = function (withLtfu) {
     if (cumulativeRegistrationsGraphCanvas) {
       new Chart(
         cumulativeRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeRegistrationsGraphConfig
+        withBaseLineConfig(config)
       );
       populateCumulativeRegistrationsGraphDefault();
     }
   };
 
   this.setupVisitDetailsGraph = (data) => {
-    const visitDetailsGraphConfig = this.createBaseGraphConfig();
-    visitDetailsGraphConfig.type = "bar";
-
     const maxBarsToDisplay = 6;
     const barsToDisplay = Math.min(
       Object.keys(data.controlRate).length,
       maxBarsToDisplay
     );
-
-    visitDetailsGraphConfig.data = {
-      labels: Object.keys(data.controlRate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "BP controlled",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.controlRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "BP uncontrolled",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no BP measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBPMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
-          type: "bar",
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+    const config = {
+      data: {
+        labels: Object.keys(data.controlRate).slice(-barsToDisplay),
+        datasets: [
+          {
+            label: "BP controlled",
+            data: Object.values(data.controlRate).slice(-barsToDisplay),
+            backgroundColor: colors.mediumGreen,
+            hoverBackgroundColor: colors.darkGreen,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "BP uncontrolled",
+            data: Object.values(data.uncontrolledRate).slice(-barsToDisplay),
+            backgroundColor: colors.mediumRed,
+            hoverBackgroundColor: colors.darkRed,
           },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
+          {
+            label: "Visit but no BP measure",
+            data: Object.values(data.visitButNoBPMeasureRate).slice(
+              -barsToDisplay
+            ),
+            backgroundColor: colors.mediumGrey,
+            hoverBackgroundColor: colors.darkGrey,
           },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
+          {
+            label: "Missed visits",
+            data: Object.values(data.missedVisitsRate).slice(-barsToDisplay),
+            backgroundColor: colors.mediumBlue,
+            hoverBackgroundColor: colors.darkBlue,
           },
-        },
-      ],
-    };
-    visitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateVisitDetailsGraphDefault();
+        ],
       },
-    };
+      options: {
+        plugins: {
+          tooltip: {
+            external: (context) => {
+              const isTooltipActive = context.tooltip._active.length > 0;
+              if (isTooltipActive) {
+                let hoveredDatapoint = context.tooltip.dataPoints;
+                populateVisitDetailsGraph(hoveredDatapoint[0].label);
+              }
+              else populateVisitDetailsGraphDefault();
+            },
+          }
+        },
+      }
+    }
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -784,905 +953,9 @@ Reports = function (withLtfu) {
     if (visitDetailsGraphCanvas) {
       new Chart(
         visitDetailsGraphCanvas.getContext("2d"),
-        visitDetailsGraphConfig
+        withBaseBarConfig(config)
       );
       populateVisitDetailsGraphDefault();
-    }
-  };
-
-  this.setupBSBelow200Graph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedDiabetesPatientCountsWithLtfu
-      : data.adjustedDiabetesPatientCounts;
-
-    const bsBelow200Numerator = data.bsBelow200Patients;
-    const bsBelow200Rate = withLtfu
-      ? data.bsBelow200WithLtfuRate
-      : data.bsBelow200Rate;
-
-    const bsBelow200GraphConfig = this.createBaseGraphConfig();
-    bsBelow200GraphConfig.data = {
-      labels: Object.keys(bsBelow200Rate),
-      datasets: [
-        {
-          label: "Blood sugar <200",
-          backgroundColor: this.lightGreenColor,
-          borderColor: this.mediumGreenColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(bsBelow200Rate),
-        },
-      ],
-    };
-    bsBelow200GraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    bsBelow200GraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateBSBelow200Graph(hoveredDatapoint[0].label);
-        else populateBSBelow200GraphDefault();
-      },
-    };
-
-    const populateBSBelow200Graph = (period) => {
-      const cardNode = document.getElementById("bs-below-200");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-      const rbsPPBSPercentNode = cardNode.querySelector("[data-rbs-ppbs]");
-      const fastingPercentNode = cardNode.querySelector("[data-fasting]");
-      const hba1cPercentNode = cardNode.querySelector("[data-hba1c]");
-
-      const rate = this.formatPercentage(bsBelow200Rate[period]);
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-      const totalPatients = bsBelow200Numerator[period];
-
-      rateNode.innerHTML = rate;
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-      const breakdown = data.bsBelow200BreakdownRates[period];
-      rbsPPBSPercentNode.innerHTML = this.formatPercentage(
-        breakdown ? breakdown["random"] + breakdown["post_prandial"] : 0
-      );
-      fastingPercentNode.innerHTML = this.formatPercentage(
-        breakdown ? breakdown["fasting"] : 0
-      );
-      hba1cPercentNode.innerHTML = this.formatPercentage(
-        breakdown ? breakdown["hba1c"] : 0
-      );
-    };
-
-    const populateBSBelow200GraphDefault = () => {
-      const cardNode = document.getElementById("bs-below-200");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateBSBelow200Graph(mostRecentPeriod);
-    };
-
-    const bsBelow200GraphCanvas = document.getElementById(
-      "bsBelow200PatientsTrend"
-    );
-    if (bsBelow200GraphCanvas) {
-      new Chart(bsBelow200GraphCanvas.getContext("2d"), bsBelow200GraphConfig);
-      populateBSBelow200GraphDefault();
-    }
-  };
-
-  this.setupBSOver200Graph = (data) => {
-    const adjustedPatients = withLtfu
-      ? data.adjustedDiabetesPatientCountsWithLtfu
-      : data.adjustedDiabetesPatientCounts;
-
-    const bs200to300Numerator = data.bs200to300Patients;
-    const bs200to300Rate = withLtfu
-      ? data.bs200to300WithLtfuRate
-      : data.bs200to300Rate;
-
-    const bsOver300Numerator = data.bsOver300Patients;
-    const bsOver300Rate = withLtfu
-      ? data.bsOver300WithLtfuRate
-      : data.bsOver300Rate;
-
-    const bsOver200GraphConfig = this.createBaseGraphConfig();
-
-    bsOver200GraphConfig.type = "bar";
-    bsOver200GraphConfig.data = {
-      labels: Object.keys(bsOver300Rate),
-      datasets: [
-        {
-          label: "Blood sugar 200-299",
-          backgroundColor: this.amberColor,
-          hoverBackgroundColor: this.darkAmberColor,
-          data: Object.values(bs200to300Rate),
-        },
-        {
-          label: "Blood sugar ≥300",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(bsOver300Rate),
-        },
-      ],
-    };
-
-    bsOver200GraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    bsOver200GraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint) populateBSOver200Graph(hoveredDatapoint[0].label);
-        else populateBSOver200GraphDefault();
-      },
-    };
-
-    const populateBSOver200Graph = (period) => {
-      const cardNode = document.getElementById("bs-over-200");
-      const bs200to300rateNode = cardNode.querySelector(
-        "[data-bs-200-to-300-rate]"
-      );
-      const bsOver300rateNode = cardNode.querySelector(
-        "[data-bs-over-300-rate]"
-      );
-      const totalBS200to300PatientsNode = cardNode.querySelector(
-        "[data-total-bs-200-to-300-patients]"
-      );
-      const totalBSOver300PatientsNode = cardNode.querySelector(
-        "[data-total-bs-over-300-patients]"
-      );
-      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-      const registrationsNodes = cardNode.querySelectorAll(
-        "[data-registrations]"
-      );
-      const registrationsPeriodEndNodes = cardNode.querySelectorAll(
-        "[data-registrations-period-end]"
-      );
-
-      const rbsPPBSPercentNode = cardNode.querySelector("[data-rbs-ppbs]");
-      const fastingPercentNode = cardNode.querySelector("[data-fasting]");
-      const hba1cPercentNode = cardNode.querySelector("[data-hba1c]");
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedPatients[period];
-
-      const totalBS200to300Patients = bs200to300Numerator[period];
-      const totalBSOver300Patients = bsOver300Numerator[period];
-
-      bs200to300rateNode.innerHTML = this.formatPercentage(
-        bs200to300Rate[period]
-      );
-      bsOver300rateNode.innerHTML = this.formatPercentage(
-        bsOver300Rate[period]
-      );
-      totalBS200to300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBS200to300Patients
-      );
-      totalBSOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSOver300Patients
-      );
-      periodStartNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_start_date)
-      );
-      periodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_end_date)
-      );
-      registrationsNodes.forEach(
-        (node) =>
-          (node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts))
-      );
-      registrationsPeriodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
-      );
-
-      const breakdown = data.bsOver200BreakdownRates[period];
-
-      rbsPPBSPercentNode.innerHTML = this.formatPercentage(
-          breakdown["random"] + breakdown["post_prandial"]
-      );
-      fastingPercentNode.innerHTML = this.formatPercentage(
-          breakdown["fasting"]
-      );
-      hba1cPercentNode.innerHTML = this.formatPercentage(
-          breakdown["hba1c"]
-      );
-    };
-
-    const populateBSOver200GraphDefault = () => {
-      const cardNode = document.getElementById("bs-over-200");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateBSOver200Graph(mostRecentPeriod);
-    };
-
-    const bsOver200GraphCanvas = document.getElementById(
-      "bsOver200PatientsTrend"
-    );
-    if (bsOver200GraphCanvas) {
-      new Chart(bsOver200GraphCanvas.getContext("2d"), bsOver200GraphConfig);
-      populateBSOver200GraphDefault();
-    }
-  };
-
-  this.setupCumulativeDiabetesRegistrationsGraph = (data) => {
-    const cumulativeDiabetesRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.cumulativeDiabetesRegistrations
-    );
-    const monthlyDiabetesRegistrationsYAxis = this.createAxisMaxAndStepSize(
-      data.monthlyDiabetesRegistrations
-    );
-    const monthlyDiabetesFollowupsYAxis = this.createAxisMaxAndStepSize(
-      data.monthlyDiabetesFollowups
-    );
-
-    const cumulativeDiabetesRegistrationsGraphConfig =
-      this.createBaseGraphConfig();
-    cumulativeDiabetesRegistrationsGraphConfig.type = "bar";
-    cumulativeDiabetesRegistrationsGraphConfig.data = {
-      labels: Object.keys(data.cumulativeDiabetesRegistrations),
-      datasets: [
-        {
-          yAxisID: "cumulativeDiabetesRegistrations",
-          label: "cumulative diabetes registrations",
-          backgroundColor: this.transparent,
-          borderColor: this.darkPurpleColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.cumulativeDiabetesRegistrations),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyDiabetesFollowups",
-          label: "monthly diabetes followups",
-          backgroundColor: this.transparent,
-          borderColor: this.darkTealColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(data.monthlyDiabetesFollowups),
-          type: "line",
-        },
-        {
-          yAxisID: "monthlyDiabetesRegistrations",
-          label: "monthly diabetes registrations",
-          backgroundColor: this.lightPurpleColor,
-          hoverBackgroundColor: this.darkPurpleColor,
-          data: Object.values(data.monthlyDiabetesRegistrations),
-          type: "bar",
-        },
-      ],
-    };
-    cumulativeDiabetesRegistrationsGraphConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateCumulativeDiabetesRegistrationsGraph(
-            hoveredDatapoint[0].label
-          );
-        else populateCumulativeDiabetesRegistrationsGraphDefault();
-      },
-    };
-    cumulativeDiabetesRegistrationsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          id: "cumulativeDiabetesRegistrations",
-          position: "left",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            max: cumulativeDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyDiabetesRegistrations",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: monthlyDiabetesRegistrationsYAxis.stepSize,
-            max: monthlyDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-        {
-          id: "monthlyDiabetesFollowups",
-          position: "right",
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            display: false,
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: cumulativeDiabetesRegistrationsYAxis.stepSize,
-            max: cumulativeDiabetesRegistrationsYAxis.max,
-            callback: (label) => {
-              return this.formatNumberWithCommas(label);
-            },
-          },
-        },
-      ],
-    };
-
-    const populateCumulativeDiabetesRegistrationsGraph = (period) => {
-      const cardNode = document.getElementById(
-        "cumulative-diabetes-registrations"
-      );
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-      const monthlyRegistrationsNode = cardNode.querySelector(
-        "[data-monthly-registrations]"
-      );
-      const registrationsMonthEndNode = cardNode.querySelector(
-        "[data-registrations-month-end]"
-      );
-      const monthlyFollowUpsNode = cardNode.querySelector(
-        "[data-monthly-follow-ups]"
-      );
-      const followupsMonthEndNode = cardNode.querySelector(
-        "[data-follow-ups-month-end]"
-      );
-      const diabetesOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-diabetes-only-registrations]"
-      );
-
-      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-and-diabetes-registrations]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const cumulativeDiabetesRegistrations =
-        data.cumulativeDiabetesRegistrations[period];
-      const cumulativeHypertensionAndDiabetesRegistrations =
-          data.cumulativeHypertensionAndDiabetesRegistrations[period];
-      const monthlyDiabetesRegistrations =
-        data.monthlyDiabetesRegistrations[period];
-      const monthlyDiabetesFollowups = data.monthlyDiabetesFollowups[period];
-
-      monthlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-        monthlyDiabetesRegistrations
-      );
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(
-        cumulativeDiabetesRegistrations
-      );
-      monthlyFollowUpsNode.innerHTML = this.formatNumberWithCommas(
-        monthlyDiabetesFollowups
-      );
-      registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsMonthEndNode.innerHTML = period;
-      followupsMonthEndNode.innerHTML = period;
-
-      diabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeDiabetesRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-      );
-
-      hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-          cumulativeHypertensionAndDiabetesRegistrations
-      );
-    };
-
-    const populateCumulativeDiabetesRegistrationsGraphDefault = () => {
-      const cardNode = document.getElementById(
-        "cumulative-diabetes-registrations"
-      );
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateCumulativeDiabetesRegistrationsGraph(mostRecentPeriod);
-    };
-
-    const cumulativeDiabetesRegistrationsGraphCanvas = document.getElementById(
-      "cumulativeDiabetesRegistrationsTrend"
-    );
-    if (cumulativeDiabetesRegistrationsGraphCanvas) {
-      new Chart(
-        cumulativeDiabetesRegistrationsGraphCanvas.getContext("2d"),
-        cumulativeDiabetesRegistrationsGraphConfig
-      );
-      populateCumulativeDiabetesRegistrationsGraphDefault();
-    }
-  };
-
-  this.setupDiabetesMissedVisitsGraph = (data) => {
-    const adjustedDiabetesPatients = withLtfu
-      ? data.adjustedDiabetesPatientCountsWithLtfu
-      : data.adjustedDiabetesPatientCounts;
-    const diabetesMissedVisitsGraphNumerator = withLtfu
-      ? data.diabetesMissedVisitsWithLtfu
-      : data.diabetesMissedVisits;
-    const diabetesMissedVisitsGraphRate = withLtfu
-      ? data.diabetesMissedVisitsWithLtfuRate
-      : data.diabetesMissedVisitsRate;
-
-    const diabetesMissedVisitsConfig = this.createBaseGraphConfig();
-    diabetesMissedVisitsConfig.data = {
-      labels: Object.keys(diabetesMissedVisitsGraphRate),
-      datasets: [
-        {
-          label: "Missed visits",
-          backgroundColor: this.lightBlueColor,
-          borderColor: this.mediumBlueColor,
-          borderWidth: 2,
-          pointBackgroundColor: this.whiteColor,
-          hoverBackgroundColor: this.whiteColor,
-          hoverBorderWidth: 2,
-          data: Object.values(diabetesMissedVisitsGraphRate),
-          type: "line",
-        },
-      ],
-    };
-    diabetesMissedVisitsConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: true,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: false,
-          display: true,
-          gridLines: {
-            display: true,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-            stepSize: 25,
-            max: 100,
-          },
-        },
-      ],
-    };
-    diabetesMissedVisitsConfig.options.tooltips = {
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateDiabetesMissedVisitsGraph(hoveredDatapoint[0].label);
-        else populateDiabetesMissedVisitsGraphDefault();
-      },
-    };
-
-    const populateDiabetesMissedVisitsGraph = (period) => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const rateNode = cardNode.querySelector("[data-rate]");
-      const totalPatientsNode = cardNode.querySelector("[data-total-patients]");
-      const periodStartNode = cardNode.querySelector("[data-period-start]");
-      const periodEndNode = cardNode.querySelector("[data-period-end]");
-      const registrationsNode = cardNode.querySelector("[data-registrations]");
-      const registrationsPeriodEndNode = cardNode.querySelector(
-        "[data-registrations-period-end]"
-      );
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = adjustedDiabetesPatients[period];
-      const totalPatients = diabetesMissedVisitsGraphNumerator[period];
-
-      rateNode.innerHTML = this.formatPercentage(
-        diabetesMissedVisitsGraphRate[period]
-      );
-      totalPatientsNode.innerHTML = this.formatNumberWithCommas(totalPatients);
-      periodStartNode.innerHTML = periodInfo.bp_control_start_date;
-      periodEndNode.innerHTML = periodInfo.bp_control_end_date;
-      registrationsNode.innerHTML = this.formatNumberWithCommas(
-        adjustedPatientCounts
-      );
-      registrationsPeriodEndNode.innerHTML =
-        periodInfo.bp_control_registration_date;
-    };
-
-    const populateDiabetesMissedVisitsGraphDefault = () => {
-      const cardNode = document.getElementById("diabetes-missed-visits");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateDiabetesMissedVisitsGraph(mostRecentPeriod);
-    };
-
-    const diabetesMissedVisitsGraphCanvas = document.getElementById(
-      "diabetesMissedVisitsTrend"
-    );
-    if (diabetesMissedVisitsGraphCanvas) {
-      new Chart(
-        diabetesMissedVisitsGraphCanvas.getContext("2d"),
-        diabetesMissedVisitsConfig
-      );
-      populateDiabetesMissedVisitsGraphDefault();
-    }
-  };
-
-  this.setupDiabetesVisitDetailsGraph = (data) => {
-    const diabetesVisitDetailsGraphConfig = this.createBaseGraphConfig();
-    diabetesVisitDetailsGraphConfig.type = "bar";
-
-    const maxBarsToDisplay = 6;
-    const barsToDisplay = Math.min(
-      Object.keys(data.bsBelow200Rate).length,
-      maxBarsToDisplay
-    );
-
-    diabetesVisitDetailsGraphConfig.data = {
-      labels: Object.keys(data.bsBelow200Rate).slice(-barsToDisplay),
-      datasets: [
-        {
-          label: "Blood sugar <200",
-          backgroundColor: this.mediumGreenColor,
-          hoverBackgroundColor: this.darkGreenColor,
-          data: Object.values(data.bsBelow200Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Blood sugar 200-299",
-          backgroundColor: this.amberColor,
-          hoverBackgroundColor: this.darkAmberColor,
-          data: Object.values(data.bs200to300Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Blood sugar ≥300",
-          backgroundColor: this.mediumRedColor,
-          hoverBackgroundColor: this.darkRedColor,
-          data: Object.values(data.bsOver300Rate).slice(-barsToDisplay),
-          type: "bar",
-        },
-        {
-          label: "Visit but no blood sugar measure",
-          backgroundColor: this.mediumGreyColor,
-          hoverBackgroundColor: this.darkGreyColor,
-          data: Object.values(data.visitButNoBSMeasureRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-        {
-          label: "Missed visits",
-          backgroundColor: this.mediumBlueColor,
-          hoverBackgroundColor: this.darkBlueColor,
-          data: Object.values(data.diabetesMissedVisitsRate).slice(
-            -barsToDisplay
-          ),
-          type: "bar",
-        },
-      ],
-    };
-    diabetesVisitDetailsGraphConfig.options.scales = {
-      xAxes: [
-        {
-          stacked: true,
-          display: true,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 12,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-      yAxes: [
-        {
-          stacked: true,
-          display: false,
-          gridLines: {
-            display: false,
-            drawBorder: false,
-          },
-          ticks: {
-            autoSkip: false,
-            fontColor: this.darkGreyColor,
-            fontSize: 10,
-            fontFamily: "Roboto",
-            padding: 8,
-            min: 0,
-            beginAtZero: true,
-          },
-        },
-      ],
-    };
-    diabetesVisitDetailsGraphConfig.options.tooltips = {
-      mode: "x",
-      enabled: false,
-      custom: (tooltip) => {
-        let hoveredDatapoint = tooltip.dataPoints;
-        if (hoveredDatapoint)
-          populateDiabetesVisitDetailsGraph(hoveredDatapoint[0].label);
-        else populateDiabetesVisitDetailsGraphDefault();
-      },
-    };
-
-    const populateDiabetesVisitDetailsGraph = (period) => {
-      const cardNode = document.getElementById("diabetes-visit-details");
-      const missedVisitsRateNode = cardNode.querySelector(
-        "[data-missed-visits-rate]"
-      );
-      const visitButNoBSMeasureRateNode = cardNode.querySelector(
-        "[data-visit-but-no-bs-measure-rate]"
-      );
-      const bsBelow200RateNode = cardNode.querySelector(
-        "[data-bs-below-200-rate]"
-      );
-      const bs200To300RateNode = cardNode.querySelector(
-        "[data-bs-200-to-300-rate]"
-      );
-      const bsOver300RateNode = cardNode.querySelector(
-        "[data-bs-over-300-rate]"
-      );
-      const missedVisitsPatientsNode = cardNode.querySelector(
-        "[data-missed-visits-patients]"
-      );
-      const visitButNoBSMeasurePatientsNode = cardNode.querySelector(
-        "[data-visit-but-no-bs-measure-patients]"
-      );
-      const bsOver300PatientsNode = cardNode.querySelector(
-        "[data-bs-over-300-patients]"
-      );
-      const bs200To300PatientsNode = cardNode.querySelector(
-        "[data-bs-200-to-300-patients]"
-      );
-      const bsBelow200PatientsNode = cardNode.querySelector(
-        "[data-bs-below-200-patients]"
-      );
-      const periodStartNodes = cardNode.querySelectorAll("[data-period-start]");
-      const periodEndNodes = cardNode.querySelectorAll("[data-period-end]");
-      const registrationPeriodEndNodes = cardNode.querySelectorAll(
-        "[data-registrations-period-end]"
-      );
-      const adjustedPatientCountsNodes = cardNode.querySelectorAll(
-        "[data-adjusted-registrations]"
-      );
-
-      const missedVisitsRate = this.formatPercentage(
-        data.diabetesMissedVisitsRate[period]
-      );
-      const visitButNoBSMeasureRate = this.formatPercentage(
-        data.visitButNoBSMeasureRate[period]
-      );
-      const bsOver300Rate = this.formatPercentage(data.bsOver300Rate[period]);
-      const bs200To300Rate = this.formatPercentage(data.bs200to300Rate[period]);
-      const bsBelow200Rate = this.formatPercentage(data.bsBelow200Rate[period]);
-
-      const periodInfo = data.periodInfo[period];
-      const adjustedPatientCounts = data.adjustedDiabetesPatientCounts[period];
-      const totalMissedVisits = data.diabetesMissedVisits[period];
-      const totalVisitButNoBSMeasure = data.visitButNoBSMeasure[period];
-      const totalBSOver300Patients = data.bsOver300Patients[period];
-      const totalBS200To300Patients = data.bs200to300Patients[period];
-      const totalBSBelow200Patients = data.bsBelow200Patients[period];
-
-      missedVisitsRateNode.innerHTML = missedVisitsRate;
-      visitButNoBSMeasureRateNode.innerHTML = visitButNoBSMeasureRate;
-      bsOver300RateNode.innerHTML = bsOver300Rate;
-      bs200To300RateNode.innerHTML = bs200To300Rate;
-      bsBelow200RateNode.innerHTML = bsBelow200Rate;
-      missedVisitsPatientsNode.innerHTML =
-        this.formatNumberWithCommas(totalMissedVisits);
-      visitButNoBSMeasurePatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalVisitButNoBSMeasure
-      );
-      bsOver300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSOver300Patients
-      );
-      bs200To300PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBS200To300Patients
-      );
-      bsBelow200PatientsNode.innerHTML = this.formatNumberWithCommas(
-        totalBSBelow200Patients
-      );
-
-      periodStartNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_start_date)
-      );
-      periodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_end_date)
-      );
-      registrationPeriodEndNodes.forEach(
-        (node) => (node.innerHTML = periodInfo.bp_control_registration_date)
-      );
-      adjustedPatientCountsNodes.forEach(
-        (node) =>
-          (node.innerHTML = this.formatNumberWithCommas(adjustedPatientCounts))
-      );
-    };
-
-    const populateDiabetesVisitDetailsGraphDefault = () => {
-      const cardNode = document.getElementById("diabetes-visit-details");
-      const mostRecentPeriod = cardNode.getAttribute("data-period");
-
-      populateDiabetesVisitDetailsGraph(mostRecentPeriod);
-    };
-
-    const diabetesVisitDetailsGraphCanvas = document.getElementById(
-      "diabetesVisitDetails"
-    );
-    if (diabetesVisitDetailsGraphCanvas) {
-      new Chart(
-        diabetesVisitDetailsGraphCanvas.getContext("2d"),
-        diabetesVisitDetailsGraphConfig
-      );
-      populateDiabetesVisitDetailsGraphDefault();
     }
   };
 
@@ -1746,34 +1019,6 @@ Reports = function (withLtfu) {
     };
   };
 
-  this.createBaseGraphConfig = () => {
-    return {
-      type: "line",
-      options: {
-        animation: false,
-        responsive: true,
-        maintainAspectRatio: false,
-        layout: {
-          padding: {
-            left: 0,
-            right: 0,
-            top: 20,
-            bottom: 0,
-          },
-        },
-        elements: {
-          point: {
-            pointStyle: "circle",
-            hoverRadius: 5,
-          },
-        },
-        legend: {
-          display: false,
-        },
-      },
-    };
-  };
-
   this.createAxisMaxAndStepSize = (data) => {
     const maxDataValue = Math.max(...Object.values(data));
     const maxAxisValue = Math.round(maxDataValue * 1.15);
@@ -1801,3 +1046,216 @@ Reports = function (withLtfu) {
     return (number || 0) + "%";
   };
 };
+
+function baseLineGraphConfig() {
+  const colors = dashboardReportsChartJSColors()
+  return {
+    type: "line",
+    options: {
+      animation: false,
+      clip: false,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      elements: {
+        point: {
+          pointStyle: "circle",
+          pointBackgroundColor: colors.white,
+          hoverBackgroundColor: colors.white,
+          borderWidth: 2,
+          hoverRadius: 5,
+          hoverBorderWidth: 2,
+        },
+        line: {
+          tension: 0.4,
+          borderWidth: 2,
+          fill: true,
+        }
+      },
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+      scales: {
+        x: {
+          stacked: false,
+          grid: {
+            display: false,
+          },
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              family: "Roboto",
+            },
+            padding: 6,
+            showLabelBackdrop: true,
+          },
+          beginAtZero: true,
+          min: 0,
+        },
+        y: {
+          stacked: false,
+          border: {
+            display: false,
+          },
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              family: "Roboto",
+              size: 10,
+            },
+            padding: 8,
+            stepSize: 25,
+          },
+          beginAtZero: true,
+          min: 0,
+          max: 100,
+        },
+      },
+    },
+    plugins: [intersectDataVerticalLine],
+  };
+}
+
+function baseBarChartConfig() {
+  const colors = dashboardReportsChartJSColors()
+  return {
+    type: "bar",
+    options: {
+      animation: false,
+      maintainAspectRatio: false,
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 20,
+          bottom: 0,
+        },
+      },
+      plugins: {
+        legend: {
+          display: false,
+        },
+        tooltip: {
+          enabled: false,
+        },
+      },
+      interaction: {
+        mode: "index",
+        intersect: false,
+      },
+      scales: {
+        x: {
+          stacked: true,
+          border: {
+            display: false,
+          },
+          grid: {
+            display: false,
+          },
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              family: "Roboto",
+            },
+            padding: 6,
+          },
+          min: 0,
+          beginAtZero: true,
+        },
+        y: {
+          stacked: true,
+          display: false,
+          border: {
+            display: false,
+          },
+          grid: {
+            display: false,
+          },
+          ticks: {
+            autoSkip: false,
+            color: colors.darkGrey,
+            font: {
+              family: "Roboto",
+              size: 10,
+            },
+            padding: 8,
+          },
+          min: 0,
+          beginAtZero: true,
+        },
+      }
+    },
+    plugins: [intersectDataVerticalLine],
+  }
+}
+
+// [plugin] vertical instersect line
+const intersectDataVerticalLine = {
+  id: "intersectDataVerticalLine",
+  beforeDraw: (chart) => {
+    if (chart.tooltip._active && chart.tooltip._active.length) {
+      const ctx = chart.ctx;
+      ctx.save();
+      const activePoint = chart.tooltip._active[0];
+      const chartArea = chart.chartArea;
+      // grey vertical hover line - full chart height
+      ctx.beginPath();
+      ctx.moveTo(activePoint.element.x, chartArea.top);
+      ctx.lineTo(activePoint.element.x, chartArea.bottom);
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = "rgba(0,0,0, 0.1)";
+      ctx.stroke();
+      ctx.restore();
+      // colored vertical hover line - ['node' point to chart bottom] - only for line graphs (graphs with 1 data point)
+      if (chart.tooltip._active.length === 1) {
+        ctx.beginPath();
+        ctx.moveTo(activePoint.element.x, activePoint.element.y);
+        ctx.lineTo(activePoint.element.x, chartArea.bottom);
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+  },
+};
+
+function withBaseLineConfig(config) {
+  return _.mergeWith(
+    baseLineGraphConfig(),
+    config,
+    mergeArraysWithConcatenation
+  );
+}
+
+function withBaseBarConfig(config) {
+  return _.mergeWith(
+    baseBarChartConfig(),
+    config,
+    mergeArraysWithConcatenation
+  );
+}
+
+
+function mergeArraysWithConcatenation(objValue, srcValue) {
+  if (_.isArray(objValue)) {
+    return objValue.concat(srcValue);
+  }
+}

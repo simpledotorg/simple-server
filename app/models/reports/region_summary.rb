@@ -21,6 +21,7 @@ module Reports
       lost_to_follow_up
       diabetes_lost_to_follow_up
       under_care
+      diabetes_under_care
       monthly_registrations
       monthly_diabetes_registrations
       monthly_hypertension_and_diabetes_registrations
@@ -57,6 +58,8 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days
       diabetes_appts_scheduled_32_to_62_days
       diabetes_appts_scheduled_more_than_62_days
+      dead
+      diabetes_dead
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
