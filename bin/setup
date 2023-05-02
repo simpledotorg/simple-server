@@ -11,7 +11,9 @@ init (){
   verify_ruby_version && verify_node_version
   verify_bundled_gems && verify_yarn_packages
   verify_foreman
-  verify_postgres && verify_database_migrations
+  verify_postgres && verify_database_migrations &&
+  cleanup_database
+
   configure_parallel_testing
 }
 
@@ -23,18 +25,15 @@ is_darwin (){
 
 has_homebrew (){
   echo 'Checking for homebrew'
-  [ is_darwin ] && [ hash brew >/dev/null 2>&1 ]
+  is_darwin && hash brew >/dev/null 2>&1
 }
 
 verify_homebrew (){
   echo 'Verifying Homebrew installed'
-  if [ ! has_homebrew ]
+  if ! has_homebrew
   then
     echo 'Homebrew is not installed'
-    if [ is_darwin ]
-    then
-      echo 'Please install homebrew. https://brew.sh'
-    fi
+    is_darwin && echo 'Please install homebrew. https://brew.sh'
     exit 1
   fi
 }
@@ -70,16 +69,13 @@ has_ruby_version (){
 install_ruby_version (){
   verify_homebrew
 
-  if [ ! has_rbenv ]
-  then
+  has_rbenv || {
     echo 'Please install rbenv (https://github.com/rbenv/rbenv) to manage your ruby versions.'
     exit 1
-  fi
-
-  has_rbenv && {
-    update_rbenv
-    rbenv_install_ruby_version
   }
+
+  update_rbenv
+  rbenv_install_ruby_version
 }
 
 verify_postgres (){
@@ -117,8 +113,16 @@ has_node_version (){
 }
 
 install_nodejs (){
+  is_darwin || {
+    echo "Please install node for your platform."
+    exit 1
+  }
+
   echo 'Installing NodeJS...'
   brew install nvm
+
+  # nvm is a bash function and not an executable, so it needs to be sourced
+  source $(brew --prefix nvm)/nvm.sh
   nvm install 18.11.0
   node -v
 }
@@ -144,13 +148,14 @@ migrate_existing_database (){
 }
 
 setup_database (){
-  bundle exec rails db:setup
+  bundle exec rails db:setup ||
+  echo 'Unable to create the databases for you.
+Please ensure your database.yml is configured for your system and try again.'
+}
 
-  if [ $? -ne 0 ]
-  then
-    echo 'Unable to create the databases for you. Please ensure your database.yml is configured for your system and try again.'
-    exit 0
-  fi
+cleanup_database (){
+  echo "Cleaning up previous db setup..."
+  rails db:drop
 }
 
 configure_parallel_testing (){
