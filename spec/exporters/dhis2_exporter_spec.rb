@@ -11,6 +11,10 @@ describe Dhis2Exporter do
   let(:data_elements_map) { {indicator1: "indicator id 1", indicator2: "indicator id 2"} }
   let(:category_option_combo_ids) { {category_option_combo1: "combo id 1", category_option_combo2: "combo id 2"} }
 
+  before(:each) do
+    Flipper.enable(:dhis2_export)
+  end
+
   describe "#export" do
     it "sends data element values for all facilities, given facility identifiers, periods and data elements" do
       exporter = described_class.new(
@@ -84,14 +88,14 @@ describe Dhis2Exporter do
 
   describe "#disaggregate_data_values" do
     it "should return a list of disaggregated data values for each category-option combo for the given data element and period" do
+      dummy_value = 5
       facility_identifier = facility_identifiers.first
-      period =
-        exporter = described_class.new(
-          facility_identifiers: [facility_identifier],
-          periods: periods,
-          data_elements_map: data_elements_map,
-          category_option_combo_ids: category_option_combo_ids
-        )
+      exporter = described_class.new(
+        facility_identifiers: [facility_identifier],
+        periods: periods,
+        data_elements_map: data_elements_map,
+        category_option_combo_ids: category_option_combo_ids
+      )
       indicator1_disaggregated_values = category_option_combo_ids.transform_values { |_value| dummy_value }
       expected_disaggregated_values = category_option_combo_ids.map do |combo, id|
         {
@@ -120,15 +124,6 @@ describe Dhis2Exporter do
       dummy_value = 5
       dummy_period = "dummy2020"
       indicator1_disaggregated_values = {category_option_combo_ids.keys.first => dummy_value}
-      expected_disaggregated_values = category_option_combo_ids.map do |combo, id|
-        {
-          data_element: data_elements_map.keys.first,
-          org_unit: facility_identifiers.first.identifier,
-          category_option_combo: id,
-          period: dummy_period,
-          value: indicator1_disaggregated_values[combo] || 0
-        }
-      end
 
       exporter = described_class.new(
         facility_identifiers: facility_identifiers,
