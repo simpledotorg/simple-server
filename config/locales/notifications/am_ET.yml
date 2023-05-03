@@ -53,3 +53,6 @@ am-ET:
       official_no_date: "ለ BP ይግድ ዛሬ %{facility_name} በ ላይ %{patient_name}ይጎብኙ። ሃክምዎ ጤናዎን ይመኝልዎታል።"
     covid:
       medication_reminder: "ውድ%{patient_name}፡ የእኛ ሰራተኞች በ%{facility_name}በዚህ የኮቪድ ድንገተኛ አደጋ ወቅት ስለእርስዎ እና የልብ ጤናዎ እያሰቡ ነው። የBP መድሃኒቶችዎን መቀጠል በጣም አስፈላጊ ነው። ነጻ መድሃኒትዎን በአቅራቢያዎ ከሚገኝ ንዑስ ማእከል ወይም የጤና ደህንነት ማእከል ይሰብስቡ። የእርስዎን ANM ወይም ASHA ያግኙ።"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

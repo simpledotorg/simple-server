@@ -1,8 +1,108 @@
 <div class="card mb-16px mt-0 w-full">
   <%= render Dashboard::Card::TitleComponent.new(
-    title: "Overdue Patients Called By User",
-    subtitle: "Subtitle here" 
+    title: "Overdue patients called",
+    subtitle: t("overdue_patients_call_activity.reports_card_subtitle") 
   ) do |c| %>
-    <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
+    <%= c.tooltip({ "Patients called" => t("overdue_patients_call_activity.patients_called"),
+                    "Percent called" => "",
+                    "Numerator" => t("overdue_patients_call_activity.percent_called_numerator"),
+                    "divider" => "",
+                    "Denominator" => t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name)
+                  }) %>
+  <% end %>
+  <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |table| %>
+      <% table.column_group do %>
+        <colgroup>
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+          <col>
+          <col class="table-divider">
+        </colgroup>
+      <% end %>
+      <% periods.each do |period| %>
+       <%= table.header(period, colspan: 2) %>
+      <% end %>
+      <%= table.sub_header(region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+
+      <%= table.sub_header("Patients called") %>
+      <%= table.sub_header("Percent") %>
+      <%= table.sub_header("Patients called") %>
+      <%= table.sub_header("Percent") %>
+      <%= table.sub_header("Patients called") %>
+      <%= table.sub_header("Percent") %>
+
+      <%= table.row do %>
+        <tr class="row-title row-total" data-sort-method="none">
+          <td class="row-title row-total">
+            <%= region.name %>
+          </td>
+
+          <td class="row-total ta-right">
+            50
+          </td>
+          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+            <em data-rate="30" class="overdue-high-is-good">30%</em>
+            <span>of 350</span>
+          </td>
+
+          <td class="row-total ta-right">
+            50
+          </td>
+          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="23%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+            <em data-rate="23" class="overdue-high-is-good">23%</em>
+            <span>of 502</span>
+          </td>
+
+          <td class="row-total ta-right">
+            50
+          </td>
+          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="58%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+            <em data-rate="58" class="overdue-high-is-good">58%</em>
+            <span>of 612</span>
+          </td>
+        </tr>
+      <% end %>
+      <%# <% children_data.each do |child| %>
+        <% table.row do %>
+          <tr>
+            <td class="row-title">
+              <%# <%= link_to child.name, reports_region_path(child.region, report_scope: child.region_type) %>
+              <%= children_data[:user][:full_name] %>
+            </td>
+            <%# <%= children_data[:patients_called][:period] %> 
+            <td class="row-total ta-right">
+              300
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
+              <% if is_not_facility %>
+                <span>of 350</span>
+              <% end %>
+            </td>
+            <td class="row-total ta-right">
+              300
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
+              <% if is_not_facility %>
+                <span>of 350</span>
+              <% end %>
+            </td>
+            <td class="row-total ta-right">
+              300
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
+              <% if is_not_facility %>
+                <span>of 350</span>
+              <% end %>
+            </td>
+
+          </tr>
+        <% end %>
+      <%# <% end %>
+
   <% end %>
 </div>
