@@ -446,12 +446,13 @@ kn-IN:
         cohort_subtitle: "%{registration_period} ನಲ್ಲಿ ನೋಂದಾಯಿಸಿಕೊಂಡಿರುವ %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} ಹೊಂದಿರುವ %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "ಪುರುಷ"
     female: "ಮಹಿಳೆ"
     transgender: "ತೃತೀಯ ಲಿಂಗಿ"
     total: "ಒಟ್ಟು"
-    yes: "ಹೌದು"
-    no: "ಇಲ್ಲ"
+    yes_lc: "ಹೌದು"
+    no_lc: "ಇಲ್ಲ"
     comments: "ಕಾಮೆಂಟ್‌ಗಳು"
     instruction_1: "ಒಂದು ವೇಳೆ ನಿಮಗೆ ಮೊತ್ತ ತಿಳಿದಿಲ್ಲದಿದ್ದರೆ ಖಾಲಿ ಬಿಡಿ"
     instruction_2: 'ದಾಸ್ತಾನು ಮುಗಿದಿದ್ದರೆ "0" ಅನ್ನು ನಮೂದಿಸಿ'
