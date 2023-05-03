@@ -53,9 +53,7 @@ class Questionnaire < ApplicationRecord
         definitions: Api::V4::Schema.all_definitions
       )
     else
-      Api::V4::Models::Questionnaires::Version1.view_group.merge(
-        definitions: Api::V4::Schema.all_definitions
-      )
+      raise StandardError.new "DSL Version #{dsl_version} is not supported"
     end
   end
 

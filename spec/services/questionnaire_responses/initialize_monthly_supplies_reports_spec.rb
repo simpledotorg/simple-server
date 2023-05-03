@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "QuestionnaireResponses::InitializeMonthlySuppliesReports" do
   let!(:facility) { create(:facility) }
-  let(:monthly_supplies_reports) {Questionnaire.questionnaire_types[:monthly_supplies_reports] }
+  let(:monthly_supplies_reports) { Questionnaire.questionnaire_types[:monthly_supplies_reports] }
   let!(:questionnaire) { create(:questionnaire, :active, questionnaire_type: monthly_supplies_reports) }
 
   before :each do
@@ -37,7 +37,7 @@ RSpec.describe "QuestionnaireResponses::InitializeMonthlySuppliesReports" do
       QuestionnaireResponses::InitializeMonthlySuppliesReports.call(three_months_ago)
 
       expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
-        { "month_date" => three_months_ago.beginning_of_month.strftime("%Y-%m-%d"), "submitted" => false }
+        {"month_date" => three_months_ago.beginning_of_month.strftime("%Y-%m-%d"), "submitted" => false}
       )
     end
   end

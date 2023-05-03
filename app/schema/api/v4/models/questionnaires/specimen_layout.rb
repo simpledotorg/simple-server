@@ -107,7 +107,7 @@ class Api::V4::Models::Questionnaires::SpecimenLayout
                 type: "display",
                 view_type: "unordered_list_item",
                 icon: "check",
-                icon_color: "00FF00",
+                icon_color: "#00B849",
                 text: "Leave blank if you don't know an amount"
               },
               {
@@ -115,7 +115,7 @@ class Api::V4::Models::Questionnaires::SpecimenLayout
                 type: "display",
                 view_type: "unordered_list_item",
                 icon: "check",
-                icon_color: "00FF00",
+                icon_color: "#00B849",
                 text: "Enter \"0\" if stock is out"
               }
             ]
