@@ -455,8 +455,8 @@ es:
     female: "Femenino"
     transgender: "Transgénero"
     total: "Total"
-    yes: "Sí"
-    no: "No"
+    yes_lc: "Sí"
+    no_lc: "No"
     comments: "Comentarios"
     instruction_1: "Deje en blanco si no sabe la cantidad"
     instruction_2: 'Escriba "0" si ya no hay en existencia'

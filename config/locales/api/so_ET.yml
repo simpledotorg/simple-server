@@ -451,8 +451,8 @@ so-ET:
     female: "Dhedig"
     transgender: "Jinsiga Badalay"
     total: "Wadarta"
-    yes: "Haa"
-    no: "Maya"
+    yes_lc: "Haa"
+    no_lc: "Maya"
     comments: "Faallooyinka"
     instruction_1: "Banee haddii aanad garanayn qadarka"
     instruction_2: 'Geli "0" Haddii alaabtu dhammaatay'

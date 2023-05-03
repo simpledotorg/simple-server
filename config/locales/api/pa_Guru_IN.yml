@@ -451,8 +451,8 @@ pa-Guru-IN:
     female: "ਔਰਤ"
     transgender: "ਦੁਲਿੰਗੀ"
     total: "ਕੁੱਲ"
-    yes: "ਹਾਂ"
-    no: "ਨਹੀਂ"
+    yes_lc: "ਹਾਂ"
+    no_lc: "ਨਹੀਂ"
     comments: "ਟਿੱਪਣੀਆਂ"
     instruction_1: "ਜੇਕਰ ਤੁਹਾਨੂੰ ਕੋਈ ਰਕਮ ਨਹੀਂ ਪਤਾ ਤਾਂ ਖਾਲੀ ਛੱਡੋ"
     instruction_2: 'ਜੇ ਸਟਾਕ ਨਹੀਂ ਹੈ ਤਾਂ "0" ਦਰਜ ਕਰੋ'

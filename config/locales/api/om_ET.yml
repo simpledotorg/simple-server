@@ -451,8 +451,8 @@ om-ET:
     female: "Dubara"
     transgender: "Saaldarbaa"
     total: "Dimshaasha"
-    yes: "Eyyee"
-    no: "Lakkii"
+    yes_lc: "Eyyee"
+    no_lc: "Lakkii"
     comments: "Yaadota"
     instruction_1: "Hanga isaa hin beektu taanaan bakka duwwaa dhiisi"
     instruction_2: 'Yoo kuusaan duwwaa ta’e “0” galchi'

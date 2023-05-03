@@ -451,8 +451,8 @@ sid-ET:
     female: "Meyaa beeetto"
     transgender: "lamenka koo/te "
     total: "Xaphooma"
-    yes: "Ee"
-    no: "Dee'ni"
+    yes_lc: "Ee"
+    no_lc: "Dee'ni"
     comments: "Hedubba"
     instruction_1: "Bikka afa hoogginiro fano agurtine sa'e"
     instruction_2: 'Kuuso gooffiniro "0" borreesse'

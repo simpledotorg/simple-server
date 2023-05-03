@@ -451,8 +451,8 @@ si-LK:
     female: "ස්ත්‍රී"
     transgender: "සංක්‍රාන්ති"
     total: "එකතුව"
-    yes: "ඔව්"
-    no: "නැත"
+    yes_lc: "ඔව්"
+    no_lc: "නැත"
     comments: "අදහස්"
     instruction_1: "ඔබ ප්‍රමාණයක් නොදන්නේ නම් හිස්ව තබන්න"
     instruction_2: 'තොග අවසන්ව ඇතිනම් "0" ඇතුලත් කරන්න'

@@ -451,8 +451,8 @@ en:
     female: "Female"
     transgender: "Transgender"
     total: "Total"
-    yes: "Yes"
-    no: "No"
+    yes_lc: "Yes"
+    no_lc: "No"
     comments: "Comments"
     instruction_1: "Leave blank if you don't know an amount"
     instruction_2: 'Enter "0" if stock is out'

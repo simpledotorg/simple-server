@@ -451,8 +451,8 @@ bn-IN:
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
     total: "মোট"
-    yes: "হ্যাঁ"
-    no: "না"
+    yes_lc: "হ্যাঁ"
+    no_lc: "না"
     comments: "কমেন্ট"
     instruction_1: "আপনি পরিমাণ না জানলে খালি রাখুন"
     instruction_2: 'স্টক না থাকলে "0" লিখুন'
