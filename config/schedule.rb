@@ -121,8 +121,7 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
-  # TODO: move screening reports to questionnaire once ET PR is merged.
-  rake "questionnaires:pre_fill_monthly_screening_reports"
+  runner "QuestionnaireResponses::PreFillMonthlyScreeningReports.call"
   runner "QuestionnaireResponses::InitializeMonthlySuppliesReports.call"
 end
 

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "QuestionnaireResponses::InitializeMonthlySuppliesReports" do
+RSpec.describe QuestionnaireResponses::InitializeMonthlySuppliesReports do
   let(:monthly_supplies_reports) { Questionnaire.questionnaire_types[:monthly_supplies_reports] }
 
   before :each do

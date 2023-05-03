@@ -1,5 +1,4 @@
 require_dependency "seed/config"
-require "tasks/scripts/pre_fill_monthly_screening_reports"
 
 module Seed
   class QuestionnaireSeeder
@@ -18,7 +17,7 @@ module Seed
         metadata: "supplies_reports, specimen-seed",
         layout: Api::V4::Models::Questionnaires::SpecimenLayout.version_2)
 
-      (1..3).map { |n| PreFillMonthlyScreeningReports.call(n.month.ago) }
+      (1..3).map { |n| QuestionnaireResponses::PreFillMonthlyScreeningReports.call(n.month.ago) }
     end
   end
 end
