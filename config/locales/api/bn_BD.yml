@@ -446,6 +446,7 @@ bn_BD:
         cohort_subtitle: "%{registration_period}-এ নিবন্ধিত %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} সহ %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"

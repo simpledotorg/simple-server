@@ -446,6 +446,7 @@ ta-IN:
         cohort_subtitle: "%{registration_period}-இல் %{number_of_patients} %{patient_or_patients} பதிவுசெய்துள்ளனர்"
         cohort_bar_tooltip: "%{threshold} உடனான %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "ஆண்"
     female: "பெண்"
     transgender: "திருநங்கை"

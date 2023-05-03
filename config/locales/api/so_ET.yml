@@ -446,6 +446,7 @@ so-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ka duwaan gashan %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} leh %{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "Lab"
     female: "Dhedig"
     transgender: "Jinsiga Badalay"
