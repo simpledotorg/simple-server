@@ -13,7 +13,7 @@ class Api::V4::Models::Questionnaires::Version1
     def view_group
       {
         type: :object,
-        example: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout,
+        example: Api::V4::Models::Questionnaires::SpecimenLayout.version_1,
         properties: {
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},

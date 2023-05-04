@@ -1856,7 +1856,8 @@ CREATE TABLE public.questionnaires (
     layout jsonb NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    deleted_at timestamp without time zone
+    deleted_at timestamp without time zone,
+    metadata character varying
 );
 
 
@@ -7006,6 +7007,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230105064908'),
 ('20230123125608'),
 ('20230124063249'),
-('20230130161639');
+('20230130161639'),
+('20230503114529');
 
 
