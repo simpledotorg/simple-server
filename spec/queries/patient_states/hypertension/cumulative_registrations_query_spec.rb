@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::CumulativeRegistrationsQuery do
+describe PatientStates::Hypertension::CumulativeRegistrationsQuery do
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -15,15 +15,15 @@ describe PatientStates::CumulativeRegistrationsQuery do
       facility_2_new_registrations = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
                                                            .call.map(&:patient_id))
         .to match_array((facility_1_new_registrations + [facility_1_old_registration]).map(&:id))
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
                                                            .call.map(&:patient_id))
         .to match_array(facility_2_new_registrations.map(&:id))
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:region].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:region].region, period)
                                                            .call.map(&:patient_id))
         .to match_array((facility_1_new_registrations + [facility_1_old_registration] + facility_2_new_registrations).map(&:id))
     end
@@ -37,12 +37,12 @@ describe PatientStates::CumulativeRegistrationsQuery do
 
       refresh_views
 
-      expect(PatientStates::CumulativeRegistrationsQuery.new(regions[:facility_1].region, period).call.count)
+      expect(PatientStates::Hypertension::CumulativeRegistrationsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .cumulative_registrations)
 
-      expect(PatientStates::CumulativeRegistrationsQuery.new(regions[:facility_2].region, period).call.count)
+      expect(PatientStates::Hypertension::CumulativeRegistrationsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .cumulative_registrations)

@@ -13,15 +13,15 @@ class BangladeshDisaggregatedDhis2Exporter
     exporter.export_disaggregated do |facility_identifier, period|
       region = facility_identifier.facility.region
       {
-        htn_cumulative_assigned_patients: PatientStates::CumulativeAssignedPatientsQuery.new(region, period).call,
-        htn_controlled_patients: PatientStates::ControlledPatientsQuery.new(region, period).call,
-        htn_uncontrolled_patients: PatientStates::UncontrolledPatientsQuery.new(region, period).call,
-        htn_patients_who_missed_visits: PatientStates::MissedVisitsPatientsQuery.new(region, period).call,
-        htn_patients_lost_to_follow_up: PatientStates::LostToFollowUpPatientsQuery.new(region, period).call,
-        htn_dead_patients: PatientStates::DeadPatientsQuery.new(region, period).call,
-        htn_cumulative_registered_patients: PatientStates::CumulativeRegistrationsQuery.new(region, period).call,
-        htn_monthly_registered_patients: PatientStates::MonthlyRegistrationsQuery.new(region, period).call,
-        htn_cumulative_assigned_patients_adjusted: PatientStates::AdjustedAssignedPatientsQuery.new(region, period).call
+        htn_cumulative_assigned_patients: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call,
+        htn_controlled_patients: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call,
+        htn_uncontrolled_patients: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
+        htn_patients_who_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call,
+        htn_patients_lost_to_follow_up: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call,
+        htn_dead_patients: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call,
+        htn_cumulative_registered_patients: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
+        htn_monthly_registered_patients: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
+        htn_cumulative_assigned_patients_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states) }
     end
   end

@@ -41,15 +41,15 @@ describe BangladeshDisaggregatedDhis2Exporter do
       htn_monthly_registered_patients = "htn_monthly_registered_patients"
       htn_cumulative_assigned_patients_adjusted = "htn_cumulative_assigned_patients_adjusted"
 
-      expect_any_instance_of(PatientStates::CumulativeAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients)
-      expect_any_instance_of(PatientStates::ControlledPatientsQuery).to receive(:call).and_return(htn_controlled_patients)
-      expect_any_instance_of(PatientStates::UncontrolledPatientsQuery).to receive(:call).and_return(htn_uncontrolled_patients)
-      expect_any_instance_of(PatientStates::MissedVisitsPatientsQuery).to receive(:call).and_return(htn_patients_who_missed_visits)
-      expect_any_instance_of(PatientStates::LostToFollowUpPatientsQuery).to receive(:call).and_return(htn_patients_lost_to_follow_up)
-      expect_any_instance_of(PatientStates::DeadPatientsQuery).to receive(:call).and_return(htn_dead_patients)
-      expect_any_instance_of(PatientStates::CumulativeRegistrationsQuery).to receive(:call).and_return(htn_cumulative_registered_patients)
-      expect_any_instance_of(PatientStates::MonthlyRegistrationsQuery).to receive(:call).and_return(htn_monthly_registered_patients)
-      expect_any_instance_of(PatientStates::AdjustedAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients_adjusted)
+      expect_any_instance_of(PatientStates::Hypertension::CumulativeAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients)
+      expect_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive(:call).and_return(htn_controlled_patients)
+      expect_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive(:call).and_return(htn_uncontrolled_patients)
+      expect_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive(:call).and_return(htn_patients_who_missed_visits)
+      expect_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive(:call).and_return(htn_patients_lost_to_follow_up)
+      expect_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive(:call).and_return(htn_dead_patients)
+      expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive(:call).and_return(htn_cumulative_registered_patients)
+      expect_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive(:call).and_return(htn_monthly_registered_patients)
+      expect_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients_adjusted)
 
       allow(described_class).to receive(:disaggregate_by_gender_age) do |value|
         value

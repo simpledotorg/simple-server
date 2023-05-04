@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::DeadPatientsQuery do
+describe PatientStates::Hypertension::DeadPatientsQuery do
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -16,19 +16,19 @@ describe PatientStates::DeadPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
         .to match_array(facility_1_dead_patients[:id])
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
         .not_to include(*facility_1_living_patients.map(&:id))
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_2].region, period)
                                              .call.map(&:patient_id).count)
         .to eq(0)
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_2].region, period)
                                              .call.map(&:patient_id))
         .not_to include(*facility_2_living_patients.map(&:id))
     end
@@ -40,12 +40,12 @@ describe PatientStates::DeadPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_1].region, period).call.count)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .dead)
 
-      expect(PatientStates::DeadPatientsQuery.new(regions[:facility_2].region, period).call.count)
+      expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .dead)

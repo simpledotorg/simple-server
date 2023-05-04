@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::LostToFollowUpPatientsQuery do
+describe PatientStates::Hypertension::LostToFollowUpPatientsQuery do
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -15,19 +15,19 @@ describe PatientStates::LostToFollowUpPatientsQuery do
       facility_2_under_care_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
         .to match_array(facility_1_lost_to_follow_up_patients[:id])
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period)
                                                        .call.map(&:patient_id))
         .not_to include(*facility_1_under_care_patients.map(&:id))
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period)
                                                        .call.map(&:patient_id).count)
         .to eq(0)
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period)
                                                        .call.map(&:patient_id))
         .not_to include(*facility_2_under_care_patients.map(&:id))
     end
@@ -39,12 +39,12 @@ describe PatientStates::LostToFollowUpPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period).call.count)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .lost_to_follow_up)
 
-      expect(PatientStates::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period).call.count)
+      expect(PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .lost_to_follow_up)

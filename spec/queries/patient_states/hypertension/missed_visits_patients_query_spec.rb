@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::MissedVisitsPatientsQuery do
+describe PatientStates::Hypertension::MissedVisitsPatientsQuery do
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -16,19 +16,19 @@ describe PatientStates::MissedVisitsPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period)
                                                        .call.map(&:patient_id))
         .to match_array(facility_1_missed_visit_patients[:id])
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period)
                                                        .call.map(&:patient_id))
         .not_to include(*facility_1_under_care_patients.map(&:id))
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period)
                                                        .call.map(&:patient_id).count)
         .to eq(0)
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period)
                                                        .call.map(&:patient_id))
         .not_to include(*facility_2_under_care_patients.map(&:id))
     end
@@ -39,12 +39,12 @@ describe PatientStates::MissedVisitsPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period).call.count)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .adjusted_missed_visit_under_care)
 
-      expect(PatientStates::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period).call.count)
+      expect(PatientStates::Hypertension::MissedVisitsPatientsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .adjusted_missed_visit_under_care)

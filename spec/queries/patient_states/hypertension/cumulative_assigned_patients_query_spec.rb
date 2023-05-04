@@ -1,6 +1,6 @@
 require "rails_helper"
 
-describe PatientStates::CumulativeAssignedPatientsQuery do
+describe PatientStates::Hypertension::CumulativeAssignedPatientsQuery do
   around do |example|
     with_reporting_time_zone { example.run }
   end
@@ -14,15 +14,15 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
       facility_2_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
       refresh_views
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period)
                .call.map(&:patient_id))
         .to match_array(facility_1_patients.map(&:id))
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period)
                                .call.map(&:patient_id))
         .to match_array(facility_2_patients.map(&:id))
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:region].region, period)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:region].region, period)
                                .call.map(&:patient_id))
         .to match_array((facility_1_patients + facility_2_patients).map(&:id))
     end
@@ -33,12 +33,12 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
 
       refresh_views
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period).call.count)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_1].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_1].id, month_date: period.begin)
                  .cumulative_assigned_patients)
 
-      expect(PatientStates::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period).call.count)
+      expect(PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(regions[:facility_2].region, period).call.count)
         .to eq(Reports::FacilityState
                  .find_by(facility_id: regions[:facility_2].id, month_date: period.begin)
                  .cumulative_assigned_patients)
@@ -49,7 +49,7 @@ describe PatientStates::CumulativeAssignedPatientsQuery do
       facility_1_dead_patient = create(:patient, assigned_facility: regions[:facility_1], status: "dead")
       refresh_views
 
-      cumulative_assigned_patient_ids = PatientStates::CumulativeAssignedPatientsQuery
+      cumulative_assigned_patient_ids = PatientStates::Hypertension::CumulativeAssignedPatientsQuery
         .new(regions[:facility_1].region, period)
         .call
         .map(&:patient_id)
