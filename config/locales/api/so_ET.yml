@@ -446,12 +446,13 @@ so-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ka duwaan gashan %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} leh %{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "Lab"
     female: "Dhedig"
     transgender: "Jinsiga Badalay"
     total: "Wadarta"
-    yes: "Haa"
-    no: "Maya"
+    yes_lc: "Haa"
+    no_lc: "Maya"
     comments: "Faallooyinka"
     instruction_1: "Banee haddii aanad garanayn qadarka"
     instruction_2: 'Geli "0" Haddii alaabtu dhammaatay'
