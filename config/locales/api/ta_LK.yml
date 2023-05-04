@@ -446,12 +446,13 @@ ta-LK:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients}, %{registration_period} இல் பதிவுசெய்தனர்"
         cohort_bar_tooltip: "%{threshold} உடன்%{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "ஆண்"
     female: "பெண்"
     transgender: "திருநங்கைகள்"
     total: "மொத்தம்"
-    yes: "ஆம்"
-    no: "இல்லை"
+    yes_lc: "ஆம்"
+    no_lc: "இல்லை"
     comments: "கருத்துக்கள்"
     instruction_1: "உங்களுக்கு ஒரு தொகை தெரியாவிட்டால், வெற்றிடமாக விடவும்"
     instruction_2: 'இருப்பு தீர்ந்து விட்டால் "0" ஐ உள்ளிடவும்'
