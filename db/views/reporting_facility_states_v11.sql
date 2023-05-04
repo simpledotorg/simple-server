@@ -272,62 +272,44 @@ reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than
 
 -- monthly overdue patients
 monthly_overdue_patients.overdue,
-monthly_overdue_patients.overdue * 100.0 / nullif(assigned_patients.under_care, 0) as percentage_overdue,
 
 monthly_overdue_patients.filtered_overdue,
-monthly_overdue_patients.filtered_overdue * 100.0 / nullif(assigned_patients.under_care, 0) as filtered_percentage_overdue,
 
 -- monthly overdue calls made to overdue patients
 monthly_overdue_patients.called,
-monthly_overdue_patients.called * 100.0 / nullif(overdue, 0) as percentage_called,
 
 monthly_overdue_patients.filtered_called,
-monthly_overdue_patients.filtered_called * 100.0 / nullif(filtered_overdue, 0) as filtered_percentage_called,
 
 -- monthly overdue calls grouped by call result
 monthly_overdue_patients.called_with_result_agreed_to_visit,
-monthly_overdue_patients.called_with_result_agreed_to_visit * 100.0 / nullif(called, 0) as percentage_called_with_result_agreed_to_visit,
 
 monthly_overdue_patients.called_with_result_remind_to_call_later,
-monthly_overdue_patients.called_with_result_remind_to_call_later * 100.0 / nullif(called, 0) as percentage_called_with_result_remind_to_call_later,
 
 monthly_overdue_patients.called_with_result_removed_from_overdue_list,
-monthly_overdue_patients.called_with_result_removed_from_overdue_list * 100.0 / nullif(called, 0) as percentage_called_with_result_removed_from_overdue_list,
 
 monthly_overdue_patients.filtered_called_with_result_agreed_to_visit,
-monthly_overdue_patients.filtered_called_with_result_agreed_to_visit * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_agreed_to_visit,
 
 monthly_overdue_patients.filtered_called_with_result_remind_to_call_later,
-monthly_overdue_patients.filtered_called_with_result_remind_to_call_later * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_remind_to_call_later,
 
 monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list,
-monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_removed_from_overdue_list,
 
 -- monthly overdue patients returned to care after a call
 monthly_overdue_patients.returned_after_call,
-monthly_overdue_patients.returned_after_call * 100.0 / nullif(called, 0) as percentage_returned_after_call,
 
 monthly_overdue_patients.filtered_returned_after_call,
-monthly_overdue_patients.filtered_returned_after_call * 100.0 / nullif(filtered_called, 0) as filtered_percentage_returned_after_call,
 
 -- monthly overdue patients returned to care after a call grouped by call result
 monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit,
-monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit * 100.0 / nullif(called_with_result_agreed_to_visit, 0) as percentage_returned_after_call_with_result_agreed_to_visit,
 
 monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later,
-monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later * 100.0 / nullif(called_with_result_remind_to_call_later, 0) as percentage_returned_after_call_with_result_remind_to_call_later,
 
 monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list,
-monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list * 100.0 / nullif(called_with_result_removed_from_overdue_list, 0) as percentage_returned_after_call_with_result_removed_from_overdue_list,
 
 monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit,
-monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit * 100.0 / nullif(filtered_called_with_result_agreed_to_visit, 0) as filtered_percentage_returned_after_call_with_result_agreed_to_visit,
 
 monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later,
-monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later * 100.0 / nullif(filtered_called_with_result_remind_to_call_later, 0) as filtered_percentage_returned_after_call_with_result_remind_to_call_later,
 
-monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list,
-monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list * 100.0 / nullif(filtered_called_with_result_removed_from_overdue_list, 0) as filtered_percentage_returned_after_call_with_result_removed_from_overdue_list
+monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list
 
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal

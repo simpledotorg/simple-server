@@ -3924,7 +3924,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
            FROM public.reporting_patient_follow_ups
           WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)
           GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
-        ), overdue_patients_aggregate AS (
+        ), monthly_overdue_patients AS (
          SELECT reporting_overdue_patients.assigned_facility_region_id AS region_id,
             reporting_overdue_patients.month_date,
             count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text))) AS overdue,
@@ -3935,16 +3935,16 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS filtered_called_with_result_agreed_to_visit,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS called_with_result_remind_to_call_later,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS filtered_called_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS called_with_result_remove_from_overdue_list,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS filtered_called_with_result_remove_from_overdue_list,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS called_with_result_removed_from_overdue_list,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS filtered_called_with_result_removed_from_overdue_list,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS returned_after_call,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS returned_after_call_with_result_agreed_to_visit,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_agreed_to_visit,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS returned_after_call_with_result_remind_to_call_later,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS returned_after_call_with_result_remove_from_overdue_list,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_remove_from_overdue_li
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS returned_after_call_with_result_removed_from_overdue_list,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_removed_from_overdue_l
            FROM public.reporting_overdue_patients
           WHERE (reporting_overdue_patients.hypertension = 'yes'::text)
           GROUP BY reporting_overdue_patients.assigned_facility_region_id, reporting_overdue_patients.month_date
@@ -4036,42 +4036,24 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days,
-    overdue_patients_aggregate.overdue,
-    (((overdue_patients_aggregate.overdue)::numeric * 100.0) / (NULLIF(assigned_patients.under_care, 0))::numeric) AS percentage_overdue,
-    overdue_patients_aggregate.filtered_overdue,
-    (((overdue_patients_aggregate.filtered_overdue)::numeric * 100.0) / (NULLIF(assigned_patients.under_care, 0))::numeric) AS filtered_percentage_overdue,
-    overdue_patients_aggregate.called,
-    (((overdue_patients_aggregate.called)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.overdue, 0))::numeric) AS percentage_called,
-    overdue_patients_aggregate.filtered_called,
-    (((overdue_patients_aggregate.filtered_called)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_overdue, 0))::numeric) AS filtered_percentage_called,
-    overdue_patients_aggregate.called_with_result_agreed_to_visit,
-    (((overdue_patients_aggregate.called_with_result_agreed_to_visit)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called, 0))::numeric) AS percentage_called_with_result_agreed_to_visit,
-    overdue_patients_aggregate.called_with_result_remind_to_call_later,
-    (((overdue_patients_aggregate.called_with_result_remind_to_call_later)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called, 0))::numeric) AS percentage_called_with_result_remind_to_call_later,
-    overdue_patients_aggregate.called_with_result_remove_from_overdue_list,
-    (((overdue_patients_aggregate.called_with_result_remove_from_overdue_list)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called, 0))::numeric) AS percentage_called_with_result_remove_from_overdue_list,
-    overdue_patients_aggregate.filtered_called_with_result_agreed_to_visit,
-    (((overdue_patients_aggregate.filtered_called_with_result_agreed_to_visit)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called, 0))::numeric) AS filtered_percentage_called_with_result_agreed_to_visit,
-    overdue_patients_aggregate.filtered_called_with_result_remind_to_call_later,
-    (((overdue_patients_aggregate.filtered_called_with_result_remind_to_call_later)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called, 0))::numeric) AS filtered_percentage_called_with_result_remind_to_call_later,
-    overdue_patients_aggregate.filtered_called_with_result_remove_from_overdue_list,
-    (((overdue_patients_aggregate.filtered_called_with_result_remove_from_overdue_list)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called, 0))::numeric) AS filtered_percentage_called_with_result_remove_from_overdue_list,
-    overdue_patients_aggregate.returned_after_call,
-    (((overdue_patients_aggregate.returned_after_call)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called, 0))::numeric) AS percentage_returned_after_call,
-    overdue_patients_aggregate.filtered_returned_after_call,
-    (((overdue_patients_aggregate.filtered_returned_after_call)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called, 0))::numeric) AS filtered_percentage_returned_after_call,
-    overdue_patients_aggregate.returned_after_call_with_result_agreed_to_visit,
-    (((overdue_patients_aggregate.returned_after_call_with_result_agreed_to_visit)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called_with_result_agreed_to_visit, 0))::numeric) AS percentage_returned_after_call_with_result_agreed_to_visit,
-    overdue_patients_aggregate.returned_after_call_with_result_remind_to_call_later,
-    (((overdue_patients_aggregate.returned_after_call_with_result_remind_to_call_later)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called_with_result_remind_to_call_later, 0))::numeric) AS percentage_returned_after_call_with_result_remind_to_call_later,
-    overdue_patients_aggregate.returned_after_call_with_result_remove_from_overdue_list,
-    (((overdue_patients_aggregate.returned_after_call_with_result_remove_from_overdue_list)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.called_with_result_remove_from_overdue_list, 0))::numeric) AS percentage_returned_after_call_with_result_remove_from_overdue_,
-    overdue_patients_aggregate.filtered_returned_after_call_with_result_agreed_to_visit,
-    (((overdue_patients_aggregate.filtered_returned_after_call_with_result_agreed_to_visit)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called_with_result_agreed_to_visit, 0))::numeric) AS filtered_percentage_returned_after_call_with_result_agreed_to_v,
-    overdue_patients_aggregate.filtered_returned_after_call_with_result_remind_to_call_later,
-    (((overdue_patients_aggregate.filtered_returned_after_call_with_result_remind_to_call_later)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called_with_result_remind_to_call_later, 0))::numeric) AS filtered_percentage_returned_after_call_with_result_remind_to_c,
-    overdue_patients_aggregate.filtered_returned_after_call_with_result_remove_from_overdue_li,
-    (((overdue_patients_aggregate.filtered_returned_after_call_with_result_remove_from_overdue_li)::numeric * 100.0) / (NULLIF(overdue_patients_aggregate.filtered_called_with_result_remove_from_overdue_list, 0))::numeric) AS filtered_percentage_returned_after_call_with_result_remove_from
+    monthly_overdue_patients.overdue,
+    monthly_overdue_patients.filtered_overdue,
+    monthly_overdue_patients.called,
+    monthly_overdue_patients.filtered_called,
+    monthly_overdue_patients.called_with_result_agreed_to_visit,
+    monthly_overdue_patients.called_with_result_remind_to_call_later,
+    monthly_overdue_patients.called_with_result_removed_from_overdue_list,
+    monthly_overdue_patients.filtered_called_with_result_agreed_to_visit,
+    monthly_overdue_patients.filtered_called_with_result_remind_to_call_later,
+    monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list,
+    monthly_overdue_patients.returned_after_call,
+    monthly_overdue_patients.filtered_returned_after_call,
+    monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit,
+    monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later,
+    monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list,
+    monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit,
+    monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later,
+    monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_l
    FROM ((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -4086,7 +4068,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
      LEFT JOIN monthly_diabetes_follow_ups ON (((monthly_diabetes_follow_ups.month_date = cal.month_date) AND (monthly_diabetes_follow_ups.facility_id = rf.facility_id))))
      LEFT JOIN public.reporting_facility_appointment_scheduled_days ON (((reporting_facility_appointment_scheduled_days.month_date = cal.month_date) AND (reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id))))
-     LEFT JOIN overdue_patients_aggregate ON (((overdue_patients_aggregate.month_date = cal.month_date) AND (overdue_patients_aggregate.region_id = rf.facility_region_id))))
+     LEFT JOIN monthly_overdue_patients ON (((monthly_overdue_patients.month_date = cal.month_date) AND (monthly_overdue_patients.region_id = rf.facility_region_id))))
   WITH NO DATA;
 
 
@@ -4704,6 +4686,27 @@ COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_32_t
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month more than 62 days from the visit date';
+
+
+--
+-- Name: COLUMN reporting_facility_states.overdue; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.overdue IS 'The total of overdue patients at the facility at the beginning of the reporting month. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.filtered_overdue; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue IS 'The total of overdue patients at the facility at the beginning of the reporting month excluding patients who are removed from overdue list. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.called; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
