@@ -4709,6 +4709,105 @@ COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue IS 'The tota
 COMMENT ON COLUMN public.reporting_facility_states.called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
+CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
+ SELECT DISTINCT ON (reporting_patient_states.month_date, reporting_patient_states.patient_id) reporting_patient_states.month_date,
+    reporting_patient_states.month,
+    reporting_patient_states.quarter,
+    reporting_patient_states.year,
+    reporting_patient_states.month_string,
+    reporting_patient_states.quarter_string,
+    reporting_patient_states.patient_id,
+    reporting_patient_states.assigned_facility_id,
+    reporting_patient_states.assigned_facility_slug,
+    reporting_patient_states.assigned_facility_region_id,
+    reporting_patient_states.assigned_block_slug,
+    reporting_patient_states.assigned_block_region_id,
+    reporting_patient_states.assigned_district_slug,
+    reporting_patient_states.assigned_district_region_id,
+    reporting_patient_states.assigned_state_slug,
+    reporting_patient_states.assigned_state_region_id,
+    reporting_patient_states.assigned_organization_slug,
+    reporting_patient_states.assigned_organization_region_id,
+    next_call_results.user_id AS called_by_user_id,
+    appointments.id AS previous_appointment_id,
+    ((appointments.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_appointment_date,
+    ((appointments.scheduled_date AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_appointment_scheduled_date,
+    ((visits.visited_at_after_appointment AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS visited_at_after_appointment,
+    ((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS next_called_at,
+    ((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_called_at,
+    reporting_patient_states.hypertension,
+    reporting_patient_states.diabetes,
+    next_call_results.result_type AS next_call_result_type,
+    next_call_results.remove_reason AS next_call_remove_from_overdue_list_reason,
+    previous_call_results.result_type AS previous_call_result_type,
+    previous_call_results.remove_reason AS previous_call_remove_from_overdue_list_reason,
+        CASE
+            WHEN (appointments.scheduled_date >= reporting_patient_states.month_date) THEN 'no'::text
+            WHEN ((appointments.scheduled_date < reporting_patient_states.month_date) AND (visits.visited_at_after_appointment < reporting_patient_states.month_date)) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS is_overdue,
+        CASE
+            WHEN (next_call_results.device_created_at IS NULL) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_called,
+        CASE
+            WHEN ((visits.visited_at_after_appointment IS NULL) OR (next_call_results.device_created_at IS NULL)) THEN 'no'::text
+            WHEN (visits.visited_at_after_appointment > (next_call_results.device_created_at + '15 days'::interval)) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_visited_following_call,
+        CASE
+            WHEN (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS ltfu,
+        CASE
+            WHEN (reporting_patient_states.htn_care_state = 'under_care'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS under_care,
+        CASE
+            WHEN (patient_phone_numbers.number IS NULL) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_phone,
+        CASE
+            WHEN ((previous_call_results.result_type)::text = 'removed_from_overdue_list'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS removed_from_overdue_list
+   FROM (((((public.reporting_patient_states
+     LEFT JOIN public.appointments ON (((reporting_patient_states.patient_id = appointments.patient_id) AND (((appointments.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < reporting_patient_states.month_date))))
+     LEFT JOIN public.patient_phone_numbers ON ((patient_phone_numbers.patient_id = reporting_patient_states.patient_id)))
+     LEFT JOIN LATERAL ( SELECT blood_sugars.id AS visit_id,
+            blood_sugars.patient_id,
+            blood_sugars.recorded_at AS visited_at_after_appointment,
+            'Blood Sugar'::text AS visit_type
+           FROM public.blood_sugars
+          WHERE ((blood_sugars.deleted_at IS NULL) AND (blood_sugars.patient_id = reporting_patient_states.patient_id) AND (appointments.device_created_at < blood_sugars.recorded_at))
+        UNION
+         SELECT blood_pressures.id AS visit_id,
+            blood_pressures.patient_id,
+            blood_pressures.recorded_at AS visited_at_after_appointment,
+            'Blood Pressure'::text AS visit_type
+           FROM public.blood_pressures
+          WHERE ((blood_pressures.deleted_at IS NULL) AND (blood_pressures.patient_id = reporting_patient_states.patient_id) AND (appointments.device_created_at < blood_pressures.recorded_at))
+        UNION
+         SELECT appointments_visit.id AS visit_id,
+            appointments_visit.patient_id,
+            appointments_visit.device_created_at AS visited_at_after_appointment,
+            'Appointments'::text AS visit_type
+           FROM public.appointments appointments_visit
+          WHERE ((appointments_visit.deleted_at IS NULL) AND (appointments_visit.patient_id = reporting_patient_states.patient_id) AND (appointments.device_created_at < appointments_visit.device_created_at))
+        UNION
+         SELECT prescription_drugs.id AS visit_id,
+            prescription_drugs.patient_id,
+            prescription_drugs.device_created_at AS visited_at_after_appointment,
+            'Prescription Drugs'::text AS visit_type
+           FROM public.prescription_drugs
+          WHERE ((prescription_drugs.deleted_at IS NULL) AND (prescription_drugs.patient_id = reporting_patient_states.patient_id) AND (appointments.device_created_at < prescription_drugs.device_created_at))) visits ON ((reporting_patient_states.patient_id = visits.patient_id)))
+     LEFT JOIN public.call_results previous_call_results ON (((reporting_patient_states.patient_id = previous_call_results.patient_id) AND (((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < reporting_patient_states.month_date) AND (previous_call_results.device_created_at > appointments.scheduled_date))))
+     FULL JOIN public.call_results next_call_results ON (((reporting_patient_states.patient_id = next_call_results.patient_id) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) >= reporting_patient_states.month_date) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < (reporting_patient_states.month_date + '1 mon'::interval)))))
+  WHERE ((reporting_patient_states.status)::text <> 'dead'::text)
+  ORDER BY reporting_patient_states.month_date, reporting_patient_states.patient_id, appointments.device_created_at DESC, visits.visited_at_after_appointment, next_call_results.device_created_at, previous_call_results.device_created_at DESC
+  WITH NO DATA;
+
+
 --
 -- Name: reporting_quarterly_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
