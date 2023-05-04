@@ -446,12 +446,13 @@ te-IN:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period}లో రిజిస్టర్ అయినవారు"
         cohort_bar_tooltip: "%{threshold} తో %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "పురుషుడు"
     female: "మహిళ"
     transgender: "ట్రాన్స్‌జండర్"
     total: "మొత్తం"
-    yes: "ఔను"
-    no: "లేదు"
+    yes_lc: "ఔను"
+    no_lc: "లేదు"
     comments: "వ్యాఖ్యలు"
     instruction_1: "మీకు మొత్తము తెలియకపోతే ఖాళీగా వదిలేయండి"
     instruction_2: 'స్టాక్ గనక అయిపోయి ఉంటే "0" ఎంటర్ చేయండి'

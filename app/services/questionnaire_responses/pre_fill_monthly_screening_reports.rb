@@ -1,4 +1,4 @@
-class PreFillMonthlyScreeningReports
+class QuestionnaireResponses::PreFillMonthlyScreeningReports
   def self.call(date = 1.month.ago)
     return unless Flipper.enabled?(:monthly_screening_reports)
 
