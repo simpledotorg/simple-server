@@ -615,115 +615,115 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
   context "monthly overdue patients" do
     describe "overdue" do
-      it 'should return number of overdue patients in a facility at beginning of a month' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should include overdue patients who does not have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should return number of overdue patients in a facility at beginning of a month" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should include overdue patients who does not have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered overdue" do
       # it 'should return number of filtered overdue patients in a facility at beginning of a month' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who does not have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who does not have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "called" do
       # it 'should return number of calls made to overdue patients in a facility during the month' do end
-      it 'should only include overdue patients who were called atleast once during the month' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who were called atleast once during the month" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_called" do
       # it 'should return number of calls made to overdue patients during the month who are not removed from the overdue list' do end
-      it 'should only include overdue patients who were called atleast once during the month' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
-      it 'should only include overdue patients who have a phone number' do end
+      it "should only include overdue patients who were called atleast once during the month" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
+      it "should only include overdue patients who have a phone number" do end
     end
     describe "called_with_result_agreed_to_visit" do
       # it 'should return number of calls made to overdue patients having result type of first call as "agreed_to_visit"' do end
-      it 'should only include overdue patients having result type of first call as "agreed_to_visit"' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "called_with_result_remind_to_call_later" do
       # it 'should return number of calls made to overdue patients having result type of first call as "remind_to_call_later"' do end
-      it 'should only include overdue patients having result type of first call as "remind_to_call_later"' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "called_with_result_removed_from_overdue_list" do
       # it 'should return number of calls made to overdue patients having result type of first call as "removed_from_overdue_list"' do end
-      it 'should only include overdue patients having result type of first call as "removed_from_overdue_list"' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_called_with_result_agreed_to_visit" do
       # it 'should return number of calls made to overdue patients having result type of first call as "agreed_to_visit"
       #     excluding patients who are removed from the overdue list at the beginning of the month' do end
-      it 'should only include overdue patients having result type of first call as "agreed_to_visit"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_called_with_result_remind_to_call_later" do
-      it 'should only include overdue patients having result type of first call as "remind_to_call_later"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_called_with_result_removed_from_overdue_list" do
-      it 'should only include overdue patients having result type of first call as "removed_from_overdue_list"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "returned_after_call" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients who were called atleast once during the month' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients who were called atleast once during the month" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_returned_after_call" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "returned_after_call_with_result_agreed_to_visit" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "agreed_to_visit"' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "returned_after_call_with_result_remind_to_call_later" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "remind_to_call_later"' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "returned_after_call_with_result_removed_from_overdue_list" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "removed_from_overdue_list"' do end
-      it 'should include overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do end
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_returned_after_call_with_result_agreed_to_visit" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "agreed_to_visit"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_returned_after_call_with_result_remind_to_call_later" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "remind_to_call_later"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
     describe "filtered_returned_after_call_with_result_removed_from_overdue_list" do
-      it 'should only include overdue patients who returned to care after a call during the month' do end
-      it 'should only include overdue patients having result type of first call as "removed_from_overdue_list"' do end
-      it 'should exclude overdue patients who are removed from overdue list at the beginning of a month' do end
-      it 'should only include overdue patients who have a phone number' do end
-      it 'should exclude overdue patients who are LTFU' do end
+      it "should only include overdue patients who returned to care after a call during the month" do end
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do end
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do end
+      it "should only include overdue patients who have a phone number" do end
+      it "should exclude overdue patients who are LTFU" do end
     end
   end
 end
