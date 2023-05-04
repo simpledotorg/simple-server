@@ -1498,6 +1498,13 @@ function withBaseBarConfig(config) {
   );
 }
 
+function mergeConfig(baseConfig, overwritingConfig) {
+  return _.mergeWith(
+    baseConfig,
+    overwritingConfig,
+    mergeArraysWithConcatenation
+  );
+}
 
 function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
