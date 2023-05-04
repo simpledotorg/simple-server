@@ -1,16 +1,16 @@
-class Api::V4::Models::Questionnaires::Version2
+class Api::V4::Models::Questionnaires::DSLVersion2
   class << self
     def definitions
       {
         questionnaire_view_group_dsl_2: view_group,
         questionnaire_display_dsl_2: display,
-        questionnaire_line_break_dsl_2: Api::V4::Models::Questionnaires::Version1.line_break,
+        questionnaire_line_break_dsl_2: Api::V4::Models::Questionnaires::DSLVersion1.line_break,
         questionnaire_unordered_list_view_group_dsl_2: unordered_list_view_group,
         questionnaire_unordered_list_item_dsl_2: unordered_list_item,
         questionnaire_radio_view_group_dsl_2: radio_view_group,
         questionnaire_radio_button_dsl_2: radio_button,
         questionnaire_input_view_group_dsl_2: input_view_group,
-        questionnaire_integer_input_dsl_2: Api::V4::Models::Questionnaires::Version1.integer_input,
+        questionnaire_integer_input_dsl_2: Api::V4::Models::Questionnaires::DSLVersion1.integer_input,
         questionnaire_string_input_dsl_2: string_input
       }
     end
@@ -18,7 +18,7 @@ class Api::V4::Models::Questionnaires::Version2
     def view_group
       {
         type: :object,
-        example: Api::V4::Models::Questionnaires::SpecimenLayout.version_2,
+        example: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version2,
         properties: {
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},

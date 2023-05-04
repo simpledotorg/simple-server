@@ -1,6 +1,6 @@
 class Api::V4::Models::Questionnaires::SpecimenLayout
   class << self
-    def version_1
+    def dsl_version1
       {
         type: "group",
         id: "2e8ce537-616c-4c4c-a651-ad065d05f220",
@@ -85,7 +85,7 @@ class Api::V4::Models::Questionnaires::SpecimenLayout
       }
     end
 
-    def version_2
+    def dsl_version2
       {
         id: "2e8ce537-616c-4c4c-a651-ad065d05f220",
         type: "group",
