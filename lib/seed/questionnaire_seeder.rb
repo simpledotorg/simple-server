@@ -17,7 +17,10 @@ module Seed
         metadata: "supplies_reports, specimen-seed",
         layout: Api::V4::Models::Questionnaires::SpecimenLayout.version_2)
 
-      (1..3).map { |n| QuestionnaireResponses::PreFillMonthlyScreeningReports.call(n.month.ago) }
+      (1..3).map do |n|
+        QuestionnaireResponses::PreFillMonthlyScreeningReports.call(n.month.ago)
+        QuestionnaireResponses::InitializeMonthlySuppliesReports.call(n.month.ago)
+      end
     end
   end
 end
