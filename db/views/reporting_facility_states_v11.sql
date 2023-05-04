@@ -154,8 +154,8 @@ WITH
            COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as called_with_result_remind_to_call_later,
            COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as filtered_called_with_result_remind_to_call_later,
 
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as called_with_result_remove_from_overdue_list,
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as filtered_called_with_result_remove_from_overdue_list,
+           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as called_with_result_removed_from_overdue_list,
+           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as filtered_called_with_result_removed_from_overdue_list,
            COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no') as returned_after_call,
            COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call,
 
@@ -165,8 +165,8 @@ WITH
            COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as returned_after_call_with_result_remind_to_call_later,
            COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_remind_to_call_later,
 
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as returned_after_call_with_result_remove_from_overdue_list,
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_remove_from_overdue_list
+           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as returned_after_call_with_result_removed_from_overdue_list,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_removed_from_overdue_list
 
     FROM reporting_overdue_patients
     WHERE hypertension = 'yes'
@@ -291,8 +291,8 @@ monthly_overdue_patients.called_with_result_agreed_to_visit * 100.0 / nullif(cal
 monthly_overdue_patients.called_with_result_remind_to_call_later,
 monthly_overdue_patients.called_with_result_remind_to_call_later * 100.0 / nullif(called, 0) as percentage_called_with_result_remind_to_call_later,
 
-monthly_overdue_patients.called_with_result_remove_from_overdue_list,
-monthly_overdue_patients.called_with_result_remove_from_overdue_list * 100.0 / nullif(called, 0) as percentage_called_with_result_remove_from_overdue_list,
+monthly_overdue_patients.called_with_result_removed_from_overdue_list,
+monthly_overdue_patients.called_with_result_removed_from_overdue_list * 100.0 / nullif(called, 0) as percentage_called_with_result_removed_from_overdue_list,
 
 monthly_overdue_patients.filtered_called_with_result_agreed_to_visit,
 monthly_overdue_patients.filtered_called_with_result_agreed_to_visit * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_agreed_to_visit,
@@ -300,8 +300,8 @@ monthly_overdue_patients.filtered_called_with_result_agreed_to_visit * 100.0 / n
 monthly_overdue_patients.filtered_called_with_result_remind_to_call_later,
 monthly_overdue_patients.filtered_called_with_result_remind_to_call_later * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_remind_to_call_later,
 
-monthly_overdue_patients.filtered_called_with_result_remove_from_overdue_list,
-monthly_overdue_patients.filtered_called_with_result_remove_from_overdue_list * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_remove_from_overdue_list,
+monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list,
+monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list * 100.0 / nullif(filtered_called, 0) as filtered_percentage_called_with_result_removed_from_overdue_list,
 
 -- monthly overdue patients returned to care after a call
 monthly_overdue_patients.returned_after_call,
@@ -317,8 +317,8 @@ monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit * 100.0
 monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later,
 monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later * 100.0 / nullif(called_with_result_remind_to_call_later, 0) as percentage_returned_after_call_with_result_remind_to_call_later,
 
-monthly_overdue_patients.returned_after_call_with_result_remove_from_overdue_list,
-monthly_overdue_patients.returned_after_call_with_result_remove_from_overdue_list * 100.0 / nullif(called_with_result_remove_from_overdue_list, 0) as percentage_returned_after_call_with_result_remove_from_overdue_list,
+monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list,
+monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list * 100.0 / nullif(called_with_result_removed_from_overdue_list, 0) as percentage_returned_after_call_with_result_removed_from_overdue_list,
 
 monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit,
 monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit * 100.0 / nullif(filtered_called_with_result_agreed_to_visit, 0) as filtered_percentage_returned_after_call_with_result_agreed_to_visit,
@@ -326,8 +326,8 @@ monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visi
 monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later,
 monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later * 100.0 / nullif(filtered_called_with_result_remind_to_call_later, 0) as filtered_percentage_returned_after_call_with_result_remind_to_call_later,
 
-monthly_overdue_patients.filtered_returned_after_call_with_result_remove_from_overdue_list,
-monthly_overdue_patients.filtered_returned_after_call_with_result_remove_from_overdue_list * 100.0 / nullif(filtered_called_with_result_remove_from_overdue_list, 0) as filtered_percentage_returned_after_call_with_result_remove_from_overdue_list
+monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list,
+monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list * 100.0 / nullif(filtered_called_with_result_removed_from_overdue_list, 0) as filtered_percentage_returned_after_call_with_result_removed_from_overdue_list
 
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal
