@@ -871,8 +871,9 @@
           {
             "name": "dsl_version",
             "in": "query",
-            "type": "string",
-            "required": true
+            "type": "integer",
+            "required": true,
+            "description": "The version of layout supported by client."
           },
           {
             "name": "process_token",
@@ -3116,7 +3117,7 @@
                 "type": "display",
                 "view_type": "unordered_list_item",
                 "icon": "check",
-                "icon_color": "00FF00",
+                "icon_color": "#00B849",
                 "text": "Leave blank if you don't know an amount"
               },
               {
@@ -3124,7 +3125,7 @@
                 "type": "display",
                 "view_type": "unordered_list_item",
                 "icon": "check",
-                "icon_color": "00FF00",
+                "icon_color": "#00B849",
                 "text": "Enter \"0\" if stock is out"
               }
             ]
