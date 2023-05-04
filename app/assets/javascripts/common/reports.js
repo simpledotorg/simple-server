@@ -1511,3 +1511,17 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
     return objValue.concat(srcValue);
   }
 }
+
+function hasGoalLine(target) {
+  if (typeof target === 'number') {
+    return true
+  }
+  return false
+}
+
+function addGoalLine(config, targetNumber) {
+  const goalLineConfig = {
+    plugins: [targetLine(targetNumber)],
+  }
+  return mergeConfig(config, goalLineConfig)
+}
