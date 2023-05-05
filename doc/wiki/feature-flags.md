@@ -28,3 +28,4 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | whatsapp_appointment_reminders | Yes | When enabled, patient reminder messages will be attempted via Whatsapp first, before falling back to SMS. |
 | monthly_screening_reports | Yes | When enabled, a cron job will run on first of every month and pre-fill screening reports with follow-up data from previous month. |
 | hide_facility_follow_up_patients_per_user | Yes | When enabled, hides the follow-up patients per user section in facility level dashboard reports. |
+| goal_lines | Yes | When enabled, shows goal lines on charts. |
