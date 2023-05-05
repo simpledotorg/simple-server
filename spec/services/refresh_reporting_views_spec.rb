@@ -54,7 +54,6 @@ RSpec.describe RefreshReportingViews do
     }.to change { Reports::PatientBloodPressure.count }.by(4)
       .and change { Reports::PatientBloodSugar.count }.by(4)
       .and change { Reports::PatientState.count }.by(4)
-      .and change { Reports::OverduePatient.count }.by(4)
       .and change { Reports::PatientVisit.count }.by(4)
       .and change { Reports::PatientFollowUp.count }.by(1)
   end

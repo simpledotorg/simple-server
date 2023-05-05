@@ -24,7 +24,6 @@ class RefreshReportingViews
     Reports::PatientFollowUp
     Reports::PatientState
     Reports::FacilityAppointmentScheduledDays
-    Reports::OverduePatient
     Reports::FacilityState
     Reports::QuarterlyFacilityState
     Reports::FacilityDailyFollowUpAndRegistration
