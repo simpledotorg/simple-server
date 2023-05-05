@@ -24,7 +24,8 @@ class Csv::FacilitiesParser
     longitude: "longitude (optional)",
     facility_size: "size (optional)",
     enable_diabetes_management: "enable_diabetes_management (true/false)",
-    enable_monthly_screening_reports: "enable_monthly_screening_reports (true/false)"
+    enable_monthly_screening_reports: "enable_monthly_screening_reports (true/false)",
+    enable_monthly_supplies_reports: "enable_monthly_supplies_reports (true/false)"
   }
 
   def self.parse(*args)
@@ -90,7 +91,8 @@ class Csv::FacilitiesParser
     {
       enable_teleconsultation: facility_attrs[:enable_teleconsultation] || false,
       enable_diabetes_management: facility_attrs[:enable_diabetes_management] || false,
-      enable_monthly_screening_reports: facility_attrs[:enable_monthly_screening_reports] || false
+      enable_monthly_screening_reports: facility_attrs[:enable_monthly_screening_reports] || false,
+      enable_monthly_supplies_reports: facility_attrs[:enable_monthly_supplies_reports] || false
     }
   end
 
