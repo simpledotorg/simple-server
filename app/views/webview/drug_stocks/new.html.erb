@@ -26,17 +26,17 @@
             </a>
           <% end %>
           <h2 class="m-0px mb-8px fw-bold c-black">
-            Drug stock report
+            <%= t("drug_stocks.intro.title") %>
           </h2>
           <p class="m-0px mb-8px p-0px ta-left fw-regular fs-16px lh-150 c-grey-dark">
-            Enter the tablets in stock at the end of a month
+            <%= t("drug_stocks.intro.instruction_month") %>
           </p>
           <div class="d-flex ai-center mb-8px">
             <div class="d-inline-block mr-12px">
               <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
-              Enter the number of tablets for each drug
+              <%= t("drug_stocks.intro.instruction_number") %>
             </p>
           </div>
           <div class="d-flex ai-center mb-8px">
@@ -44,7 +44,7 @@
               <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
-              Leave blank if you don't know an amount
+              <%= t("drug_stocks.intro.instruction_blank") %>
             </p>
           </div>
           <div class="d-flex ai-center">
@@ -52,7 +52,7 @@
               <%= inline_file("check-mark-small.svg") %>
             </div>
             <p class="m-0px p-0px ta-left fw-regular fs-16px c-grey-dark">
-              Enter "0" if a drug's stock is out
+              <%= t("drug_stocks.intro.instruction_zero") %>
             </p>
           </div>
         </div>
@@ -70,19 +70,19 @@
               <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                 <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
                 <p class="mb-0px mb-8px p-0px ta-left fw-medium fs-14px c-black">
-                  <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets
+                  <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> <%= t("drug_stocks.form.tablets") %>
                 </p>
                 <div class="d-flex mb-24px">
                   <div class="f-1 mr-12px">
                     <%= drug_stock_form.number_field :received, value: @drug_stocks[protocol_drug.id].try(&:received),  class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px", skip_label: true %>
                     <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
-                      Received this month
+                      <%= t("drug_stocks.form.received") %>
                     </p>
                   </div>
                   <div class="f-1">
                     <%= drug_stock_form.number_field :in_stock, class: :in_stock, value: @drug_stocks[protocol_drug.id].try(&:in_stock), class: "bs-border-box w-100 mb-4px p-12px fw-regular fs-16px c-black b-grey-mid br-4px", skip_label: true %>
                     <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
-                      Stock on hand
+                      <%= t("drug_stocks.form.hand") %>
                     </p>
                   </div>
                 </div>
@@ -90,7 +90,7 @@
             <% end %>
             <div class="redistribution-question">
               <p class="m-0px p-0px ta-left fw-regular fs-16px c-black" for="redistribution-fields-toggle">
-                Did your facility issue drugs to other facilities this month?
+                <%= t("drug_stocks.form.issue") %>
               </p>
               <div class="redistribution-switch-wrapper">
                 <input type="checkbox" id="redistribution-fields-toggle" class="switch" <%= "checked" if @drug_stocks.values.map(&:redistributed).any? %> />
@@ -101,7 +101,7 @@
                 <%= form.fields_for "drug_stocks[#{index}]", DrugStock.new do |drug_stock_form| %>
                   <%= drug_stock_form.hidden_field :protocol_drug_id, value: protocol_drug.id %>
                   <p class="mb-0px mb-8px p-0px ta-left fw-medium fs-14px c-black">
-                    <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> tablets
+                    <%= "#{protocol_drug.name} #{protocol_drug.dosage}"%> <%= t("drug_stocks.form.tablets") %>
                   </p>
                   <div class="d-flex mb-24px">
                     <div class="w-95">
@@ -111,7 +111,7 @@
                           skip_label: true
                       %>
                       <p class="m-0px p-0px ta-left fw-regular fs-12px c-grey-dark">
-                        Stock issued to other facilities
+                        <%= t("drug_stocks.form.issued") %>
                       </p>
                     </div>
                   </div>

@@ -75,6 +75,19 @@ en:
       female: "Female"
       male: "Male"
       transgender: "Transgender"
+  drug_stocks:
+    intro:
+      title: Drug stock report
+      instruction_month: Enter the tablets in stock at the end of a month
+      instruction_number: Enter the number of tablets for each drug
+      instruction_blank: Leave blank if you don't know an amount
+      instruction_zero: Enter "0" if a drug's stock is out
+    form:
+      tablets: tablets
+      received: Received this month
+      hand: Stock on hand
+      issue: Did your facility issue drugs to other facilities this month?
+      issued: Stock issued to other facilities
   help:
     menu:
       videos_html: Videos
