@@ -11,7 +11,7 @@
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-controlled"
          data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
 
       <div class="pt-20px px-20px">
@@ -51,8 +51,8 @@
       </div>
       <div>
         <div class="p-relative mb-12px">
-          <div class="h-320px mr-16px mb-12px ml-13px">
-            <canvas id="controlledPatientsTrend"></canvas>
+          <div class="h-320px mr-8px ml-8px">
+            <canvas id="controlledPatientsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@
       <div>
         <div class="p-relative mb-16px">
           <div class="h-320px mr-16px mb-12px ml-13px">
-            <canvas id="uncontrolledPatientsTrend"></canvas>
+            <canvas id="uncontrolledPatientsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
           </div>
         </div>
       </div>
@@ -210,15 +210,13 @@
       </div>
       <div>
         <div class="h-320px mr-16px mb-16px ml-13px">
-          <canvas id="missedVisitsTrend"></canvas>
+          <canvas id="missedVisitsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
         </div>
       </div>
     </div>
   </div>
 </div>
-
 <%= render "treatment_outcomes_card" %>
-
 <h4 class="mt-5 mb-32px">Details</h4>
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Hypertension::CoverageCardComponent.new(

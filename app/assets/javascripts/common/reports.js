@@ -173,8 +173,8 @@ DashboardReports = () => {
             y: {
               stacked: true,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -432,8 +432,7 @@ Reports = function (withLtfu) {
     const controlledGraphRate = withLtfu
       ? data.controlWithLtfuRate
       : data.controlRate;
-
-    const config = {
+    let config = {
       data: {
         labels: Object.keys(controlledGraphRate),
         datasets: [
@@ -458,8 +457,11 @@ Reports = function (withLtfu) {
             },
           },
         },
-      }
+      },
     };
+    if (isGoalLineEnabled(document.getElementById("bp-controlled"))) {
+      config = addGoalLineToConfig(config, controlledGraphRate);
+    }
 
     const populateControlledGraph = (period) => {
       const cardNode = document.getElementById("bp-controlled");
@@ -516,7 +518,7 @@ Reports = function (withLtfu) {
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
-    const config = {
+    let config = {
       data: {
         labels: Object.keys(uncontrolledGraphRate),
         datasets: [
@@ -543,6 +545,9 @@ Reports = function (withLtfu) {
         },
       },
     };
+    if (isGoalLineEnabled(document.getElementById("bp-uncontrolled"))) {
+      config = addGoalLineToConfig(config, uncontrolledGraphRate, true);
+    }
 
     const populateUncontrolledGraph = (period) => {
       const cardNode = document.getElementById("bp-uncontrolled");
@@ -601,7 +606,7 @@ Reports = function (withLtfu) {
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
-    const config = {
+    let config = {
       data: {
         labels: Object.keys(missedVisitsGraphRate),
         datasets: [
@@ -625,9 +630,13 @@ Reports = function (withLtfu) {
               else populateMissedVisitsGraphDefault();
             },
           },
-        }
+      },
       },
     };
+
+    if (isGoalLineEnabled(document.getElementById("missed-visits"))) {
+      addGoalLineToConfig(config, missedVisitsGraphRate, true);
+    }
 
     const populateMissedVisitsGraph = (period) => {
       const cardNode = document.getElementById("missed-visits");
@@ -1059,7 +1068,7 @@ function baseLineGraphConfig() {
         padding: {
           left: 0,
           right: 0,
-          top: 20,
+          top: 26,
           bottom: 0,
         },
       },
@@ -1237,6 +1246,138 @@ const intersectDataVerticalLine = {
   },
 };
 
+function goalLinePlugin(goalValue) {
+  return {
+    id: "goalLine",
+    beforeDraw: (chart) => {
+      const ctx = chart.ctx;
+      ctx.save();
+      canvasDrawGoalLine(chart, goalValue);
+      canvasDrawGoalTextBubble(chart, goalValue);
+      canvasDrawLineFromGoalToBubble(chart, goalValue);
+    },
+  };
+}
+
+function canvasDrawGoalLine(chart, goalValue) {
+  const ctx = chart.ctx;
+  const chartArea = chart.chartArea;
+  const chartBottom = chartArea.bottom;
+  const chartHeight = chart.chartArea.height;
+  const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+
+  ctx.beginPath();
+  ctx.moveTo(chartArea.left + 1, lineYPosition);
+  ctx.lineTo(chartArea.right - 1, lineYPosition);
+  ctx.lineWidth = 3;
+  ctx.lineCap = "round";
+  ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
+  ctx.setLineDash([1, 6]);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function canvasDrawRoundRect(ctx, x, y, width, heightVar, radiusVar, fillStyle) {
+  const radius = radiusVar || 5;
+  const height = heightVar + 4
+  const cornerRadius = radius + 1
+
+  ctx.beginPath();
+  ctx.moveTo(x + cornerRadius, y);
+  ctx.lineTo(x + width - cornerRadius, y);
+  ctx.arcTo(x + width, y, x + width, y + cornerRadius, cornerRadius);
+  ctx.lineTo(x + width, y + height - cornerRadius);
+  ctx.arcTo(
+    x + width,
+    y + height,
+    x + width - cornerRadius,
+    y + height,
+    cornerRadius
+  );
+  ctx.lineTo(x + cornerRadius, y + height);
+  ctx.arcTo(x, y + height, x, y + height - cornerRadius, cornerRadius);
+  ctx.lineTo(x, y + cornerRadius);
+  ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+  ctx.closePath();
+
+  ctx.fillStyle = fillStyle || "grey";
+  ctx.fill();
+}
+
+function canvasDrawGoalTextBubble(chart, goalValue) {
+  // draw text
+  const ctx = chart.ctx;
+  const cornerRadius = 10;
+  const xTextPadding = 7;
+  const yTextPadding = 2;
+
+  const rgbaChartColor = chart.config.data.datasets[0].borderColor;
+  const textColor = rgbaChartColor;
+  const rgbaArray = rgbaChartColor.match(/\d+/g);
+  rgbaArray[3] = 0.15;
+  const fillColor = `rgba(${rgbaArray.join(", ")})`;
+
+  const dateNow = new Date();
+  const currentYearString = dateNow.getFullYear();
+  const text = `Goal: ${goalValue}% by end of ${currentYearString}`;
+  const font = "14px Roboto Condensed";
+  ctx.font = font;
+  ctx.fillStyle = textColor;
+
+  const textSize = ctx.measureText(text);
+  const textWidth = textSize.width;
+  const textHeight = parseInt(font, 10);
+  const chartRight = chart.chartArea.right;
+  const textXPos = chartRight - textWidth - xTextPadding;
+  const textYPos = textHeight + yTextPadding;
+
+  ctx.fillStyle = textColor;
+  ctx.strokeStyle = textColor;
+  ctx.fillText(text, textXPos, textYPos);
+  ctx.restore()
+
+  // draw background
+  const backgroundFillXPos = chartRight - textWidth - xTextPadding * 2
+  const rectWidth = textWidth + xTextPadding * 2
+  const rectHeight = textHeight + yTextPadding * 2
+  canvasDrawRoundRect(
+    ctx,
+    backgroundFillXPos,
+    0,
+    rectWidth,
+    rectHeight,
+    cornerRadius,
+    fillColor
+  );
+
+}
+
+function canvasDrawLineFromGoalToBubble(chart, goalValue) {
+  const lineWidth = 2;
+  const currentRGBColor = chart.config.data.datasets[0].borderColor;
+  const rgbaArray2 = currentRGBColor.match(/\d+/g);
+  rgbaArray2[3] = 0.3;
+  const bgColorString = `rgba(${rgbaArray2.join(", ")})`;
+
+  const ctx = chart.ctx;
+  const chartArea = chart.chartArea;
+  const chartBottom = chartArea.bottom;
+  const chartRight = chartArea.right;
+  const chartWidth = chartArea.width;
+  const chartHeight = chart.chartArea.height;
+  const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+  const xPos = chartRight - (chartWidth / 18) * 1.5 - lineWidth;
+
+  ctx.beginPath();
+  ctx.moveTo(xPos, 23);
+  ctx.lineTo(xPos, lineYPosition);
+  ctx.strokeStyle = bgColorString;
+  ctx.lineWidth = lineWidth;
+  ctx.lineCap = "square";
+  ctx.stroke();
+  ctx.restore();
+}
+
 function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
@@ -1253,9 +1394,70 @@ function withBaseBarConfig(config) {
   );
 }
 
+function mergeConfig(baseConfig, overwritingConfig) {
+  return _.mergeWith(
+    baseConfig,
+    overwritingConfig,
+    mergeArraysWithConcatenation
+  );
+}
 
 function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
+}
+
+function isGoalLineEnabled(domElement) {
+  const cardNodeBPControlled = domElement;
+  const isEnabled = cardNodeBPControlled.querySelector("[data-show-goal-lines]")
+    .dataset.showGoalLines;
+  if (isEnabled === "true") {
+    return true;
+  }
+  return false;
+}
+
+function addGoalLineToConfig(config, periodValues, goalDownwards = false) {
+  const latestDecValue = getLatestDecemberValue(periodValues);
+  const goal = calculateGoal(latestDecValue, goalDownwards);
+  const goalLineConfig = {
+    plugins: [goalLinePlugin(goal)],
+  };
+  return mergeConfig(config, goalLineConfig);
+}
+
+function calculateGoal(value, goalDownwards) {
+  if (goalDownwards) {
+    return calculateGoalDownwards(value);
+  }
+  return calculateGoalUpwards(value);
+}
+
+function calculateGoalUpwards(decemeberValue) {
+  const goal =
+    decemeberValue + (100 - decemeberValue) * relativeImprovementRatio();
+  return Math.ceil(goal);
+}
+
+function calculateGoalDownwards(decemeberValue) {
+  const goal = decemeberValue - decemeberValue * relativeImprovementRatio();
+  return Math.floor(goal);
+}
+
+function relativeImprovementRatio() {
+  const defaultRelativeImprovementPercentage = 10;
+  return defaultRelativeImprovementPercentage / 100;
+}
+
+function getLatestDecemberValue(periodValues) {
+  const dateKeysArray = Object.keys(periodValues);
+  const filterDecemberKeys = dateKeysArray.filter((item) => {
+    if (item.includes("Dec")) {
+      return true;
+    }
+  });
+
+  const latestDecDate = filterDecemberKeys[filterDecemberKeys.length - 1];
+  return periodValues[latestDecDate];
 }
