@@ -20,7 +20,7 @@ RSpec.describe PreFillMonthlyScreeningReports do
   end
 
   describe "#call" do
-    it "pre-fills monthly screening reports for previous month" do
+    it "[India] pre-fills monthly screening reports for previous month" do
       PreFillMonthlyScreeningReports.call
 
       date = 1.month.ago.beginning_of_month
@@ -39,6 +39,27 @@ RSpec.describe PreFillMonthlyScreeningReports do
       )
       expect(questionnaire_response.device_created_at).to eq(date)
       expect(questionnaire_response.device_updated_at).to eq(date)
+    end
+
+    it "[Ethiopia] pre-fills monthly screening reports for previous month" do
+      current_country = Rails.application.config.country
+      Rails.application.config.country = CountryConfig.for("ET")
+      PreFillMonthlyScreeningReports.call
+
+      date = 1.month.ago.beginning_of_month
+      questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
+      expect(questionnaire_response.content).to eq(
+        {
+          "month_date" => date.strftime("%Y-%m-%d"),
+          "submitted" => false,
+          "monthly_screening_report.total_htn_diagnosed" => 1,
+          "monthly_screening_report.total_dm_diagnosed" => 0
+        }
+      )
+      expect(questionnaire_response.device_created_at).to eq(date)
+      expect(questionnaire_response.device_updated_at).to eq(date)
+
+      Rails.application.config.country = current_country
     end
 
     it "ignores existing monthly screening reports" do

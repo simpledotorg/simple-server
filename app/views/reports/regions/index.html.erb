@@ -9,7 +9,8 @@
   <% @accessible_regions.each do |org, children| %>
     <div class="organization card show">
       <div class="access-tree__section-header">
-        <% if current_admin.feature_enabled?(:organization_reports) %>
+        <% if current_admin.feature_enabled?(:organization_reports) &&
+          current_admin.accessible_organizations(:view_reports).find_by_id(org.source) %>
           <h3><%= link_to(org.name, reports_region_path(org.source.slug, report_scope: org.region_type)) %></h3>
         <% else %>
           <h3><%= org.name %></h3>

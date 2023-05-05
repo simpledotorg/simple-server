@@ -120,7 +120,7 @@ so-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
       bp_passports:
-        heading_html: BP Passports
+        heading_html: "BP Passports"
         contents_html: Baro sida loo isticmaalo kaadhadhka BP Passports ama waraaqaha dhajiska BP Passports ee isbitaalkaaga.
         video_link_html: Sida loo isticmaalo BP Passports
         video_link_subtitle_html: Qoraalka hoose ee Ingiriisiga Hindiga lagu turjubay
@@ -332,7 +332,7 @@ so-ET:
       subtitle: "Waxa aad weli eegi kartaa warbixinaha hore"
     update_required_card:
       title: "Cusboonaysiin ayaa loo baahan yahay"
-      subtitle: "Cusboonaysii app-ka si aad u aragto warbixintan"
+      subtitle: "Cusboonaysii app-ka si aad u aragto warbixintan"
     diagnoses:
       all: "Dhamaan dhiigarka iyo macaanka"
       hypertension: "Dhiikar"
@@ -449,11 +449,33 @@ so-ET:
     male: "Lab"
     female: "Dhedig"
     transgender: "Jinsiga Badalay"
+    total: "Wadarta"
+    yes: "Haa"
+    no: "Maya"
+    comments: "Faallooyinka"
+    instruction_1: "Banee haddii aanad garanayn qadarka"
+    instruction_2: 'Geli "0" Haddii alaabtu dhammaatay'
   monthly_screening_report:
+    htn_and_dm_screening: "BAADHITAANKA HTN & DM"
+    # Ethiopia
+    total_bp: "Wadarta baadhitaanka BP la sameeyay"
+    total_bs: "Wadarta baadhitaanka sonkorta dhiiga la sameeyay"
+    new_raised_cases: "XAALADAHA CUSUB EE LA SOO QAADAY"
+    total_bp_raised: "Wadarta BP sare u kacay"
+    total_bs_raised: "Wadarta xaaladaha BS sare u kacay"
+    total_bp_raised_ncd_linked: "Wadarta xaaladaha BP sare u kacay ee ku xidhan rugta NDC"
+    total_bs_raised_ncd_linked: "Wadarta xaaladaha BS sare u kacay ee ku xidhan rugta NDC"
+    diagnosed_cases: "XAALADAHA LA AQOONSADAY"
+    total_htn_diagnosed: "Wadarta HTN ee la Aqoonsaday"
+    total_dm_diagnosed: "Wadarta DM ee la Aqoonsaday"
+    cervical_cancer_uc: "KANSARKA ILMA GALEENKA"
+    total_women_screened_cervical: "Wadarta haweenka laga baadhay Kansarka Ilma galeenka"
+    total_women_treated_cervical: "Wadarta haweenka laga daweeyay Kansarka Ilma galeenka"
+    total_women_followup_cervical: "Wadarta haweenka lala socday 1 sano ka dib"
+    # India
     monthly_opd_visits_gt_30: "Booqashooyinka bilaha ah ee OPD ee dadka waa wayns  > 30 sano jirka ah"
     monthly_opd_visits_gt_18: "Booqashooyinka OPO ee dadka waa wayns >18 sano jirka"
     outpatient_department_visits: "Booqashooyinka waaxda bukaan socodka"
-    htn_and_dm_screening: "BAADHITAANKA HTN & DM"
     total_bp_checks: "Wadarta baadhitaanka BP la sameeyay"
     total_blood_sugar_checks: "Wadarta baadhitaanka dhiiga sonkorta la sameeyay"
     new_suspected_individuals: "SHAKHSIYAADKA CUSUB EE LAGA SHAKISAN YAHAY"
@@ -471,4 +493,44 @@ so-ET:
     oral_cancer: "Kansarka afka"
     breast_cancer: "Kansarka naaska"
     cervical_cancer: "Kansarka dhuunta ilma galeenka"
-
+  monthly_supplies_report:
+    instruction_1: "Geli saadka ku hadhaya laabta dhammaadka bil kasta"
+    stock_on_hand: "Alaabta la hayo"
+    stock_on_hand_uc: "ALAABTA LA HAYO"
+    working_equipments: "QALABKA SHAQAYNAYA"
+    glucose_strips: "Liidadka baadhida Guluukoosta Dhiiga"
+    total_working_condition: "Wadarta xaaladaha shaqada"
+    # Bangladesh
+    patient_books: "Buuggaagta bukaanka"
+    available_bp_monitors_arm_in: "Wadarta mashiinada BP la heli karo (arm-in)"
+    functioning_bp_monitors_arm_in: "Mashiinada BP shaqaynaya (gacanta la geliyo)"
+    available_bp_monitors_handheld: "Wadarta mashiinada BP la heli karo (gacanta lagu hayo)"
+    functioning_bp_monitors_handheld: "Mashiinada BP shaqaynaya (gacanta la geliyo)"
+    available_blood_glucose_monitors: "Wdarta mashiinada Guluukoosta dhiiga la heli karo"
+    functioning_blood_glucose_monitors: "Mishiinada Guluukoosta Dhiiga shaqaynaya"
+    # Ethiopia
+    bp_monitor: "Mishiinka BP"
+    glucose_meter: "Qalabka qiyaasta guluukoosta"
+    stethoscope: "Qalabka dhegaysiga wadnaha"
+    height_weight_machine: "Mishiinka Qiyaasta Dhererka & Miisaanka"
+    waist_tape: "Qiyaasta fuudhka dhexda lagu wareejiyo"
+    # India
+    glucometer_strips: "Liidadka qalabka qiyaasta buluukoosta"
+    # Sri Lanka
+    equipment: "QALABKA"
+    available_bp_devices: "Wadarta qalabyada BP la heli karo"
+    functioning_bp_devices: "Qalabyada shaqaynaya ee BP"
+    available_phones: "Wadarta telefoonada Moobilka la heli karo"
+    functioning_phones: "Telefoonada Moobilka shaqaynaya"
+    drug_stock: "ALAABTA DAWADA AH"
+    drug_stock_losartan: "Dawo ku filan bisha xigta: Losartan"
+    drug_stock_amlodipine: "Dawo ku filan bisha xigta: Amlodipine"
+    drug_stock_hct: "Dawo ku filan bisha xigta: HCT (Hydrochlorathiazide)"
+    trained_staff: "SHAQAALAHA TABABARAN"
+    doctors_count: "Tirada Dhakhtarada imanaya rugta caafimaadka"
+    nurses_count: "Tirada Kalkaalisooyinka imanaya rugta caafimaadka"
+    pharmacists_count: "Tirada Farmasiiyada laga heli karo cusbitaalka"
+    drug_dispensers_count: "Tirada Bixiyayaasha dawada laga heli karo cusbitaalka"
+    others: "KUWA KALE"
+    television_functional: "Miyaa fariimaha waxbarashadda caafimaadka lagu soo bandhigaa xaga Rugta Caafimaadka iyaddoo la isticmaalayo shaashada telefeeshanka?"
+    wifi_functional: "Miyaa la heli karaa shabakada Wi-Fi?"
