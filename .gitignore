@@ -35,6 +35,7 @@ coverage
 
 # Ignore utility configuration files
 .idea/
+.tool-versions
 .rubocop.yml
 config/spring.rb
 
