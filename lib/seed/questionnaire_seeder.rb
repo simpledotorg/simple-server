@@ -7,14 +7,14 @@ module Seed
         questionnaire_type: "monthly_screening_reports",
         dsl_version: 1,
         is_active: true,
-        metadata: "screening_reports, specimen-seed",
+        description: "screening_reports, specimen_seed",
         layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
 
       FactoryBot.create(:questionnaire,
         questionnaire_type: "monthly_supplies_reports",
         dsl_version: 2,
         is_active: true,
-        metadata: "supplies_reports, specimen-seed",
+        description: "supplies_reports, specimen_seed",
         layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version2)
 
       (1..3).map do |n|

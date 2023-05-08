@@ -1858,7 +1858,7 @@ CREATE TABLE public.questionnaires (
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    metadata character varying
+    description character varying
 );
 
 
