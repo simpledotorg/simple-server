@@ -6,6 +6,7 @@ describe BangladeshDisaggregatedDhis2Exporter do
   end
 
   before do
+    ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/sandbox.yml"
     Rails.application.config.country = CountryConfig.for(:BD)
   end
 
@@ -18,8 +19,8 @@ describe BangladeshDisaggregatedDhis2Exporter do
       expected_arguments = {
         facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
         periods: (Period.current.previous.advance(months: -24)..Period.current.previous),
-        data_elements_map: CountryConfig.current.fetch(:disaggregated_dhis2_data_elements),
-        category_option_combo_ids: CountryConfig.current.fetch(:dhis2_category_option_combo)
+        data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
+        category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
       }
 
       expect(Dhis2Exporter).to receive(:new).with(expected_arguments).and_call_original

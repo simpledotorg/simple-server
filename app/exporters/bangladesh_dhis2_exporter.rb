@@ -5,7 +5,7 @@ class BangladeshDhis2Exporter
     exporter = Dhis2Exporter.new(
       facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
       periods: periods,
-      data_elements_map: CountryConfig.current.fetch(:dhis2_data_elements)
+      data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)
     )
 
     exporter.export do |facility_identifier, period|

@@ -6,8 +6,8 @@ class BangladeshDisaggregatedDhis2Exporter
     exporter = Dhis2Exporter.new(
       facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
       periods: (current_month_period.advance(months: -24)..current_month_period),
-      data_elements_map: CountryConfig.current.fetch(:disaggregated_dhis2_data_elements),
-      category_option_combo_ids: CountryConfig.current.fetch(:dhis2_category_option_combo)
+      data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
+      category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
     )
 
     exporter.export_disaggregated do |facility_identifier, period|
