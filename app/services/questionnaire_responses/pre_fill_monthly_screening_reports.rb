@@ -48,8 +48,8 @@ class QuestionnaireResponses::PreFillMonthlyScreeningReports
   def self.monthly_screening_report_exists?(facility_id, month_date_str)
     QuestionnaireResponse
       .where(facility_id: facility_id)
-      .merge(Questionnaire.monthly_screening_reports)
       .joins(:questionnaire)
+      .merge(Questionnaire.monthly_screening_reports)
       .where("content->>'month_date' = ?", month_date_str)
       .any?
   end
