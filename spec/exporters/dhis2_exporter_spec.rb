@@ -22,14 +22,14 @@ describe Dhis2Exporter do
         periods: periods,
         data_elements_map: data_elements_map
       )
-      dummy_value = 0
+      value = 0
       expected_data_values = facility_identifiers.map { |facility_identifier|
         periods.product(data_elements_map.values).map { |period, data_element_id|
           {
             data_element: data_element_id,
             org_unit: facility_identifier.identifier,
             period: exporter.reporting_period(period),
-            value: dummy_value
+            value: value
           }
         }
       }
@@ -41,8 +41,8 @@ describe Dhis2Exporter do
 
       exporter.export do |_facility_identifier, _period|
         {
-          data_elements_map.keys.first => dummy_value,
-          data_elements_map.keys.second => dummy_value
+          data_elements_map.keys.first => value,
+          data_elements_map.keys.second => value
         }
       end
     end
@@ -56,7 +56,7 @@ describe Dhis2Exporter do
         data_elements_map: data_elements_map,
         category_option_combo_ids: category_option_combo_ids
       )
-      dummy_value = 0
+      value = 0
       expected_data_values = facility_identifiers.map do |facility_identifier|
         periods.product(data_elements_map.values).map do |period, data_element_id|
           category_option_combo_ids.map do |_combo, id|
@@ -65,12 +65,12 @@ describe Dhis2Exporter do
               org_unit: facility_identifier.identifier,
               category_option_combo: id,
               period: exporter.reporting_period(period),
-              value: dummy_value
+              value: value
             }
           end
         end.flatten
       end
-      disaggregated_data_values = category_option_combo_ids.transform_values { |_value| dummy_value }
+      disaggregated_data_values = category_option_combo_ids.transform_values { |_value| value }
 
       allow(exporter).to receive(:send_data_to_dhis2)
 
@@ -88,7 +88,7 @@ describe Dhis2Exporter do
 
   describe "#disaggregate_data_values" do
     it "should return a list of disaggregated data values for each category-option combo for the given data element and period" do
-      dummy_value = 5
+      value = 5
       facility_identifier = facility_identifiers.first
       exporter = described_class.new(
         facility_identifiers: [facility_identifier],
@@ -96,7 +96,7 @@ describe Dhis2Exporter do
         data_elements_map: data_elements_map,
         category_option_combo_ids: category_option_combo_ids
       )
-      indicator1_disaggregated_values = category_option_combo_ids.transform_values { |_value| dummy_value }
+      indicator1_disaggregated_values = category_option_combo_ids.transform_values { |_value| value }
       expected_disaggregated_values = category_option_combo_ids.map do |combo, id|
         {
           data_element: data_elements_map.keys.first,
@@ -121,9 +121,9 @@ describe Dhis2Exporter do
     end
 
     it "should set value to zero for category-option combos that don't have values for a given data element" do
-      dummy_value = 5
-      dummy_period = "dummy2020"
-      indicator1_disaggregated_values = {category_option_combo_ids.keys.first => dummy_value}
+      value = 5
+      period = "dummy2020"
+      indicator1_disaggregated_values = {category_option_combo_ids.keys.first => value}
 
       exporter = described_class.new(
         facility_identifiers: facility_identifiers,
@@ -131,7 +131,7 @@ describe Dhis2Exporter do
         data_elements_map: data_elements_map,
         category_option_combo_ids: category_option_combo_ids
       )
-      allow(exporter).to receive(:reporting_period).and_return(dummy_period)
+      allow(exporter).to receive(:reporting_period).and_return(period)
       disaggregated_values = exporter.disaggregate_data_values(
         exporter.data_elements_map.keys.first,
         exporter.facility_identifiers.first,
@@ -139,7 +139,7 @@ describe Dhis2Exporter do
         indicator1_disaggregated_values
       )
 
-      expect(disaggregated_values.first[:value]).to eq(dummy_value)
+      expect(disaggregated_values.first[:value]).to eq(value)
       expect(disaggregated_values.second[:value]).to eq(0)
     end
   end

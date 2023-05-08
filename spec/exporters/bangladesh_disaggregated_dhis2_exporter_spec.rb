@@ -99,17 +99,15 @@ describe BangladeshDisaggregatedDhis2Exporter do
     end
   end
 
-  describe ".gender_age_counts" do
-    it "should take patient states and d" do
-    end
-  end
-
   describe ".gender_age_range_symbol" do
     it "should take a gender and age bucket index and return a symbol concatenating the gender and age range" do
       gender = "male"
-      age_buckets = (15..75).step(5).to_a
-      age_bucket_index = age_buckets.find_index(20) + 1
+      age_bucket_index = BangladeshDisaggregatedDhis2Exporter::BUCKETS.find_index(20) + 1
       expect(described_class.gender_age_range_key(gender, age_bucket_index)).to eq("male_20_24")
+    end
+    it "should append _plus in for the last age bucket" do
+      gender = "male"
+      expect(described_class.gender_age_range_key(gender, BangladeshDisaggregatedDhis2Exporter::BUCKETS.length)).to eq("male_75_plus")
     end
   end
 end

@@ -43,11 +43,12 @@ class Dhis2Exporter
       @periods.each do |period|
         facility_data = yield(facility_identifier, period)
         facility_data.each do |data_element, value|
-          data_values << disaggregate_data_values(data_elements_map[data_element], facility_identifier, period, value)
-          data_values = data_values.flatten
-          puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{data_values.last}"
+          results = disaggregate_data_values(data_elements_map[data_element], facility_identifier, period, value)
+          data_values << results
+          results.each { |result| puts "Adding data for #{facility_identifier.facility.name}, #{period}, #{data_element}: #{result}" }
         end
       end
+      data_values = data_values.flatten
       send_data_to_dhis2(data_values)
     end
   end
