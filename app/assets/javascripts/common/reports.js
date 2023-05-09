@@ -402,7 +402,7 @@ DashboardReports = () => {
   }
 }
 
-Reports = function (withLtfu) {
+Reports = function (settings) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
@@ -425,11 +425,11 @@ Reports = function (withLtfu) {
   };
 
   this.setupControlledGraph = (data) => {
-    const adjustedPatients = withLtfu
+    const adjustedPatients = settings.withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
     const controlledGraphNumerator = data.controlledPatients;
-    const controlledGraphRate = withLtfu
+    const controlledGraphRate = settings.withLtfu
       ? data.controlWithLtfuRate
       : data.controlRate;
     let config = {
@@ -459,7 +459,7 @@ Reports = function (withLtfu) {
         },
       },
     };
-    if (isGoalLineEnabled(document.getElementById("bp-controlled"))) {
+    if (settings.showGoalLines) {
       config = addGoalLineToConfig(config, controlledGraphRate);
     }
 
@@ -510,11 +510,11 @@ Reports = function (withLtfu) {
   };
 
   this.setupUncontrolledGraph = (data) => {
-    const adjustedPatients = withLtfu
+    const adjustedPatients = settings.withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
     const uncontrolledGraphNumerator = data.uncontrolledPatients;
-    const uncontrolledGraphRate = withLtfu
+    const uncontrolledGraphRate = settings.withLtfu
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
@@ -545,7 +545,7 @@ Reports = function (withLtfu) {
         },
       },
     };
-    if (isGoalLineEnabled(document.getElementById("bp-uncontrolled"))) {
+    if (settings.showGoalLines) {
       config = addGoalLineToConfig(config, uncontrolledGraphRate, true);
     }
 
@@ -596,13 +596,13 @@ Reports = function (withLtfu) {
   };
 
   this.setupMissedVisitsGraph = (data) => {
-    const adjustedPatients = withLtfu
+    const adjustedPatients = settings.withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
-    const missedVisitsGraphNumerator = withLtfu
+    const missedVisitsGraphNumerator = settings.withLtfu
       ? data.missedVisitsWithLtfu
       : data.missedVisits;
-    const missedVisitsGraphRate = withLtfu
+    const missedVisitsGraphRate = settings.withLtfu
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
@@ -634,7 +634,7 @@ Reports = function (withLtfu) {
       },
     };
 
-    if (isGoalLineEnabled(document.getElementById("missed-visits"))) {
+    if (settings.showGoalLines) {
       addGoalLineToConfig(config, missedVisitsGraphRate, true);
     }
 
@@ -1402,16 +1402,6 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
-}
-
-function isGoalLineEnabled(domElement) {
-  const cardNodeBPControlled = domElement;
-  const isEnabled = cardNodeBPControlled.querySelector("[data-show-goal-lines]")
-    .dataset.showGoalLines;
-  if (isEnabled === "true") {
-    return true;
-  }
-  return false;
 }
 
 function addGoalLineToConfig(config, periodValues, goalDownwards = false) {

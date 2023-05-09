@@ -52,7 +52,7 @@
       <div>
         <div class="p-relative mb-12px">
           <div class="h-320px mr-8px ml-8px">
-            <canvas id="controlledPatientsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
+            <canvas id="controlledPatientsTrend"></canvas>
           </div>
         </div>
       </div>
@@ -161,7 +161,7 @@
       <div>
         <div class="p-relative mb-16px">
           <div class="h-320px mr-16px mb-12px ml-13px">
-            <canvas id="uncontrolledPatientsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
+            <canvas id="uncontrolledPatientsTrend"></canvas>
           </div>
         </div>
       </div>
@@ -210,7 +210,7 @@
       </div>
       <div>
         <div class="h-320px mr-16px mb-16px ml-13px">
-          <canvas id="missedVisitsTrend" data-show-goal-lines="<%= Flipper.enabled?(:goal_lines) %>"></canvas>
+          <canvas id="missedVisitsTrend"></canvas>
         </div>
       </div>
     </div>
@@ -269,6 +269,9 @@
 </div>
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    new Reports(<%= @with_ltfu %>).initialize();
+    new Reports({
+      withLtfu: <%= @with_ltfu %>,
+      showGoalLines: <%= Flipper.enabled?(:goal_lines) %>
+    }).initialize();
   });
 </script>
