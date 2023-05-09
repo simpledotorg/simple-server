@@ -1434,14 +1434,14 @@ function calculateGoal(value, goalDownwards) {
   return calculateGoalUpwards(value);
 }
 
-function calculateGoalUpwards(decemeberValue) {
+function calculateGoalUpwards(decemberValue) {
   const goal =
-    decemeberValue + (100 - decemeberValue) * relativeImprovementRatio();
+    decemberValue + (100 - decemberValue) * relativeImprovementRatio();
   return Math.ceil(goal);
 }
 
-function calculateGoalDownwards(decemeberValue) {
-  const goal = decemeberValue - decemeberValue * relativeImprovementRatio();
+function calculateGoalDownwards(decemberValue) {
+  const goal = decemberValue - decemberValue * relativeImprovementRatio();
   return Math.floor(goal);
 }
 
