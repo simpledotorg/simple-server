@@ -1313,9 +1313,7 @@ function canvasDrawGoalTextBubble(chart, goalValue) {
 
   const rgbaChartColor = chart.config.data.datasets[0].borderColor;
   const textColor = rgbaChartColor;
-  const rgbaArray = rgbaChartColor.match(/\d+/g);
-  rgbaArray[3] = 0.15;
-  const fillColor = `rgba(${rgbaArray.join(", ")})`;
+  const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.15)
 
   const dateNow = new Date();
   const currentYearString = dateNow.getFullYear();
@@ -1354,10 +1352,8 @@ function canvasDrawGoalTextBubble(chart, goalValue) {
 
 function canvasDrawLineFromGoalToBubble(chart, goalValue) {
   const lineWidth = 2;
-  const currentRGBColor = chart.config.data.datasets[0].borderColor;
-  const rgbaArray2 = currentRGBColor.match(/\d+/g);
-  rgbaArray2[3] = 0.3;
-  const bgColorString = `rgba(${rgbaArray2.join(", ")})`;
+  const currentRGBAColor = chart.config.data.datasets[0].borderColor;
+  const bgColorString = changeRGBAColorOpacity(currentRGBAColor, 0.3)
 
   const ctx = chart.ctx;
   const chartArea = chart.chartArea;
@@ -1460,4 +1456,10 @@ function getLatestDecemberValue(periodValues) {
 
   const latestDecDate = filterDecemberKeys[filterDecemberKeys.length - 1];
   return periodValues[latestDecDate];
+}
+
+function changeRGBAColorOpacity(colorString, opacity) {
+  const rgbaArray = colorString.match(/\d+/g);
+  rgbaArray[3] = opacity;
+  return `rgba(${rgbaArray.join(", ")})`
 }
