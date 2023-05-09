@@ -439,7 +439,7 @@ Reports = function (settings) {
     };
   }
 
-  function addGoalLineToConfig(config, periodValues, goalDownwards = false) {
+  function withGoalLineConfig(config, periodValues, goalDownwards = false) {
     const latestDecValue = getLatestDecemberValue(periodValues);
     const goal = calculateGoal(latestDecValue, goalDownwards);
     const goalLineConfig = {
@@ -619,7 +619,7 @@ Reports = function (settings) {
     const controlledGraphRate = settings.withLtfu
       ? data.controlWithLtfuRate
       : data.controlRate;
-    let config = {
+    const config = {
       data: {
         labels: Object.keys(controlledGraphRate),
         datasets: [
@@ -639,16 +639,12 @@ Reports = function (settings) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateControlledGraph(hoveredDatapoint[0].label);
-              }
-              else populateControlledGraphDefault();
+              } else populateControlledGraphDefault();
             },
           },
         },
       },
     };
-    if (settings.showGoalLines) {
-      config = addGoalLineToConfig(config, controlledGraphRate);
-    }
 
     const populateControlledGraph = (period) => {
       const cardNode = document.getElementById("bp-controlled");
@@ -690,7 +686,11 @@ Reports = function (settings) {
     if (controlledGraphCanvas) {
       new Chart(
         controlledGraphCanvas.getContext("2d"),
-        withBaseLineConfig(config)
+        withBaseLineConfig(
+          settings.showGoalLines
+            ? withGoalLineConfig(config, controlledGraphRate)
+            : config
+        )
       );
       populateControlledGraphDefault();
     }
@@ -705,7 +705,7 @@ Reports = function (settings) {
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
-    let config = {
+    const config = {
       data: {
         labels: Object.keys(uncontrolledGraphRate),
         datasets: [
@@ -725,16 +725,12 @@ Reports = function (settings) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateUncontrolledGraph(hoveredDatapoint[0].label);
-              }
-              else populateUncontrolledGraphDefault();
+              } else populateUncontrolledGraphDefault();
             },
           },
         },
       },
     };
-    if (settings.showGoalLines) {
-      config = addGoalLineToConfig(config, uncontrolledGraphRate, true);
-    }
 
     const populateUncontrolledGraph = (period) => {
       const cardNode = document.getElementById("bp-uncontrolled");
@@ -776,7 +772,11 @@ Reports = function (settings) {
     if (uncontrolledGraphCanvas) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
-        withBaseLineConfig(config)
+        withBaseLineConfig(
+          settings.showGoalLines
+            ? withGoalLineConfig(config, uncontrolledGraphRate, true)
+            : config
+        )
       );
       populateUncontrolledGraphDefault();
     }
@@ -793,7 +793,7 @@ Reports = function (settings) {
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
-    let config = {
+    const config = {
       data: {
         labels: Object.keys(missedVisitsGraphRate),
         datasets: [
@@ -813,17 +813,12 @@ Reports = function (settings) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateMissedVisitsGraph(hoveredDatapoint[0].label);
-              }
-              else populateMissedVisitsGraphDefault();
+              } else populateMissedVisitsGraphDefault();
             },
           },
-      },
+        },
       },
     };
-
-    if (settings.showGoalLines) {
-      addGoalLineToConfig(config, missedVisitsGraphRate, true);
-    }
 
     const populateMissedVisitsGraph = (period) => {
       const cardNode = document.getElementById("missed-visits");
@@ -863,8 +858,12 @@ Reports = function (settings) {
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
       new Chart(
-        missedVisitsGraphCanvas.getContext("2d"), 
-        withBaseLineConfig(config)
+        missedVisitsGraphCanvas.getContext("2d"),
+        withBaseLineConfig(
+          settings.showGoalLines
+            ? withGoalLineConfig(config, missedVisitsGraphRate, true)
+            : config
+        )
       );
       populateMissedVisitsGraphDefault();
     }
