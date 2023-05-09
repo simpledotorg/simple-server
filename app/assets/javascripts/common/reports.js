@@ -1253,7 +1253,6 @@ function withBaseBarConfig(config) {
   );
 }
 
-
 function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
