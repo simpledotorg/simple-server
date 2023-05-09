@@ -1448,11 +1448,7 @@ function relativeImprovementRatio() {
 
 function getLatestDecemberValue(periodValues) {
   const dateKeysArray = Object.keys(periodValues);
-  const filterDecemberKeys = dateKeysArray.filter((item) => {
-    if (item.includes("Dec")) {
-      return true;
-    }
-  });
+  const filterDecemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
 
   const latestDecDate = filterDecemberKeys[filterDecemberKeys.length - 1];
   return periodValues[latestDecDate];
