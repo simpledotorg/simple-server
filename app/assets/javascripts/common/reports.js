@@ -402,7 +402,7 @@ DashboardReports = () => {
   }
 }
 
-Reports = function ({withLtfu, showGoalLines}) {
+Reports = function ({ withLtfu, showGoalLines }) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
