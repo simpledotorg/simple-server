@@ -88,8 +88,25 @@ FactoryBot.define do
       appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 2.months.ago) }
     end
 
+    trait(:missed_visit_under_care) do
+      recorded_at { 2.years.ago }
+      appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 5.months.ago) }
+    end
+
     trait(:dead) do
       status { "dead" }
+    end
+
+    trait(:controlled) do
+      hypertension
+      under_care
+      blood_pressures { build_list(:blood_pressure, 1, :under_control) }
+    end
+
+    trait(:uncontrolled) do
+      hypertension
+      under_care
+      blood_pressures { build_list(:blood_pressure, 1, :hypertensive) }
     end
   end
 end
