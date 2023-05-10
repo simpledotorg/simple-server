@@ -440,45 +440,91 @@ Reports = function ({ withLtfu, showGoalLines }) {
   }
 
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    const latestDecValue = getLatestDecemberValue(periodValues);
-    const goal = calculateGoal(latestDecValue, goalDownwards);
+    if (lessThan6MonthsSinceFirstPatientRegistered(periodValues)) {
+      return config;
+    }
+
+    const goal = calculateGoal(periodValues, goalDownwards);
     const goalLineConfig = {
       plugins: [goalLinePlugin(goal)],
     };
     return mergeConfig(config, goalLineConfig);
   }
 
-  function calculateGoal(value, goalDownwards) {
-    if (goalDownwards) {
-      return calculateGoalDownwards(value);
+  function lessThan6MonthsSinceFirstPatientRegistered(periodValues) {
+    if (periodValues.length < 6) {
+      return true;
     }
-    return calculateGoalUpwards(value);
+    return false;
   }
 
-  function calculateGoalUpwards(decemberValue) {
-    const goal =
-      decemberValue + (100 - decemberValue) * relativeImprovementRatio();
+  function calculateGoal(periodValues, goalDownwards) {
+    const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
+    const improvementRatio = relativeImprovementRatio(goalMonthIndex);
+
+    if (goalDownwards) {
+      return calculateGoalDownwards(goalMonthValue, improvementRatio);
+    }
+    return calculateGoalUpwards(goalMonthValue, improvementRatio);
+  }
+
+  function goalPeriodValue(periodValues) {
+    const dateKeysArray = Object.keys(periodValues).slice(-7);
+    const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
+    
+    const indexOfLatestDecember = dateKeysArray.indexOf(
+      decemberKeys[decemberKeys.length - 1]
+    );
+
+    if (indexOfLatestDecember < 5) {
+      const monthSixDateString = dateKeysArray[5];
+      const goalMonthIndex = monthIndexFromDateString(monthSixDateString)
+      return {
+        goalMonthValue: periodValues[monthSixDateString],
+        goalMonthIndex,
+      };
+    }
+    const latestDecDate = decemberKeys[decemberKeys.length - 1];
+    return {
+      goalMonthValue: periodValues[latestDecDate],
+    };
+  }
+
+  function monthIndexFromDateString(dateString) {
+    const [month, year] = dateString.split("-");
+    const months = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec",
+    ];
+     return months.indexOf(month.toLowerCase());
+  }
+
+  function calculateGoalUpwards(monthValue, improvementRatio) {
+    const goal = monthValue + (100 - monthValue) * improvementRatio;
     return Math.ceil(goal);
   }
 
-  function calculateGoalDownwards(decemberValue) {
-    const goal = decemberValue - decemberValue * relativeImprovementRatio();
+  function calculateGoalDownwards(monthValue, improvementRatio) {
+    const goal = monthValue - monthValue * improvementRatio;
     return Math.floor(goal);
   }
 
-  function relativeImprovementRatio() {
+  function relativeImprovementRatio(goalMonthIndex) {
     const defaultRelativeImprovementPercentage = 10;
+    if (typeof goalMonthIndex !== "undefined") {
+      return (defaultRelativeImprovementPercentage / 100 / 12) * (12 - goalMonthIndex);
+    }
     return defaultRelativeImprovementPercentage / 100;
-  }
-
-  function getLatestDecemberValue(periodValues) {
-    const dateKeysArray = Object.keys(periodValues);
-    const filterDecemberKeys = dateKeysArray.filter((item) =>
-      item.includes("Dec")
-    );
-
-    const latestDecDate = filterDecemberKeys[filterDecemberKeys.length - 1];
-    return periodValues[latestDecDate];
   }
 
   function changeRGBAColorOpacity(colorString, opacity) {
