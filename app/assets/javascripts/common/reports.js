@@ -469,7 +469,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
   }
 
   function goalPeriodValue(periodValues) {
-    const dateKeysArray = Object.keys(periodValues).slice(-7);
+    const dateKeysArray = Object.keys(periodValues);
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
     
     const indexOfLatestDecember = dateKeysArray.indexOf(
