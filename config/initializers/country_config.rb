@@ -1,4 +1,5 @@
 class CountryConfig
+  include Memery
   COUNTRYWISE_STATES = YAML.load_file("config/data/canonical_states.yml")
 
   CONFIGS = {
@@ -98,7 +99,7 @@ class CountryConfig
     CountryConfig.current[:name] == country
   end
 
-  def self.dhis2_data_elements
+  memoize def self.dhis2_data_elements
     YAML.load_file(ENV.fetch("DHIS2_DATA_ELEMENTS_FILE")).with_indifferent_access
   end
 end
