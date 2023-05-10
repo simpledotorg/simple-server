@@ -402,7 +402,7 @@ DashboardReports = () => {
   }
 }
 
-Reports = function (settings) {
+Reports = function ({withLtfu, showGoalLines}) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
@@ -612,11 +612,11 @@ Reports = function (settings) {
   // -- end of goal-line functions
 
   this.setupControlledGraph = (data) => {
-    const adjustedPatients = settings.withLtfu
+    const adjustedPatients = withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
     const controlledGraphNumerator = data.controlledPatients;
-    const controlledGraphRate = settings.withLtfu
+    const controlledGraphRate = withLtfu
       ? data.controlWithLtfuRate
       : data.controlRate;
     const config = {
@@ -687,7 +687,7 @@ Reports = function (settings) {
       new Chart(
         controlledGraphCanvas.getContext("2d"),
         withBaseLineConfig(
-          settings.showGoalLines
+          showGoalLines
             ? withGoalLineConfig(config, controlledGraphRate)
             : config
         )
@@ -697,11 +697,11 @@ Reports = function (settings) {
   };
 
   this.setupUncontrolledGraph = (data) => {
-    const adjustedPatients = settings.withLtfu
+    const adjustedPatients = withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
     const uncontrolledGraphNumerator = data.uncontrolledPatients;
-    const uncontrolledGraphRate = settings.withLtfu
+    const uncontrolledGraphRate = withLtfu
       ? data.uncontrolledWithLtfuRate
       : data.uncontrolledRate;
 
@@ -773,7 +773,7 @@ Reports = function (settings) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
         withBaseLineConfig(
-          settings.showGoalLines
+          showGoalLines
             ? withGoalLineConfig(config, uncontrolledGraphRate, true)
             : config
         )
@@ -783,13 +783,13 @@ Reports = function (settings) {
   };
 
   this.setupMissedVisitsGraph = (data) => {
-    const adjustedPatients = settings.withLtfu
+    const adjustedPatients = withLtfu
       ? data.adjustedPatientCountsWithLtfu
       : data.adjustedPatientCounts;
-    const missedVisitsGraphNumerator = settings.withLtfu
+    const missedVisitsGraphNumerator = withLtfu
       ? data.missedVisitsWithLtfu
       : data.missedVisits;
-    const missedVisitsGraphRate = settings.withLtfu
+    const missedVisitsGraphRate = withLtfu
       ? data.missedVisitsWithLtfuRate
       : data.missedVisitsRate;
 
@@ -860,7 +860,7 @@ Reports = function (settings) {
       new Chart(
         missedVisitsGraphCanvas.getContext("2d"),
         withBaseLineConfig(
-          settings.showGoalLines
+          showGoalLines
             ? withGoalLineConfig(config, missedVisitsGraphRate, true)
             : config
         )
