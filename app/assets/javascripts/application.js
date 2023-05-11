@@ -21,6 +21,7 @@
 //= require numeral
 //= require tablesort/dist/sorts/tablesort.number.min
 //= require bs-custom-file-input
+//= require chart.js/dist/chart.umd.js
 //= require_tree ./common
 
 $(function () {
