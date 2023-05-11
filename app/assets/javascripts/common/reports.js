@@ -173,8 +173,8 @@ DashboardReports = () => {
             y: {
               stacked: true,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -402,7 +402,7 @@ DashboardReports = () => {
   }
 }
 
-Reports = function (withLtfu) {
+Reports = function ({ withLtfu, showGoalLines }) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
@@ -424,6 +424,240 @@ Reports = function (withLtfu) {
     this.setupVisitDetailsGraph(data);
   };
 
+  // goal-line functions
+  // - config and calculations
+  function goalLinePlugin(goalValue) {
+    return {
+      id: "goalLine",
+      beforeDraw: (chart) => {
+        const ctx = chart.ctx;
+        ctx.save();
+        canvasDrawGoalLine(chart, goalValue);
+        canvasDrawGoalTextBubble(chart, goalValue);
+        canvasDrawLineFromGoalToBubble(chart, goalValue);
+      },
+    };
+  }
+
+  function withGoalLineConfig(config, periodValues, goalDownwards = false) {
+    if (lessThan6MonthsSinceFirstPatientRegistered(periodValues)) {
+      return config;
+    }
+
+    const goal = calculateGoal(periodValues, goalDownwards);
+    const goalLineConfig = {
+      plugins: [goalLinePlugin(goal)],
+    };
+    return mergeConfig(config, goalLineConfig);
+  }
+
+  function lessThan6MonthsSinceFirstPatientRegistered(periodValues) {
+    if (periodValues.length < 6) {
+      return true;
+    }
+    return false;
+  }
+
+  function calculateGoal(periodValues, goalDownwards) {
+    const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
+    const improvementRatio = relativeImprovementRatio(goalMonthIndex);
+
+    if (goalDownwards) {
+      return calculateGoalDownwards(goalMonthValue, improvementRatio);
+    }
+    return calculateGoalUpwards(goalMonthValue, improvementRatio);
+  }
+
+  function goalPeriodValue(periodValues) {
+    const dateKeysArray = Object.keys(periodValues);
+    const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
+    
+    const indexOfLatestDecember = dateKeysArray.indexOf(
+      decemberKeys[decemberKeys.length - 1]
+    );
+
+    if (indexOfLatestDecember < 5) {
+      const monthSixDateString = dateKeysArray[5];
+      const goalMonthIndex = monthIndexFromDateString(monthSixDateString)
+      return {
+        goalMonthValue: periodValues[monthSixDateString],
+        goalMonthIndex,
+      };
+    }
+    const latestDecDate = decemberKeys[decemberKeys.length - 1];
+    return {
+      goalMonthValue: periodValues[latestDecDate],
+    };
+  }
+
+  function monthIndexFromDateString(dateString) {
+    const [month, year] = dateString.split("-");
+    const months = [
+      "jan",
+      "feb",
+      "mar",
+      "apr",
+      "may",
+      "jun",
+      "jul",
+      "aug",
+      "sep",
+      "oct",
+      "nov",
+      "dec",
+    ];
+    
+     return months.indexOf(month.toLowerCase());
+  }
+
+  function calculateGoalUpwards(monthValue, improvementRatio) {
+    const goal = monthValue + (100 - monthValue) * improvementRatio;
+    return Math.ceil(goal);
+  }
+
+  function calculateGoalDownwards(monthValue, improvementRatio) {
+    const goal = monthValue - monthValue * improvementRatio;
+    return Math.floor(goal);
+  }
+
+  function relativeImprovementRatio(goalMonthIndex) {
+    const defaultRelativeImprovementPercentage = 10;
+    if (typeof goalMonthIndex !== "undefined") {
+      return (defaultRelativeImprovementPercentage / 100 / 12) * (12 - goalMonthIndex);
+    }
+    return defaultRelativeImprovementPercentage / 100;
+  }
+
+  function changeRGBAColorOpacity(colorString, opacity) {
+    const rgbaArray = colorString.match(/\d+/g);
+    rgbaArray[3] = opacity;
+    return `rgba(${rgbaArray.join(", ")})`;
+  }
+
+  // - canvas drawing
+  function canvasDrawGoalLine(chart, goalValue) {
+    const ctx = chart.ctx;
+    const chartArea = chart.chartArea;
+    const chartBottom = chartArea.bottom;
+    const chartHeight = chart.chartArea.height;
+    const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+  
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left + 1, lineYPosition);
+    ctx.lineTo(chartArea.right - 1, lineYPosition);
+    ctx.lineWidth = 3;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
+    ctx.setLineDash([1, 6]);
+    ctx.stroke();
+    ctx.restore();
+  }
+  
+  function canvasDrawRoundRect(
+    ctx,
+    x,
+    y,
+    width,
+    heightVar,
+    radiusVar,
+    fillStyle
+  ) {
+    const radius = radiusVar || 5;
+    const height = heightVar + 4;
+    const cornerRadius = radius + 1;
+  
+    ctx.beginPath();
+    ctx.moveTo(x + cornerRadius, y);
+    ctx.lineTo(x + width - cornerRadius, y);
+    ctx.arcTo(x + width, y, x + width, y + cornerRadius, cornerRadius);
+    ctx.lineTo(x + width, y + height - cornerRadius);
+    ctx.arcTo(
+      x + width,
+      y + height,
+      x + width - cornerRadius,
+      y + height,
+      cornerRadius
+    );
+    ctx.lineTo(x + cornerRadius, y + height);
+    ctx.arcTo(x, y + height, x, y + height - cornerRadius, cornerRadius);
+    ctx.lineTo(x, y + cornerRadius);
+    ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
+    ctx.closePath();
+  
+    ctx.fillStyle = fillStyle || "grey";
+    ctx.fill();
+  }
+  
+  function canvasDrawGoalTextBubble(chart, goalValue) {
+    // draw text
+    const ctx = chart.ctx;
+    const cornerRadius = 10;
+    const xTextPadding = 7;
+    const yTextPadding = 2;
+  
+    const rgbaChartColor = chart.config.data.datasets[0].borderColor;
+    const textColor = rgbaChartColor;
+    const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.15);
+  
+    const dateNow = new Date();
+    const currentYearString = dateNow.getFullYear();
+    const text = `Goal: ${goalValue}% by end of ${currentYearString}`;
+    const font = "14px Roboto Condensed";
+    ctx.font = font;
+    ctx.fillStyle = textColor;
+  
+    const textSize = ctx.measureText(text);
+    const textWidth = textSize.width;
+    const textHeight = parseInt(font, 10);
+    const chartRight = chart.chartArea.right;
+    const textXPos = chartRight - textWidth - xTextPadding;
+    const textYPos = textHeight + yTextPadding;
+  
+    ctx.fillStyle = textColor;
+    ctx.strokeStyle = textColor;
+    ctx.fillText(text, textXPos, textYPos);
+    ctx.restore();
+  
+    // draw background
+    const backgroundFillXPos = chartRight - textWidth - xTextPadding * 2;
+    const rectWidth = textWidth + xTextPadding * 2;
+    const rectHeight = textHeight + yTextPadding * 2;
+    canvasDrawRoundRect(
+      ctx,
+      backgroundFillXPos,
+      0,
+      rectWidth,
+      rectHeight,
+      cornerRadius,
+      fillColor
+    );
+  }
+  
+  function canvasDrawLineFromGoalToBubble(chart, goalValue) {
+    const lineWidth = 2;
+    const currentRGBAColor = chart.config.data.datasets[0].borderColor;
+    const bgColorString = changeRGBAColorOpacity(currentRGBAColor, 0.3);
+  
+    const ctx = chart.ctx;
+    const chartArea = chart.chartArea;
+    const chartBottom = chartArea.bottom;
+    const chartRight = chartArea.right;
+    const chartWidth = chartArea.width;
+    const chartHeight = chart.chartArea.height;
+    const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+    const xPos = chartRight - (chartWidth / 18) * 1.5 - lineWidth;
+  
+    ctx.beginPath();
+    ctx.moveTo(xPos, 23);
+    ctx.lineTo(xPos, lineYPosition);
+    ctx.strokeStyle = bgColorString;
+    ctx.lineWidth = lineWidth;
+    ctx.lineCap = "square";
+    ctx.stroke();
+    ctx.restore();
+  }
+  // -- end of goal-line functions
+
   this.setupControlledGraph = (data) => {
     const adjustedPatients = withLtfu
       ? data.adjustedPatientCountsWithLtfu
@@ -432,7 +666,6 @@ Reports = function (withLtfu) {
     const controlledGraphRate = withLtfu
       ? data.controlWithLtfuRate
       : data.controlRate;
-
     const config = {
       data: {
         labels: Object.keys(controlledGraphRate),
@@ -453,12 +686,11 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateControlledGraph(hoveredDatapoint[0].label);
-              }
-              else populateControlledGraphDefault();
+              } else populateControlledGraphDefault();
             },
           },
         },
-      }
+      },
     };
 
     const populateControlledGraph = (period) => {
@@ -501,7 +733,11 @@ Reports = function (withLtfu) {
     if (controlledGraphCanvas) {
       new Chart(
         controlledGraphCanvas.getContext("2d"),
-        withBaseLineConfig(config)
+        withBaseLineConfig(
+          showGoalLines
+            ? withGoalLineConfig(config, controlledGraphRate)
+            : config
+        )
       );
       populateControlledGraphDefault();
     }
@@ -536,8 +772,7 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateUncontrolledGraph(hoveredDatapoint[0].label);
-              }
-              else populateUncontrolledGraphDefault();
+              } else populateUncontrolledGraphDefault();
             },
           },
         },
@@ -584,7 +819,11 @@ Reports = function (withLtfu) {
     if (uncontrolledGraphCanvas) {
       new Chart(
         uncontrolledGraphCanvas.getContext("2d"),
-        withBaseLineConfig(config)
+        withBaseLineConfig(
+          showGoalLines
+            ? withGoalLineConfig(config, uncontrolledGraphRate, true)
+            : config
+        )
       );
       populateUncontrolledGraphDefault();
     }
@@ -621,11 +860,10 @@ Reports = function (withLtfu) {
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateMissedVisitsGraph(hoveredDatapoint[0].label);
-              }
-              else populateMissedVisitsGraphDefault();
+              } else populateMissedVisitsGraphDefault();
             },
           },
-        }
+        },
       },
     };
 
@@ -667,8 +905,12 @@ Reports = function (withLtfu) {
       document.getElementById("missedVisitsTrend");
     if (missedVisitsGraphCanvas) {
       new Chart(
-        missedVisitsGraphCanvas.getContext("2d"), 
-        withBaseLineConfig(config)
+        missedVisitsGraphCanvas.getContext("2d"),
+        withBaseLineConfig(
+          showGoalLines
+            ? withGoalLineConfig(config, missedVisitsGraphRate, true)
+            : config
+        )
       );
       populateMissedVisitsGraphDefault();
     }
@@ -1059,7 +1301,7 @@ function baseLineGraphConfig() {
         padding: {
           left: 0,
           right: 0,
-          top: 20,
+          top: 26,
           bottom: 0,
         },
       },
@@ -1249,6 +1491,14 @@ function withBaseBarConfig(config) {
   return _.mergeWith(
     baseBarChartConfig(),
     config,
+    mergeArraysWithConcatenation
+  );
+}
+
+function mergeConfig(baseConfig, overwritingConfig) {
+  return _.mergeWith(
+    baseConfig,
+    overwritingConfig,
     mergeArraysWithConcatenation
   );
 }
