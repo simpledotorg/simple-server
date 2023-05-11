@@ -506,6 +506,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
       "nov",
       "dec",
     ];
+    
      return months.indexOf(month.toLowerCase());
   }
 
