@@ -452,7 +452,8 @@ Reports = function ({ withLtfu, showGoalLines }) {
   }
 
   function lessThan6MonthsSinceFirstPatientRegistered(periodValues) {
-    if (periodValues.length < 6) {
+    const periodKeysArray = Object.keys(periodValues)
+    if (periodKeysArray.length < 6) {
       return true;
     }
     return false;
