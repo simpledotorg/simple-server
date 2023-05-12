@@ -29,3 +29,4 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | monthly_screening_reports | Yes | When enabled, a cron job will run on first of every month and pre-fill screening reports with follow-up data from previous month. |
 | monthly_supplies_reports | Yes | When enabled, a cron job will run on the first of every month and create a supplies report for the previous month. |
 | hide_facility_follow_up_patients_per_user | Yes | When enabled, hides the follow-up patients per user section in facility level dashboard reports. |
+| goal_lines | Yes | When enabled, shows goal lines on charts. |
