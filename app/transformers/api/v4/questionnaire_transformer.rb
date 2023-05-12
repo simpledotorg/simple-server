@@ -6,6 +6,7 @@ class Api::V4::QuestionnaireTransformer < Api::V4::Transformer
         .except(
           "dsl_version",
           "is_active",
+          "description",
           "created_at",
           "updated_at"
         )
