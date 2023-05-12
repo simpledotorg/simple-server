@@ -11,7 +11,7 @@ describe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
       parameter name: "Accept-Language", in: :header, type: :string
 
-      parameter name: "dsl_version", in: :query, type: :string, required: true
+      parameter name: "dsl_version", in: :query, type: :number, required: true, description: "The version of layout supported by client."
       Api::V4::Schema.sync_to_user_request.each do |param|
         parameter param
       end

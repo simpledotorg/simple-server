@@ -134,15 +134,18 @@ describe Api::V4::QuestionnairesController, type: :controller do
       end
     end
 
-    it "returns questionnaires only for given DSL Version" do
-      version_1_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
-      version_2_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 2)
+    it "returns questionnaires from floor to current dsl_version" do
+      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1.0)
+      questionnaire_11 = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1.1)
+      _ = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1.2)
+      questionnaire_2 = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 2.0)
 
-      get :sync_to_user, params: {dsl_version: 1}
-      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_1_questionnaire.id
+      # For dsl_version 1.1, return all questionnaires from 1 to 1.1.
+      get :sync_to_user, params: {dsl_version: 1.1}
+      (JSON(response.body)["questionnaires"].pluck("id")).should match_array([questionnaire_1.id, questionnaire_11.id])
 
-      get :sync_to_user, params: {dsl_version: 2}
-      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_2_questionnaire.id
+      get :sync_to_user, params: {dsl_version: 2.1}
+      (JSON(response.body)["questionnaires"].pluck("id")).should match_array(questionnaire_2.id)
     end
 
     it "returns only one questionnaire per questionnaire_type" do
