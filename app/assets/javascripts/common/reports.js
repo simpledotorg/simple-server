@@ -439,8 +439,9 @@ Reports = function ({ withLtfu, showGoalLines }) {
     };
   }
 
+  const defaultMonthsRequired = 6;
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    if (lessThan6MonthsSinceFirstPatientRegistered(periodValues)) {
+    if (isLessThanDefaultMonthsSinceFirstPatientRegistered(periodValues)) {
       return config;
     }
 
@@ -451,8 +452,9 @@ Reports = function ({ withLtfu, showGoalLines }) {
     return mergeConfig(config, goalLineConfig);
   }
 
-  function lessThan6MonthsSinceFirstPatientRegistered(periodValues) {
-    if (periodValues.length < 6) {
+  function isLessThanDefaultMonthsSinceFirstPatientRegistered(periodValues) {
+    const periodKeysArray = Object.keys(periodValues);
+    if (periodKeysArray.length < defaultMonthsRequired) {
       return true;
     }
     return false;
@@ -476,7 +478,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
       decemberKeys[decemberKeys.length - 1]
     );
 
-    if (indexOfLatestDecember < 5) {
+    if (indexOfMostRecentDecemberInPeriodValues < defaultMonthsRequired - 1) { // zero index
       const monthSixDateString = dateKeysArray[5];
       const goalMonthIndex = monthIndexFromDateString(monthSixDateString)
       return {
