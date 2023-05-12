@@ -4643,15 +4643,6 @@ CREATE TABLE public.teleconsultations (
 
 
 --
--- Name: testing; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.testing (
-    dsl_version numeric(4,2) NOT NULL
-);
-
-
---
 -- Name: treatment_group_memberships; Type: TABLE; Schema: public; Owner: -
 --
 
