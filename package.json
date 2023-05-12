@@ -4,7 +4,6 @@
   "dependencies": {
     "@rails/webpacker": "^6.0.0-beta.7",
     "bootstrap": "^5.0.2",
-    "chart.js": "4.2.1",
     "css-loader": "^6.2.0",
     "css-minimizer-webpack-plugin": "^3.0.2",
     "mini-css-extract-plugin": "^2.1.0",
