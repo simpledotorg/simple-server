@@ -473,22 +473,21 @@ Reports = function ({ withLtfu, showGoalLines }) {
   function goalPeriodValue(periodValues) {
     const dateKeysArray = Object.keys(periodValues);
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
-    
-    const indexOfLatestDecember = dateKeysArray.indexOf(
-      decemberKeys[decemberKeys.length - 1]
-    );
+    const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
+    const indexOfMostRecentDecemberInPeriodValues = dateKeysArray.indexOf(mostRecentDecemberKey);
 
     if (indexOfMostRecentDecemberInPeriodValues < defaultMonthsRequired - 1) { // zero index
-      const monthSixDateString = dateKeysArray[5];
-      const goalMonthIndex = monthIndexFromDateString(monthSixDateString)
+      // 'dec' value is within first 5 months (0-4) - or no 'dec' present (-1)
+      const monthDateKeyString = dateKeysArray[defaultMonthsRequired - 1];
+      const goalMonthIndex = monthIndexFromDateString(monthDateKeyString);
       return {
-        goalMonthValue: periodValues[monthSixDateString],
+        goalMonthValue: periodValues[monthDateKeyString],
         goalMonthIndex,
       };
     }
-    const latestDecDate = decemberKeys[decemberKeys.length - 1];
+
     return {
-      goalMonthValue: periodValues[latestDecDate],
+      goalMonthValue: periodValues[mostRecentDecemberKey],
     };
   }
 
@@ -525,7 +524,10 @@ Reports = function ({ withLtfu, showGoalLines }) {
   function relativeImprovementRatio(goalMonthIndex) {
     const defaultRelativeImprovementPercentage = 10;
     if (typeof goalMonthIndex !== "undefined") {
-      return (defaultRelativeImprovementPercentage / 100 / 12) * (12 - goalMonthIndex);
+      return (
+        (defaultRelativeImprovementPercentage / 100 / 12) *
+        (12 - goalMonthIndex)
+      );
     }
     return defaultRelativeImprovementPercentage / 100;
   }
