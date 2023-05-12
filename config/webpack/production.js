@@ -4,6 +4,6 @@ const webpackConfig = require('./base')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 webpackConfig["optimization"] = {}
-webpackConfig["optimization"]["minimizer"] = [new UglifyJsPlugin({})]
+webpackConfig["optimization"]["minimizer"] = [new UglifyJsPlugin()]
 
 module.exports = webpackConfig
