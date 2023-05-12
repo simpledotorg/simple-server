@@ -85,7 +85,6 @@ gem "squid"
 gem "stackprof", require: false
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.62"
-gem "uglifier", ">= 1.3.0"
 gem "uuidtools", require: false
 gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
