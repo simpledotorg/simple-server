@@ -45,6 +45,8 @@
         <%= form.check_box :enable_teleconsultation, id: :facility_enable_teleconsultation, onclick: "new FacilityTeleconsultFields().toggleTeleconsultationFields()" %>
         <h3 class="mt-5">Monthly screening reports enabled?</h3>
         <%= form.check_box :enable_monthly_screening_reports, id: :facility_enable_monthly_screening_reports %>
+        <h3 class="mt-5">Monthly supplies reports enabled?</h3>
+        <%= form.check_box :enable_monthly_supplies_reports, id: :facility_enable_monthly_supplies_reports %>
 
         <span class="teleconsultation-fields">
           <div id="teleconsultation-fields" class="mt-4" style=<%= "#{'display:none' unless @facility[:enable_teleconsultation]}" %>>
