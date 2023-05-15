@@ -441,7 +441,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   const defaultMonthsRequired = 6;
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    if (isLessThanDefaultMonthsSinceFirstPatientRegistered(periodValues)) {
+    if (monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired) {
       return config;
     }
 
@@ -452,12 +452,9 @@ Reports = function ({ withLtfu, showGoalLines }) {
     return mergeConfig(config, goalLineConfig);
   }
 
-  function isLessThanDefaultMonthsSinceFirstPatientRegistered(periodValues) {
+  function monthsSinceFirstRegistration(periodValues) {
     const periodKeysArray = Object.keys(periodValues);
-    if (periodKeysArray.length < defaultMonthsRequired) {
-      return true;
-    }
-    return false;
+    return periodKeysArray.length;
   }
 
   function calculateGoal(periodValues, goalDownwards) {
