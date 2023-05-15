@@ -474,9 +474,10 @@ Reports = function ({ withLtfu, showGoalLines }) {
     const dateKeysArray = Object.keys(periodValues);
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
-    const indexOfMostRecentDecemberInPeriodValues = dateKeysArray.indexOf(mostRecentDecemberKey);
+    const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
 
-    if (indexOfMostRecentDecemberInPeriodValues < defaultMonthsRequired - 1) { // zero index
+    if (indexOfLatestDecember < defaultMonthsRequired - 1) {
+      // zero index
       // 'dec' value is within first 5 months (0-4) - or no 'dec' present (-1)
       const monthDateKeyString = dateKeysArray[defaultMonthsRequired - 1];
       const goalMonthIndex = monthIndexFromDateString(monthDateKeyString);
