@@ -271,7 +271,7 @@
   window.addEventListener("DOMContentLoaded", () => {
     new Reports({
       withLtfu: <%= @with_ltfu %>,
-      showGoalLines: <%= Flipper.enabled?(:goal_lines) %>
+      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>
     }).initialize();
   });
 </script>
