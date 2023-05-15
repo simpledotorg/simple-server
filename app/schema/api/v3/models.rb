@@ -203,7 +203,8 @@ class Api::V3::Models
             properties: {
               enable_diabetes_management: {type: :boolean},
               enable_teleconsultation: {type: :boolean},
-              enable_monthly_screening_reports: {type: :boolean}
+              enable_monthly_screening_reports: {type: :boolean},
+              enable_monthly_supplies_reports: {type: :boolean}
             }
           },
           required: %w[enable_diabetes_management enable_teleconsultation]
