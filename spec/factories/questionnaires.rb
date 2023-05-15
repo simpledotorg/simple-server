@@ -4,6 +4,7 @@ FactoryBot.define do
     questionnaire_type { "monthly_screening_reports" }
     dsl_version { 1.0 }
     is_active { false }
+    description { "created_by_factory" }
     layout {
       {
         type: "group",
