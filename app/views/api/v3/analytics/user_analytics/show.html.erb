@@ -102,9 +102,9 @@
             <p class="m-0px fw-bold fs-24px c-brown-new align-center mt-16px mb-16px">World Hypertension Day!</p>
             <p class="c-brown-new">May 17 is World Hypertension Day. Thanks to you, there are now 
               <% if CountryConfig.current[:name] == "India" %>33,38,244<% end %>
-              <% if CountryConfig.current[:name] == "Bangladesh" %>195045<% end %>
-              <% if CountryConfig.current[:name] == "Ethiopia" %>23395<% end %>
-              <% if CountryConfig.current[:name] == "Sri Lanka" %>7406<% end %>
+              <% if CountryConfig.current[:name] == "Bangladesh" %>195,045<% end %>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>23,395<% end %>
+              <% if CountryConfig.current[:name] == "Sri Lanka" %>7,406<% end %>
               patients with hypertension managed in 
               <% if CountryConfig.current[:name] == "India" %>India<% end %><% if CountryConfig.current[:name] == "Bangladesh" %>Bangladesh<% end %><% if CountryConfig.current[:name] == "Ethiopia" %>Ethiopia<% end %><% if CountryConfig.current[:name] == "Sri Lanka" %>Sri Lanka<% end %>.
             </p>
@@ -186,26 +186,26 @@
       </div>
       <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
         <div class="mb-8px p-16px bgc-white bs-card">
-        <div class="d-flex ai-flex-start jc-space-between mb-16px">
-          <div class="f-1">
-            <h1 class="m-0px mb-8px fw-bold fs-24px">
-              <%= t("progress_tab.drug_stock_report_card.title") %>
-            </h1>
-            <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-              <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
-            </p>
+          <div class="d-flex ai-flex-start jc-space-between mb-16px">
+            <div class="f-1">
+              <h1 class="m-0px mb-8px fw-bold fs-24px">
+                <%= t("progress_tab.drug_stock_report_card.title") %>
+              </h1>
+              <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+                <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
+              </p>
+            </div>
+            <div class="w-76px h-76px">
+              <%= inline_svg("drug-stock.svg") %>
+            </div>
           </div>
-          <div class="w-76px h-76px">
-            <%= inline_svg("drug-stock.svg") %>
-          </div>
-        </div>
-        <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
+          <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
           access_token: current_user.access_token,
           facility_id: current_facility.id),
           style: "font-weight: 500;",
           class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bgc-blue-light bs-secondary-button br-2px"
         %>
-      </div>
+        </div>
       <% end %>
       <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
         <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
@@ -311,7 +311,7 @@
       last_updated_at: @user_analytics.last_updated_at
     ))
     %>
-<!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
+    <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
   </body>
   <%= inline_js("standalone/progress_tab.js") %>
 </html>
