@@ -1508,3 +1508,5 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
     return objValue.concat(srcValue);
   }
 }
+
+function abcd() {}
