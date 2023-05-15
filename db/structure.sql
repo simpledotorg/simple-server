@@ -206,7 +206,8 @@ CREATE TABLE public.facilities (
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL,
     short_name character varying NOT NULL,
-    enable_monthly_screening_reports boolean DEFAULT false NOT NULL
+    enable_monthly_screening_reports boolean DEFAULT false NOT NULL,
+    enable_monthly_supplies_reports boolean DEFAULT false NOT NULL
 );
 
 
@@ -7006,6 +7007,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230105064908'),
 ('20230123125608'),
 ('20230124063249'),
-('20230130161639');
+('20230130161639'),
+('20230512070306');
 
 
