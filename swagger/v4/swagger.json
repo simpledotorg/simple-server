@@ -871,8 +871,9 @@
           {
             "name": "dsl_version",
             "in": "query",
-            "type": "string",
-            "required": true
+            "type": "number",
+            "required": true,
+            "description": "The version of layout supported by client."
           },
           {
             "name": "process_token",
