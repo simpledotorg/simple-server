@@ -144,10 +144,10 @@ describe Api::V4::QuestionnairesController, type: :controller do
 
       # For clients supporting DSL version "1.1", return all questionnaires from 1 to 1.1.
       get :sync_to_user, params: {dsl_version: "1.1"}
-      (JSON(response.body)["questionnaires"].pluck("id")).should match_array([questionnaire_1.id, questionnaire_11.id])
+      expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array([questionnaire_1.id, questionnaire_11.id])
 
       get :sync_to_user, params: {dsl_version: "2.1"}
-      (JSON(response.body)["questionnaires"].pluck("id")).should match_array(questionnaire_2.id)
+      expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array(questionnaire_2.id)
     end
 
     it "de-duplicates multiple questionnaires of same type by choosing latest DSL version" do
