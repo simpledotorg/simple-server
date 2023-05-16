@@ -10,9 +10,23 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
   def current_facility_records
     # TODO: Current implementation always responds with 1 JSON minimum. Reason:
     # process_token.last_updated_at has precision upto 3 milliseconds & is always lesser than updated_at.
+    dsl_version = params.require("dsl_version")
+    dsl_version_major = dsl_version.split(".")[0]
+
+    # For dsl_version "1.5", return all questionnaires from "1" to "1.5".
+    # De-duplicate multiple questionnaires of same type by choosing latest dsl_version.
     Questionnaire
       .for_sync
-      .where(dsl_version: params.require("dsl_version").to_i)
+      .joins("
+        INNER JOIN (
+          SELECT questionnaire_type, max(dsl_version) max_version
+          FROM questionnaires
+          WHERE dsl_version BETWEEN '#{dsl_version_major}' AND '#{dsl_version}'
+            AND is_active = TRUE
+          GROUP BY questionnaire_type
+        ) q
+        ON q.max_version = questionnaires.dsl_version AND q.questionnaire_type = questionnaires.questionnaire_type")
+      .where(dsl_version: dsl_version_major..dsl_version)
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
