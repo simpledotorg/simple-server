@@ -17,16 +17,9 @@ class Api::V4::QuestionnairesController < Api::V4::SyncController
     # De-duplicate multiple questionnaires of same type by choosing latest dsl_version.
     Questionnaire
       .for_sync
-      .joins("
-        INNER JOIN (
-          SELECT questionnaire_type, max(dsl_version) max_version
-          FROM questionnaires
-          WHERE dsl_version BETWEEN '#{dsl_version_major}' AND '#{dsl_version}'
-            AND is_active = TRUE
-          GROUP BY questionnaire_type
-        ) q
-        ON q.max_version = questionnaires.dsl_version AND q.questionnaire_type = questionnaires.questionnaire_type")
+      .select("DISTINCT ON (questionnaire_type) questionnaire_type, dsl_version, id, layout, updated_at")
       .where(dsl_version: dsl_version_major..dsl_version)
+      .order(:questionnaire_type, dsl_version: :desc)
       .updated_on_server_since(current_facility_processed_since, limit)
   end
 
