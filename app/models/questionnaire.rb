@@ -31,7 +31,7 @@ class Questionnaire < ApplicationRecord
   end
 
   def dsl_version_semver
-    unless /^[0-9]+.[0-9]+$/ === dsl_version or /^[0-9]+$/ === dsl_version
+    unless /^[0-9]+.[0-9]+$/ === dsl_version || /^[0-9]+$/ === dsl_version
       errors.add(:dsl_version, "should be a Semver of pattern X.Y where X & Y are integers")
     end
   end
