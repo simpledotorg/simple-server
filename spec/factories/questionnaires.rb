@@ -2,7 +2,7 @@ FactoryBot.define do
   factory :questionnaire do
     id { SecureRandom.uuid }
     questionnaire_type { "monthly_screening_reports" }
-    dsl_version { 1.0 }
+    dsl_version { "1.0" }
     is_active { false }
     description { "created_by_factory" }
     layout {

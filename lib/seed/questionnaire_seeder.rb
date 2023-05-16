@@ -7,7 +7,7 @@ module Seed
       FactoryBot.create(:questionnaire,
         questionnaire_type: "monthly_screening_reports",
         is_active: true,
-        description: "screening_reports, specimen-seed",
+        description: "A specimen screening report created during seeding.",
         layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
 
       (1..3).map { |n| PreFillMonthlyScreeningReports.call(n.month.ago) }

@@ -1852,7 +1852,7 @@ CREATE TABLE public.questionnaire_responses (
 CREATE TABLE public.questionnaires (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
-    dsl_version numeric(4,2) NOT NULL,
+    dsl_version character varying NOT NULL,
     is_active boolean NOT NULL,
     layout jsonb NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
