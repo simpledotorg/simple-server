@@ -18,7 +18,7 @@
   <body>
     <div id="home-page">
       <% if Flipper.enabled?(:world_htn_day_2023) %>
-        <div class="mb-8px p-20px bgc-white bs-card htnday-card" style="background: #FFFEE3;">
+        <div class="mb-8px p-20px pt-12px bgc-white bs-card htnday-card" style="background: #FFFEE3;">
           <%# here %>
           <% if CountryConfig.current[:name] == "India" %>
             <div class="fw-bold ta-center" style="font-size: 82px;">
@@ -27,7 +27,7 @@
                 <path id="curve" d="M369.978 45H0.0214844C30.6605 18.5446 101.948 0 185 0C268.052 0 339.339 18.5446 369.978 45Z"/>
                 <text width="500" x="380">
                   <textPath xlink:href="#curve">
-                    33,38,244
+                    34,58,530
                   </textPath>
                 </text>
               </svg>
@@ -73,7 +73,7 @@
               </svg>
             </div>
           <% end %>
-          <svg style="margin-top: -20px; max-width: 480px;" width="420" viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <svg style="display: block; margin: auto; margin-top: -20px; max-width: 480px;" width="420" viewBox="0 0 420 280" fill="none" xmlns="http://www.w3.org/2000/svg">
             <g class="animate-heart-arms">
               <path d="M351.395 162.758C351.395 162.758 351.893 162.922 352.772 163.209C353.172 163.322 353.807 163.588 354.51 163.865C354.861 164.008 355.223 164.162 355.613 164.316C355.975 164.48 356.346 164.664 356.736 164.849C357.527 165.207 358.348 165.648 359.207 166.119C360.086 166.57 360.945 167.134 361.863 167.677C362.752 168.271 363.689 168.845 364.587 169.511C365.037 169.839 365.496 170.167 365.955 170.495L367.292 171.551C368.191 172.237 369.04 173.006 369.9 173.744C370.73 174.512 371.56 175.25 372.312 176.039C373.083 176.798 373.796 177.587 374.47 178.335C375.143 179.083 375.739 179.862 376.296 180.559C376.823 181.317 377.331 181.963 377.741 182.619C378.141 183.285 378.503 183.828 378.776 184.34C379.303 185.375 379.596 185.97 379.596 185.97C380.583 187.917 379.88 190.325 378.024 191.36C376.169 192.395 373.874 191.657 372.888 189.71L372.712 189.372C372.712 189.372 372.517 188.993 372.175 188.327C372.009 187.988 371.716 187.579 371.442 187.107C371.159 186.636 370.739 186.113 370.349 185.539C369.89 184.986 369.421 184.361 368.865 183.736C368.308 183.11 367.712 182.444 367.048 181.799C366.413 181.122 365.681 180.497 364.968 179.821C364.216 179.185 363.484 178.509 362.693 177.915L361.521 176.992C361.121 176.705 360.72 176.419 360.32 176.132C359.539 175.547 358.719 175.056 357.947 174.533C357.156 174.072 356.404 173.57 355.662 173.19C354.93 172.791 354.236 172.412 353.582 172.125C353.26 171.971 352.947 171.827 352.654 171.684C352.381 171.571 352.117 171.459 351.863 171.366C351.375 171.161 350.975 170.987 350.487 170.844C349.608 170.557 349.11 170.393 349.11 170.393C347.108 169.727 345.995 167.493 346.62 165.392C347.245 163.291 349.383 162.123 351.385 162.778L351.395 162.758Z" fill="#911D36"/>
               <path d="M350.975 160.76C350.975 160.76 351.502 160.76 352.42 160.76C352.84 160.749 353.514 160.801 354.266 160.852C354.637 160.883 355.037 160.913 355.447 160.944C355.838 160.995 356.248 161.047 356.668 161.108C357.527 161.2 358.435 161.374 359.392 161.559C360.359 161.723 361.336 162 362.371 162.235C363.377 162.533 364.441 162.789 365.486 163.147C366.013 163.322 366.54 163.496 367.068 163.67L368.64 164.264C369.695 164.644 370.72 165.125 371.745 165.556C372.751 166.037 373.747 166.488 374.694 167.011C375.642 167.493 376.55 168.036 377.399 168.548C378.249 169.06 379.04 169.624 379.772 170.116C380.495 170.669 381.159 171.141 381.725 171.643C382.292 172.155 382.799 172.565 383.19 172.965C383.981 173.795 384.43 174.266 384.43 174.266C385.914 175.824 385.914 178.345 384.43 179.903C382.946 181.461 380.544 181.461 379.059 179.903L378.805 179.636C378.805 179.636 378.512 179.329 378.005 178.806C377.751 178.54 377.36 178.232 376.97 177.874C376.559 177.515 376.022 177.146 375.485 176.716C374.89 176.326 374.274 175.875 373.562 175.445C372.849 175.015 372.107 174.564 371.286 174.154C370.495 173.703 369.616 173.324 368.747 172.903C367.859 172.535 366.96 172.114 366.033 171.776L364.656 171.254C364.187 171.1 363.728 170.946 363.269 170.792C362.351 170.475 361.433 170.259 360.554 169.993C359.666 169.798 358.807 169.552 357.996 169.419C357.186 169.265 356.414 169.112 355.711 169.04C355.359 168.989 355.018 168.948 354.695 168.907C354.402 168.886 354.119 168.866 353.856 168.845C353.328 168.804 352.899 168.753 352.401 168.763C351.483 168.763 350.955 168.763 350.955 168.763C348.856 168.753 347.167 166.949 347.176 164.746C347.186 162.543 348.905 160.77 351.004 160.78L350.975 160.76Z" fill="#911D36"/>
@@ -101,10 +101,10 @@
           <div style="max-width: 560px; margin: auto;">
             <p class="m-0px fw-bold fs-24px c-brown-new align-center mt-16px mb-16px">World Hypertension Day!</p>
             <p class="c-brown-new">May 17 is World Hypertension Day. Thanks to you, there are now 
-              <% if CountryConfig.current[:name] == "India" %>33,38,244<% end %>
-              <% if CountryConfig.current[:name] == "Bangladesh" %>195045<% end %>
-              <% if CountryConfig.current[:name] == "Ethiopia" %>23395<% end %>
-              <% if CountryConfig.current[:name] == "Sri Lanka" %>7406<% end %>
+              <% if CountryConfig.current[:name] == "India" %>34,58,530<% end %>
+              <% if CountryConfig.current[:name] == "Bangladesh" %>195,045<% end %>
+              <% if CountryConfig.current[:name] == "Ethiopia" %>23,395<% end %>
+              <% if CountryConfig.current[:name] == "Sri Lanka" %>7,406<% end %>
               patients with hypertension managed in 
               <% if CountryConfig.current[:name] == "India" %>India<% end %><% if CountryConfig.current[:name] == "Bangladesh" %>Bangladesh<% end %><% if CountryConfig.current[:name] == "Ethiopia" %>Ethiopia<% end %><% if CountryConfig.current[:name] == "Sri Lanka" %>Sri Lanka<% end %>.
             </p>
@@ -186,26 +186,26 @@
       </div>
       <% if current_facility_group.region.feature_enabled?(:drug_stocks) && controller_name == "user_analytics" %>
         <div class="mb-8px p-16px bgc-white bs-card">
-        <div class="d-flex ai-flex-start jc-space-between mb-16px">
-          <div class="f-1">
-            <h1 class="m-0px mb-8px fw-bold fs-24px">
-              <%= t("progress_tab.drug_stock_report_card.title") %>
-            </h1>
-            <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
-              <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
-            </p>
+          <div class="d-flex ai-flex-start jc-space-between mb-16px">
+            <div class="f-1">
+              <h1 class="m-0px mb-8px fw-bold fs-24px">
+                <%= t("progress_tab.drug_stock_report_card.title") %>
+              </h1>
+              <p class="m-0px p-0px ta-left fw-normal fs-16px lh-150 c-grey-dark">
+                <%= t("progress_tab.drug_stock_report_card.subtitle", facility_name: current_facility.name, period: @period.to_s(:mon_year)) %>
+              </p>
+            </div>
+            <div class="w-76px h-76px">
+              <%= inline_svg("drug-stock.svg") %>
+            </div>
           </div>
-          <div class="w-76px h-76px">
-            <%= inline_svg("drug-stock.svg") %>
-          </div>
-        </div>
-        <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
+          <%= link_to t("progress_tab.drug_stock_report_card.button_title"), new_webview_drug_stock_url(user_id: current_user.id,
           access_token: current_user.access_token,
           facility_id: current_facility.id),
           style: "font-weight: 500;",
           class: "d-block p-16px ta-center fs-16px fw-regular tt-uppercase ls-1_25px c-blue b-none bgc-blue-light bs-secondary-button br-2px"
         %>
-      </div>
+        </div>
       <% end %>
       <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
         <h1 class="m-0px mb-24px pr-16px pl-16px fw-bold fs-24px">
@@ -311,7 +311,7 @@
       last_updated_at: @user_analytics.last_updated_at
     ))
     %>
-<!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
+    <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
   </body>
   <%= inline_js("standalone/progress_tab.js") %>
 </html>
