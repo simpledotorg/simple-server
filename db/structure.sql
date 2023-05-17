@@ -1852,13 +1852,13 @@ CREATE TABLE public.questionnaire_responses (
 CREATE TABLE public.questionnaires (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
-    dsl_version integer NOT NULL,
+    dsl_version character varying NOT NULL,
     is_active boolean NOT NULL,
     layout jsonb NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    metadata character varying
+    description character varying
 );
 
 
@@ -7009,7 +7009,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230123125608'),
 ('20230124063249'),
 ('20230130161639'),
-('20230503114529'),
-('20230505085151');
+('20230512070306'),
+('20230512070357');
 
 

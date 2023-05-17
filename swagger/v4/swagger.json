@@ -871,7 +871,7 @@
           {
             "name": "dsl_version",
             "in": "query",
-            "type": "integer",
+            "type": "string",
             "required": true,
             "description": "The version of layout supported by client."
           },

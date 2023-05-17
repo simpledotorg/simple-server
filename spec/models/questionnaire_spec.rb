@@ -11,16 +11,24 @@ RSpec.describe Questionnaire, type: :model do
         create_list(:questionnaire,
           2,
           questionnaire_type: "monthly_screening_reports",
-          dsl_version: 1,
+          dsl_version: "1",
           is_active: true)
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "allows multiple inactive forms per type" do
       expect {
-        create_list(:questionnaire, 2, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
-        create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
+        create_list(:questionnaire, 2, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: false)
+        create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: true)
       }.to change { Questionnaire.count }.by 3
+    end
+
+    it "validates DSL version follows X.Y semver" do
+      ["1a", "1.a", "1.", "a1", "a.1", "-1.1", "+2.2", ".1"].each do |dsl_version|
+        expect {
+          create(:questionnaire, dsl_version: dsl_version)
+        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Dsl version should be a Semver of pattern X.Y where X & Y are integers")
+      end
     end
 
     it "validates the specimen layout for dsl_version_1 using the swagger schema" do
@@ -64,8 +72,8 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "includes only the active forms" do
-      active_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
-      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
+      active_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: true)
+      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: false)
 
       expect(described_class.for_sync).to include(active_questionnaire)
     end
