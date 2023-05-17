@@ -1,4 +1,4 @@
-class Api::V4::Models::Questionnaires::DSLVersion1_1
+class Api::V4::Models::Questionnaires::DSLVersion1Dot1
   class << self
     def definitions
       {

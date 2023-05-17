@@ -469,7 +469,7 @@ class Api::V4::Models
         questionnaire_response: Api::V4::Models.questionnaire_response,
         questionnaire_responses: array_of("questionnaire_response"),
         **Api::V4::Models::Questionnaires::DSLVersion1.definitions,
-        **Api::V4::Models::Questionnaires::DSLVersion1_1.definitions,
+        **Api::V4::Models::Questionnaires::DSLVersion1Dot1.definitions,
         teleconsultation: teleconsultation,
         teleconsultations: array_of("teleconsultation"),
         timestamp: timestamp,

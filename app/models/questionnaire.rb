@@ -47,7 +47,7 @@ class Questionnaire < ApplicationRecord
             when "1"
               Api::V4::Models::Questionnaires::DSLVersion1
             when "1.1"
-              Api::V4::Models::Questionnaires::DSLVersion1_1
+              Api::V4::Models::Questionnaires::DSLVersion1Dot1
             else
               raise StandardError.new "DSL Version #{dsl_version} is not supported"
     end
