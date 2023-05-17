@@ -1970,6 +1970,9 @@
             },
             "enable_monthly_screening_reports": {
               "type": "boolean"
+            },
+            "enable_monthly_supplies_reports": {
+              "type": "boolean"
             }
           }
         },
