@@ -2,7 +2,8 @@ class Questionnaire < ApplicationRecord
   has_many :questionnaire_responses
 
   enum questionnaire_type: {
-    monthly_screening_reports: "monthly_screening_reports"
+    monthly_screening_reports: "monthly_screening_reports",
+    monthly_supplies_reports: "monthly_supplies_reports"
   }
 
   validates :dsl_version, uniqueness: {
@@ -10,7 +11,6 @@ class Questionnaire < ApplicationRecord
     message: "has already been taken for given questionnaire_type",
     conditions: -> { active }
   }
-  validate :dsl_version_semver
   validate :validate_layout
 
   scope :active, -> { where(is_active: true) }
@@ -30,12 +30,6 @@ class Questionnaire < ApplicationRecord
     JSON::Validator.validate(layout_schema, layout)
   end
 
-  def dsl_version_semver
-    unless /^[0-9]+.[0-9]+$/ === dsl_version || /^[0-9]+$/ === dsl_version
-      errors.add(:dsl_version, "should be a Semver of pattern X.Y where X & Y are integers")
-    end
-  end
-
   def validate_layout
     JSON::Validator.fully_validate(layout_schema, layout).each do |error_string|
       errors.add(:layout_schema, error_string.split("in schema").first)
@@ -49,10 +43,15 @@ class Questionnaire < ApplicationRecord
   private
 
   def layout_schema
-    # TODO: When dsl_version is incremented, insert a switch here.
-    Api::V4::Models::Questionnaires::Version1.view_group.merge(
-      definitions: Api::V4::Schema.all_definitions
-    )
+    model = case dsl_version
+            when "1"
+              Api::V4::Models::Questionnaires::DSLVersion1
+            when "1.1"
+              Api::V4::Models::Questionnaires::DSLVersion1_1
+            else
+              raise StandardError.new "DSL Version #{dsl_version} is not supported"
+    end
+    model.view_group.merge(definitions: Api::V4::Schema.all_definitions)
   end
 
   def apply_recursively_to_layout(sub_layout, &blk)

@@ -396,6 +396,7 @@ class Api::V4::Models
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          layout: {
            oneOf: [
+             {"$ref" => "#/definitions/questionnaire_view_group_dsl_1_1"},
              {"$ref" => "#/definitions/questionnaire_view_group_dsl_1"}
            ]
          },
@@ -467,7 +468,8 @@ class Api::V4::Models
         questionnaires: array_of("questionnaire"),
         questionnaire_response: Api::V4::Models.questionnaire_response,
         questionnaire_responses: array_of("questionnaire_response"),
-        **Api::V4::Models::Questionnaires::Version1.definitions,
+        **Api::V4::Models::Questionnaires::DSLVersion1.definitions,
+        **Api::V4::Models::Questionnaires::DSLVersion1_1.definitions,
         teleconsultation: teleconsultation,
         teleconsultations: array_of("teleconsultation"),
         timestamp: timestamp,
