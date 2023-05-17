@@ -29,3 +29,7 @@ promotions:
     pipeline_file: deploy.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: Bangladesh Demo Deployment # Testing new k8s deployment
+    pipeline_file: bangladesh_demo_deployment.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
