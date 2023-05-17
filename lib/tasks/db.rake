@@ -45,8 +45,3 @@ end
 Rake::Task["db:structure:dump"].enhance do
   Rake::Task["db:structure:clean"].invoke
 end
-
-Rake::Task["db:seed"].enhance do
-  ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
-  Rake::Task["db:refresh_reporting_views"].invoke
-end

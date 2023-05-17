@@ -53,3 +53,6 @@ so-ET:
       official_no_date: "Maanta kaalay %{facility_name} si loo cabiro BP, %{patient_name}. Dhakhtarkaagu waxa uu kuu rajaynayaa caafimaad wanaagsan."
     covid:
       medication_reminder: "Gacaliye %{patient_name}: Shaqaalahayaga jooga xaga %{facility_name} way kaa fekeriyaan adiga iyo caafimaadkaaga wadnaha muddada gurmadkan COVID. Aad ayay muhiim u tahay in la sii wado dawooyinkaaga BP. Ka qaado dawooyinkaaga blaashka ah xarunta hoose ee ugu dhow ama xarunta fayo qabka caafimaadkaaga. La xidhiidh ANM kaaga ama ASHA."
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

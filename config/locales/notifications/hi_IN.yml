@@ -53,3 +53,6 @@ hi-IN:
       official_no_date: "%{patient_name} अपने बीपी की जांच के लिए आज ही %{facility_name} आएँ। आपके डॉक्टर आपके अच्छे स्वास्थ्य की कामना करते हैं।"
     covid:
       medication_reminder: "Dear %{patient_name}: इस कोरोना महामारी के दौरान %{facility_name} आपके और आपके दिल के स्वास्थ्य का खयाल कर रहा हें। कृपया अपने बीपी की दवाइया नियमित जारी रखें। निकटतम स्वास्थ्य एवं कल्याण केन्द्र या उप-केन्द्र से नि:शुल्क दवा प्राप्त करे। अधिक सूचना के लिए ए.एन.एम. या आशा से संपर्क करे।"
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

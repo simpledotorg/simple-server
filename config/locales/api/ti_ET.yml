@@ -120,7 +120,7 @@ ti-ET:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ህንዲ
       bp_passports:
-        heading_html: ናይ BP ፓስፖርትታት
+        heading_html: "ናይ BP ፓስፖርትታት"
         contents_html: ኣብ ናትካ ሆስፒታል BP ፓስፖርት ካርድታት ወይ BP ፓስፖርት ስቲከር ብኸመይ ከምእትጥቀመሎም ተማሃር።
         video_link_html: ናይ BP ፓስፖርት ብኸመይ ትጥቀም
         video_link_subtitle_html: ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ
@@ -445,14 +445,37 @@ ti-ET:
         cohort_title: "ካብ ዝሓለፈ ምብዛሕ ውጽኢት ኣብ %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ዝተመዝገቡ ኣብ %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} ምስ%{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
     male: "ወዲ-ተባዕታይ"
     female: "ጓል-አነስተይቲ"
     transgender: "ፆታ-ዝቐየረ"
+    total: "ጠቕላላ"
+    yes: "እወ"
+    no: "ኣይፋል"
+    comments: "ርኢቶታት"
+    instruction_1: "መጠን ዘይትፈልጡ እንተኾይንኩም ባዶ ግደፉዎ"
+    instruction_2: 'መኽዘን እንተተወዲኡ “0”  ኣእቱዉ'
+  monthly_screening_report:
+    htn_and_dm_screening: "ናይ HTNን DMን መርመራታት"
+    # Ethiopia
+    total_bp: "ጠቕላላ መርመራ ናይ BP ተገይሩ እዩ"
+    total_bs: "ጠቕላላ መርመራ ናይ ሽኮር ተገይሩ እዩ"
+    new_raised_cases: "ሓደሽቲ ዝወሰኹ ጉዳያት"
+    total_bp_raised: "ጠቕላላ ዝወሰኹ BP"
+    total_bs_raised: "ጠቕላላ ዝወሰኹ BS"
+    total_bp_raised_ncd_linked: "ምስ ክሊኒክ NCD ዝተሓሓዙ ጠቕላላ ዝወሰኹ BP"
+    total_bs_raised_ncd_linked: "ምስ ክሊኒክ NCD ዝተሓሓዙ ጠቕላላ ዝወሰኹ BS"
+    diagnosed_cases: "ዝተመርመሩ ጉዳያት"
+    total_htn_diagnosed: "ዝተመርመሩ ጠቕላላ HTN"
+    total_dm_diagnosed: "ዝተመርመሩ ጠቕላላ DM"
+    cervical_cancer_uc: "ናይ ማህጸን ምንሽሮ"
+    total_women_screened_cervical: "ናይ ማህጸን ምንሽሮ ዝተመርመሩ ጠቕላላ ኣንስቲ"
+    total_women_treated_cervical: "ናይ ማህጸን ምንሽሮ ሕክምና ዝረኸቡ ጠቕላላ ኣንስቲ"
+    total_women_followup_cervical: "ድሕሪ 1 ዓመት ክትትል ዝተገበረሎም ጠቕላላ ኣንስቲ"
+    # India
     monthly_opd_visits_gt_30: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >30 ዓመት"
     monthly_opd_visits_gt_18: "ወርሓዊ ናይ OPD ምጉብናያት ንዓበይቲ >18 ዓመት"
     outpatient_department_visits: "ናይ ደጋዊ ተሓካሚ ምጉብናያት"
-    htn_and_dm_screening: "ናይ HTNን DMን መርመራታት"
     total_bp_checks: "ጠቕላላ ናይ BP ምርግጋፃት ተዛዚሞም እዮም"
     total_blood_sugar_checks: "ጠቕላላ ናይ ደም ሽኮር ምርግጋፃት ተዛዚሞም እዮም"
     new_suspected_individuals: "ሓደሽቲ ዝጥርጠሩ ውልቀ ሰባት"
@@ -470,4 +493,44 @@ ti-ET:
     oral_cancer: "ናይ ኣፍ ካንሰር"
     breast_cancer: "ናይ ጡብ ካንሰር"
     cervical_cancer: "ናይ ማህፀን ካንሰር"
-
+  monthly_supplies_report:
+    instruction_1: "ኣብ ሕድሕድ መወዳእታ ወርሒ ኣብ መኽዘን ዝተረፉ ቀረባት ኣእቱዉ"
+    stock_on_hand: "ኣብ ኢድ ዘሎ በዝሒ"
+    stock_on_hand_uc: "ኣብ ኢድ ዘሎ በዝሒ"
+    working_equipments: "ናይ መስርሕ ናውቲ"
+    glucose_strips: "ናይ ደም ግሉኮስ መርመራ ተቐንጠጥቲ"
+    total_working_condition: "ጠቕላላ ኣብ ጽቡቕ ናይ ምስራሕ ኩነታት ዘለዉ"
+    # Bangladesh
+    patient_books: "መጻሕፍቲ ተሓካማይ"
+    available_bp_monitors_arm_in: "ጠቕላላ ዝርከቡ መቆጻጸሪታት BP (ናይ ኢድ)"
+    functioning_bp_monitors_arm_in: "ይሰርሑ ዘለዉ መቆጻጸሪታት BP (ናይ ኢድ)"
+    available_bp_monitors_handheld: "ጠቕላላ ዝርከቡ መቆጻጸሪታት BP (ብኢድ ዝተሓዝ)"
+    functioning_bp_monitors_handheld: "ይሰርሑ ዘለዉ መቆጻጸሪታት BP (ብኢድ ዝተሓዝ)"
+    available_blood_glucose_monitors: "ጠቕላላ ዝርከቡ መቆጻጸሪታት ግሉኮስ ደም"
+    functioning_blood_glucose_monitors: "ይሰርሑ ዘለዉ መቆጻጸሪታት ግሉኮስ ደም"
+    # Ethiopia
+    bp_monitor: "መቆጻጸሪ BP"
+    glucose_meter: "መዐቀኒ ግሉኮስ ደም"
+    stethoscope: "መዳመጺ ሓኪም"
+    height_weight_machine: "ናይ ንውሓትን ክብደትን መዐቀኒ ማሽን"
+    waist_tape: "ዙሪያ ሽምጢ መዐቀኒ ሸሪጥ"
+    # India
+    glucometer_strips: "ተቐንጠጥቲ መዐቀኒ ግሉኮስ"
+    # Sri Lanka
+    equipment: "ናውቲ"
+    available_bp_devices: "ጠቕላላ ዝርከቡ መሳርሒታት BP"
+    functioning_bp_devices: "ይሰርሑ ዘለዉ መሳርሒታት BP"
+    available_phones: "ጠቕላላ ዝርከቡ ተንቀሳቓሲ ስልክታት"
+    functioning_phones: "ይሰርሑ ዘለዉ ተንቀሳቓሲ ስልክታት"
+    drug_stock: "መኽዘን መድሓኒት"
+    drug_stock_losartan: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ Losartan"
+    drug_stock_amlodipine: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ Amlodipine"
+    drug_stock_hct: "ክሳብ ዝቕጽል ወርሒ ዝኣኽሉ መድሓኒታት፦ HCT (Hydrochlorathiazide)"
+    trained_staff: "ዝሰልጠኑ ሰራሕተኛታት"
+    doctors_count: "በዝሒ ኣብ ናይ ሕክምና ክሊኒክ ዝሳተፉ ሓኻይም"
+    nurses_count: "በዝሒ ኣብ ናይ ሕክምና ክሊኒክ ዝሳተፉ ነርስታት"
+    pharmacists_count: "በዝሒ ኣብ ሆስፒታል ዝሳተፉ ፋርማሰኛታት"
+    drug_dispensers_count: "በዝሒ ኣብ ሆስፒታል ዝርከቡ መዓደሊታት መድሓኒት"
+    others: "ካልኦት"
+    television_functional: "ናይ ጥዕና ትምህርቲ መልእኽትታት ኣብ’ቲ ናይ ሕክምና ክሊኒክ ብተለቭዥን ስክሪን ይረኣዩ ዶ?"
+    wifi_functional: "ናይ ዋይፋይ ኔትወርክ ይርከብ ዶ?"

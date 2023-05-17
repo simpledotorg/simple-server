@@ -20,22 +20,46 @@ RSpec.describe PreFillMonthlyScreeningReports do
   end
 
   describe "#call" do
-    it "pre-fills monthly screening reports for previous month" do
+    it "[India] pre-fills monthly screening reports for previous month" do
       PreFillMonthlyScreeningReports.call
 
       date = 1.month.ago.beginning_of_month
-      expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
+      questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
+      expect(questionnaire_response.content).to eq(
         {
           "month_date" => date.strftime("%Y-%m-%d"),
           "submitted" => false,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female" => 1,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.male" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.female" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.male" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.female" => 0
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.female" => 1,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.male" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.female" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.male" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => 0
         }
       )
+      expect(questionnaire_response.device_created_at).to eq(date)
+      expect(questionnaire_response.device_updated_at).to eq(date)
+    end
+
+    it "[Ethiopia] pre-fills monthly screening reports for previous month" do
+      current_country = Rails.application.config.country
+      Rails.application.config.country = CountryConfig.for("ET")
+      PreFillMonthlyScreeningReports.call
+
+      date = 1.month.ago.beginning_of_month
+      questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
+      expect(questionnaire_response.content).to eq(
+        {
+          "month_date" => date.strftime("%Y-%m-%d"),
+          "submitted" => false,
+          "monthly_screening_report.total_htn_diagnosed" => 1,
+          "monthly_screening_report.total_dm_diagnosed" => 0
+        }
+      )
+      expect(questionnaire_response.device_created_at).to eq(date)
+      expect(questionnaire_response.device_updated_at).to eq(date)
+
+      Rails.application.config.country = current_country
     end
 
     it "ignores existing monthly screening reports" do
@@ -49,8 +73,8 @@ RSpec.describe PreFillMonthlyScreeningReports do
     end
 
     it "links pre-filled reports to latest active questionnaire" do
-      create(:questionnaire, :active, dsl_version: 2)
-      latest_questionnaire = create(:questionnaire, :active, dsl_version: 3)
+      create(:questionnaire, :active, dsl_version: "2")
+      latest_questionnaire = create(:questionnaire, :active, dsl_version: "3")
 
       PreFillMonthlyScreeningReports.call
 
@@ -83,12 +107,12 @@ RSpec.describe PreFillMonthlyScreeningReports do
         {
           "month_date" => date.strftime("%Y-%m-%d"),
           "submitted" => false,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.male" => 1,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn.female" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.male" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_dm.female" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.male" => 0,
-          "monthly_screening_reports.diagnosed_cases_on_follow_up_htn_and_dm.female" => 0
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => 1,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn.female" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.male" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_dm.female" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.male" => 0,
+          "monthly_screening_report.diagnosed_cases_on_follow_up_htn_and_dm.female" => 0
         }
       )
     end

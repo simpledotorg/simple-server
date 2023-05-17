@@ -14,12 +14,6 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
       custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic diabetes],
-      maharashtra_dhis2_data_elements: {
-        monthly_registrations_male: "F0cPY1T9lNs.tY82VK3LTQq",
-        monthly_registrations_female: "F0cPY1T9lNs.VHbljVQ8REF",
-        controlled_male: "FSuHsnyPYcV.tY82VK3LTQq",
-        controlled_female: "FSuHsnyPYcV.VHbljVQ8REF"
-      },
       appointment_reminders_channel: "Messaging::Bsnl::Sms"
     },
     BD: {
@@ -33,17 +27,6 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+880",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: true,
-      dhis2_data_elements: {
-        cumulative_assigned: "eNtDKQTRdto",
-        cumulative_assigned_adjusted: "jCn7IIHtlXf",
-        controlled: "oVfmtlxYhOH",
-        uncontrolled: "QO2eTU3dW18",
-        missed_visits: "w7NRchlv0Rb",
-        ltfu: "w91dERGRhJ4",
-        dead: "SyduEtVKvlF",
-        cumulative_registrations: "bdMBWIf2i1h",
-        monthly_registrations: "tI9g0mtCzOv"
-      },
       enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::AlphaSms::Sms"
     },
@@ -58,17 +41,6 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
-      dhis2_data_elements: {
-        cumulative_assigned: "nrK3Yj6ELl0",
-        cumulative_assigned_adjusted: "YKsRrnjBiVE",
-        controlled: "ZCkeHFQETzb",
-        uncontrolled: "z4mVPviB8OH",
-        missed_visits: "tNRBsYt0ZOK",
-        ltfu: "qI3kE1DizFL",
-        dead: "ZNYhcG2efAB",
-        cumulative_registrations: "PX8qBGsdF5G",
-        monthly_registrations: "Tx3CKEUFqNN"
-      },
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     },
     LK: {
@@ -109,6 +81,14 @@ class CountryConfig
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
     }
   }.with_indifferent_access.freeze
+
+  class << self
+    include Memery
+
+    memoize def dhis2_data_elements
+      YAML.load_file(ENV.fetch("DHIS2_DATA_ELEMENTS_FILE")).with_indifferent_access
+    end
+  end
 
   def self.for(abbreviation)
     CONFIGS[abbreviation]

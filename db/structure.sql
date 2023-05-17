@@ -206,7 +206,8 @@ CREATE TABLE public.facilities (
     monthly_estimated_opd_load integer,
     enable_teleconsultation boolean DEFAULT false NOT NULL,
     short_name character varying NOT NULL,
-    enable_monthly_screening_reports boolean DEFAULT false NOT NULL
+    enable_monthly_screening_reports boolean DEFAULT false NOT NULL,
+    enable_monthly_supplies_reports boolean DEFAULT false NOT NULL
 );
 
 
@@ -1851,12 +1852,13 @@ CREATE TABLE public.questionnaire_responses (
 CREATE TABLE public.questionnaires (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
     questionnaire_type character varying NOT NULL,
-    dsl_version integer NOT NULL,
+    dsl_version character varying NOT NULL,
     is_active boolean NOT NULL,
     layout jsonb NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    deleted_at timestamp without time zone
+    deleted_at timestamp without time zone,
+    description character varying
 );
 
 
@@ -7006,6 +7008,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230105064908'),
 ('20230123125608'),
 ('20230124063249'),
-('20230130161639');
+('20230130161639'),
+('20230512070306'),
+('20230512070357');
 
 

@@ -37,7 +37,24 @@ $ bin/setup
 
 If you encounter issues with this script, please open [a new issue with details](https://github.com/simpledotorg/simple-server/issues/new?title=Problems+with+bin/setup). Please include the entire log from bin/setup, as well as your computer / OS details.
 
-### Note for Apple Silicon M1 Macs
+### Setup Troubleshooting
+
+#### Setup fails when bundler tries to resolve `nokogiri`
+
+The error message will look like:
+```
+Extracting libxml2-2.9.13.tar.xz into <...>
+========================================================================
+tar (child): xz: Cannot exec: No such file or directory
+tar (child): Error is not recoverable: exiting now
+/bin/tar: Child returned status 2
+/bin/tar: Error is not recoverable: exiting now
+========================================================================
+```
+
+Ensure that you have `xz` installed and *linked* with `brew link xz`.
+
+#### Apple Silicon M1 Macs
 
 With recent gem updates, all of our gems and dependencies now build ARM native on m1 macs. This means you do **not** need to use Rosetta to set up simple-server, and in fact using Rosetta will make things more complicated and confusing in day to day dev experience, and also hurts performance.
 

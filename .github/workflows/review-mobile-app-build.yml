@@ -11,7 +11,7 @@ jobs:
   build_app:
     runs-on: [ ubuntu-latest ]
     env:
-      PR_NUMBER: ${{ github.event.inputs.name }}
+      PR_NUMBER: ${{ github.event.inputs.pr_number }}
     steps:
       - name: Checkout simple-android
         uses: actions/checkout@v2

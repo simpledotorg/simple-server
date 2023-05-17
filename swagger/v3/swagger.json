@@ -1970,6 +1970,9 @@
             },
             "enable_monthly_screening_reports": {
               "type": "boolean"
+            },
+            "enable_monthly_supplies_reports": {
+              "type": "boolean"
             }
           }
         },
@@ -2329,6 +2332,7 @@
           ],
           "enum": [
             "not_responding",
+            "refused_to_come_back",
             "invalid_phone_number",
             "public_hospital_transfer",
             "moved_to_private",

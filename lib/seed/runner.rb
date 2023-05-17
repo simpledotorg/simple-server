@@ -9,7 +9,7 @@ module Seed
     include ActionView::Helpers::NumberHelper
     include ConsoleLogger
     SIZES = Facility.facility_sizes
-    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group, :prescription_drug]
+    SUMMARY_COUNTS = [:patient, :blood_pressure, :blood_sugar, :appointment, :facility, :facility_group, :prescription_drug, :call_result]
 
     attr_reader :config
     attr_reader :logger
@@ -55,6 +55,12 @@ module Seed
       total_counts.merge!(hsh)
 
       print_summary
+
+      ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
+      RefreshReportingViews.call
+      puts "Reporting views have been refreshed"
+      QuestionnaireSeeder.call
+
       [counts, total_counts]
     end
 
@@ -63,7 +69,7 @@ module Seed
         hsh[model] = number_with_delimiter(model.to_s.classify.constantize.count)
       }
       announce <<~EOL
-        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, #{totals[:prescription_drug]} prescription drugs, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
+        \n⭐️ Seed complete! Created #{totals[:patient]} patients, #{totals[:blood_pressure]} BPs, #{totals[:blood_sugar]} blood sugars, #{totals[:prescription_drug]} prescription drugs, #{totals[:call_result]} calls, and #{totals[:appointment]} appointments across #{totals[:facility]} facilities in #{totals[:facility_group]} districts.\n
         ⭐️ Elapsed time #{distance_of_time_in_words(start_time, Time.current, include_seconds: true)} ⭐️\n
       EOL
     end
@@ -72,10 +78,11 @@ module Seed
       [
         :dashboard_progress_reports,
         :drug_stocks,
+        :monthly_screening_reports,
         :follow_ups_v2_progress_tab,
         :notifications,
-        (:auto_approve_users if SimpleServer.env.android_review?),
-        (:fixed_otp if SimpleServer.env.android_review?)
+        (:auto_approve_users if SimpleServer.env.android_review? || SimpleServer.env.review?),
+        (:fixed_otp if SimpleServer.env.android_review? || SimpleServer.env.review?)
       ].compact
     end
 
@@ -97,8 +104,9 @@ module Seed
           blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
           unless config.skip_encounters
-            appt_result = create_appts(patient_info, facility: facility, user_ids: registration_user_ids)
-            result[:appointment] = appt_result.ids.size
+            data_creation_info = create_appointments_and_call_results(patient_info, facility: facility, user_ids: registration_user_ids)
+            result[:appointment] = data_creation_info[:appointments_creation_info].ids.size
+            result[:call_result] = data_creation_info[:call_results_creation_info].ids.size
           end
           prescription_drugs_result = PrescriptionDrugSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
           result.merge!(prescription_drugs_result) { |key, count1, count2| count1 + count2 }
@@ -150,25 +158,48 @@ module Seed
       )
     end
 
-    def create_appts(patient_info, facility:, user_ids:)
-      attrs = patient_info.each_with_object([]) { |(patient_id, recorded_at), attrs|
-        number_appointments = config.rand_or_max(0..1) # some patients dont get appointments
-        next if number_appointments == 0
-        scheduled_date = Faker::Time.between(from: Time.current, to: 45.days.from_now)
-        created_at = Faker::Time.between(from: 4.months.ago, to: 1.day.ago)
+    def create_appointments_and_call_results(patient_info, facility:, user_ids:)
+      appointment_attributes = patient_info.map do |(patient_id, _recorded_at)|
+        number_of_appointments = config.rand_or_max(0..1) # some patients dont get appointments
+        next if number_of_appointments.zero?
+
+        device_created_at = Faker::Time.between(from: 6.months.ago, to: 1.day.ago)
+        created_at = Faker::Time.between(from: device_created_at, to: 1.day.ago)
+        scheduled_date = Faker::Time.between(from: device_created_at, to: device_created_at.advance(days: 45))
         user_id = user_ids.sample
-        hsh = {
+        FactoryBot.attributes_for(:appointment,
           creation_facility_id: facility.id,
           facility_id: facility.id,
           patient_id: patient_id,
           scheduled_date: scheduled_date,
+          device_created_at: device_created_at,
           created_at: created_at,
           updated_at: created_at,
-          user_id: user_id
-        }
-        attrs << FactoryBot.attributes_for(:appointment, hsh)
-      }
-      Appointment.import(attrs)
+          user_id: user_id)
+      end.compact
+
+      call_result_attributes = create_call_results_for_appointments(appointment_attributes, user_ids: user_ids)
+
+      appointments_creation_info = Appointment.import(appointment_attributes)
+      call_results_creation_info = CallResult.import(call_result_attributes)
+      {appointments_creation_info: appointments_creation_info,
+       call_results_creation_info: call_results_creation_info}
+    end
+
+    def create_call_results_for_appointments(appointment_attributes, user_ids:)
+      appointment_attributes.map do |appointment|
+        number_of_calls = config.rand_or_max(0..1)
+        next if number_of_calls.zero?
+
+        device_created_at = Faker::Time.between(from: appointment[:scheduled_date], to: Time.now)
+        FactoryBot.attributes_for(:call_result,
+          appointment_id: appointment[:id],
+          patient_id: appointment[:patient_id],
+          facility_id: appointment[:facility_id],
+          user_id: user_ids.sample,
+          device_created_at: device_created_at,
+          device_updated_at: device_created_at)
+      end.compact
     end
   end
 end

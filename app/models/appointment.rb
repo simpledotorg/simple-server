@@ -138,6 +138,8 @@ class Appointment < ApplicationRecord
         patient.update(status: :migrated)
       when "public_hospital_transfer"
         patient.update(status: :migrated)
+      when "refused_to_come_back"
+        patient.update(status: :migrated)
       else
         patient.update(status: :active)
     end

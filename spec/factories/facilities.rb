@@ -13,6 +13,7 @@ FactoryBot.define do
     facility_group
     enable_diabetes_management { [true, false].sample }
     enable_monthly_screening_reports { false }
+    enable_monthly_supplies_reports { false }
     enable_teleconsultation { false }
     monthly_estimated_opd_load { 300 }
 
