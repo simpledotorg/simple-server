@@ -35,8 +35,8 @@ class QuestionnaireResponses::InitializeMonthlySuppliesReports
   def self.monthly_supplies_report_exists?(facility_id, month_date_str)
     QuestionnaireResponse
       .where(facility_id: facility_id)
-      .merge(Questionnaire.monthly_supplies_reports)
       .joins(:questionnaire)
+      .merge(Questionnaire.monthly_supplies_reports)
       .where("content->>'month_date' = ?", month_date_str)
       .any?
   end
