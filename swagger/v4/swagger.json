@@ -3248,7 +3248,7 @@
                 "$ref": "#/definitions/questionnaire_unordered_list_view_group_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_line_break_dsl_1_1"
+                "$ref": "#/definitions/questionnaire_line_break_dsl_1"
               },
               {
                 "$ref": "#/definitions/questionnaire_input_view_group_dsl_1_1"
@@ -3295,32 +3295,6 @@
         "type",
         "id",
         "text",
-        "view_type"
-      ]
-    },
-    "questionnaire_line_break_dsl_1_1": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "display"
-          ]
-        },
-        "id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "view_type": {
-          "type": "string",
-          "enum": [
-            "separator",
-            "line_separator"
-          ]
-        }
-      },
-      "required": [
-        "type",
-        "id",
         "view_type"
       ]
     },
@@ -3489,7 +3463,7 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_integer_input_dsl_1_1"
+                "$ref": "#/definitions/questionnaire_integer_input_dsl_1"
               },
               {
                 "$ref": "#/definitions/questionnaire_string_input_dsl_1_1"
@@ -3503,55 +3477,6 @@
         "id",
         "view_type",
         "item"
-      ]
-    },
-    "questionnaire_integer_input_dsl_1_1": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": [
-            "integer"
-          ]
-        },
-        "id": {
-          "$ref": "#/definitions/uuid"
-        },
-        "link_id": {
-          "type": "string"
-        },
-        "text": {
-          "type": "string"
-        },
-        "view_type": {
-          "type": "string",
-          "enum": [
-            "input_field"
-          ]
-        },
-        "validations": {
-          "type": "object",
-          "properties": {
-            "min": {
-              "type": "integer"
-            },
-            "max": {
-              "type": "integer"
-            }
-          },
-          "required": [
-            "min",
-            "max"
-          ]
-        }
-      },
-      "required": [
-        "type",
-        "id",
-        "link_id",
-        "text",
-        "view_type",
-        "validations"
       ]
     },
     "questionnaire_string_input_dsl_1_1": {

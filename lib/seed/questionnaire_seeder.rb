@@ -9,7 +9,6 @@ module Seed
         is_active: true,
         description: "A specimen screening report created during seeding.",
         layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
-      # TODO: change the specimen layout's text to have translation keys instead of english text?
 
       FactoryBot.create(:questionnaire,
         questionnaire_type: "monthly_supplies_reports",

@@ -4,13 +4,11 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot1
       {
         questionnaire_view_group_dsl_1_1: view_group,
         questionnaire_display_dsl_1_1: display,
-        questionnaire_line_break_dsl_1_1: Api::V4::Models::Questionnaires::DSLVersion1.line_break,
         questionnaire_unordered_list_view_group_dsl_1_1: unordered_list_view_group,
         questionnaire_unordered_list_item_dsl_1_1: unordered_list_item,
         questionnaire_radio_view_group_dsl_1_1: radio_view_group,
         questionnaire_radio_button_dsl_1_1: radio_button,
         questionnaire_input_view_group_dsl_1_1: input_view_group,
-        questionnaire_integer_input_dsl_1_1: Api::V4::Models::Questionnaires::DSLVersion1.integer_input,
         questionnaire_string_input_dsl_1_1: string_input
       }
     end
@@ -29,7 +27,7 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot1
               oneOf: [
                 {"$ref" => "#/definitions/questionnaire_display_dsl_1_1"},
                 {"$ref" => "#/definitions/questionnaire_unordered_list_view_group_dsl_1_1"},
-                {"$ref" => "#/definitions/questionnaire_line_break_dsl_1_1"},
+                {"$ref" => "#/definitions/questionnaire_line_break_dsl_1"},
                 {"$ref" => "#/definitions/questionnaire_input_view_group_dsl_1_1"},
                 {"$ref" => "#/definitions/questionnaire_radio_view_group_dsl_1_1"}
               ]
@@ -64,7 +62,7 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot1
             type: :array,
             items: {
               oneOf: [
-                {"$ref" => "#/definitions/questionnaire_integer_input_dsl_1_1"},
+                {"$ref" => "#/definitions/questionnaire_integer_input_dsl_1"},
                 {"$ref" => "#/definitions/questionnaire_string_input_dsl_1_1"}
               ]
             }
