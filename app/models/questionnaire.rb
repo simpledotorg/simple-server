@@ -11,7 +11,6 @@ class Questionnaire < ApplicationRecord
     message: "has already been taken for given questionnaire_type",
     conditions: -> { active }
   }
-  validate :dsl_version_semver
   validate :validate_layout
 
   scope :active, -> { where(is_active: true) }
@@ -29,12 +28,6 @@ class Questionnaire < ApplicationRecord
 
   def layout_valid?
     JSON::Validator.validate(layout_schema, layout)
-  end
-
-  def dsl_version_semver
-    unless /^[0-9]+.[0-9]+$/ === dsl_version || /^[0-9]+$/ === dsl_version
-      errors.add(:dsl_version, "should be a Semver of pattern X.Y where X & Y are integers")
-    end
   end
 
   def validate_layout
@@ -57,7 +50,7 @@ class Questionnaire < ApplicationRecord
               Api::V4::Models::Questionnaires::DSLVersion1_1
             else
               raise StandardError.new "DSL Version #{dsl_version} is not supported"
-            end
+    end
     model.view_group.merge(definitions: Api::V4::Schema.all_definitions)
   end
 

@@ -23,14 +23,6 @@ RSpec.describe Questionnaire, type: :model do
       }.to change { Questionnaire.count }.by 3
     end
 
-    it "validates DSL version follows X.Y semver" do
-      ["1a", "1.a", "1.", "a1", "a.1", "-1.1", "+2.2", ".1"].each do |dsl_version|
-        expect {
-          create(:questionnaire, dsl_version: dsl_version)
-        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Dsl version should be a Semver of pattern X.Y where X & Y are integers")
-      end
-    end
-
     it "validates the specimen layout for dsl_version_1 using the swagger schema" do
       questionnaire = build(:questionnaire, dsl_version: "1", layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
       expect(questionnaire).to receive(:validate_layout).and_call_original

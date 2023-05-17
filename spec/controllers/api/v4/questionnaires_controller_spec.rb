@@ -135,7 +135,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
     end
 
     it "returns questionnaires with the same major dsl_version uptil given minor version" do
-      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "1.0")
+      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "1")
       create(:questionnaire, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1") # Inactive questionnaire
       questionnaire_11 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1")
 
