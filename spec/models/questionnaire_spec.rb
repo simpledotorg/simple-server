@@ -31,11 +31,22 @@ RSpec.describe Questionnaire, type: :model do
       end
     end
 
-    it "validates the specimen layout using the swagger schema" do
-      questionnaire = build(:questionnaire, layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
+    it "validates the specimen layout for dsl_version_1 using the swagger schema" do
+      questionnaire = build(:questionnaire, dsl_version: 1, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!
+    end
+
+    it "validates the specimen layout for dsl_version_2 using the swagger schema" do
+      questionnaire = build(:questionnaire, dsl_version: 2, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version2)
+      expect(questionnaire).to receive(:validate_layout).and_call_original
+
+      questionnaire.save!
+    end
+
+    it "raises error for unsupported dsl_version" do
+      expect { FactoryBot.create(:questionnaire, dsl_version: 100, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1) }.to raise_error(StandardError, "DSL Version 100 is not supported")
     end
 
     it "ensures IDs are generated before validation" do
