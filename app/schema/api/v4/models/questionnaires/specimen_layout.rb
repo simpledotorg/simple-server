@@ -85,7 +85,7 @@ class Api::V4::Models::Questionnaires::SpecimenLayout
       }
     end
 
-    def dsl_version2
+    def dsl_version1_1
       {
         id: "2e8ce537-616c-4c4c-a651-ad065d05f220",
         type: "group",

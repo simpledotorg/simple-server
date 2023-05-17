@@ -2748,7 +2748,7 @@
         "layout": {
           "oneOf": [
             {
-              "$ref": "#/definitions/questionnaire_view_group_dsl_2"
+              "$ref": "#/definitions/questionnaire_view_group_dsl_1_1"
             },
             {
               "$ref": "#/definitions/questionnaire_view_group_dsl_1"
@@ -3094,7 +3094,7 @@
         "validations"
       ]
     },
-    "questionnaire_view_group_dsl_2": {
+    "questionnaire_view_group_dsl_1_1": {
       "type": "object",
       "example": {
         "id": "2e8ce537-616c-4c4c-a651-ad065d05f220",
@@ -3242,19 +3242,19 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_display_dsl_2"
+                "$ref": "#/definitions/questionnaire_display_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_unordered_list_view_group_dsl_2"
+                "$ref": "#/definitions/questionnaire_unordered_list_view_group_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_line_break_dsl_2"
+                "$ref": "#/definitions/questionnaire_line_break_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_input_view_group_dsl_2"
+                "$ref": "#/definitions/questionnaire_input_view_group_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_radio_view_group_dsl_2"
+                "$ref": "#/definitions/questionnaire_radio_view_group_dsl_1_1"
               }
             ]
           }
@@ -3267,7 +3267,7 @@
         "item"
       ]
     },
-    "questionnaire_display_dsl_2": {
+    "questionnaire_display_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3298,7 +3298,7 @@
         "view_type"
       ]
     },
-    "questionnaire_line_break_dsl_2": {
+    "questionnaire_line_break_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3324,7 +3324,7 @@
         "view_type"
       ]
     },
-    "questionnaire_unordered_list_view_group_dsl_2": {
+    "questionnaire_unordered_list_view_group_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3347,7 +3347,7 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_unordered_list_item_dsl_2"
+                "$ref": "#/definitions/questionnaire_unordered_list_item_dsl_1_1"
               }
             ]
           }
@@ -3360,7 +3360,7 @@
         "item"
       ]
     },
-    "questionnaire_unordered_list_item_dsl_2": {
+    "questionnaire_unordered_list_item_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3397,7 +3397,7 @@
         "text"
       ]
     },
-    "questionnaire_radio_view_group_dsl_2": {
+    "questionnaire_radio_view_group_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3423,7 +3423,7 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_radio_button_dsl_2"
+                "$ref": "#/definitions/questionnaire_radio_button_dsl_1_1"
               }
             ]
           }
@@ -3437,7 +3437,7 @@
         "item"
       ]
     },
-    "questionnaire_radio_button_dsl_2": {
+    "questionnaire_radio_button_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3466,7 +3466,7 @@
         "text"
       ]
     },
-    "questionnaire_input_view_group_dsl_2": {
+    "questionnaire_input_view_group_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3489,10 +3489,10 @@
           "items": {
             "oneOf": [
               {
-                "$ref": "#/definitions/questionnaire_integer_input_dsl_2"
+                "$ref": "#/definitions/questionnaire_integer_input_dsl_1_1"
               },
               {
-                "$ref": "#/definitions/questionnaire_string_input_dsl_2"
+                "$ref": "#/definitions/questionnaire_string_input_dsl_1_1"
               }
             ]
           }
@@ -3505,7 +3505,7 @@
         "item"
       ]
     },
-    "questionnaire_integer_input_dsl_2": {
+    "questionnaire_integer_input_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {
@@ -3554,7 +3554,7 @@
         "validations"
       ]
     },
-    "questionnaire_string_input_dsl_2": {
+    "questionnaire_string_input_dsl_1_1": {
       "type": "object",
       "properties": {
         "type": {

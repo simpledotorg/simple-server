@@ -32,14 +32,14 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "validates the specimen layout for dsl_version_1 using the swagger schema" do
-      questionnaire = build(:questionnaire, dsl_version: 1, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
+      questionnaire = build(:questionnaire, dsl_version: "1", layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!
     end
 
-    it "validates the specimen layout for dsl_version_2 using the swagger schema" do
-      questionnaire = build(:questionnaire, dsl_version: 2, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version2)
+    it "validates the specimen layout for dsl_version_1_1 using the swagger schema" do
+      questionnaire = build(:questionnaire, dsl_version: "1.1", layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1_1)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!

@@ -15,7 +15,7 @@ module Seed
                         dsl_version: 2,
                         is_active: true,
                         metadata: "supplies_reports, specimen-seed",
-                        layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version2)
+                        layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1_1)
 
       (1..3).map do |n|
         QuestionnaireResponses::PreFillMonthlyScreeningReports.call(n.month.ago)

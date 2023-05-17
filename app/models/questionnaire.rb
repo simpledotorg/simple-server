@@ -51,12 +51,12 @@ class Questionnaire < ApplicationRecord
 
   def layout_schema
     case dsl_version
-    when 1
+    when "1"
       Api::V4::Models::Questionnaires::DSLVersion1.view_group.merge(
         definitions: Api::V4::Schema.all_definitions
       )
-    when 2
-      Api::V4::Models::Questionnaires::DSLVersion2.view_group.merge(
+    when "1.1"
+      Api::V4::Models::Questionnaires::DSLVersion1_1.view_group.merge(
         definitions: Api::V4::Schema.all_definitions
       )
     else
