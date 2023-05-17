@@ -446,12 +446,13 @@ si-LK:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} හි ලියාපදිංචි වී ඇත"
         cohort_bar_tooltip: "%{threshold} සමඟ %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "පුරුෂ"
     female: "ස්ත්‍රී"
     transgender: "සංක්‍රාන්ති"
     total: "එකතුව"
-    yes: "ඔව්"
-    no: "නැත"
+    yes_lc: "ඔව්"
+    no_lc: "නැත"
     comments: "අදහස්"
     instruction_1: "ඔබ ප්‍රමාණයක් නොදන්නේ නම් හිස්ව තබන්න"
     instruction_2: 'තොග අවසන්ව ඇතිනම් "0" ඇතුලත් කරන්න'

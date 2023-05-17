@@ -446,12 +446,13 @@ sid-ET:
         cohort_subtitle: "%{number_of_patients} \n%{patient_or_patients} borreessantinori \n%{registration_period}"
         cohort_bar_tooltip: "%{total_patients} \n%{patient_or_patients} ledo \n%{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "Labbaaha"
     female: "Meyaa beeetto"
     transgender: "lamenka koo/te "
     total: "Xaphooma"
-    yes: "Ee"
-    no: "Dee'ni"
+    yes_lc: "Ee"
+    no_lc: "Dee'ni"
     comments: "Hedubba"
     instruction_1: "Bikka afa hoogginiro fano agurtine sa'e"
     instruction_2: 'Kuuso gooffiniro "0" borreesse'

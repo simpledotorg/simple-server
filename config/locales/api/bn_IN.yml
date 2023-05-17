@@ -446,12 +446,13 @@ bn-IN:
         cohort_subtitle: "%{registration_period}-এ রেজিস্টার করা %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} থাকা %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
     total: "মোট"
-    yes: "হ্যাঁ"
-    no: "না"
+    yes_lc: "হ্যাঁ"
+    no_lc: "না"
     comments: "কমেন্ট"
     instruction_1: "আপনি পরিমাণ না জানলে খালি রাখুন"
     instruction_2: 'স্টক না থাকলে "0" লিখুন'

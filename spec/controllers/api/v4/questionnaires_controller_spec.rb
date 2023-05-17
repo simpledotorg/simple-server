@@ -135,7 +135,9 @@ describe Api::V4::QuestionnairesController, type: :controller do
     end
 
     it "returns questionnaires with the same major dsl_version uptil given minor version" do
-      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "1.0")
+      allow_any_instance_of(Questionnaire).to receive(:validate_layout)
+
+      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "1")
       create(:questionnaire, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1") # Inactive questionnaire
       questionnaire_11 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1")
 
@@ -151,6 +153,8 @@ describe Api::V4::QuestionnairesController, type: :controller do
     end
 
     it "de-duplicates multiple questionnaires of same type by choosing latest DSL version" do
+      allow_any_instance_of(Questionnaire).to receive(:validate_layout)
+
       create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.0")
       create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.1")
       questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.2")
