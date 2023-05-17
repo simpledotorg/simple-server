@@ -4,21 +4,17 @@ blocks:
   - name: Deploy to Bangladesh Demo
     task:
       secrets:
-        - name: semaphore-deploy-key
         - name: sentry-release-auth-token
+        - name: argocd
       jobs:
         - name: Deploy to Bangladesh Demo
           commands:
             - checkout
-            - deploy_target=bangladesh:demo script/semaphore_deploy
-      prologue:
-        commands:
-          - chmod 600 ~/.ssh/semaphore_id_rsa
-          - ssh-add ~/.ssh/semaphore_id_rsa
+            - script/argocd_deployment.sh $BD_STAGING_ARGOCD_ENDPOINT $ARGOCD_USERNAME $BD_STAGING_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
 promotions:
   - name: Bangladesh Production Deployment
     pipeline_file: bangladesh_production_deployment.yml
