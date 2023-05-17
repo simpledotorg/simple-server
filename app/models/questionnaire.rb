@@ -2,7 +2,8 @@ class Questionnaire < ApplicationRecord
   has_many :questionnaire_responses
 
   enum questionnaire_type: {
-    monthly_screening_reports: "monthly_screening_reports"
+    monthly_screening_reports: "monthly_screening_reports",
+    monthly_supplies_reports: "monthly_supplies_reports"
   }
 
   validates :dsl_version, uniqueness: {
@@ -49,10 +50,15 @@ class Questionnaire < ApplicationRecord
   private
 
   def layout_schema
-    # TODO: When dsl_version is incremented, insert a switch here.
-    Api::V4::Models::Questionnaires::Version1.view_group.merge(
-      definitions: Api::V4::Schema.all_definitions
-    )
+    model = case dsl_version
+            when "1"
+              Api::V4::Models::Questionnaires::DSLVersion1
+            when "1.1"
+              Api::V4::Models::Questionnaires::DSLVersion1Dot1
+            else
+              raise StandardError.new "DSL Version #{dsl_version} is not supported"
+    end
+    model.view_group.merge(definitions: Api::V4::Schema.all_definitions)
   end
 
   def apply_recursively_to_layout(sub_layout, &blk)
