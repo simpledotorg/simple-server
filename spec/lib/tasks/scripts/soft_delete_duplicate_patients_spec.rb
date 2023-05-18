@@ -31,11 +31,20 @@ RSpec.describe SoftDeleteDuplicatePatients do
         .map { |patient| patient["Simple Patient ID"] }
     end
     let!(:patient_ids_to_delete) { described_class.parse(file_path) }
-    let!(:patients) { patient_ids.map { |id| create(:patient, id: id) } }
 
-    it "should discard all patients given their ids" do
+    it "discards all patients given their IDs" do
+      patient_ids.map { |id| create(:patient, id: id) }
+
       expect { described_class.discard_patients(patient_ids_to_delete) }.to change { Patient.count }.from(5).to(3)
       expect(Patient.unscoped.count).to eq(5)
+    end
+
+    it "sets the discard reason for all deleted IDs to 'duplicate'" do
+      patient_ids_to_delete.map { |id| create(:patient, id: id) }
+
+      discarded_patients = described_class.discard_patients(patient_ids_to_delete)
+
+      expect(discarded_patients.pluck(:deleted_reason)).to all eq("duplicate")
     end
   end
 end

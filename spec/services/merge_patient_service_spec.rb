@@ -51,15 +51,43 @@ RSpec.describe MergePatientService, type: :model do
       end
     end
 
-    it "should discard_data when deleted_at exists and the patient is not already deleted" do
-      patient = create(:patient)
-      now = Time.current
-      # set the updated_at so that it is treated as an update
-      patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
-      payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+    context "when deleted_at exists in payload" do
+      it "calls discard_data if the patient is not already deleted" do
+        patient = create(:patient)
+        now = Time.current
+        # set the updated_at so that it is treated as an update
+        patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
+        payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
 
-      expect_any_instance_of(Patient).to receive(:discard_data)
-      described_class.new(payload, request_metadata: metadata).merge
+        expect_any_instance_of(Patient).to receive(:discard_data)
+        described_class.new(payload, request_metadata: metadata).merge
+      end
+
+      it "does not call discard_data if the patient is already deleted" do
+        patient = create(:patient)
+        now = Time.current
+        # set the updated_at so that it is treated as an update
+        patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
+        payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+        # ensuring that the patient to merge with is already deleted
+        Patient.find_by(id: payload["id"]).then { |p| p.update(deleted_at: now - 3.hours) }
+
+        expect_any_instance_of(Patient).not_to receive(:discard_data)
+        described_class.new(payload, request_metadata: metadata).merge
+      end
+
+      it "preserves the existing deleted_reason after merge" do
+        patient = create(:patient, deleted_reason: "duplicate")
+        now = Time.current
+        # set the updated_at so that it is treated as an update
+        patient_attributes = build_patient_payload(patient).merge(updated_at: now, deleted_at: now)
+        payload = Api::V3::PatientTransformer.from_nested_request(patient_attributes)
+
+        expect_any_instance_of(Patient).to receive(:discard_data)
+        merged_patient = described_class.new(payload, request_metadata: metadata).merge
+
+        expect(merged_patient.deleted_reason).to eq("duplicate")
+      end
     end
 
     it "touches the patient if patient associations are updated" do
