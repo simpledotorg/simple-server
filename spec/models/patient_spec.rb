@@ -666,6 +666,18 @@ describe Patient, type: :model do
   end
 
   context ".discard_data" do
+    it "adds a default deleted reason of 'unknown'" do
+      patient = create(:patient)
+      patient.discard_data
+      expect(patient.deleted_reason).to eq "unknown"
+    end
+
+    it "adds a deleted reason" do
+      patient = create(:patient)
+      patient.discard_data(deleted_reason: "accidental_registration")
+      expect(patient.deleted_reason).to eq "accidental_registration"
+    end
+
     it "soft deletes the patient's encounters" do
       patient = create(:patient)
       create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
@@ -739,13 +751,19 @@ describe Patient, type: :model do
       expect(Address.where(id: patient.address_id)).to be_empty
     end
 
-    it "soft deleted the patient's teleconsultations" do
+    it "soft deletes the patient's teleconsultations" do
       patient = create(:patient)
       user = patient.registration_user
       create_list(:teleconsultation, 2, patient: patient, requester: user, medical_officer: user, requested_medical_officer: user)
       patient.discard_data
 
       expect(Teleconsultation.where(patient: patient)).to be_empty
+    end
+
+    it "soft deletes the patient itself" do
+      patient = create(:patient)
+      patient.discard_data
+      expect(patient.deleted_at).not_to be_nil
     end
   end
 end
