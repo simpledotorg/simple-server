@@ -224,8 +224,9 @@ class Patient < ApplicationRecord
      gender: gender}
   end
 
-  def discard_data
+  def discard_data(deleted_reason: "unknown")
     ActiveRecord::Base.transaction do
+      update(deleted_reason: deleted_reason)
       address&.discard
       appointments.discard_all
       blood_pressures.discard_all
