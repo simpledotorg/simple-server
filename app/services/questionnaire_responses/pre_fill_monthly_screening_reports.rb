@@ -1,7 +1,5 @@
 class QuestionnaireResponses::PreFillMonthlyScreeningReports
   def self.call(date = 1.month.ago)
-    return unless Flipper.enabled?(:monthly_screening_reports)
-
     month_date = date.beginning_of_month
     month_date_str = month_date.strftime("%Y-%m-%d")
     facility_reports = monthly_followup_and_registration(month_date_str)

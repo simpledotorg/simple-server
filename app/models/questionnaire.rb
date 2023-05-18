@@ -50,15 +50,11 @@ class Questionnaire < ApplicationRecord
   private
 
   def layout_schema
-    model = case dsl_version
-            when "1"
-              Api::V4::Models::Questionnaires::DSLVersion1
-            when "1.1"
-              Api::V4::Models::Questionnaires::DSLVersion1Dot1
-            else
-              raise StandardError.new "DSL Version #{dsl_version} is not supported"
-    end
-    model.view_group.merge(definitions: Api::V4::Schema.all_definitions)
+    layout_definitions = {
+      "1" => Api::V4::Models::Questionnaires::DSLVersion1,
+      "1.1" => Api::V4::Models::Questionnaires::DSLVersion1Dot1
+    }
+    layout_definitions.fetch(dsl_version).view_group.merge(definitions: Api::V4::Schema.all_definitions)
   end
 
   def apply_recursively_to_layout(sub_layout, &blk)

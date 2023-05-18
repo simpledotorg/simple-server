@@ -48,7 +48,7 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "raises error for unsupported dsl_version" do
-      expect { FactoryBot.create(:questionnaire, dsl_version: 100, layout: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1) }.to raise_error(StandardError, "DSL Version 100 is not supported")
+      expect { FactoryBot.create(:questionnaire, dsl_version: 100) }.to raise_error(StandardError)
     end
 
     it "ensures IDs are generated before validation" do
