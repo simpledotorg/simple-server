@@ -636,6 +636,8 @@ GEM
       rubocop (= 1.24.1)
       rubocop-performance (= 1.13.1)
     table_print (1.5.7)
+    terser (1.1.15)
+      execjs (>= 0.3.0, < 3)
     thor (1.2.1)
     tilt (2.0.11)
     timecop (0.9.5)
@@ -806,6 +808,7 @@ DEPENDENCIES
   stackprof
   standard (= 1.6.0)
   table_print
+  terser (~> 1.1)
   timecop (~> 0.9.0)
   twilio-ruby (~> 5.62)
   uuidtools

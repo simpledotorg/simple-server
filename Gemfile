@@ -83,6 +83,7 @@ gem "sidekiq-unique-jobs"
 gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
+gem "terser", "~> 1.1"
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.62"
 gem "uuidtools", require: false
