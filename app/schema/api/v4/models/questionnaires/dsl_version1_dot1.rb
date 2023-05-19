@@ -16,7 +16,7 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot1
     def view_group
       {
         type: :object,
-        example: Api::V4::Models::Questionnaires::SpecimenLayout.dsl_version1_1,
+        example: Api::V4::Models::Questionnaires::SpecimenLayout::DSLVERSION1DOT1,
         properties: {
           type: {type: :string, enum: %w[group]},
           id: {"$ref" => "#/definitions/uuid"},

@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
+RSpec.describe QuestionnaireResponses::MonthlyScreeningReports do
   let(:user) { create(:user) }
   let(:facility) { create(:facility) }
   let(:month_date) { Time.now.beginning_of_month - 1.month }
@@ -18,9 +18,9 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
     refresh_views
   end
 
-  describe "#call" do
+  describe "#pre_fill" do
     it "[India] pre-fills monthly screening reports for previous month" do
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call
+      QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
       date = 1.month.ago.beginning_of_month
       questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
@@ -43,7 +43,7 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
     it "[Ethiopia] pre-fills monthly screening reports for previous month" do
       current_country = Rails.application.config.country
       Rails.application.config.country = CountryConfig.for("ET")
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call
+      QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
       date = 1.month.ago.beginning_of_month
       questionnaire_response = QuestionnaireResponse.find_by_facility_id(facility)
@@ -65,7 +65,7 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
       existing_content = {"month_date" => month_date.strftime("%Y-%m-%d")}
       existing_monthly_screening_report = create(:questionnaire_response, facility: facility, content: existing_content)
 
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call
+      QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
       expect(QuestionnaireResponse.where(facility: facility).count).to eq(1)
       expect(QuestionnaireResponse.find_by_facility_id(facility)).to eq(existing_monthly_screening_report)
@@ -75,7 +75,7 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
       create(:questionnaire, :active, dsl_version: "1")
       latest_questionnaire = Questionnaire.find_by_dsl_version("1.1")
 
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call
+      QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
       expect(QuestionnaireResponse.find_by_facility_id(facility).questionnaire).to eq(latest_questionnaire)
     end
@@ -86,7 +86,7 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
       create(:questionnaire_response, questionnaire: questionnaire, facility: facility, content: existing_content)
       expect(QuestionnaireResponse.where(facility: facility).count).to eq(1)
 
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call
+      QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
       expect(QuestionnaireResponse.where(facility: facility).count).to eq(2)
       expect(QuestionnaireResponse.where(facility: facility).merge(Questionnaire.monthly_screening_reports).joins(:questionnaire).count).to eq(1)
@@ -100,7 +100,7 @@ RSpec.describe QuestionnaireResponses::PreFillMonthlyScreeningReports do
       refresh_views
 
       date = three_months_ago.beginning_of_month
-      QuestionnaireResponses::PreFillMonthlyScreeningReports.call(date)
+      QuestionnaireResponses::MonthlyScreeningReports.new(date).pre_fill
 
       expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(
         {

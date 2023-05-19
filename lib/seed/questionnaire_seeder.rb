@@ -18,8 +18,8 @@ module Seed
         layout: supplies_reports_seed_layout)
 
       (1..3).map do |n|
-        QuestionnaireResponses::PreFillMonthlyScreeningReports.call(n.month.ago)
-        QuestionnaireResponses::InitializeMonthlySuppliesReports.call(n.month.ago)
+        QuestionnaireResponses::MonthlyScreeningReports.new(n.month.ago).pre_fill
+        QuestionnaireResponses::MonthlySuppliesReports.new(n.month.ago).seed
       end
     end
 
