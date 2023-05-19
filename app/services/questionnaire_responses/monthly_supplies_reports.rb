@@ -2,14 +2,14 @@ class QuestionnaireResponses::MonthlySuppliesReports
   def initialize(date = 1.month.ago)
     @month_date = date.beginning_of_month
     @facility_ids = Facility.select("id").pluck(:id)
-    @questionnaire = latest_active_supplies_reports_questionnaire
+    @questionnaire_id = latest_active_supplies_reports_questionnaire_id
   end
 
   def seed
     @facility_ids.each do |facility_id|
       unless monthly_supplies_report_exists?(facility_id)
         QuestionnaireResponse.create!(
-          questionnaire_id: @questionnaire.id,
+          questionnaire_id: @questionnaire_id,
           facility_id: facility_id,
           content: supplies_report_content,
           device_created_at: @month_date,
@@ -19,8 +19,8 @@ class QuestionnaireResponses::MonthlySuppliesReports
     end
   end
 
-  def latest_active_supplies_reports_questionnaire
-    Questionnaire.monthly_supplies_reports.active.order(dsl_version: :desc).first
+  def latest_active_supplies_reports_questionnaire_id
+    Questionnaire.monthly_supplies_reports.active.order(dsl_version: :desc).first.id
   end
 
   def monthly_supplies_report_exists?(facility_id)

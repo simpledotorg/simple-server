@@ -48,8 +48,8 @@ RSpec.describe QuestionnaireResponses::MonthlySuppliesReports do
     it "returns latest active questionnaire" do
       _questionnaire_lower_version = create(:questionnaire, :active, dsl_version: "1", questionnaire_type: monthly_supplies_reports)
 
-      expect(QuestionnaireResponses::MonthlySuppliesReports.new.latest_active_supplies_reports_questionnaire)
-        .to eq(questionnaire)
+      expect(QuestionnaireResponses::MonthlySuppliesReports.new.latest_active_supplies_reports_questionnaire_id)
+        .to eq(questionnaire.id)
     end
   end
 

@@ -2,14 +2,14 @@ class QuestionnaireResponses::MonthlyScreeningReports
   def initialize(date = 1.month.ago)
     @month_date = date.beginning_of_month
     @facility_reports = monthly_followup_and_registration
-    @questionnaire = latest_active_screening_reports_questionnaire
+    @questionnaire_id = latest_active_screening_reports_questionnaire_id
   end
 
   def pre_fill
     @facility_reports.each do |facility_report|
       unless monthly_screening_report_exists?(facility_report.facility_id)
         QuestionnaireResponse.create!(
-          questionnaire_id: @questionnaire.id,
+          questionnaire_id: @questionnaire_id,
           facility_id: facility_report.facility_id,
           content: prefilled_responses(month_date_str, facility_report),
           device_created_at: @month_date,
@@ -41,8 +41,8 @@ class QuestionnaireResponses::MonthlyScreeningReports
     ).load
   end
 
-  def latest_active_screening_reports_questionnaire
-    Questionnaire.monthly_screening_reports.active.order(:dsl_version).last
+  def latest_active_screening_reports_questionnaire_id
+    Questionnaire.monthly_screening_reports.active.order(dsl_version: :desc).first.id
   end
 
   def monthly_screening_report_exists?(facility_id)
