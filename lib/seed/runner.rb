@@ -79,6 +79,7 @@ module Seed
         :dashboard_progress_reports,
         :drug_stocks,
         :monthly_screening_reports,
+        :monthly_supplies_reports,
         :follow_ups_v2_progress_tab,
         :notifications,
         (:auto_approve_users if SimpleServer.env.android_review? || SimpleServer.env.review?),

@@ -446,12 +446,13 @@ am-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} በ %{registration_period} የተመዘገቡ"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} የ %{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "ወንድ"
     female: "ሴት"
     transgender: "ወንዳገረድ"
     total: "ጠቅላላ"
-    yes: "አዎ"
-    no: "አይ"
+    yes_lc: "አዎ"
+    no_lc: "አይ"
     comments: "አስተያየቶች"
     instruction_1: "መጠኑን ካላወቁ ባዶውን ይተዉት"
     instruction_2: 'በክምችት ውስጥ ከሌለ "0" ያስገቡ'
