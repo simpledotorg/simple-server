@@ -6,12 +6,8 @@ class QuestionnaireResponses::MonthlySuppliesReports
   end
 
   def seed
-    reports_exist = false
-
     @facility_ids.each do |facility_id|
-      if monthly_supplies_report_exists?(facility_id)
-        reports_exist = true
-      else
+      unless monthly_supplies_report_exists?(facility_id)
         QuestionnaireResponse.create!(
           questionnaire_id: @questionnaire.id,
           facility_id: facility_id,
@@ -20,10 +16,6 @@ class QuestionnaireResponses::MonthlySuppliesReports
           device_updated_at: @month_date
         )
       end
-    end
-
-    if reports_exist
-      Rails.logger.warn("Some/all monthly supplies reports already existed during initialization task for month: %s" % month_date_str)
     end
   end
 

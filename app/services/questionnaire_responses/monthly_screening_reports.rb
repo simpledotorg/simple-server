@@ -6,11 +6,8 @@ class QuestionnaireResponses::MonthlyScreeningReports
   end
 
   def pre_fill
-    reports_exist = false
     @facility_reports.each do |facility_report|
-      if monthly_screening_report_exists?(facility_report.facility_id)
-        reports_exist = true
-      else
+      unless monthly_screening_report_exists?(facility_report.facility_id)
         QuestionnaireResponse.create!(
           questionnaire_id: @questionnaire.id,
           facility_id: facility_report.facility_id,
@@ -19,10 +16,6 @@ class QuestionnaireResponses::MonthlyScreeningReports
           device_updated_at: @month_date
         )
       end
-    end
-
-    if reports_exist
-      Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_date_str)
     end
   end
 
