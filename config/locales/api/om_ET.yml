@@ -1,4 +1,4 @@
-om-ET:
+om:
   date:
     month_names: [~, "Amajji", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Muddee"]
     abbr_month_names: [~, "Amajjii", "Guraandhala", "Bitootessa", "Ebla", "Caamsaa", "Waxabajjii", "Adooleessa", "Hagayya", "Fulbaana", "Onkoloolessa", "Sadaasa", "Mud"]
@@ -30,7 +30,7 @@ om-ET:
   analytics:
     page_title: "Xiinxala Dhuunfa"
     updated: "Haaromfameera: %{time}"
-    tap_sync: "Ragaa haaraadhaf \"Sync\"  fuulmanaa irratti cuqaasi."
+    tap_sync: "Ragaa haaraadhaf \"Sync\"  fuulmanaa irratti cuqaasi."
     registered: "Galmaa'eera"
     follow_up: "Hordoffii"
     patient:
@@ -90,7 +90,7 @@ om-ET:
     bp_passport_app_summary:
       new_html: HAARAA!
       heading_html: Appii dhukkubsatoota keetiif
-      contents_1_html: Dhukkubsattootni appii salphaa "BP Passport"  jedhamu fayyyadamuudhaan BPwwan fi sukkaara isaanii ilaaluu ni danda'au.
+      contents_1_html: Dhukkubsattootni appii salphaa "BP Passport"  jedhamu fayyyadamuudhaan BPwwan fi sukkaara isaanii ilaaluu ni danda'au.
       contents_2_html: Dhukkubsatootni kee gara Google Play Store yookan Apple App Store adeemudhaan "BP Passport" akka buufatan taasisi.
       learn_more_html: Caalmaatti bari...
     videos:
@@ -508,7 +508,7 @@ om-ET:
     available_bp_monitors_handheld: "Meeshaalee to’annoo BP jiran dimshaashaan (hand heeld)"
     functioning_bp_monitors_handheld: "Meeshaalee to’annoo BP tajaajila irra jiran walii galaan (hand-heeld)"
     available_blood_glucose_monitors: "Meeshaalee to’annoo Giluukoosii Dhiigaa jiran dimshaashaan"
-    functioning_blood_glucose_monitors: "Meeshaalee to’annoo Giluukoosii Dhiigaa  hojii irra jiran  dimshaashaan"
+    functioning_blood_glucose_monitors: "Meeshaalee to’annoo Giluukoosii Dhiigaa  hojii irra jiran  dimshaashaan"
     # Ethiopia
     bp_monitor: "To’attuu BP"
     glucose_meter: "Safartuu Giluukoosii Dhiigaa"
