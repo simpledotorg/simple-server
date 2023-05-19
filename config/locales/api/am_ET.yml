@@ -1,4 +1,4 @@
-am-ET:
+am_ET:
   date:
     month_names: [~, "ጥር", "የካቲት", "መጋቢት", "ሚያዚያ", "ግንቦት", "ሰኔ", "ሃምሌ", "ነሃሴ", "መስከረም", "ጥቅምት", "ህዳር", "ታህሳስ"]
     abbr_month_names: [~, "ጥር", "የካቲ", "መጋ", "ሚያ", "ግን", "ሰኔ", "ሃም", "ነሃ", "መስከ", "ጥቅም", "ህዳር", "ታህ"]
@@ -428,7 +428,7 @@ am-ET:
         very_uncontrolled_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ ስኳር ታካሚዎች ባለፉት 3 ወራት ውስጥ%{very_uncontrolled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
           help_tooltip:
-            numerator: " \n\n \nባለፉት 3 ወራት ውስጥ %{very_uncontrolled_threshold} የመጨረሻ ጉብኝታቸው ላይ የገቡት የስኳር ህመምተኞች።"
+            numerator: " \n\n \nባለፉት 3 ወራት ውስጥ %{very_uncontrolled_threshold} የመጨረሻ ጉብኝታቸው ላይ የገቡት የስኳር ህመምተኞች።"
             denominator: "ወደ %{facility_name} ተመደቡት የ  ስኳር ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
         missed_visits_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ በ %{facility_name} ምንም ጉብኝት ሳያደርጉ"
