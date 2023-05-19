@@ -446,12 +446,13 @@ ti-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} ዝተመዝገቡ ኣብ %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} ምስ%{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "ወዲ-ተባዕታይ"
     female: "ጓል-አነስተይቲ"
     transgender: "ፆታ-ዝቐየረ"
     total: "ጠቕላላ"
-    yes: "እወ"
-    no: "ኣይፋል"
+    yes_lc: "እወ"
+    no_lc: "ኣይፋል"
     comments: "ርኢቶታት"
     instruction_1: "መጠን ዘይትፈልጡ እንተኾይንኩም ባዶ ግደፉዎ"
     instruction_2: 'መኽዘን እንተተወዲኡ “0”  ኣእቱዉ'

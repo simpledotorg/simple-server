@@ -1,4 +1,4 @@
-bn_BD:
+bn-BD:
   date:
     month_names: [~, "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"]
     abbr_month_names: [~, "জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"]
@@ -446,12 +446,13 @@ bn_BD:
         cohort_subtitle: "%{registration_period}-এ নিবন্ধিত %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} সহ %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
+    empty: ""
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"
     total: "মোট"
-    yes: "হ্যাঁ"
-    no: "না"
+    yes_lc: "হ্যাঁ"
+    no_lc: "না"
     comments: "কমেন্ট"
     instruction_1: "পরিমাণ না জানলে ফাঁকা রাখুন"
     instruction_2: 'স্টক আউট হলে "0" লিখুন'

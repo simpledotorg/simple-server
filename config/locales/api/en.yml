@@ -446,12 +446,13 @@ en:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
   questionnaire_layout:
+    empty: ""
     male: "Male"
     female: "Female"
     transgender: "Transgender"
     total: "Total"
-    yes: "Yes"
-    no: "No"
+    yes_lc: "Yes"
+    no_lc: "No"
     comments: "Comments"
     instruction_1: "Leave blank if you don't know an amount"
     instruction_2: 'Enter "0" if stock is out'
