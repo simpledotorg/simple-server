@@ -112,6 +112,7 @@ group :development, :test do
   gem "rswag-specs"
   gem "shoulda-matchers", "~> 5.1.0"
   gem "standard", "1.6.0", require: false
+  gem "terser", '~> 1.1'
 end
 
 group :development, :test, :profiling do
