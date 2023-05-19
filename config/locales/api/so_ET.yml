@@ -1,4 +1,4 @@
-so-ET:
+so:
   date:
     month_names: [~, "Janaayo ", "Febraayo ", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoobar", "Noofember", "Diseember"]
     abbr_month_names: [~, "Janaayo", "Febraayo", "Maarso", "Abriil", "Maay", "Juun", "Julaay", "Agoosto", "Sebteember", "Oktoober", "Noofember", "Diseember"]
@@ -332,7 +332,7 @@ so-ET:
       subtitle: "Waxa aad weli eegi kartaa warbixinaha hore"
     update_required_card:
       title: "Cusboonaysiin ayaa loo baahan yahay"
-      subtitle: "Cusboonaysii app-ka si aad u aragto warbixintan"
+      subtitle: "Cusboonaysii app-ka si aad u aragto warbixintan"
     diagnoses:
       all: "Dhamaan dhiigarka iyo macaanka"
       hypertension: "Dhiikar"
