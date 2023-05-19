@@ -122,10 +122,10 @@ end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
   if Flipper.enabled?(:monthly_screening_reports)
-    runner "QuestionnaireResponses::PreFillMonthlyScreeningReports.call"
+    runner "QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill"
   end
   if Flipper.enabled?(:monthly_supplies_reports)
-    runner "QuestionnaireResponses::InitializeMonthlySuppliesReports.call"
+    runner "QuestionnaireResponses::MonthlySuppliesReports.new.seed"
   end
 end
 
