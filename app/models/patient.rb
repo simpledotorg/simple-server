@@ -14,7 +14,9 @@ class Patient < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
 
-  enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
+  enum status: STATUSES.zip(STATUSES).to_h.with_indifferent_access, _prefix: true
+
+  enum deleted_reason: DELETED_REASONS.zip(DELETED_REASONS).to_h, _prefix: true
 
   enum reminder_consent: {
     granted: "granted",
@@ -224,9 +226,9 @@ class Patient < ApplicationRecord
      gender: gender}
   end
 
-  def discard_data(deleted_reason: "unknown")
+  def discard_data(reason:)
     ActiveRecord::Base.transaction do
-      update(deleted_reason: deleted_reason)
+      update(deleted_reason: reason)
       address&.discard
       appointments.discard_all
       blood_pressures.discard_all
