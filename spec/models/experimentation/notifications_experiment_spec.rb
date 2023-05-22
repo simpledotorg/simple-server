@@ -495,7 +495,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
         subject: nil)
       membership = create(:treatment_group_membership, treatment_group: treatment_group, status: :evicted, patient: patient)
       membership.record_notification(reminder_template.id, notification)
-      patient.discard_data
+      patient.discard_data(reason: :duplicate)
 
       experiment.record_notification_results
     end
