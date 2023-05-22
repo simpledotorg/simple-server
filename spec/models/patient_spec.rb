@@ -666,15 +666,9 @@ describe Patient, type: :model do
   end
 
   context ".discard_data" do
-    it "adds a default deleted reason of 'unknown'" do
-      patient = create(:patient)
-      patient.discard_data
-      expect(patient.deleted_reason).to eq "unknown"
-    end
-
     it "adds a deleted reason" do
       patient = create(:patient)
-      patient.discard_data(deleted_reason: "accidental_registration")
+      patient.discard_data(reason: "accidental_registration")
       expect(patient.deleted_reason).to eq "accidental_registration"
     end
 
@@ -682,7 +676,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(Encounter.where(patient: patient)).to be_empty
     end
 
@@ -690,7 +684,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       encounter_ids = Encounter.with_discarded.where(patient: patient).pluck(:id)
       expect(Observation.where(encounter_id: encounter_ids)).to be_empty
     end
@@ -699,7 +693,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:blood_pressure, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(BloodPressure.where(patient: patient)).to be_empty
     end
 
@@ -707,7 +701,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:blood_sugar, 2, :with_encounter, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(BloodSugar.where(patient: patient)).to be_empty
     end
 
@@ -715,7 +709,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:appointment, 2, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(Appointment.where(patient: patient)).to be_empty
     end
 
@@ -723,31 +717,31 @@ describe Patient, type: :model do
       patient = create(:patient)
       create_list(:prescription_drug, 2, patient: patient, user: patient.registration_user, facility: patient.registration_facility)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(PrescriptionDrug.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's business identifiers" do
       patient = create(:patient)
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(PatientBusinessIdentifier.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's phone numbers" do
       patient = create(:patient)
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(PatientPhoneNumber.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's medical history" do
       patient = create(:patient)
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(MedicalHistory.where(patient: patient)).to be_empty
     end
 
     it "soft deletes the patient's address" do
       patient = create(:patient)
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
       expect(Address.where(id: patient.address_id)).to be_empty
     end
 
@@ -755,7 +749,7 @@ describe Patient, type: :model do
       patient = create(:patient)
       user = patient.registration_user
       create_list(:teleconsultation, 2, patient: patient, requester: user, medical_officer: user, requested_medical_officer: user)
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
 
       expect(Teleconsultation.where(patient: patient)).to be_empty
     end
@@ -763,7 +757,7 @@ describe Patient, type: :model do
     it "soft deletes the patient itself" do
       patient = create(:patient)
 
-      patient.discard_data
+      patient.discard_data(reason: "duplicate")
 
       expect(patient.deleted_at).not_to be_nil
     end
