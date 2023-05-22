@@ -55,7 +55,7 @@ module PatientDeduplication
         track(Patient, patient, new_patient)
       end
       @patients.map do |p|
-        p.discard_data(deleted_reason: "duplicate")
+        p.discard_data(reason: :duplicate)
       end
     end
 
