@@ -186,7 +186,9 @@ RSpec.describe CohortAnalyticsQuery do
       end
 
       it "does not count discarded patients" do
-        jan_patients_1[0..2].each(&:discard_data)
+        jan_patients_1[0..2].each do |p|
+          p.discard_data(reason: nil)
+        end
         analytics = CohortAnalyticsQuery.new(facility_group, period: :month, prev_periods: 3, from_time: report_end)
         counts = analytics.patient_counts(cohort_start, cohort_end, report_start, report_end).deep_symbolize_keys
         expect(counts[:cohort_patients][:total]).to eq(14)
