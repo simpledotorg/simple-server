@@ -357,7 +357,7 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
       it "doesn't update soft deleted patient's attributes" do
         existing_patient_name = existing_patient.full_name
 
-        existing_patient.discard_data
+        existing_patient.discard_data(reason: "unknown")
 
         update_payload_for_discarded_patient =
           build_payload.call(existing_patient).merge(full_name: "Test Patient Name Xcad7asd")
