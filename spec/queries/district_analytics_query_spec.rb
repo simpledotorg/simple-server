@@ -208,7 +208,7 @@ RSpec.describe DistrictAnalyticsQuery do
         create(:bp_with_encounter, patient: patients.second, facility: facility_2, user: user)
       end
 
-      patients.first.discard_data
+      patients.first.discard_data(reason: nil)
       refresh_views
     end
 

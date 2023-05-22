@@ -15,7 +15,7 @@ def parse_process_token(response_body)
 end
 
 def discard_patient(record)
-  record.instance_of?(Patient) ? record.discard_data : record.patient.discard_data
+  record.instance_of?(Patient) ? record.discard_data(reason: nil) : record.patient.discard_data(reason: nil)
 end
 
 RSpec.shared_examples "a sync controller that authenticates user requests: sync_from_user" do

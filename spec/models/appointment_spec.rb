@@ -206,7 +206,7 @@ describe Appointment, type: :model do
     let!(:discarded_overdue_appointment) { create(:appointment, :overdue, patient: discard_patient) }
 
     it "shouldn't include discarded patients' appointments " do
-      discard_patient.discard_data
+      discard_patient.discard_data(reason: "unknown")
 
       expect(Appointment.overdue).to include(overdue_appointment)
       expect(Appointment.overdue).not_to include(discarded_overdue_appointment)
