@@ -21,6 +21,8 @@ module SoftDeleteDuplicatePatients
   end
 
   def self.discard_patients(patient_ids)
-    Patient.where(id: patient_ids).map { |p| p.discard_data(deleted_reason: "duplicate") }
+    Patient.where(id: patient_ids).map do |patient|
+      patient.discard_data(reason: :duplicate)
+    end
   end
 end
