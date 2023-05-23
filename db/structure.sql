@@ -4584,7 +4584,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
             appointments.scheduled_date AS previous_appointment_schedule_date
            FROM (public.reporting_patient_states rps
              LEFT JOIN public.appointments ON (((appointments.patient_id = rps.patient_id) AND (appointments.device_created_at < rps.month_date))))
-          WHERE ((rps.status)::text <> 'dead'::text)
+          WHERE (((rps.status)::text <> 'dead'::text) AND (rps.month_date > (now() - '2 years'::interval)))
           ORDER BY rps.patient_id, rps.month_date, appointments.device_created_at DESC
         ), patients_with_appointments_and_visits AS (
          SELECT DISTINCT ON (patients_with_appointments.patient_id, patients_with_appointments.month_date) patients_with_appointments.month_date,
