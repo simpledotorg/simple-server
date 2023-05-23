@@ -29,6 +29,7 @@ WITH patients_with_appointments AS (
     LEFT JOIN appointments ON appointments.patient_id = rps.patient_id
         AND appointments.device_created_at < rps.month_date
     WHERE rps.status <> 'dead'
+	AND rps.month_date > NOW() - INTERVAL '24 months'
     ORDER BY
         rps.patient_id,
         rps.month_date,
