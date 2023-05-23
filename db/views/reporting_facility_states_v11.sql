@@ -141,7 +141,7 @@ WITH
     monthly_overdue_patients as (
         SELECT assigned_facility_region_id as region_id, month_date,
            COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes')  as overdue_patients,
-           COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue,
+           COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients,
 
                COUNT(*) filter(where has_called = 'yes' and ltfu = 'no') as called,
                COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_called,
@@ -270,17 +270,17 @@ reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_
 reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days AS diabetes_appts_scheduled_32_to_62_days,
 reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days AS diabetes_appts_scheduled_more_than_62_days,
 
--- monthly overdue patients
+-- overdue patients
 monthly_overdue_patients.overdue_patients,
 
-monthly_overdue_patients.filtered_overdue,
+monthly_overdue_patients.filtered_overdue_patients,
 
--- monthly overdue calls made to overdue patients
+-- overdue patients who got a call
 monthly_overdue_patients.called,
 
 monthly_overdue_patients.filtered_called,
 
--- monthly overdue calls grouped by call result
+-- overdue patients grouped by call result
 monthly_overdue_patients.called_with_result_agreed_to_visit,
 
 monthly_overdue_patients.called_with_result_remind_to_call_later,

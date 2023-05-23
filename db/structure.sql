@@ -4074,8 +4074,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
         ), monthly_overdue_patients AS (
          SELECT reporting_overdue_patients.assigned_facility_region_id AS region_id,
             reporting_overdue_patients.month_date,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text))) AS overdue,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text))) AS overdue_patients,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS called,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_called,
             count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS called_with_result_agreed_to_visit,
@@ -4183,8 +4183,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days,
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days,
-    monthly_overdue_patients.overdue,
-    monthly_overdue_patients.filtered_overdue,
+    monthly_overdue_patients.overdue_patients,
+    monthly_overdue_patients.filtered_overdue_patients,
     monthly_overdue_patients.called,
     monthly_overdue_patients.filtered_called,
     monthly_overdue_patients.called_with_result_agreed_to_visit,
@@ -4836,17 +4836,17 @@ COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_more
 
 
 --
--- Name: COLUMN reporting_facility_states.overdue; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.overdue IS 'The total of overdue patients at the facility at the beginning of the reporting month. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.filtered_overdue; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue IS 'The total of overdue patients at the facility at the beginning of the reporting month excluding patients who are removed from overdue list. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month excluding patients who are removed from overdue list. Dead and lost to follow-up patients are excluded.';
 
 
 --
