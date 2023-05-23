@@ -71,7 +71,7 @@ FactoryBot.define do
     end
 
     trait(:without_phone_number) do
-      phone_numbers { nil }
+      phone_numbers { [] }
     end
 
     trait(:with_appointments) do
