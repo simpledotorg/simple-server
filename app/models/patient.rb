@@ -16,6 +16,8 @@ class Patient < ApplicationRecord
 
   enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
 
+  enum deleted_reason: DELETED_REASONS.zip(DELETED_REASONS).to_h, _prefix: true
+
   enum reminder_consent: {
     granted: "granted",
     denied: "denied"
@@ -224,8 +226,9 @@ class Patient < ApplicationRecord
      gender: gender}
   end
 
-  def discard_data
+  def discard_data(reason:)
     ActiveRecord::Base.transaction do
+      update!(deleted_reason: reason)
       address&.discard
       appointments.discard_all
       blood_pressures.discard_all
@@ -239,5 +242,7 @@ class Patient < ApplicationRecord
       teleconsultations.discard_all
       discard
     end
+
+    self
   end
 end
