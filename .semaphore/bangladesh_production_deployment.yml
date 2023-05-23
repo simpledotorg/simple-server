@@ -5,17 +5,13 @@ blocks:
     task:
       secrets:
         - name: sentry-release-auth-token
-        - name: semaphore-deploy-key
+        - name: argocd
       jobs:
         - name: Deploy to Bangladesh Production
           commands:
             - checkout
-            - deploy_target=bangladesh:production script/semaphore_deploy
-      prologue:
-        commands:
-          - chmod 600 ~/.ssh/semaphore_id_rsa
-          - ssh-add ~/.ssh/semaphore_id_rsa
+            - script/argocd_deployment.sh $BD_PROD_ARGOCD_ENDPOINT $ARGOCD_USERNAME $BD_PROD_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
