@@ -431,7 +431,7 @@ Reports = function ({
 
   // goal-line functions
   // - config and calculations
-  function goalLinePlugin(goalValue) {
+  function goalLinePlugin(goalValue, goalDownwards = false) {
     return {
       id: "goalLine",
       beforeDraw: (chart) => {
@@ -455,7 +455,7 @@ Reports = function ({
 
     const goal = calculateGoal(periodValues, goalDownwards);
     const goalLineConfig = {
-      plugins: [goalLinePlugin(goal)],
+      plugins: [goalLinePlugin(goal, goalDownwards)],
     };
     return mergeConfig(config, goalLineConfig);
   }
@@ -613,7 +613,7 @@ Reports = function ({
     ctx.fill();
   }
   
-  function canvasDrawGoalTextBubble(chart, goalValue) {
+  function canvasDrawGoalTextBubble(chart, goalValue, goalDownwards) {
     // draw text
     const ctx = chart.ctx;
     const cornerRadius = 10;
