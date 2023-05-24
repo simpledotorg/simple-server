@@ -471,8 +471,9 @@ Reports = function ({
       "organization",
       "region",
       "division",
-      "districtBD"
+      "districtBD",
     ];
+    // region types present in multiple countries
     if (regionType === 'district' || regionType === 'facility') {
       console.log(regionType+countryAbbreviation);
       return enabledRegions.indexOf(regionType+countryAbbreviation) === -1;
