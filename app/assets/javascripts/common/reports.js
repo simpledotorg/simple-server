@@ -446,7 +446,10 @@ Reports = function ({
 
   const defaultMonthsRequired = 6;
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    if (monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired) {
+    if (
+      disabledForRegionLevel() ||
+      monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired
+    ) {
       return config;
     }
 
@@ -462,6 +465,20 @@ Reports = function ({
     return periodKeysArray.length;
   }
 
+  function disabledForRegionLevel() {
+    console.log(regionType);
+    const enabledRegions = [
+      "organization",
+      "region",
+      "division",
+      "districtBD"
+    ];
+    if (regionType === 'district' || regionType === 'facility') {
+      console.log(regionType+countryAbbreviation);
+      return enabledRegions.indexOf(regionType+countryAbbreviation) === -1;
+    }
+    return enabledRegions.indexOf(regionType) === -1;
+  }
   function calculateGoal(periodValues, goalDownwards) {
     const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
     const improvementRatio = relativeImprovementRatio(goalMonthIndex);
