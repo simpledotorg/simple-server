@@ -143,30 +143,30 @@ WITH
            COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes')  as overdue_patients,
            COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients,
 
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no') as called,
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_called,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no') as overdue_patients_called,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients_called,
 
 
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as called_with_result_agreed_to_visit,
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'agreed_to_visit') as filtered_called_with_result_agreed_to_visit,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as overdue_patients_called_with_result_agreed_to_visit,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'agreed_to_visit') as filtered_overdue_patients_called_with_result_agreed_to_visit,
 
 
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as called_with_result_remind_to_call_later,
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as filtered_called_with_result_remind_to_call_later,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as overdue_patients_called_with_result_remind_to_call_later,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as filtered_overdue_patients_called_with_result_remind_to_call_later,
 
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as called_with_result_removed_from_overdue_list,
-               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as filtered_called_with_result_removed_from_overdue_list,
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no') as returned_after_call,
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as overdue_patients_called_with_result_removed_from_overdue_list,
+               COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as filtered_overdue_patients_called_with_result_removed_from_overdue_list,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no') as overdue_patients_returned_after_call,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients_returned_after_call,
 
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as returned_after_call_with_result_agreed_to_visit,
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_agreed_to_visit,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as overdue_patients_returned_after_call_with_result_agreed_to_visit,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients_returned_after_call_with_result_agreed_to_visit,
 
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as returned_after_call_with_result_remind_to_call_later,
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_remind_to_call_later,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as overdue_patients_returned_after_call_with_result_remind_to_call_later,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients_returned_after_call_with_result_remind_to_call_later,
 
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as returned_after_call_with_result_removed_from_overdue_list,
-               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_returned_after_call_with_result_removed_from_overdue_list
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as overdue_patients_returned_after_call_with_result_removed_from_overdue_list,
+               COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list' and removed_from_overdue_list = 'no' and has_phone = 'yes') as filtered_overdue_patients_returned_after_call_with_result_removed_from_overdue_list
 
         FROM reporting_overdue_patients
         WHERE hypertension = 'yes'
@@ -276,40 +276,40 @@ monthly_overdue_patients.overdue_patients,
 monthly_overdue_patients.filtered_overdue_patients,
 
 -- overdue patients who got a call
-monthly_overdue_patients.called,
+monthly_overdue_patients.overdue_patients_called,
 
-monthly_overdue_patients.filtered_called,
+monthly_overdue_patients.filtered_overdue_patients_called,
 
 -- overdue patients grouped by call result
-monthly_overdue_patients.called_with_result_agreed_to_visit,
+monthly_overdue_patients.overdue_patients_called_with_result_agreed_to_visit,
 
-monthly_overdue_patients.called_with_result_remind_to_call_later,
+monthly_overdue_patients.overdue_patients_called_with_result_remind_to_call_later,
 
-monthly_overdue_patients.called_with_result_removed_from_overdue_list,
+monthly_overdue_patients.overdue_patients_called_with_result_removed_from_overdue_list,
 
-monthly_overdue_patients.filtered_called_with_result_agreed_to_visit,
+monthly_overdue_patients.filtered_overdue_patients_called_with_result_agreed_to_visit,
 
-monthly_overdue_patients.filtered_called_with_result_remind_to_call_later,
+monthly_overdue_patients.filtered_overdue_patients_called_with_result_remind_to_call_later,
 
-monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list,
+monthly_overdue_patients.filtered_overdue_patients_called_with_result_removed_from_overdue_list,
 
 -- monthly overdue patients returned to care after a call
-monthly_overdue_patients.returned_after_call,
+monthly_overdue_patients.overdue_patients_returned_after_call,
 
-monthly_overdue_patients.filtered_returned_after_call,
+monthly_overdue_patients.filtered_overdue_patients_returned_after_call,
 
 -- monthly overdue patients returned to care after a call grouped by call result
-monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit,
+monthly_overdue_patients.overdue_patients_returned_after_call_with_result_agreed_to_visit,
 
-monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later,
+monthly_overdue_patients.overdue_patients_returned_after_call_with_result_remind_to_call_later,
 
-monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list,
+monthly_overdue_patients.overdue_patients_returned_after_call_with_result_removed_from_overdue_list,
 
-monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit,
+monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_agreed_to_visit,
 
-monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later,
+monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_remind_to_call_later,
 
-monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_list
+monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_removed_from_overdue_list
 
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal

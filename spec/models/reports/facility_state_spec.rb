@@ -682,7 +682,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).called).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called).to eq(1)
         end
       end
 
@@ -698,7 +698,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).called).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called).to eq(1)
         end
       end
     end
@@ -714,7 +714,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called).to eq(1)
         end
       end
 
@@ -729,7 +729,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called).to eq(0)
         end
       end
 
@@ -758,7 +758,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
     end
@@ -774,7 +774,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
     end
@@ -791,7 +791,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
         end
       end
     end
@@ -814,7 +814,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
 
@@ -833,7 +833,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
     end
@@ -856,7 +856,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
 
@@ -875,7 +875,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
     end
@@ -898,7 +898,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
         end
       end
       it "should only include overdue patients who have a phone number" do
@@ -916,7 +916,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
         end
       end
     end

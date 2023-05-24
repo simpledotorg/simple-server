@@ -4076,22 +4076,22 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             reporting_overdue_patients.month_date,
             count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text))) AS overdue_patients,
             count(*) FILTER (WHERE ((reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.is_overdue = 'yes'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS called,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_called,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS called_with_result_agreed_to_visit,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS filtered_called_with_result_agreed_to_visit,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS called_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS filtered_called_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS called_with_result_removed_from_overdue_list,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS filtered_called_with_result_removed_from_overdue_list,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS returned_after_call,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS returned_after_call_with_result_agreed_to_visit,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_agreed_to_visit,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS returned_after_call_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_remind_to_call_later,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS returned_after_call_with_result_removed_from_overdue_list,
-            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_returned_after_call_with_result_removed_from_overdue_l
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS overdue_patients_called,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients_called,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS overdue_patients_called_with_result_agreed_to_visit,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS filtered_overdue_patients_called_with_result_agreed_to_visit,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS overdue_patients_called_with_result_remind_to_call_later,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS filtered_overdue_patients_called_with_result_remind_to_call_lat,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS overdue_patients_called_with_result_removed_from_overdue_list,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_called = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS filtered_overdue_patients_called_with_result_removed_from_overd,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text))) AS overdue_patients_returned_after_call,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients_returned_after_call,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text))) AS overdue_patients_returned_after_call_with_result_agreed_to_visi,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'agreed_to_visit'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients_returned_after_call_with_result_agree,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text))) AS overdue_patients_returned_after_call_with_result_remind_to_call,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'remind_to_call_later'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients_returned_after_call_with_result_remin,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text))) AS overdue_patients_returned_after_call_with_result_removed_from_o,
+            count(*) FILTER (WHERE ((reporting_overdue_patients.has_visited_following_call = 'yes'::text) AND (reporting_overdue_patients.ltfu = 'no'::text) AND ((reporting_overdue_patients.next_call_result_type)::text = 'removed_from_overdue_list'::text) AND (reporting_overdue_patients.removed_from_overdue_list = 'no'::text) AND (reporting_overdue_patients.has_phone = 'yes'::text))) AS filtered_overdue_patients_returned_after_call_with_result_remov
            FROM public.reporting_overdue_patients
           WHERE (reporting_overdue_patients.hypertension = 'yes'::text)
           GROUP BY reporting_overdue_patients.assigned_facility_region_id, reporting_overdue_patients.month_date
@@ -4185,22 +4185,22 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days,
     monthly_overdue_patients.overdue_patients,
     monthly_overdue_patients.filtered_overdue_patients,
-    monthly_overdue_patients.called,
-    monthly_overdue_patients.filtered_called,
-    monthly_overdue_patients.called_with_result_agreed_to_visit,
-    monthly_overdue_patients.called_with_result_remind_to_call_later,
-    monthly_overdue_patients.called_with_result_removed_from_overdue_list,
-    monthly_overdue_patients.filtered_called_with_result_agreed_to_visit,
-    monthly_overdue_patients.filtered_called_with_result_remind_to_call_later,
-    monthly_overdue_patients.filtered_called_with_result_removed_from_overdue_list,
-    monthly_overdue_patients.returned_after_call,
-    monthly_overdue_patients.filtered_returned_after_call,
-    monthly_overdue_patients.returned_after_call_with_result_agreed_to_visit,
-    monthly_overdue_patients.returned_after_call_with_result_remind_to_call_later,
-    monthly_overdue_patients.returned_after_call_with_result_removed_from_overdue_list,
-    monthly_overdue_patients.filtered_returned_after_call_with_result_agreed_to_visit,
-    monthly_overdue_patients.filtered_returned_after_call_with_result_remind_to_call_later,
-    monthly_overdue_patients.filtered_returned_after_call_with_result_removed_from_overdue_l
+    monthly_overdue_patients.overdue_patients_called,
+    monthly_overdue_patients.filtered_overdue_patients_called,
+    monthly_overdue_patients.overdue_patients_called_with_result_agreed_to_visit,
+    monthly_overdue_patients.overdue_patients_called_with_result_remind_to_call_later,
+    monthly_overdue_patients.overdue_patients_called_with_result_removed_from_overdue_list,
+    monthly_overdue_patients.filtered_overdue_patients_called_with_result_agreed_to_visit,
+    monthly_overdue_patients.filtered_overdue_patients_called_with_result_remind_to_call_lat,
+    monthly_overdue_patients.filtered_overdue_patients_called_with_result_removed_from_overd,
+    monthly_overdue_patients.overdue_patients_returned_after_call,
+    monthly_overdue_patients.filtered_overdue_patients_returned_after_call,
+    monthly_overdue_patients.overdue_patients_returned_after_call_with_result_agreed_to_visi,
+    monthly_overdue_patients.overdue_patients_returned_after_call_with_result_remind_to_call,
+    monthly_overdue_patients.overdue_patients_returned_after_call_with_result_removed_from_o,
+    monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_agree,
+    monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_remin,
+    monthly_overdue_patients.filtered_overdue_patients_returned_after_call_with_result_remov
    FROM ((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
@@ -4850,115 +4850,115 @@ COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients IS 
 
 
 --
--- Name: COLUMN reporting_facility_states.called; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients_called; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.filtered_called; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.filtered_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_called; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.called_with_result_removed_from_overdue_list; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.called_with_result_removed_from_overdue_list IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.filtered_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.filtered_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.filtered_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.filtered_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.filtered_called_with_result_removed_from_overdue_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.filtered_called_with_result_removed_from_overdue_list IS 'The total of overdue patients having call result type marked as ''removed_from_overdue_list'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.returned_after_call; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients_called_with_result_removed_from_overdue_list; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.filtered_returned_after_call; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.filtered_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_called_with_result_removed_from_overdue_list IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.returned_after_call_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.returned_after_call_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.returned_after_call_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.returned_after_call_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.returned_after_call_with_result_removed_from_overdue_list; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_called_with_result_remind_to_call_lat; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.returned_after_call_with_result_removed_from_overdue_list IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.filtered_returned_after_call_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.filtered_returned_after_call_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_called_with_result_remind_to_call_lat IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.filtered_returned_after_call_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_called_with_result_removed_from_overd; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.filtered_returned_after_call_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_called_with_result_removed_from_overd IS 'The total of overdue patients having call result type marked as ''removed_from_overdue_list'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.filtered_returned_after_call_with_result_removed_from_overdue_l; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.overdue_patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.filtered_returned_after_call_with_result_removed_from_overdue_l IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.overdue_patients_returned_after_call_with_result_agreed_to_visi; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_returned_after_call_with_result_agreed_to_visi IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.overdue_patients_returned_after_call_with_result_remind_to_call; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_returned_after_call_with_result_remind_to_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.overdue_patients_returned_after_call_with_result_removed_from_o; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.overdue_patients_returned_after_call_with_result_removed_from_o IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_agree; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_agree IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_remin; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_remin IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_remov; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.filtered_overdue_patients_returned_after_call_with_result_remov IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
 
 
 --
