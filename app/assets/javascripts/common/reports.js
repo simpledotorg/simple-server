@@ -371,7 +371,7 @@ DashboardReports = () => {
     overdueCalledTrend: function (data) {
       const config = {
         data: {
-          labels: Object.keys(data.percentageCalled),
+          labels: Object.keys(data.overduePatientsCalled),
           datasets: [
             {
               label: "Agreed to visit",
@@ -383,7 +383,6 @@ DashboardReports = () => {
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
-
               fill: true,
             },
             {
@@ -409,7 +408,7 @@ DashboardReports = () => {
               fill: "-1",
               segment: {
                 borderDash: (ctx) =>
-                  dynamicChartSegementDashed(ctx, Object.keys(data.percentageCalled).length),
+                  dynamicChartSegementDashed(ctx, Object.keys(data.overduePatientsCalledRate).length),
               },
             },
           ],

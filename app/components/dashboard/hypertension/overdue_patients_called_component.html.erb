@@ -10,16 +10,16 @@
       <%end%>
       <%= c.summary do %>
         <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black graph-percent fs-28px" data-key="percentageCalled" data-format="percentage"  style="color: #e0b000;"></p>
+          <p class="c-print-black graph-percent fs-28px" data-key="overduePatientsCalledRate" data-format="percentage"  style="color: #e0b000;"></p>
           <div>
             <p class="m-0px c-black">
-              <span data-key="called" data-format="numberWithCommas"></span>
+              <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
               patients called in
               <span data-key="endDate"></span>
             </p>
             <p class="m-0px c-grey-dark c-print-black">
               of
-              <span data-key="overdue" data-format="numberWithCommas"></span>
+              <span data-key="overduePatients" data-format="numberWithCommas"></span>
               patients that are overdue at the start of
               <span data-key="endDate"></span>
             </p>
@@ -30,19 +30,18 @@
             Call results <span data-key="endDate"></span>
           </p>
           <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
-            <p data-title="percentageCalledWithResultRemindToCallLater" 
+            <p data-title="chartProportionalPercentageCalledWithResultAgreedToVisit"
                 style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
-              <span data-key="percentageCalledWithResultAgreedToVisit"></span>%
+              <span data-key="chartProportionalPercentageCalledWithResultAgreedToVisit"></span>%
               'Agreed to visit'
             </p>
-            <p title="<%= graph_external_hover_data[:percentageCalledWithResultRemoveFromOverdueList] %>% 'Remind to call'"
-                style="border-radius: 30px; text-align: center; background: rgba(252, 247, 193, 0.8); color:rgb(118, 93, 3); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
-              <span data-key="percentageCalledWithResultRemindToCallLater"></span>%
-              'Remind to call'</p>
-            <p title="<%= graph_external_hover_data[:percentageCalledWithResultRemoveFromOverdueList] %>% 'Remove from overdue list'" 
-                style="background: rgba(232, 144, 80, 0.15); color:rgb(143,17,12 ); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
-              <span data-key="percentageCalledWithResultRemoveFromOverdueList"></span>%
-              'Remove from...'
+            <p data-title="chartProportionalPercentageCalledWithResultRemindToCallLater"
+              style="border-radius: 30px; text-align: center; background: rgba(252, 247, 193, 0.8); color:rgb(118, 93, 3); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
+              <span data-key="chartProportionalPercentageCalledWithResultRemindToCallLater"></span>% 'Remind to call'
+            </p>
+            <p data-title="chartProportionalPercentageCalledWithResultRemoveFromOverdueList"
+               style="background: rgba(232, 144, 80, 0.15); color:rgb(143,17,12 ); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
+              <span data-key="chartProportionalPercentageCalledWithResultRemoveFromOverdueList"></span>% 'Remove from...'
             </p>
           </div>
         </div>

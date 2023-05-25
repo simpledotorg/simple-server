@@ -14,25 +14,16 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     # TODO: Implement toggle logic. We can reuse the keys in the graph_data but inject the
     # filtered / non filtered data based on the toggle
     {
-      overdue: @rates.map { |k, v| { k => v[:overdue] } }.reduce(:merge),
-      called: @rates.map { |k, v| { k => v[:called] } }.reduce(:merge),
-      percentageCalled: @rates.map do |k, v|
+      overduePatients: @rates.map { |k, v| { k => v[:overdue] } }.reduce(:merge),
+      overduePatientsCalled: @rates.map { |k, v| { k => v[:called] } }.reduce(:merge),
+      overduePatientsCalledRate: @rates.map do |k, v|
                           { k => v[:percentageCalled] }
                         end.reduce(:merge),
       startDate: @period.advance(months: -17),
       chartProportionalPercentageCalledWithResultAgreedToVisit: @rates.map { |k, v| { k => v[:chartProportionalPercentageCalledWithResultAgreedToVisit] } }.reduce(:merge),
       chartProportionalPercentageCalledWithResultRemindToCallLater: @rates.map { |k, v| { k => v[:chartProportionalPercentageCalledWithResultRemindToCallLater] } }.reduce(:merge),
       chartProportionalPercentageCalledWithResultRemoveFromOverdueList: @rates.map { |k, v| { k => v[:chartProportionalPercentageCalledWithResultRemoveFromOverdueList] } }.reduce(:merge),
-      **period_data,
-      **graph_external_hover_data
-    }
-  end
-
-  def graph_external_hover_data
-    {
-      percentageCalledWithResultAgreedToVisit: @rates.map { |k, v| { k => v[:percentageCalledWithResultAgreedToVisit] } }.reduce(:merge),
-      percentageCalledWithResultRemindToCallLater: @rates.map { |k, v| { k => v[:percentageCalledWithResultRemindToCallLater] } }.reduce(:merge),
-      percentageCalledWithResultRemoveFromOverdueList: @rates.map { |k, v| { k => v[:percentageCalledWithResultRemoveFromOverdueList] } }.reduce(:merge),
+      **period_data
     }
   end
 
@@ -52,16 +43,11 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
         chart_proportion_called_agreed_percent = percent_called * [called_agreed_percent, 1].max / 100
         chart_proportion_called_remind_percent = percent_called * [called_remind_percent, 1].max / 100
         chart_proportion_called_remove_percent = percent_called * [called_remove_percent, 1].max / 100
-        puts overdue_called
-        puts called_agreed
-        puts called_agreed_percent
-      { period => {
+      {
+        period => {
         overdue: overdue,
         called: overdue_called,
         percentageCalled: percent_called,
-        percentageCalledWithResultAgreedToVisit: called_agreed_percent,
-        percentageCalledWithResultRemindToCallLater: called_remind_percent,
-        percentageCalledWithResultRemoveFromOverdueList: called_remove_percent,
         
         chartProportionalPercentageCalledWithResultAgreedToVisit: chart_proportion_called_agreed_percent,
         chartProportionalPercentageCalledWithResultRemindToCallLater: chart_proportion_called_remind_percent,
