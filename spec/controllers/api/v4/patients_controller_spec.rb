@@ -87,7 +87,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
       )
 
       set_headers(patient_1.registration_user, patient_1.registration_facility)
-      patient_1.discard_data
+      patient_1.discard_data(reason: :unknown)
       business_identifier.reload.undiscard
 
       post :lookup, params: {identifier: patient_1.business_identifiers.first.identifier}, as: :json
