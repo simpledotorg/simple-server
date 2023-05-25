@@ -641,7 +641,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "overdue_has_phone_and_excluding_removed_from_overdue_list" do
+    describe "contactable_overdue_patients" do
       it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -653,7 +653,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
         end
       end
 
@@ -666,12 +666,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
         end
       end
     end
 
-    describe "called" do
+    describe "overdue_patients_called" do
       it "should only include overdue patients who were called atleast once during the month" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -703,7 +703,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "filtered_called" do
+    describe "contactable_overdue_patients_called" do
       it "should only include overdue patients who were called atleast once during the month" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -714,7 +714,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_called).to eq(1)
         end
       end
 
@@ -729,7 +729,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_called).to eq(0)
         end
       end
 
@@ -742,12 +742,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
         end
       end
     end
 
-    describe "called_with_result_agreed_to_visit" do
+    describe "patients_called_with_result_agreed_to_visit" do
       it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -758,12 +758,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
     end
 
-    describe "called_with_result_remind_to_call_later" do
+    describe "patients_called_with_result_remind_to_call_later" do
       it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -774,12 +774,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
     end
 
-    describe "called_with_result_removed_from_overdue_list" do
+    describe "patients_called_with_result_removed_from_list" do
       it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do
         facility = create(:facility)
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
@@ -791,12 +791,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_removed_from_list).to eq(1)
         end
       end
     end
 
-    describe "filtered_called_with_result_agreed_to_visit" do
+    describe "contactable_patients_called_with_result_agreed_to_visit" do
       it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
         facility = create(:facility)
         month_date = june_2021[:now]
@@ -814,7 +814,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
 
@@ -833,12 +833,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_agreed_to_visit).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(1)
         end
       end
     end
 
-    describe "filtered_called_with_result_remind_to_call_later" do
+    describe "contactable_patients_called_with_result_remind_to_call_later" do
       it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
         facility = create(:facility)
         month_date = june_2021[:now]
@@ -856,7 +856,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
 
@@ -875,12 +875,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_remind_to_call_later).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(1)
         end
       end
     end
 
-    describe "filtered_called_with_result_removed_from_overdue_list" do
+    describe "contactable_patients_called_with_result_removed_from_list" do
       it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
         facility = create(:facility)
         month_date = june_2021[:now]
@@ -898,7 +898,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(1)
         end
       end
       it "should only include overdue patients who have a phone number" do
@@ -916,12 +916,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_called_with_result_removed_from_overdue_list).to eq(1)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(1)
         end
       end
     end
 
-    describe "returned_after_call" do
+    describe "overdue_patients_returned_after_call" do
       it "should only include overdue patients who returned to care after a call during the month" do
         facility = create(:facility)
         month_date = june_2021[:now]
@@ -968,7 +968,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "filtered_returned_after_call" do
+    describe "contactable_overdue_patients_returned_after_call" do
       it "should exclude overdue patients who doesn't have a phone number" do
         facility = create(:facility)
         month_date = june_2021[:now]
@@ -980,7 +980,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_returned_after_call).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_returned_after_call).to eq(0)
         end
       end
 
@@ -996,12 +996,12 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).filtered_overdue_patients_returned_after_call).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_returned_after_call).to eq(0)
         end
       end
     end
 
-    describe "returned_after_call_with_result_agreed_to_visit" do
+    describe "patients_returned_with_result_agreed_to_visit" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do
@@ -1012,7 +1012,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "returned_after_call_with_result_remind_to_call_later" do
+    describe "patients_returned_with_result_remind_to_call_later" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do
@@ -1021,7 +1021,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "returned_after_call_with_result_removed_from_overdue_list" do
+    describe "patients_returned_with_result_removed_from_overdue_list" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do
@@ -1030,7 +1030,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "filtered_returned_after_call_with_result_agreed_to_visit" do
+    describe "contactable_patients_returned_with_result_agreed_to_visit" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do
@@ -1041,7 +1041,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "filtered_returned_after_call_with_result_remind_to_call_later" do
+    describe "contactable_patients_returned_with_result_remind_to_call_later" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do
@@ -1052,7 +1052,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
     end
 
-    describe "filtered_returned_after_call_with_result_removed_from_overdue_list" do
+    describe "contactable_patients_returned_with_result_removed_from_overdue_list" do
       it "should only include overdue patients who returned to care after a call during the month" do
       end
       it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do
