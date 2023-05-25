@@ -15,9 +15,7 @@ How to buy
   - Make payment with a credit card. Note that large transactions (10L) have gotten stuck in the past so its best to buy smaller packs
     every once in a while.
 - We have Slack alerts setup to warn us a week in advance if our balance is running low.
-- Additionally, you can run `bundle exec cap india:production deploy:rake task="bsnl:get_account_balance"` at any time.
-  This task will also show a low balance warning if credits are low.
-
+- Additionally, you can run `bundle exec cap india:production deploy:rake task="bsnl:get_account_balance"` at any time. (You will need credentials to run this. See: [Creating SMS configuration](#creating-sms-configuration)). This task will also show a low balance warning if credits are low.
 
 ### Managing JWT tokens
 
@@ -30,22 +28,29 @@ How to buy
   - Make sure to use a different token ID than production's.
   - Make sure to setup a schedule for refreshing the JWT token on the new env.
 
+### Creating SMS configuration
+- You will need production credentials to run the script. Copy over the following vars from India production's `.env` file to your `.env.development.local`:
+  ```
+  BSNL_IHCI_ENTITY_ID=140xxxx
+  BSNL_IHCI_HEADER=IHCxxx
+  ```
+- Create a `Configuration` object with the `name` key set to `bsnl_sms_jwt` and put the jwt copied over from production into the `value` key.
+
 ### Adding new SMS strings
 - Add the new notification strings to the locale file in `config/notifications/locale`.
 - Upload the notification template to the DLT dashboard. The name should follow the format: `locale.locale_key.version_number`. Some examples:
   - `en.notifications.set01.basic.1`
   - `hi-IN.notifications.set03.basic.2`
 
-  The locale in the name on DLT portal needs to be hyphenated (`hi-IN` and not `hi_IN`). This format is used to associate the templates on BSNL to locale keys so it's an important step.
+  **Note**: The locale in the name on DLT portal needs to be hyphenated (`hi-IN` and not `hi_IN`). This format is used to associate the templates on BSNL to locale keys so it's an important step.
 
 - Set the `version_number` for new SMSes as `1`. If you're uploading a revision to an existing message, you should increment
-  the version existing . You can find the latest version of a template by calling this method
-
-```ruby
-Messaging::Bsnl::DltTemplate.latest_name_of("<template name>")
-Messaging::Bsnl::DltTemplate.latest_name_of("en.notifications.set01.basic")
-Messaging::Bsnl::DltTemplate.latest_name_of("en.notifications.set01.basic.2")
-```
+  the version existing . You can find the latest version of a template by calling this method.
+  ```ruby
+  Messaging::Bsnl::DltTemplate.latest_name_of("<template name>")
+  Messaging::Bsnl::DltTemplate.latest_name_of("en.notifications.set01.basic")
+  Messaging::Bsnl::DltTemplate.latest_name_of("en.notifications.set01.basic.2")
+  ```
 
 If you need to upload a lot of strings refer to this [Video walkthrough](https://drive.google.com/drive/folders/1kh-XSykRj6w5dGrjZh7sZXjSgvdAGtjU)
 and use the scripts [here](bulk_submit_dlt_templates).
@@ -53,17 +58,9 @@ and use the scripts [here](bulk_submit_dlt_templates).
 - Submissions to DLT are usually approved within 2 weekdays.
 - Once approved, the template should show up on the bulksms dashboard in a few hours.
 
-After a new template has been added to bulksms, we need to pull in it's details to the simple codebase in order to use it.
+After a new template has been added to bulksms, we need to pull in its details to the simple codebase in order to use it.
 We have a script to help with it.
 
-**Note:** You will need production credentials to run the script.
-
-- Copy over the following vars from India production's `.env` file to your `.env.development.local`:
-```
-BSNL_IHCI_ENTITY_ID=140xxxx
-BSNL_IHCI_HEADER=IHCxxx
-```
-- Create a `Configuration` object with the key as `bsnl_sms_jwt` and copy the value from production.
 - Run `bundle exec rake bsnl:get_template_details`.
 - This will pull the latest configuration from BSNL and save it to `config/data/bsnl_templates.yml`. This will also output a summary of any actions to be taken, go through them carefully.
 - Commit and push changes in this file (if there are any).
