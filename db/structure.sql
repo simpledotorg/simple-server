@@ -4587,7 +4587,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
           WHERE (((rps.status)::text <> 'dead'::text) AND (rps.month_date > (now() - '2 years'::interval)))
           ORDER BY rps.patient_id, rps.month_date, appointments.device_created_at DESC
         ), patients_with_appointments_and_visits AS (
-         SELECT DISTINCT ON (patients_with_appointments.patient_id, patients_with_appointments.month_date) patients_with_appointments.month_date,
+         SELECT patients_with_appointments.month_date,
             patients_with_appointments.patient_id,
             patients_with_appointments.hypertension,
             patients_with_appointments.diabetes,
@@ -4614,30 +4614,30 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
             visits.visit_id,
             visits.visited_at_after_appointment
            FROM (patients_with_appointments
-             LEFT JOIN LATERAL ( SELECT blood_sugars.id AS visit_id,
+             LEFT JOIN LATERAL ( SELECT DISTINCT ON (blood_sugars.patient_id) blood_sugars.id AS visit_id,
                     blood_sugars.patient_id,
                     blood_sugars.recorded_at AS visited_at_after_appointment
                    FROM public.blood_sugars
                   WHERE ((blood_sugars.deleted_at IS NULL) AND (blood_sugars.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < blood_sugars.recorded_at) AND (blood_sugars.recorded_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
-                UNION
+                UNION ALL
                  SELECT blood_pressures.id AS visit_id,
                     blood_pressures.patient_id,
                     blood_pressures.recorded_at AS visited_at_after_appointment
                    FROM public.blood_pressures
                   WHERE ((blood_pressures.deleted_at IS NULL) AND (blood_pressures.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < blood_pressures.recorded_at) AND (blood_pressures.recorded_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
-                UNION
+                UNION ALL
                  SELECT patients_with_appointments_visit.id AS visit_id,
                     patients_with_appointments_visit.patient_id,
                     patients_with_appointments_visit.device_created_at AS visited_at_after_appointment
                    FROM public.appointments patients_with_appointments_visit
                   WHERE ((patients_with_appointments_visit.deleted_at IS NULL) AND (patients_with_appointments_visit.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < patients_with_appointments_visit.device_created_at) AND (patients_with_appointments_visit.device_created_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
-                UNION
+                UNION ALL
                  SELECT prescription_drugs.id AS visit_id,
                     prescription_drugs.patient_id,
                     prescription_drugs.device_created_at AS visited_at_after_appointment
                    FROM public.prescription_drugs
-                  WHERE ((prescription_drugs.deleted_at IS NULL) AND (prescription_drugs.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < prescription_drugs.device_created_at) AND (prescription_drugs.device_created_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))) visits ON ((patients_with_appointments.patient_id = visits.patient_id)))
-          ORDER BY patients_with_appointments.patient_id, patients_with_appointments.month_date, patients_with_appointments.previous_appointment_date DESC, visits.visited_at_after_appointment
+                  WHERE ((prescription_drugs.deleted_at IS NULL) AND (prescription_drugs.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < prescription_drugs.device_created_at) AND (prescription_drugs.device_created_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
+          ORDER BY 2, 3) visits ON ((patients_with_appointments.patient_id = visits.patient_id)))
         ), patient_with_call_results AS (
          SELECT DISTINCT ON (patients_with_appointments_and_visits.patient_id, patients_with_appointments_and_visits.month_date) patients_with_appointments_and_visits.month_date,
             patients_with_appointments_and_visits.patient_id,
