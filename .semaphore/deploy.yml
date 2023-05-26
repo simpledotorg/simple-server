@@ -4,17 +4,13 @@ blocks:
   - name: Deploy to Sandbox
     task:
       secrets:
-        - name: sentry-release-auth-token
+        - name: argocd
         - name: semaphore-deploy-key
       jobs:
         - name: Deploy to Sandbox
           commands:
             - checkout
-            - deploy_target=sandbox script/semaphore_deploy
-      prologue:
-        commands:
-          - chmod 600 ~/.ssh/semaphore_id_rsa
-          - ssh-add ~/.ssh/semaphore_id_rsa
+            - script/argocd_deployment.sh $SANDBOX_ARGOCD_ENDPOINT $ARGOCD_USERNAME $SANDBOX_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
     dependencies: []
   - name: Deploy to QA
     task:
@@ -32,7 +28,7 @@ queue:
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu1804
+    os_image: ubuntu2004
 promotions:
   - name: Bangladesh Demo Deployment
     pipeline_file: bangladesh_demo_deployment.yml
