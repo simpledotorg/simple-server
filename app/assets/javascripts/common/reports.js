@@ -466,7 +466,6 @@ Reports = function ({
   }
 
   function disabledForRegionLevel() {
-    console.log(regionType);
     const enabledRegions = [
       "organization",
       "region",
@@ -474,9 +473,8 @@ Reports = function ({
       "districtBD",
     ];
     // region types present in multiple countries
-    if (regionType === 'district' || regionType === 'facility') {
-      console.log(regionType+countryAbbreviation);
-      return enabledRegions.indexOf(regionType+countryAbbreviation) === -1;
+    if (regionType === "district" || regionType === "facility") {
+      return enabledRegions.indexOf(regionType + countryAbbreviation) === -1;
     }
     return enabledRegions.indexOf(regionType) === -1;
   }
@@ -512,7 +510,6 @@ Reports = function ({
         goalMonthIndex,
       };
     }
-
     return {
       goalMonthValue: periodValues[mostRecentDecemberKey],
     };
