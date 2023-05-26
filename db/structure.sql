@@ -4553,6 +4553,239 @@ COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_more
 
 
 --
+-- Name: reporting_overdue_patients; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
+ WITH patients_with_appointments AS (
+         SELECT DISTINCT ON (rps.patient_id, rps.month_date) rps.month_date,
+            rps.patient_id,
+            rps.hypertension,
+            rps.diabetes,
+            rps.htn_care_state,
+            rps.month,
+            rps.quarter,
+            rps.year,
+            rps.month_string,
+            rps.quarter_string,
+            rps.assigned_facility_id,
+            rps.assigned_facility_slug,
+            rps.assigned_facility_region_id,
+            rps.assigned_block_slug,
+            rps.assigned_block_region_id,
+            rps.assigned_district_slug,
+            rps.assigned_district_region_id,
+            rps.assigned_state_slug,
+            rps.assigned_state_region_id,
+            rps.assigned_organization_slug,
+            rps.assigned_organization_region_id,
+            appointments.id AS previous_appointment_id,
+            appointments.device_created_at AS previous_appointment_date,
+            appointments.scheduled_date AS previous_appointment_schedule_date
+           FROM (public.reporting_patient_states rps
+             LEFT JOIN public.appointments ON (((appointments.patient_id = rps.patient_id) AND (appointments.device_created_at < rps.month_date))))
+          WHERE (((rps.status)::text <> 'dead'::text) AND (rps.month_date > (now() - '2 years'::interval)))
+          ORDER BY rps.patient_id, rps.month_date, appointments.device_created_at DESC
+        ), patients_with_appointments_and_visits AS (
+         SELECT patients_with_appointments.month_date,
+            patients_with_appointments.patient_id,
+            patients_with_appointments.hypertension,
+            patients_with_appointments.diabetes,
+            patients_with_appointments.htn_care_state,
+            patients_with_appointments.month,
+            patients_with_appointments.quarter,
+            patients_with_appointments.year,
+            patients_with_appointments.month_string,
+            patients_with_appointments.quarter_string,
+            patients_with_appointments.assigned_facility_id,
+            patients_with_appointments.assigned_facility_slug,
+            patients_with_appointments.assigned_facility_region_id,
+            patients_with_appointments.assigned_block_slug,
+            patients_with_appointments.assigned_block_region_id,
+            patients_with_appointments.assigned_district_slug,
+            patients_with_appointments.assigned_district_region_id,
+            patients_with_appointments.assigned_state_slug,
+            patients_with_appointments.assigned_state_region_id,
+            patients_with_appointments.assigned_organization_slug,
+            patients_with_appointments.assigned_organization_region_id,
+            patients_with_appointments.previous_appointment_id,
+            patients_with_appointments.previous_appointment_date,
+            patients_with_appointments.previous_appointment_schedule_date,
+            visits.visit_id,
+            visits.visited_at_after_appointment
+           FROM (patients_with_appointments
+             LEFT JOIN LATERAL ( SELECT DISTINCT ON (blood_sugars.patient_id) blood_sugars.id AS visit_id,
+                    blood_sugars.patient_id,
+                    blood_sugars.recorded_at AS visited_at_after_appointment
+                   FROM public.blood_sugars
+                  WHERE ((blood_sugars.deleted_at IS NULL) AND (blood_sugars.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < blood_sugars.recorded_at) AND (blood_sugars.recorded_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
+                UNION ALL
+                 SELECT blood_pressures.id AS visit_id,
+                    blood_pressures.patient_id,
+                    blood_pressures.recorded_at AS visited_at_after_appointment
+                   FROM public.blood_pressures
+                  WHERE ((blood_pressures.deleted_at IS NULL) AND (blood_pressures.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < blood_pressures.recorded_at) AND (blood_pressures.recorded_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
+                UNION ALL
+                 SELECT patients_with_appointments_visit.id AS visit_id,
+                    patients_with_appointments_visit.patient_id,
+                    patients_with_appointments_visit.device_created_at AS visited_at_after_appointment
+                   FROM public.appointments patients_with_appointments_visit
+                  WHERE ((patients_with_appointments_visit.deleted_at IS NULL) AND (patients_with_appointments_visit.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < patients_with_appointments_visit.device_created_at) AND (patients_with_appointments_visit.device_created_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
+                UNION ALL
+                 SELECT prescription_drugs.id AS visit_id,
+                    prescription_drugs.patient_id,
+                    prescription_drugs.device_created_at AS visited_at_after_appointment
+                   FROM public.prescription_drugs
+                  WHERE ((prescription_drugs.deleted_at IS NULL) AND (prescription_drugs.patient_id = patients_with_appointments.patient_id) AND (patients_with_appointments.previous_appointment_date < prescription_drugs.device_created_at) AND (prescription_drugs.device_created_at < ((patients_with_appointments.month_date + '1 mon'::interval) + '15 days'::interval)))
+          ORDER BY 2, 3) visits ON ((patients_with_appointments.patient_id = visits.patient_id)))
+        ), patient_with_call_results AS (
+         SELECT DISTINCT ON (patients_with_appointments_and_visits.patient_id, patients_with_appointments_and_visits.month_date) patients_with_appointments_and_visits.month_date,
+            patients_with_appointments_and_visits.patient_id,
+            patients_with_appointments_and_visits.hypertension,
+            patients_with_appointments_and_visits.diabetes,
+            patients_with_appointments_and_visits.htn_care_state,
+            patients_with_appointments_and_visits.month,
+            patients_with_appointments_and_visits.quarter,
+            patients_with_appointments_and_visits.year,
+            patients_with_appointments_and_visits.month_string,
+            patients_with_appointments_and_visits.quarter_string,
+            patients_with_appointments_and_visits.assigned_facility_id,
+            patients_with_appointments_and_visits.assigned_facility_slug,
+            patients_with_appointments_and_visits.assigned_facility_region_id,
+            patients_with_appointments_and_visits.assigned_block_slug,
+            patients_with_appointments_and_visits.assigned_block_region_id,
+            patients_with_appointments_and_visits.assigned_district_slug,
+            patients_with_appointments_and_visits.assigned_district_region_id,
+            patients_with_appointments_and_visits.assigned_state_slug,
+            patients_with_appointments_and_visits.assigned_state_region_id,
+            patients_with_appointments_and_visits.assigned_organization_slug,
+            patients_with_appointments_and_visits.assigned_organization_region_id,
+            patients_with_appointments_and_visits.previous_appointment_id,
+            patients_with_appointments_and_visits.previous_appointment_date,
+            patients_with_appointments_and_visits.previous_appointment_schedule_date,
+            patients_with_appointments_and_visits.visit_id,
+            patients_with_appointments_and_visits.visited_at_after_appointment,
+            ((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS previous_called_at,
+            previous_call_results.result_type AS previous_call_result_type,
+            previous_call_results.remove_reason AS previous_call_removed_from_overdue_list_reason,
+            ((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE 'UTC'::text) AS next_called_at,
+            next_call_results.result_type AS next_call_result_type,
+            next_call_results.remove_reason AS next_call_removed_from_overdue_list_reason,
+            next_call_results.user_id AS called_by_user_id
+           FROM ((patients_with_appointments_and_visits
+             LEFT JOIN public.call_results previous_call_results ON (((patients_with_appointments_and_visits.patient_id = previous_call_results.patient_id) AND (((previous_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < patients_with_appointments_and_visits.month_date) AND (previous_call_results.device_created_at > patients_with_appointments_and_visits.previous_appointment_schedule_date))))
+             LEFT JOIN public.call_results next_call_results ON (((patients_with_appointments_and_visits.patient_id = next_call_results.patient_id) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) >= patients_with_appointments_and_visits.month_date) AND (((next_call_results.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) < (patients_with_appointments_and_visits.month_date + '1 mon'::interval)))))
+          ORDER BY patients_with_appointments_and_visits.patient_id, patients_with_appointments_and_visits.month_date, next_call_results.device_created_at, previous_call_results.device_created_at DESC
+        ), patient_with_call_results_and_phone AS (
+         SELECT DISTINCT ON (patient_with_call_results.patient_id, patient_with_call_results.month_date) patient_with_call_results.month_date,
+            patient_with_call_results.patient_id,
+            patient_with_call_results.hypertension,
+            patient_with_call_results.diabetes,
+            patient_with_call_results.htn_care_state,
+            patient_with_call_results.month,
+            patient_with_call_results.quarter,
+            patient_with_call_results.year,
+            patient_with_call_results.month_string,
+            patient_with_call_results.quarter_string,
+            patient_with_call_results.assigned_facility_id,
+            patient_with_call_results.assigned_facility_slug,
+            patient_with_call_results.assigned_facility_region_id,
+            patient_with_call_results.assigned_block_slug,
+            patient_with_call_results.assigned_block_region_id,
+            patient_with_call_results.assigned_district_slug,
+            patient_with_call_results.assigned_district_region_id,
+            patient_with_call_results.assigned_state_slug,
+            patient_with_call_results.assigned_state_region_id,
+            patient_with_call_results.assigned_organization_slug,
+            patient_with_call_results.assigned_organization_region_id,
+            patient_with_call_results.previous_appointment_id,
+            patient_with_call_results.previous_appointment_date,
+            patient_with_call_results.previous_appointment_schedule_date,
+            patient_with_call_results.visit_id,
+            patient_with_call_results.visited_at_after_appointment,
+            patient_with_call_results.previous_called_at,
+            patient_with_call_results.previous_call_result_type,
+            patient_with_call_results.previous_call_removed_from_overdue_list_reason,
+            patient_with_call_results.next_called_at,
+            patient_with_call_results.next_call_result_type,
+            patient_with_call_results.next_call_removed_from_overdue_list_reason,
+            patient_with_call_results.called_by_user_id,
+            patient_phone_numbers.number AS patient_phone_number
+           FROM (patient_with_call_results
+             LEFT JOIN public.patient_phone_numbers ON ((patient_phone_numbers.patient_id = patient_with_call_results.patient_id)))
+          ORDER BY patient_with_call_results.patient_id, patient_with_call_results.month_date
+        )
+ SELECT patient_with_call_results_and_phone.month_date,
+    patient_with_call_results_and_phone.patient_id,
+    patient_with_call_results_and_phone.hypertension,
+    patient_with_call_results_and_phone.diabetes,
+    patient_with_call_results_and_phone.htn_care_state,
+    patient_with_call_results_and_phone.month,
+    patient_with_call_results_and_phone.quarter,
+    patient_with_call_results_and_phone.year,
+    patient_with_call_results_and_phone.month_string,
+    patient_with_call_results_and_phone.quarter_string,
+    patient_with_call_results_and_phone.assigned_facility_id,
+    patient_with_call_results_and_phone.assigned_facility_slug,
+    patient_with_call_results_and_phone.assigned_facility_region_id,
+    patient_with_call_results_and_phone.assigned_block_slug,
+    patient_with_call_results_and_phone.assigned_block_region_id,
+    patient_with_call_results_and_phone.assigned_district_slug,
+    patient_with_call_results_and_phone.assigned_district_region_id,
+    patient_with_call_results_and_phone.assigned_state_slug,
+    patient_with_call_results_and_phone.assigned_state_region_id,
+    patient_with_call_results_and_phone.assigned_organization_slug,
+    patient_with_call_results_and_phone.assigned_organization_region_id,
+    patient_with_call_results_and_phone.previous_appointment_id,
+    patient_with_call_results_and_phone.previous_appointment_date,
+    patient_with_call_results_and_phone.previous_appointment_schedule_date,
+    patient_with_call_results_and_phone.visited_at_after_appointment,
+    patient_with_call_results_and_phone.called_by_user_id,
+    patient_with_call_results_and_phone.next_called_at,
+    patient_with_call_results_and_phone.previous_called_at,
+    patient_with_call_results_and_phone.next_call_result_type,
+    patient_with_call_results_and_phone.next_call_removed_from_overdue_list_reason,
+    patient_with_call_results_and_phone.previous_call_result_type,
+    patient_with_call_results_and_phone.previous_call_removed_from_overdue_list_reason,
+        CASE
+            WHEN (patient_with_call_results_and_phone.previous_appointment_schedule_date >= patient_with_call_results_and_phone.month_date) THEN 'no'::text
+            WHEN ((patient_with_call_results_and_phone.previous_appointment_schedule_date < patient_with_call_results_and_phone.month_date) AND (patient_with_call_results_and_phone.visited_at_after_appointment < patient_with_call_results_and_phone.month_date)) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS is_overdue,
+        CASE
+            WHEN (patient_with_call_results_and_phone.next_called_at IS NULL) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_called,
+        CASE
+            WHEN ((patient_with_call_results_and_phone.visited_at_after_appointment IS NULL) OR (patient_with_call_results_and_phone.next_called_at IS NULL)) THEN 'no'::text
+            WHEN (patient_with_call_results_and_phone.visited_at_after_appointment > (patient_with_call_results_and_phone.next_called_at + '15 days'::interval)) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_visited_following_call,
+        CASE
+            WHEN (patient_with_call_results_and_phone.htn_care_state = 'lost_to_follow_up'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS ltfu,
+        CASE
+            WHEN (patient_with_call_results_and_phone.htn_care_state = 'under_care'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS under_care,
+        CASE
+            WHEN (patient_with_call_results_and_phone.patient_phone_number IS NULL) THEN 'no'::text
+            ELSE 'yes'::text
+        END AS has_phone,
+        CASE
+            WHEN ((patient_with_call_results_and_phone.previous_call_result_type)::text = 'removed_from_overdue_list'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS removed_from_overdue_list,
+        CASE
+            WHEN ((patient_with_call_results_and_phone.next_call_result_type)::text = 'removed_from_overdue_list'::text) THEN 'yes'::text
+            ELSE 'no'::text
+        END AS removed_from_overdue_list_during_the_month
+   FROM patient_with_call_results_and_phone
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_quarterly_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -6497,6 +6730,20 @@ CREATE UNIQUE INDEX overdue_calls_month_date_patient_id ON public.reporting_over
 
 
 --
+-- Name: overdue_patients_assigned_facility_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX overdue_patients_assigned_facility_region_id ON public.reporting_overdue_patients USING btree (assigned_facility_region_id);
+
+
+--
+-- Name: overdue_patients_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX overdue_patients_month_date_patient_id ON public.reporting_overdue_patients USING btree (month_date, patient_id);
+
+
+--
 -- Name: patient_blood_pressures_patient_id_month_date; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7010,6 +7257,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230124063249'),
 ('20230130161639'),
 ('20230512070306'),
-('20230512070357');
+('20230512070357'),
+('20230522081701');
 
 
