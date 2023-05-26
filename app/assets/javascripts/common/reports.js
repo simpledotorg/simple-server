@@ -492,9 +492,9 @@ Reports = function ({
     const dateKeysArray = Object.keys(periodValues);
 
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
-    const isCurrentMonthDec =
-      monthIndexFromDateString(currentMonthString()) === 11;
-    if (isCurrentMonthDec) {
+    const isLastDateKeysArrayMonthDec =
+      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
+    if (isLastDateKeysArrayMonthDec) {
       decemberKeys.splice(-1);
     }
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
@@ -513,12 +513,6 @@ Reports = function ({
     return {
       goalMonthValue: periodValues[mostRecentDecemberKey],
     };
-  }
-
-  function currentMonthString() {
-    const currentDate = new Date();
-    const options = { month: "short", year: "numeric" };
-    return currentDate.toLocaleString("en-US", options).replace(" ", "-");
   }
 
   function monthIndexFromDateString(dateString) {
