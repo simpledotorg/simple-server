@@ -28,7 +28,7 @@ How to buy
   - Make sure to use a different token ID than production's.
   - Make sure to setup a schedule for refreshing the JWT token on the new env.
 
-### Creating SMS configuration
+### Creating BSNL configuration locally
 - You will need production credentials to run the script. Copy over the following vars from India production's `.env` file to your `.env.development.local`:
   ```
   BSNL_IHCI_ENTITY_ID=140xxxx
