@@ -1,7 +1,7 @@
 WITH patients_with_appointments AS (
     SELECT
         DISTINCT ON (rps.patient_id, rps.month_date) 
-        rps.month_date,
+	rps.month_date,
         rps.patient_id,
         rps.hypertension AS hypertension,
         rps.diabetes AS diabetes,
@@ -40,17 +40,14 @@ WITH patients_with_appointments AS (
 
 patients_with_appointments_and_visits AS (
     SELECT
-        DISTINCT ON (
-            patients_with_appointments.patient_id,
-            patients_with_appointments.month_date
-        ) patients_with_appointments.*,
+        patients_with_appointments.*,
         visit_id,
         visited_at_after_appointment
     FROM
         patients_with_appointments
         LEFT JOIN lateral (
             SELECT
-                id AS visit_id,
+                DISTINCT ON (patient_id) id AS visit_id,
                 patient_id,
                 recorded_at AS visited_at_after_appointment
             FROM
@@ -60,8 +57,7 @@ patients_with_appointments_and_visits AS (
                 AND patient_id = patients_with_appointments.patient_id
                 AND patients_with_appointments.previous_appointment_date < blood_sugars.recorded_at
                 AND blood_sugars.recorded_at < patients_with_appointments.month_date + INTERVAL '1 month' + INTERVAL '15 days'
-            UNION
-            (
+            UNION ALL (
                 SELECT
                     id AS visit_id,
                     patient_id,
@@ -74,8 +70,7 @@ patients_with_appointments_and_visits AS (
                     AND patients_with_appointments.previous_appointment_date < blood_pressures.recorded_at
                     AND blood_pressures.recorded_at < patients_with_appointments.month_date + INTERVAL '1 month' + INTERVAL '15 days'
             )
-            UNION
-            (
+            UNION ALL (
                 SELECT
                     id AS visit_id,
                     patient_id,
@@ -88,8 +83,7 @@ patients_with_appointments_and_visits AS (
                     AND patients_with_appointments.previous_appointment_date < patients_with_appointments_visit.device_created_at
                     AND patients_with_appointments_visit.device_created_at < patients_with_appointments.month_date + INTERVAL '1 month' + INTERVAL '15 days'
             )
-            UNION
-            (
+            UNION ALL (
                 SELECT
                     id AS visit_id,
                     patient_id,
@@ -102,12 +96,10 @@ patients_with_appointments_and_visits AS (
                     AND patients_with_appointments.previous_appointment_date < prescription_drugs.device_created_at
                     AND prescription_drugs.device_created_at < patients_with_appointments.month_date + INTERVAL '1 month' + INTERVAL '15 days'
             )
+            ORDER BY
+                patient_id,
+                visited_at_after_appointment
         ) AS visits ON patients_with_appointments.patient_id = visits.patient_id
-    ORDER BY
-        patients_with_appointments.patient_id,
-        patients_with_appointments.month_date,
-        patients_with_appointments.previous_appointment_date DESC,
-        visited_at_after_appointment
 ),
 
 patient_with_call_results AS (
@@ -146,6 +138,7 @@ patient_with_call_results AS (
         next_call_results.device_created_at,
         previous_call_results.device_created_at DESC
 ),
+
 patient_with_call_results_and_phone AS (
     SELECT
         DISTINCT ON (
