@@ -438,7 +438,7 @@ Reports = function ({
         const ctx = chart.ctx;
         ctx.save();
         canvasDrawGoalLine(chart, goalValue);
-        canvasDrawGoalTextBubble(chart, goalValue);
+        canvasDrawGoalTextBubble(chart, goalValue, goalDownwards);
         canvasDrawLineFromGoalToBubble(chart, goalValue);
       },
     };
@@ -638,7 +638,8 @@ Reports = function ({
   
     const dateNow = new Date();
     const currentYearString = dateNow.getFullYear();
-    const text = `Goal: ${goalValue}% by end of ${currentYearString}`;
+    const aboveOrBelowString = goalDownwards ? "Below" : "Above";
+    const text = `Goal: ${aboveOrBelowString} ${goalValue}% by end of ${currentYearString}`;
     const font = "14px Roboto Condensed";
     ctx.font = font;
     ctx.fillStyle = textColor;
