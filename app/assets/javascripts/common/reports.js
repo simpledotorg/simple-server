@@ -402,7 +402,12 @@ DashboardReports = () => {
   }
 }
 
-Reports = function ({ withLtfu, showGoalLines }) {
+Reports = function ({
+  withLtfu,
+  showGoalLines,
+  regionType,
+  countryAbbreviation,
+}) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
@@ -426,14 +431,14 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   // goal-line functions
   // - config and calculations
-  function goalLinePlugin(goalValue) {
+  function goalLinePlugin(goalValue, goalDownwards = false) {
     return {
       id: "goalLine",
       beforeDraw: (chart) => {
         const ctx = chart.ctx;
         ctx.save();
         canvasDrawGoalLine(chart, goalValue);
-        canvasDrawGoalTextBubble(chart, goalValue);
+        canvasDrawGoalTextBubble(chart, goalValue, goalDownwards);
         canvasDrawLineFromGoalToBubble(chart, goalValue);
       },
     };
@@ -441,13 +446,16 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   const defaultMonthsRequired = 6;
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    if (monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired) {
+    if (
+      disabledForRegionLevel() ||
+      monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired
+    ) {
       return config;
     }
 
     const goal = calculateGoal(periodValues, goalDownwards);
     const goalLineConfig = {
-      plugins: [goalLinePlugin(goal)],
+      plugins: [goalLinePlugin(goal, goalDownwards)],
     };
     return mergeConfig(config, goalLineConfig);
   }
@@ -457,6 +465,19 @@ Reports = function ({ withLtfu, showGoalLines }) {
     return periodKeysArray.length;
   }
 
+  function disabledForRegionLevel() {
+    const enabledRegions = [
+      "organization",
+      "region",
+      "division",
+      "districtBD",
+    ];
+    // region types present in multiple countries
+    if (regionType === "district" || regionType === "facility") {
+      return enabledRegions.indexOf(regionType + countryAbbreviation) === -1;
+    }
+    return enabledRegions.indexOf(regionType) === -1;
+  }
   function calculateGoal(periodValues, goalDownwards) {
     const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
     const improvementRatio = relativeImprovementRatio(goalMonthIndex);
@@ -469,7 +490,13 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   function goalPeriodValue(periodValues) {
     const dateKeysArray = Object.keys(periodValues);
+
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
+    const isLastDateKeysArrayMonthDec =
+      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
+    if (isLastDateKeysArrayMonthDec) {
+      decemberKeys.splice(-1);
+    }
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
     const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
 
@@ -483,7 +510,6 @@ Reports = function ({ withLtfu, showGoalLines }) {
         goalMonthIndex,
       };
     }
-
     return {
       goalMonthValue: periodValues[mostRecentDecemberKey],
     };
@@ -590,7 +616,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
     ctx.fill();
   }
   
-  function canvasDrawGoalTextBubble(chart, goalValue) {
+  function canvasDrawGoalTextBubble(chart, goalValue, goalDownwards) {
     // draw text
     const ctx = chart.ctx;
     const cornerRadius = 10;
@@ -603,7 +629,8 @@ Reports = function ({ withLtfu, showGoalLines }) {
   
     const dateNow = new Date();
     const currentYearString = dateNow.getFullYear();
-    const text = `Goal: ${goalValue}% by end of ${currentYearString}`;
+    const aboveOrBelowString = goalDownwards ? "Below" : "Above";
+    const text = `Goal: ${aboveOrBelowString} ${goalValue}% by end of ${currentYearString}`;
     const font = "14px Roboto Condensed";
     ctx.font = font;
     ctx.fillStyle = textColor;
