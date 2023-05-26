@@ -8,7 +8,6 @@ class GetBsnlAccountBalance
 
   def initialize
     @recharge_details = Messaging::Bsnl::Api.new.get_account_balance
-    @expiry_date = Date.parse(recharge_details.map { |recharge| recharge["Balance_Expiry_Time"] }.max).beginning_of_day
     @total_balance_remaining = recharge_details.map { |recharge_detail| recharge_detail["SMS_Balance_Count"].to_i }.sum
   end
 
@@ -24,6 +23,10 @@ class GetBsnlAccountBalance
   private
 
   def balance_expiry_message
+    return "Account balance is zero" if recharge_details.empty?
+
+    expiry_date = Date.parse(recharge_details.map { |recharge| recharge["Balance_Expiry_Time"] }.max).beginning_of_day
+
     if expiry_date < BALANCE_EXPIRY_ALERT_DAYS.days.from_now
       "Account balance is going to expire in less than #{BALANCE_EXPIRY_ALERT_DAYS} days. Please extend validity before #{expiry_date.strftime("%d-%b-%y")}"
     elsif total_balance_remaining < (MAX_DAILY_MESSAGE_SEGMENT_COUNT * BALANCE_EXPIRY_ALERT_DAYS)
