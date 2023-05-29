@@ -6,7 +6,7 @@ To start an SMS experiment you'll need to gather information about the following
 #### Experiment
 
 - `name` - A name for the experiment.
-- `type` - There are two kinds of experiments depending on the type of the patients that will be enrolled.
+- `experiment_type` - There are two kinds of experiments depending on the type of the patients that will be enrolled.
   - `current_patients` - Patients who have an upcoming appointment.
   - `stale_patients` - Patients who have not visited in the last year and do not have a scheduled appointment in the future.
 - `max_patients_per_day` - The maximum number of patients to be enrolled per day.
@@ -25,8 +25,10 @@ To start an SMS experiment you'll need to gather information about the following
   Each reminder template has
   - a `message` - The locale key of the message (for ex. `notifications.set01.basic`).
   - a `remind_on` -  The day on which this message will be sent out relative to the expected date of return.
+  - The `message` texts must be added to `config/locales/notifications/`.
+For India:
 - If the experiment has new messages and translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
-  [config](../config/data/bsnl_templates.yml).
+  [config](../config/data/bsnl_templates.yml). See [bsnl/sms_reminders.md](bsnl/sms_reminders.md)
 
 As an example, if you want to run this 3-message cascade for current patients
 - A reminder is sent 1 day before an upcoming appointment
@@ -47,20 +49,20 @@ For stale patients, it's relative to the date of enrollment in the experiment.
 
 ## Setup
 - Enable the `experiment` and `notifications` flipper flags.
-- Create a data migration in the style of [this data migration](db/data/20220412130957_create_apr2022_ihci_experiment.rb).
-It should setup the `experiment`, its `treatment_groups` and `reminder_templates`.
-- Put a guard clause to make sure the migration runs only in the env you want. Write a spec for the migration.
+- You'll need to create the `experiment`, its `treatment_groups` and `reminder_templates`. See [appendix](#appendix) for sample commands.
+- You can also put these commands in a data migration in the style of [this data migration](db/data/20220412130957_create_apr2022_ihci_experiment.rb) 
+instead of running them from rails console.
 
 **Note about consecutive experiments**
 
-An experiment that sends notifications in advance enrolls patients who have appointments in the future.
-For an experiment starting right after, this can mean that all the patients might've already been enrolled
-in the first one. Make sure there's at least a gap of these many days (only if this value is positive) to avoid this
+Make sure there's always a gap of at least these many days between two experiments (if this value is positive)
 ```ruby
- experiment_1 = Experimentation::Experiment.find("old experiment's id")
- experiment_2 = Experimentation::Experiment.find("new experiment's id")
- experiment_1.earliest_remind_on - experiment_2.earliest_remind_on
+experiment_1.earliest_remind_on - experiment_2.earliest_remind_on
 ```
+
+An experiment that sends notifications before an appointment enrolls patients who have appointments in the future.
+For an experiments that starts immediately after such an experiment, this can mean that patients in the first few days might've already been enrolled in the first one.
+This causes low enrollments in the second experiment.
 
 ## Running the experiment
 
@@ -72,12 +74,22 @@ When an experiment starts, you should
 - We get a daily summary on slack on #ab-testing-stats. Check on the "Pending notifications" report everyday. 
   This number should always be 0. If not, some reminder messages are not being sent to patients and this problem requires investigation.
   Inspect error reports in [Sentry](https://sentry.io/organizations/resolve-to-save-lives/issues/?project=1217715) to find and fix the problem.
-- Run `rake:get_account_balance` every once in a while, check the balance and recharge if needed.
+- Run `deploy:rake task="bsnl:get_account_balance"` every once in a while, check the balance and recharge if needed.
 
 **Notes**
 
 - Depending on the cadence, notifications may go out for a few days after the experiment has "ended".
 - Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date.
+- Monitoring includes:
+  - Recording the statuses of notifications
+  - Marking visits for patients who returned to care
+  - Evicting patients who have invalid data
+- Reasons for eviction:
+  - appointment_moved - the appointment was rescheduled or patient agreed to visit on a later date. This makes the
+  `days_to_visit` calculation dubious so we just evict the patient.
+  - new_appointment_created_after_enrollment
+  - notification_failed
+  - patient_soft_deleted
 
 ### Important links
 
@@ -90,10 +102,18 @@ If you're adding any new reports to the IHCI dashboard save them in this [collec
 so it's viewable by other people.
 
 ### Cancelling an experiment
+You might want to cancel an experiment because of
+- issues with the setup/data consistency
+- issues with sending notifications
 
+In that case you can run
 ```ruby
 Experimentation::NotificationsExperiment.find("experiment id").cancel
 ```
+
+This will soft-delete the experiment, which means it will not enroll, notify and monitor anymore.
+If you want to only stop enrolling but notify and monitor the remaining patients,
+change the `end_time` of the experiment.
 
 ## In the long run
 
@@ -105,4 +125,39 @@ Experimentation::NotificationsExperiment.find("experiment id").cancel
   We will have to think about [archiving them frequently](https://app.shortcut.com/simpledotorg/story/7931/data-archival-strategy-for-notification-communication-and-delivery-detail-records)
   once we start doing regular notifications.
 
+## Appendix
 
+Creating a sample experiment
+```ruby
+start_time = Date.parse("6 May 2023").beginning_of_day
+end_time = Date.parse("6 May 2023").beginning_of_day
+
+# Creating an experiment that targets patients with upcoming visits.
+e = Experimentation::Experiment.create!(
+  name: "Current Patient May 2023 Official Short",
+  experiment_type: "current_patients",
+  start_time: start_time,
+  end_time: end_time,
+  max_patients_per_day: 20000
+)
+# Create treatment groups. This group has 2 messages sent 3 days before and
+# 7 days after visit.
+cascade_tg = e.treatment_groups.create!(description: "official_short_cascade")
+cascade_tg.reminder_templates.create!(message: "notifications.set03.official_short", remind_on_in_days: -3)
+cascade_tg.reminder_templates.create!(message: "notifications.set03.official_short", remind_on_in_days: 7)
+# This group sends 1 message on the day of visit.
+single_tg = e.treatment_groups.create!(description: "official_short_single")
+single_tg.reminder_templates.create!(message: "notifications.set02.official_short", remind_on_in_days: -3)
+
+# Creating a stale patient experiment
+e = Experimentation::Experiment.create!(
+  name: "Stale Patient May 2023 Official Short",
+  experiment_type: "stale_patients",
+  start_time: start_time,
+  end_time: end_time,
+  max_patients_per_day: 20000
+)
+tg = e.treatment_groups.create!(description: "official_short_cascade")
+tg.reminder_templates.create!(message: "notifications.set02.official_short", remind_on_in_days: 0)
+tg.reminder_templates.create!(message: "notifications.set03.official_short", remind_on_in_days: 7)
+```
