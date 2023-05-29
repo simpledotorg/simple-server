@@ -19,20 +19,20 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
-                 .where(facility_id: facility.id)
-                 .where("month_date < ?", two_years_ago)
-                 .pluck(:cumulative_registrations)).to all eq(nil)
+            .where(facility_id: facility.id)
+            .where("month_date < ?", two_years_ago)
+            .pluck(:cumulative_registrations)).to all eq(nil)
 
           expect(described_class
-                 .where(facility_id: facility.id)
-                 .where("month_date >= ?", two_years_ago)
-                 .where("month_date < ?", june_2021[:under_three_months_ago])
-                 .pluck(:cumulative_registrations)).to all eq(6)
+            .where(facility_id: facility.id)
+            .where("month_date >= ?", two_years_ago)
+            .where("month_date < ?", june_2021[:under_three_months_ago])
+            .pluck(:cumulative_registrations)).to all eq(6)
 
           expect(described_class
-                 .where(facility_id: facility.id)
-                 .where("month_date >= ?", june_2021[:under_three_months_ago])
-                 .pluck(:cumulative_registrations)).to all eq(9)
+            .where(facility_id: facility.id)
+            .where("month_date >= ?", june_2021[:under_three_months_ago])
+            .pluck(:cumulative_registrations)).to all eq(9)
         end
       end
     end
@@ -49,19 +49,19 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
-               .where(facility_id: facility.id)
-               .where("month_date < ?", month_2020_07)
-               .pluck(:monthly_registrations)).to all be nil
+            .where(facility_id: facility.id)
+            .where("month_date < ?", month_2020_07)
+            .pluck(:monthly_registrations)).to all be nil
 
           expect(described_class
-               .find_by(facility_id: facility.id, month_date: month_2020_07)
-               .monthly_registrations).to eq 2
+            .find_by(facility_id: facility.id, month_date: month_2020_07)
+            .monthly_registrations).to eq 2
 
           expect(described_class
-               .where(facility_id: facility.id)
-               .where("month_date > ?", month_2020_07)
-               .where("month_date < ?", month_2021_04)
-               .pluck(:monthly_registrations)).to all eq 0
+            .where(facility_id: facility.id)
+            .where("month_date > ?", month_2020_07)
+            .where("month_date < ?", month_2021_04)
+            .pluck(:monthly_registrations)).to all eq 0
 
           expect(described_class
                .find_by(facility_id: facility.id, month_date: month_2021_04)
