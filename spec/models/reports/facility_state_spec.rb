@@ -64,8 +64,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             .pluck(:monthly_registrations)).to all eq 0
 
           expect(described_class
-               .find_by(facility_id: facility.id, month_date: month_2021_04)
-               .monthly_registrations).to eq 3
+            .find_by(facility_id: facility.id, month_date: month_2021_04)
+            .monthly_registrations).to eq 3
         end
       end
     end
