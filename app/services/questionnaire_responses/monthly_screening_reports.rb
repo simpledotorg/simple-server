@@ -1,35 +1,31 @@
-class PreFillMonthlyScreeningReports
-  def self.call(date = 1.month.ago)
-    return unless Flipper.enabled?(:monthly_screening_reports)
+class QuestionnaireResponses::MonthlyScreeningReports
+  def initialize(date = 1.month.ago)
+    @month_date = date.beginning_of_month
+    @facility_reports = monthly_followup_and_registration
+    @questionnaire_id = latest_active_screening_reports_questionnaire_id
+  end
 
-    month_date = date.beginning_of_month
-    month_date_str = month_date.strftime("%Y-%m-%d")
-    facility_reports = monthly_followup_and_registration(month_date_str)
-
-    reports_exist = false
-    questionnaire = Questionnaire.monthly_screening_reports.active.order(:dsl_version).last
-    facility_reports.each do |facility_report|
-      if monthly_screening_report_exists?(facility_report.facility_id, month_date_str)
-        reports_exist = true
-      else
+  def pre_fill
+    @facility_reports.each do |facility_report|
+      unless monthly_screening_report_exists?(facility_report.facility_id)
         QuestionnaireResponse.create!(
-          questionnaire_id: questionnaire.id,
+          questionnaire_id: @questionnaire_id,
           facility_id: facility_report.facility_id,
           content: prefilled_responses(month_date_str, facility_report),
-          device_created_at: month_date,
-          device_updated_at: month_date
+          device_created_at: @month_date,
+          device_updated_at: @month_date
         )
       end
     end
-
-    if reports_exist
-      Rails.logger.error("Some/all monthly screening reports already existed during pre-fill task for month: %s" % month_date_str)
-    end
   end
 
-  private_class_method
+  private
 
-  def self.monthly_followup_and_registration(month_date_str)
+  def month_date_str
+    @month_date.strftime("%Y-%m-%d")
+  end
+
+  def monthly_followup_and_registration
     Reports::FacilityMonthlyFollowUpAndRegistration.where(
       month_date: month_date_str
     ).select(
@@ -45,16 +41,20 @@ class PreFillMonthlyScreeningReports
     ).load
   end
 
-  def self.monthly_screening_report_exists?(facility_id, month_date_str)
+  def latest_active_screening_reports_questionnaire_id
+    Questionnaire.monthly_screening_reports.active.order(dsl_version: :desc).first.id
+  end
+
+  def monthly_screening_report_exists?(facility_id)
     QuestionnaireResponse
       .where(facility_id: facility_id)
-      .merge(Questionnaire.monthly_screening_reports)
       .joins(:questionnaire)
+      .merge(Questionnaire.monthly_screening_reports)
       .where("content->>'month_date' = ?", month_date_str)
       .any?
   end
 
-  def self.prefilled_responses(month_date_str, facility_report)
+  def prefilled_responses(month_date_str, facility_report)
     content = {
       "month_date" => month_date_str,
       "submitted" => false
