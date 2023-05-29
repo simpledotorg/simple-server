@@ -19,20 +19,20 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
-            .where(facility_id: facility.id)
-            .where("month_date < ?", two_years_ago)
-            .pluck(:cumulative_registrations)).to all eq(nil)
+                 .where(facility_id: facility.id)
+                 .where("month_date < ?", two_years_ago)
+                 .pluck(:cumulative_registrations)).to all eq(nil)
 
           expect(described_class
-            .where(facility_id: facility.id)
-            .where("month_date >= ?", two_years_ago)
-            .where("month_date < ?", june_2021[:under_three_months_ago])
-            .pluck(:cumulative_registrations)).to all eq(6)
+                 .where(facility_id: facility.id)
+                 .where("month_date >= ?", two_years_ago)
+                 .where("month_date < ?", june_2021[:under_three_months_ago])
+                 .pluck(:cumulative_registrations)).to all eq(6)
 
           expect(described_class
-            .where(facility_id: facility.id)
-            .where("month_date >= ?", june_2021[:under_three_months_ago])
-            .pluck(:cumulative_registrations)).to all eq(9)
+                 .where(facility_id: facility.id)
+                 .where("month_date >= ?", june_2021[:under_three_months_ago])
+                 .pluck(:cumulative_registrations)).to all eq(9)
         end
       end
     end
@@ -49,23 +49,23 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
-            .where(facility_id: facility.id)
-            .where("month_date < ?", month_2020_07)
-            .pluck(:monthly_registrations)).to all be nil
+               .where(facility_id: facility.id)
+               .where("month_date < ?", month_2020_07)
+               .pluck(:monthly_registrations)).to all be nil
 
           expect(described_class
-            .find_by(facility_id: facility.id, month_date: month_2020_07)
-            .monthly_registrations).to eq 2
+               .find_by(facility_id: facility.id, month_date: month_2020_07)
+               .monthly_registrations).to eq 2
 
           expect(described_class
-            .where(facility_id: facility.id)
-            .where("month_date > ?", month_2020_07)
-            .where("month_date < ?", month_2021_04)
-            .pluck(:monthly_registrations)).to all eq 0
+               .where(facility_id: facility.id)
+               .where("month_date > ?", month_2020_07)
+               .where("month_date < ?", month_2021_04)
+               .pluck(:monthly_registrations)).to all eq 0
 
           expect(described_class
-            .find_by(facility_id: facility.id, month_date: month_2021_04)
-            .monthly_registrations).to eq 3
+               .find_by(facility_id: facility.id, month_date: month_2021_04)
+               .monthly_registrations).to eq 3
         end
       end
     end
@@ -610,6 +610,672 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         .not_to include([facility_1.id, 2.months.ago.at_beginning_of_month],
           [facility_1.id, 1.months.ago.at_beginning_of_month])
       expect(rows.pluck(:facility_id)).not_to include(facility_2.id)
+    end
+  end
+
+  context "monthly overdue patients" do
+    describe "overdue_patients" do
+      it "should return number of overdue patients assigned to the facility at beginning of a month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients).to eq(1)
+        end
+      end
+
+      it "should exclude overdue patients who are LTFU" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility, device_created_at: june_2021[:two_years_ago])
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:twelve_months_ago], scheduled_date: june_2021[:twelve_months_ago] + 15.days)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: june_2021[:now], facility_id: facility.id).overdue_patients).to eq(0)
+        end
+      end
+    end
+
+    describe "contactable_overdue_patients" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date - 14.days, appointment: appointment,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
+        end
+      end
+
+      it "should exclude overdue patients who does not have a phone number" do
+        facility = create(:facility)
+        patient = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
+        end
+      end
+    end
+
+    describe "overdue_patients_called" do
+      it "should only include overdue patients who were called atleast once during the month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called).to eq(1)
+        end
+      end
+
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date - 14.days, appointment: appointment,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_called).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_overdue_patients_called" do
+      it "should only include overdue patients who were called atleast once during the month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_called).to eq(1)
+        end
+      end
+
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date - 14.days, appointment: appointment,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_called).to eq(0)
+        end
+      end
+
+      it "should exclude overdue patients who doesn't have a phone number" do
+        facility = create(:facility)
+        patient = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(0)
+        end
+      end
+    end
+
+    describe "patients_called_with_result_agreed_to_visit" do
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+    end
+
+    describe "patients_called_with_result_remind_to_call_later" do
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+    end
+
+    describe "patients_called_with_result_removed_from_list" do
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do
+        facility = create(:facility)
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        month_date = june_2021[:now]
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_removed_from_list).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_patients_called_with_result_agreed_to_visit" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+
+        patient_removed_from_list = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_removed_from_list, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date - 14.days, appointment: appointment_2,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient_with_phone = create(:patient, :with_sanitized_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_with_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_with_phone, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_patients_called_with_result_remind_to_call_later" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+
+        patient_removed_from_list = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_removed_from_list, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date - 14.days, appointment: appointment_2,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient_with_phone = create(:patient, :with_sanitized_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_with_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_with_phone, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_patients_called_with_result_removed_from_list" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        patient_removed_from_list = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_removed_from_list, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date - 14.days, appointment: appointment_2,
+               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
+        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(1)
+        end
+      end
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+
+        patient_with_phone = create(:patient, :with_sanitized_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_with_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_with_phone, device_created_at: month_date, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(1)
+        end
+      end
+    end
+
+    describe "overdue_patients_returned_after_call" do
+      it "should only include overdue patients who returned to care after a call during the month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_returned_after_call).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who were called atleast once during the month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_returned_after_call).to eq(0)
+        end
+      end
+
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date - 14.days, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients_returned_after_call).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_overdue_patients_returned_after_call" do
+      it "should exclude overdue patients who doesn't have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_returned_after_call).to eq(0)
+        end
+      end
+
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        create(:call_result, patient: patient, device_created_at: month_date - 14.days, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients_returned_after_call).to eq(0)
+        end
+      end
+    end
+
+    describe "patients_returned_with_result_agreed_to_visit" do
+      it "should only include overdue patients having result type of first call as 'agreed_to_visit'" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+        _second_call = create(:call_result, patient: patient, device_created_at: month_date + 1.day, appointment: appointment, result_type: :agreed_to_visit)
+
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+        _second_call = create(:call_result, patient: patient_called, device_created_at: month_date + 1.day, appointment: appointment_2, result_type: :remind_to_call_later)
+
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_during_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_agreed_to_visit).to eq(2)
+        end
+      end
+    end
+
+    describe "patients_returned_with_result_remind_to_call_later" do
+      it "should only include overdue patients having result type of first call as 'remind_to_call_later'" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        _second_call = create(:call_result, patient: patient, device_created_at: month_date + 1.day, appointment: appointment, result_type: :remind_to_call_later)
+
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1.day)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+        _second_call = create(:call_result, patient: patient_called, device_created_at: month_date + 1.day, appointment: appointment_2, result_type: :agreed_to_visit)
+
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_during_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_remind_to_call_later).to eq(2)
+        end
+      end
+    end
+
+    describe "patients_returned_with_result_removed_from_overdue_list" do
+      it "should only include overdue patients having result type of first call as 'removed_from_overdue_list'" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        _second_call = create(:call_result, patient: patient, device_created_at: month_date + 1.day, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1.day)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _first_call = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _second_call = create(:call_result, patient: patient_called, device_created_at: month_date + 1.day, appointment: appointment_2, result_type: :agreed_to_visit)
+
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_removed_from_list).to eq(1)
+        end
+      end
+
+      it "should include overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_after_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_removed_from_list).to eq(2)
+        end
+      end
+    end
+
+    describe "contactable_patients_returned_with_result_agreed_to_visit" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_during_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient_without_phone, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_agreed_to_visit).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_patients_returned_with_result_remind_to_call_later" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_during_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient_without_phone, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :remind_to_call_later)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_remind_to_call_later).to eq(1)
+        end
+      end
+    end
+
+    describe "contactable_patients_returned_with_result_removed_from_overdue_list" do
+      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_before_month = create(:call_result, patient: patient, device_created_at: month_date - 14, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        _call_during_month = create(:call_result, patient: patient, device_created_at: month_date, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:blood_pressure, patient: patient, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_removed_from_list).to eq(1)
+        end
+      end
+
+      it "should only include overdue patients who have a phone number" do
+        facility = create(:facility)
+        month_date = june_2021[:now]
+        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
+        appointment = create(:appointment, patient: patient_without_phone, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_without_phone, device_created_at: month_date, appointment: appointment, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:blood_pressure, patient: patient_without_phone, device_created_at: month_date + 1)
+
+        patient_called = create(:patient, assigned_facility: facility, registration_facility: facility)
+        appointment_2 = create(:appointment, patient: patient_called, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _call_during_month = create(:call_result, patient: patient_called, device_created_at: month_date, appointment: appointment_2, result_type: :removed_from_overdue_list, remove_reason: :other)
+        create(:blood_pressure, patient: patient_called, device_created_at: month_date + 1)
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_removed_from_list).to eq(1)
+        end
+      end
     end
   end
 end
