@@ -1,4 +1,3 @@
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js" integrity="sha384-gdQErvCNWvHQZj6XZM0dNsAoY4v+j5P1XDpNkcM3HJG1Yx04ecqIHk7+4VBOCHOG" crossorigin="anonymous"></script>
 <% content_for :title do %>
  <%= @region.name %> | Hypertension
 <% end %>
@@ -11,7 +10,7 @@
   <div class="d-lg-flex w-lg-50 pr-lg-2">
     <div id="bp-controlled"
          data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
                 justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
 
       <div class="pt-20px px-20px">
@@ -51,7 +50,7 @@
       </div>
       <div>
         <div class="p-relative mb-12px">
-          <div class="h-320px mr-16px mb-12px ml-13px">
+          <div class="h-320px mr-8px ml-8px">
             <canvas id="controlledPatientsTrend"></canvas>
           </div>
         </div>
@@ -216,9 +215,7 @@
     </div>
   </div>
 </div>
-
 <%= render "treatment_outcomes_card" %>
-
 <h4 class="mt-5 mb-32px">Details</h4>
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Hypertension::CoverageCardComponent.new(
@@ -231,7 +228,41 @@
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
 
-<h4 class="mt-5 mb-32px">Overdue</h4>
+<div class="d-flex jc-space-between">
+  <h4 class="mt-5 mb-32px">Overdue</h4>
+
+  <div class="d-flex" style="margin-top: 43px;">
+    <form method="get" name="overdue_form">
+      <div class="custom-control custom-switch checkbox-outside-card">
+        <input id="overdueFilter" type="checkbox" class="custom-control-input checkbox-outside-card">
+        <%# <input type="checkbox"
+              onChange="this.form.submit()"
+              name="with_ltfu"
+              for="ltfu_form"
+              class="custom-control-input"
+              id="<%= id %>
+        <%# <label class="font-weight-normal custom-control-label c-grey-dark"
+              for=""> %>
+          <label for="overdueFilter" class="font-weight-normal custom-control-label checkbox-outside-card">
+            Include filtered patients
+          </label>
+        <%# </label> %>
+        <% if params[:period].present? %>
+          <!-- Preserve period selection in reports header -->
+          <input type="hidden" for="ltfu_form" name="period[type]" value="<%= params[:period]["type"] %>">
+          <input type="hidden" for="ltfu_form" name="period[value]" value="<%= params[:period]["value"] %>">
+        <% end %>
+      </div>
+    </form>
+    <div class="ml-8px" style="margin-top: 2px;">
+      <%= render "definition_tooltip",
+                  definitions: { "" => t("overdue_toggle_tooltip.main"), 
+                                  "" => t("overdue_toggle_tooltip.additional"),
+                                  "list" => t("overdue_toggle_tooltip.list")} %>
+    </div>
+
+  </div>
+</div>
 
 <div class="d-lg-flex flex-lg-wrap">
   <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
@@ -291,6 +322,9 @@
 </div>
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    new Reports(<%= @with_ltfu %>).initialize();
+    new Reports({
+      withLtfu: <%= @with_ltfu %>,
+      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>
+    }).initialize();
   });
 </script>

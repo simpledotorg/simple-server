@@ -53,3 +53,6 @@ ti-ET:
       official_no_date: "ጸቕጢ ደም ንምዕቃን ሎሚ ናብ %{facility_name}ምጻእ, %{patient_name}። ሓኪምካ ጥዕናኻ ክትረክብ እዩ ዝምነ።"
     covid:
       medication_reminder: "ክቡር %{patient_name}፡ ኣብ %{facility_name} ዝርከቡ ሰራሕተኛታትና ኣብዚ ናይ ኮቪድ ህጹጽ ግዜ ብዛዕባኹምን ብዛዕባ ጥዕና ልብኹምን ይሓስቡ ኣለዉ እዮም። ናይ BP መድሓኒታትኩም ክትቅጽሉሉ ኣገዳሲ እዩ። ነጻ መድሓኒትኩም ካብ ቐረባ ንኡስ ማእኸል ወይ ማእኸል ድሕነት ጥዕና ከይድኩም ርኸቡ። ምስ ናትኩም ANM ወይ ASHA ተራኸቡ። "
+    sri_lanka:
+      one_day_before_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"
+      three_days_missed_appointment: "Do Not Translate. Only meant for si-LK Sinhala-Sri Lanka"

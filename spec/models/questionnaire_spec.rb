@@ -11,23 +11,44 @@ RSpec.describe Questionnaire, type: :model do
         create_list(:questionnaire,
           2,
           questionnaire_type: "monthly_screening_reports",
-          dsl_version: 1,
+          dsl_version: "1",
           is_active: true)
       }.to raise_error(ActiveRecord::RecordInvalid)
     end
 
     it "allows multiple inactive forms per type" do
       expect {
-        create_list(:questionnaire, 2, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
-        create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
+        create_list(:questionnaire, 2, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: false)
+        create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: true)
       }.to change { Questionnaire.count }.by 3
     end
 
-    it "validates the specimen layout using the swagger schema" do
-      questionnaire = build(:questionnaire, layout: Api::V4::Models::Questionnaires::MonthlyScreeningReport.layout)
+    it "validates DSL version follows X.Y semver" do
+      allow_any_instance_of(Questionnaire).to receive(:validate_layout)
+
+      ["1a", "1.a", "1.", "a1", "a.1", "-1.1", "+2.2", ".1"].each do |dsl_version|
+        expect {
+          create(:questionnaire, dsl_version: dsl_version)
+        }.to raise_error(ActiveRecord::RecordInvalid, "Validation failed: Dsl version should be a Semver of pattern X.Y where X & Y are integers")
+      end
+    end
+
+    it "validates the specimen layout for dsl_version_1 using the swagger schema" do
+      questionnaire = build(:questionnaire, dsl_version: "1", layout: Api::V4::Models::Questionnaires::SpecimenLayout::DSLVERSION1)
       expect(questionnaire).to receive(:validate_layout).and_call_original
 
       questionnaire.save!
+    end
+
+    it "validates the specimen layout for dsl_version_1_1 using the swagger schema" do
+      questionnaire = build(:questionnaire, dsl_version: "1.1", layout: Api::V4::Models::Questionnaires::SpecimenLayout::DSLVERSION1DOT1)
+      expect(questionnaire).to receive(:validate_layout).and_call_original
+
+      questionnaire.save!
+    end
+
+    it "raises error for unsupported dsl_version" do
+      expect { FactoryBot.create(:questionnaire, dsl_version: 100) }.to raise_error(StandardError)
     end
 
     it "ensures IDs are generated before validation" do
@@ -53,8 +74,8 @@ RSpec.describe Questionnaire, type: :model do
     end
 
     it "includes only the active forms" do
-      active_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: true)
-      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1, is_active: false)
+      active_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: true)
+      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1", is_active: false)
 
       expect(described_class.for_sync).to include(active_questionnaire)
     end
@@ -83,6 +104,13 @@ RSpec.describe Questionnaire, type: :model do
 
       questionnaire = build(:questionnaire, layout: layout)
       expect(questionnaire.localized_layout).to eq(localized_layout)
+    end
+
+    it "raises an exception when key is missing" do
+      layout = {"text" => "undefined_translation_key"}
+      questionnaire = build(:questionnaire, layout: layout)
+
+      expect { questionnaire.localized_layout }.to raise_error(I18n::MissingTranslationData)
     end
   end
 

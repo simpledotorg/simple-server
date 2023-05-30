@@ -120,7 +120,7 @@ en:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
       bp_passports:
-        heading_html: BP Passports
+        heading_html: "BP Passports"
         contents_html: Learn how to use BP Passport cards or BP Passport stickers in your hospital.
         video_link_html: How to use a BP Passport
         video_link_subtitle_html: Hindi with English subtitles
@@ -445,14 +445,38 @@ en:
         cohort_title: "Result from last visit in %{period}"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} registered in %{registration_period}"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} with %{threshold}"
-  monthly_screening_reports:
+  questionnaire_layout:
+    empty: ""
     male: "Male"
     female: "Female"
     transgender: "Transgender"
+    total: "Total"
+    yes_lc: "Yes"
+    no_lc: "No"
+    comments: "Comments"
+    instruction_1: "Leave blank if you don't know an amount"
+    instruction_2: 'Enter "0" if stock is out'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN & DM SCREENING"
+    # Ethiopia
+    total_bp: "Total BP screening done"
+    total_bs: "Total blood sugar screening done"
+    new_raised_cases: "NEW RAISED CASES"
+    total_bp_raised: "Total raised BP"
+    total_bs_raised: "Total raised BS"
+    total_bp_raised_ncd_linked: "Total raised BP cases linked to NCD clinic"
+    total_bs_raised_ncd_linked: "Total raised BS cases linked to NCD clinic"
+    diagnosed_cases: "DIAGNOSED CASES"
+    total_htn_diagnosed: "Total HTN Diagnosed"
+    total_dm_diagnosed: "Total DM Diagnosed"
+    cervical_cancer_uc: "CERVICAL CANCER"
+    total_women_screened_cervical: "Total women screened for Cervical Cancer"
+    total_women_treated_cervical: "Total women treated for Cervical Cancer"
+    total_women_followup_cervical: "Total women followed up after 1 year"
+    # India
     monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
     monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
     outpatient_department_visits: "Outpatient department visits"
-    htn_and_dm_screening: "HTN & DM SCREENING"
     total_bp_checks: "Total BP checks done"
     total_blood_sugar_checks: "Total blood sugar checks done"
     new_suspected_individuals: "NEW SUSPECTED INDIVIDUALS"
@@ -470,4 +494,44 @@ en:
     oral_cancer: "Oral cancer"
     breast_cancer: "Breast cancer"
     cervical_cancer: "Cervical cancer"
-
+  monthly_supplies_report:
+    instruction_1: "Enter the supplies left in stock at the end of every month"
+    stock_on_hand: "Stock on hand"
+    stock_on_hand_uc: "STOCK ON HAND"
+    working_equipments: "WORKING EQUIPMENTS"
+    glucose_strips: "Blood Glucose Test strips"
+    total_working_condition: "Total in working condition"
+    # Bangladesh
+    patient_books: "Patient books"
+    available_bp_monitors_arm_in: "Total available BP monitors (arm-in)"
+    functioning_bp_monitors_arm_in: "Functioning BP monitors (arm-in)"
+    available_bp_monitors_handheld: "Total available BP monitors (handheld)"
+    functioning_bp_monitors_handheld: "Functioning BP monitors (handheld)"
+    available_blood_glucose_monitors: "Total available Blood Glucose monitors"
+    functioning_blood_glucose_monitors: "Functioning Blood Glucose monitors"
+    # Ethiopia
+    bp_monitor: "BP monitor"
+    glucose_meter: "Blood glucose meter"
+    stethoscope: "Stethoscope"
+    height_weight_machine: "Height & Weight Measuring Machine"
+    waist_tape: "Tape for waist circumference measure"
+    # India
+    glucometer_strips: "Glucometer strips"
+    # Sri Lanka
+    equipment: "EQUIPMENT"
+    available_bp_devices: "Total available BP devices"
+    functioning_bp_devices: "Functioning BP devices"
+    available_phones: "Total available Mobile phones"
+    functioning_phones: "Functioning Mobile phones"
+    drug_stock: "DRUG STOCK"
+    drug_stock_losartan: "Enough drugs for next month: Losartan"
+    drug_stock_amlodipine: "Enough drugs for next month: Amlodipine"
+    drug_stock_hct: "Enough drugs for next month: HCT (Hydrochlorathiazide)"
+    trained_staff: "TRAINED STAFF"
+    doctors_count: "Number of Doctors attending medical clinic"
+    nurses_count: "Number of Nurses attending medical clinic"
+    pharmacists_count: "Number of Pharmacists available at the hospital"
+    drug_dispensers_count: "Number of Drug Dispensers available at the hospital"
+    others: "OTHERS"
+    television_functional: "Are health education messages displayed at the Medical Clinic using a television screen?"
+    wifi_functional: "Is Wi-Fi network available?"

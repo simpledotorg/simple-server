@@ -34,9 +34,6 @@ blocks:
           value: "test"
         - name: TB_RSPEC_OPTIONS
           value: "--profile --format RspecJunitFormatter --out junit.xml"
-      secrets:
-        - name: sentry-release-auth-token
-        - name: semaphore-deploy-key
       jobs:
         - name: StandardRB
           commands:

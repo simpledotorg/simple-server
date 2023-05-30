@@ -44,7 +44,7 @@ si-LK:
     achievements: "ජයග්‍රහණයන්"
     hypertension_patients: "අධ්‍යාතති රෝගීන්"
     notes: "සටහන්"
-    footer_note_1: "දත්ත %{facility_name} හි සියලු ක්‍රියාකාරකම් සඳහා වේ. දත්ත යල් පැන ඇති බවක් දක්නට ලැබේ නම්, මුල් තිරයේ \"සමමුහුර්ත කිරීමට අපේෂිතයි\" සබැඳියට තට්ටු කරන්න."
+    footer_note_1: "දත්ත %{facility_name} හි සියලු ක්‍රියාකාරකම් සඳහා වේ. දත්ත යල් පැන ඇති බවක් දක්නට ලැබේ නම්, මුල් තිරයේ \"සමමුහුර්ත කිරීමට අපේෂිතයි\" සබැඳියට තට්ටු කරන්න."
     thank_you: "ඔබට ස්තූතියි"
     thank_you_note: "අධ්‍යාතතිය සහිත රෝගීන්ට ප්‍රතිකාර කිරීමේ වෙහෙසකර සේවය සම්බන්ධයෙන් ඔබ සැමට ස්තූතියි. ඔබගේ සේවය, හෘද රෝග සහ ආඝාත වලින් ජීවිත ආරක්ෂා කරයි."
     definition: "නිර්වචනය"
@@ -120,7 +120,7 @@ si-LK:
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: හින්දි
       bp_passports:
-        heading_html: රුපී බලපත්‍රයන්
+        heading_html: "රුපී බලපත්‍රයන්"
         contents_html: බීපී පාස්පෝට් කාඩ් හෝ බීපී පාස්පෝට් ස්ටිකර් ඔබගේ රෝහලේ භාවිතා කරන ආකාරය ඉ‍ගෙන ගන්න.
         video_link_html: බීපී පාස්පෝට් භාවිතා කරන්නේ කෙසේ ද
         video_link_subtitle_html: ඉංග්‍රීසි උපසිරැසි සහිත හින්දි
@@ -137,7 +137,7 @@ si-LK:
         contents_1_html: <i>අධ්‍යාතතිය සහිත සෑම රෝගියෙකුම</i> හෝ අධි රුපී සඳහා ඖෂධ ලබා ගන්නා සෑම රෝගියෙකුම වාර්තා කිරීම සඳහා Simple යෙදවුම ‍භාවිතා කරන්න.
         contents_2_html: "රෝගියා පසු-විපරම සඳහා නැවත පැමිණෙන විට, එම රෝගියා සොයාගෙන, නව රුධිර පීඩලය ඇතුළු කරන්න."
       step_1:
-        label_html: 1 පියවර
+        label_html: 1 පියවර
         heading_html: රෝගියාගේ රුපී
         contents_html: "නිවැරදි රුපී ලබා ගන්න: පාදයන් පොළවේ, ‍කොන්ද පුටුවට හේත්තු වී, කතා නොකරමින්."
       step_2:
@@ -185,7 +185,7 @@ si-LK:
         heading_html: ඔබට බීපී පාස්පෝට් <i>නැති නම්</i>
         step_1_html: "<span class=\"code\">රෝගියාගේ නම ඇතුළත් කරන්න</span>"
         step_2_html: ඔබගේ රෝගියාගේ සම්පූර්ණ නම ඇතුළත් කරන්න.
-        step_3_html: "සෙවුම් ප්‍රතිඵලයන්හි ඔබට රෝගියාව දකින්නට නොලැබේ නම්, <span class=\"code\">අලුත් රෝගියෙකු ලෙස ලියාපදිංචි කරන්න</span> මත තට්ටු කරන්න."
+        step_3_html: "සෙවුම් ප්‍රතිඵලයන්හි ඔබට රෝගියාව දකින්නට නොලැබේ නම්, <span class=\"code\">අලුත් රෝගියෙකු ලෙස ලියාපදිංචි කරන්න</span> මත තට්ටු කරන්න."
         step_4_html: ලියාපදිංචි කිරීමේ පෝරමය පුරවන්න.
         step_5_html: "ඔබගේ රෝගියාට කතා කොට, අනතුරුව වෛද්‍ය ඉතිහාසය සම්පූර්ණ කරන්න."
         step_6_html: "රෝගී හමුව වාර්තා කරන්න, <span class=\"code\">සුරකින්න</span> ඔබන්න."
@@ -194,7 +194,7 @@ si-LK:
         tip_1_html: "සෑමවිටම රෝගියා නිවැරදි පහසුකමට වාර්තා කිරීමට වග බලා ගන්න. මුල් තිරයේ, සෑමවිටම ඉහළ වම් කෙළවරෙහි පහසුකම පරීක්ෂා කරන්න."
         tip_2_html: ඔබට හැකි නම් ජංගම දුරකථන අංකය ඇතුළත් කරන්න!
         tip_3_html: "ඔබට පසු විපරම් රෝගියෙකු සොයා ගැනීමට නොහැකි නම්, ඔහුව නව රෝගියෙකු ලියාපදිංචි කිරීම යෝග්‍ය වේ."
-        tip_4_html: "රෝගියෙකු බීපී පාස්පෝට් අස්ථානගත වුවහොත්, කරුණාකර ඔහුට අලුත් එකක් ලබා දෙන්න. ඒක් රෝගියෙකුට බීපී පාස්පෝට් කිහිපයක් තබා ගත හැකිය, ඒවා සියල්ලක්ම නිසියාකාරයෙන් ක්‍රියාත්මක වනු ඇත."
+        tip_4_html: "රෝගියෙකු බීපී පාස්පෝට් අස්ථානගත වුවහොත්, කරුණාකර ඔහුට අලුත් එකක් ලබා දෙන්න. ඒක් රෝගියෙකුට බීපී පාස්පෝට් කිහිපයක් තබා ගත හැකිය, ඒවා සියල්ලක්ම නිසියාකාරයෙන් ක්‍රියාත්මක වනු ඇත."
     search:
       heading_html: නිවැරදි රෝගියාව සොයා ගන්න
       find_patient:
@@ -445,14 +445,38 @@ si-LK:
         cohort_title: "%{period} හි අවසන් සංචාරයේ ප්‍රතිඵලය"
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} හි ලියාපදිංචි වී ඇත"
         cohort_bar_tooltip: "%{threshold} සමඟ %{total_patients} %{patient_or_patients}"
-  monthly_screening_reports:
+  questionnaire_layout:
+    empty: ""
     male: "පුරුෂ"
     female: "ස්ත්‍රී"
     transgender: "සංක්‍රාන්ති"
+    total: "එකතුව"
+    yes_lc: "ඔව්"
+    no_lc: "නැත"
+    comments: "අදහස්"
+    instruction_1: "ඔබ ප්‍රමාණයක් නොදන්නේ නම් හිස්ව තබන්න"
+    instruction_2: 'තොග අවසන්ව ඇතිනම් "0" ඇතුලත් කරන්න'
+  monthly_screening_report:
+    htn_and_dm_screening: "HTN සහ DM රෝග පරීක්ෂණය"
+    # Ethiopia
+    total_bp: "සම්පූර්ණ BP පරීක්ෂණය සිදු කර ඇත"
+    total_bs: "සම්පූර්ණ රුධිර සීනි පරීක්ෂණය සිදු කර ඇත"
+    new_raised_cases: "අලුතින් මතු වූ අවස්ථා"
+    total_bp_raised: "සම්පූර්ණ වැඩි වූ BP"
+    total_bs_raised: "සම්පූර්ණ වැඩි වූ BS"
+    total_bp_raised_ncd_linked: "NCD සායනයට සම්බන්ධ සම්පූර්ණ වැඩි වූ BP රෝගීන්"
+    total_bs_raised_ncd_linked: "NCD සායනයට සම්බන්ධ සම්පූර්ණ වැඩි වූ BS රෝගීන්"
+    diagnosed_cases: "රෝග විනිශ්චය කළ රෝගීන්"
+    total_htn_diagnosed: "රෝග විනිශ්චය කළ සම්පූර්ණ HTN"
+    total_dm_diagnosed: "රෝග විනිශ්චය කළ සම්පූර්ණ DM"
+    cervical_cancer_uc: "ගැබ්ගෙල පිළිකාව"
+    total_women_screened_cervical: "ගැබ්ගෙල පිළිකාව සඳහා පරීක්ෂාවට ලක්වූ මුළු කාන්තාවන් ගණන"
+    total_women_treated_cervical: "ගැබ්ගෙල පිළිකාව සඳහා ප්‍රතිකාර ලද මුළු කාන්තාවන් ගණන"
+    total_women_followup_cervical: "1 වසරකට පසුව පසු විපරම් කළ සම්පූර්ණ කාන්තාවන් ගණන"
+    # India
     monthly_opd_visits_gt_30: "වයස අවුරුදු 30 ට වැඩි වැඩිහිටියන් සඳහා මාසික OPD පැමිණීම්"
     monthly_opd_visits_gt_18: "වයස අවුරුදු 18 ට වැඩි වැඩිහිටියන් සඳහා මාසික OPD පැමිණීම්"
     outpatient_department_visits: "බාහිර රෝගී අංශ පැමිණීම්"
-    htn_and_dm_screening: "HTN සහ DM රෝග පරීක්ෂණය"
     total_bp_checks: "සිදු කළ සම්පූර්ණ බීපී පරීක්ෂා"
     total_blood_sugar_checks: "සිදු කළ සම්පූර්ණ රුධිර සීනි පරීක්ෂා"
     new_suspected_individuals: "නව සැක සහිත පුද්ගලයින්"
@@ -470,4 +494,44 @@ si-LK:
     oral_cancer: "මුඛ පිළිකාව"
     breast_cancer: "පියයුරු පිළිකාව"
     cervical_cancer: "ගැබ් ගෙල පිළිකාව"
-
+  monthly_supplies_report:
+    instruction_1: "සෑම මසකම අවසානයේ තොගයේ ඉතිරිව ඇති සැපයුම් ගණන ඇතුල් කරන්න"
+    stock_on_hand: "අත ඉතිරි තොගය"
+    stock_on_hand_uc: "අත ඉතිරි තොගය"
+    working_equipments: "වැඩ කරන උපකරණ"
+    glucose_strips: "රුධිර ග්ලූකෝස් පරීක්ෂණ පටි"
+    total_working_condition: "වැඩ කරන තත්වයේ ඇති සම්පූර්ණ ගණන"
+    # Bangladesh
+    patient_books: "රෝගීන්ගේ පොත්"
+    available_bp_monitors_arm_in: "ලද හැකි BP මොනිටර් ගණනේ (අතේ-පළඳින) එකතුව"
+    functioning_bp_monitors_arm_in: "ක්‍රියා කරන BP මොනිටර් ගණන (අතේ-පළඳින)"
+    available_bp_monitors_handheld: "ලද හැකි BP මොනිටර් ගණනේ (අතේ ගෙන යන) එකතුව"
+    functioning_bp_monitors_handheld: "ක්‍රියා කරන BP මොනිටර් ගණන (අතේ ගෙන යන)"
+    available_blood_glucose_monitors: "ලබා ගත හැකි මුළු රුධිර ග්ලූකෝස් මොනිටර"
+    functioning_blood_glucose_monitors: "ක්‍රියාකරන රුධිර ග්ලූකෝස් මොනිටර"
+    # Ethiopia
+    bp_monitor: "BP මොනිටරය"
+    glucose_meter: "රුධිර ග්ලූකෝස් මීටරය"
+    stethoscope: "වෛද්‍ය නළාව"
+    height_weight_machine: "උස සහ බර මැනීමේ යන්ත්‍රය"
+    waist_tape: "ඉණේ වට ප්‍රමාණය මැනීම සඳහා පටිය"
+    # India
+    glucometer_strips: "ග්ලූකෝමීටර තීරු"
+    # Sri Lanka
+    equipment: "උපකරණය"
+    available_bp_devices: "ලද හැකි BP උපාංග ගණනේ එකතුව"
+    functioning_bp_devices: "ක්‍රියා කරන BP උපාංග ගණන"
+    available_phones: "ලද හැකි ජංගම දුරකථන ගණනේ එකතුව"
+    functioning_phones: "ක්‍රියා කරන ජංගම දුරකථන"
+    drug_stock: "ඖෂධ තොගය"
+    drug_stock_losartan: "ලබන මාසය සඳහා ප්‍රමාණවත් ඖෂධ: ලොසාර්ටන්"
+    drug_stock_amlodipine: "ලබන මාසය සඳහා ප්‍රමාණවත් ඖෂධ: ඇම්ලොඩිපින්"
+    drug_stock_hct: "ලබන මාසය සඳහා ප්‍රමාණවත් ඖෂධ: HCT (හයිඩ්‍රොක්ලෝරතයසයිඩ්)"
+    trained_staff: "පුහුණු කාර්ය මණ්ඩලය"
+    doctors_count: "වෛද්‍ය සායනයට සහභාගී වන වෛද්‍යවරුන් සංඛ්‍යාව"
+    nurses_count: "වෛද්‍ය සායනයට සහභාගී වන හෙද සංඛ්‍යාව"
+    pharmacists_count: "රෝහලේ සිටින ඖෂධවේදීන් සංඛ්‍යාව"
+    drug_dispensers_count: "රෝහලේ ඇති ඖෂධ නිකුත්කරණ ගණන"
+    others: "අනෙක් අය"
+    television_functional: "වෛද්‍ය සායනයේ දී රූපවාහිනී තිරයක් භාවිතයෙන් සෞඛ්‍ය අධ්‍යාපන පණිවුඩ ප්‍රදර්ශනය කරන්නේ ද?"
+    wifi_functional: "Wi-Fi ජාලය ලද හැකිද?"
