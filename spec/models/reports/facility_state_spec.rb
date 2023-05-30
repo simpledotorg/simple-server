@@ -614,12 +614,23 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "monthly overdue patients" do
+    around do |example|
+      Timecop.return do
+        freeze_time_for_reporting_specs(example, today[:month])
+      end
+    end
+
     describe "overdue_patients" do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
+        month_date = today[:month]
         facility = create(:facility)
+
+        overdue_patient = create(:patient, assigned_facility: facility, registration_facility: facility)
+        _appointment_1 = create(:appointment, patient: overdue_patient, device_created_at: today[:two_months_ago], scheduled_date: month_date - 15.days)
+
         patient = create(:patient, assigned_facility: facility, registration_facility: facility)
-        month_date = june_2021[:now]
-        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:two_months_ago], scheduled_date: month_date - 15.days)
+        _appointment_2 = create(:appointment, patient: patient, device_created_at: today[:two_months_ago], scheduled_date: month_date - 15.days)
+        _visit = create(:blood_pressure, patient: patient, device_created_at: month_date - 15.days)
 
         RefreshReportingViews.refresh_v2
 
@@ -629,14 +640,19 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       end
 
       it "should exclude overdue patients who are LTFU" do
+        month_date = today[:month]
         facility = create(:facility)
-        patient = create(:patient, assigned_facility: facility, registration_facility: facility, device_created_at: june_2021[:two_years_ago])
-        _appointment = create(:appointment, patient: patient, device_created_at: june_2021[:twelve_months_ago], scheduled_date: june_2021[:twelve_months_ago] + 15.days)
+
+        ltfu_patient = create(:patient, assigned_facility: facility, registration_facility: facility, device_created_at: today[:long_ago])
+        _appointment = create(:appointment, patient: ltfu_patient, device_created_at: today[:twelve_months_ago], scheduled_date: today[:twelve_months_ago] + 15.days)
+
+        patient = create(:patient, assigned_facility: facility, registration_facility: facility, device_created_at: today[:long_ago])
+        _appointment = create(:appointment, patient: patient, device_created_at: today[:two_months_ago], scheduled_date: month_date - 15.days)
 
         RefreshReportingViews.refresh_v2
 
         with_reporting_time_zone do
-          expect(described_class.find_by(month_date: june_2021[:now], facility_id: facility.id).overdue_patients).to eq(0)
+          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients).to eq(1)
         end
       end
     end
