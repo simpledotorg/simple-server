@@ -9,7 +9,7 @@ describe Api::V4::QuestionnairesController, type: :controller do
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { Questionnaire }
-  let(:dsl_version) { 1 }
+  let(:dsl_version) { "1" }
 
   before do
     @questionnaire_types = stub_questionnaire_types
@@ -134,22 +134,41 @@ describe Api::V4::QuestionnairesController, type: :controller do
       end
     end
 
-    it "returns questionnaires only for given DSL Version" do
-      version_1_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
-      version_2_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 2)
+    it "returns questionnaires with the same major dsl_version uptil given minor version" do
+      allow_any_instance_of(Questionnaire).to receive(:validate_layout)
 
-      get :sync_to_user, params: {dsl_version: 1}
-      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_1_questionnaire.id
+      questionnaire_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "1")
+      create(:questionnaire, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1") # Inactive questionnaire
+      questionnaire_1_1 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.second, dsl_version: "1.1")
 
-      get :sync_to_user, params: {dsl_version: 2}
-      expect(JSON(response.body)["questionnaires"].first["id"]).to eq version_2_questionnaire.id
+      create(:questionnaire, :active, questionnaire_type: @questionnaire_types.third, dsl_version: "1.2") # Higher DSL version
+      questionnaire_2 = create(:questionnaire, :active, questionnaire_type: @questionnaire_types.first, dsl_version: "2.0")
+
+      # For clients supporting DSL version "1.1", return all questionnaires from 1 to 1.1.
+      get :sync_to_user, params: {dsl_version: "1.1"}
+      expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array([questionnaire_1.id, questionnaire_1_1.id])
+
+      get :sync_to_user, params: {dsl_version: "2.1"}
+      expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array(questionnaire_2.id)
+    end
+
+    it "de-duplicates multiple questionnaires of same type by choosing latest DSL version" do
+      allow_any_instance_of(Questionnaire).to receive(:validate_layout)
+
+      create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.0")
+      create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.1")
+      questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.2")
+      create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1.3")
+
+      get :sync_to_user, params: {dsl_version: "1.2"}
+      expect(JSON(response.body)["questionnaires"].first["id"]).to eq questionnaire.id
     end
 
     it "returns only one questionnaire per questionnaire_type" do
-      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
-      active_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: 1)
+      _inactive_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports", dsl_version: "1")
+      active_questionnaire = create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1")
 
-      get :sync_to_user, params: {dsl_version: 1}
+      get :sync_to_user, params: {dsl_version: "1"}
       expect(JSON(response.body)["questionnaires"].pluck("id")).to contain_exactly active_questionnaire.id
     end
 

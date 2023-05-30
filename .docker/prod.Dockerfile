@@ -1,5 +1,5 @@
-# Ruby version 2.7.4
-FROM phusion/passenger-ruby27:2.0.1
+# Base image from https://github.com/simpledotorg/container-deployment/blob/master/docker/simple-server-base.Dockerfile
+FROM simpledotorg/server-base:latest
 
 SHELL ["/bin/bash", "-c"]
 
@@ -32,26 +32,6 @@ RUN mkdir -p /home/deploy/apps/simple-server/shared/log
 
 # Copy application files
 COPY --chown=app:app ./ ./
-
-## Install dependencies
-RUN apt-get update && apt-get upgrade -y && apt-get autoclean -y && apt-get autoremove -y && apt-get install -y \
-  redis-server \
-  jq \
-  cron \
-  vim \
-  s3cmd
-# Yarn
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg -o /root/yarn-pubkey.gpg && apt-key add /root/yarn-pubkey.gpg
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get install -y --no-install-recommends yarn
-# Node
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
-RUN apt-get update && apt-get install -y --no-install-recommends nodejs
-# Postgres client 14
-RUN apt policy postgresql && \
-  curl -fsSL https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/postgresql.gpg && \
-  echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-  apt update && apt install -y postgresql-client-14 && apt autoremove -y
 
 # Configure rails env
 ENV RAILS_ENV production
