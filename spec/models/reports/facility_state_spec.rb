@@ -648,7 +648,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
         month_date = current_month[:beginning_of_month]
         facility = create(:facility)
-
+        pp month_date
         overdue_patient = create(:patient, assigned_facility: facility, registration_facility: facility)
         _appointment_1 = create(:appointment, patient: overdue_patient, device_created_at: current_month[:two_months_ago], scheduled_date: month_date - 15.days)
 
