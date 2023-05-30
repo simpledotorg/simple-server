@@ -13,23 +13,23 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
     # TODO: Implement toggle logic. We can reuse the keys in the graph_data but inject the
     # filtered / non filtered data based on the toggle
     {
-      assignedPatients: @rates.map { |k, v| { k => v[:assignedPatients] } }.reduce(:merge),
-      overduePatients: @rates.map { |k, v| { k => v[:overduePatients] } }.reduce(:merge),
-      overduePatientsPercentage: @rates.map { |k, v| { k => v[:overduePatientsPercentage] } }.reduce(:merge),
-      testfigure: 'test',
+      assignedPatients: @rates.map { |k, v| {k => v[:assignedPatients]} }.reduce(:merge),
+      overduePatients: @rates.map { |k, v| {k => v[:overduePatients]} }.reduce(:merge),
+      overduePatientsPercentage: @rates.map { |k, v| {k => v[:overduePatientsPercentage]} }.reduce(:merge),
+      testfigure: "test",
       **period_data
     }
   end
 
   def gen_rates
     periods
-      .reduce({}) { |merged_values, val| merged_values.merge({ val => rand(1..10_000) }) }
+      .reduce({}) { |merged_values, val| merged_values.merge({val => rand(1..10_000)}) }
       .map do |period, value|
         overdue_count = rand(0..value)
         rate = overdue_count * 100 / value
-        { period => { assignedPatients: value,
-                      overduePatients: overdue_count,
-                      overduePatientsPercentage: rate } }
+        {period => {assignedPatients: value,
+                    overduePatients: overdue_count,
+                    overduePatientsPercentage: rate}}
       end
       .reduce(:merge)
   end
@@ -45,7 +45,7 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
     result = {
       endDate: period_info(:name)
     }
-    pp result 
+    pp result
   end
 
   def period_info(key)

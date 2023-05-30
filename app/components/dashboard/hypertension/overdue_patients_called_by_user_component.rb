@@ -30,7 +30,7 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
 
   def is_not_facility
     return false
-    if region.child_region_type != 'facility'
+    if region.child_region_type != "facility"
       return true
     end
     false
