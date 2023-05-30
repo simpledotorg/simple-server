@@ -874,7 +874,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         appointment_2 = create(:appointment, patient: overdue_patient_removed_from_list, device_created_at: current_month[:two_months_ago], scheduled_date: month_date - 15.days)
         create(:call_result, patient: overdue_patient_removed_from_list, device_created_at: month_date - 14.days, appointment: appointment_2,
                result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
-        create(:call_result, patient: patient_removed_from_list, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
+        create(:call_result, patient: overdue_patient_removed_from_list, device_created_at: month_date, appointment: appointment_2, result_type: :agreed_to_visit)
 
         RefreshReportingViews.refresh_v2
 
