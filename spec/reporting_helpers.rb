@@ -43,15 +43,19 @@ module ReportingHelpers
 
   def today
     timezone = Time.find_zone(Period::REPORTING_TIME_ZONE)
-    month_date = timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0) # Beginning of the month
+    year = Date.today.year
+    month = Date.today.month
+    month_date = timezone.local(year, month, 1, 0, 0, 0) # Beginning of the month
     {
       month: month_date,
       long_ago: month_date - 5.years,
-      month_string: "2021-06",
+      month_string: "#{year}-#{"%02d" % month}",
+      under_12_months_ago: timezone.local(year - 1, month + 1, 1, 0, 0, 1),
+      over_12_months_ago: timezone.local(year - 1, month + 1, 1, 0, 0, 1) - 1.second,
       beginning_of_month: month_date, # Beginning of current month
-      over_3_months_ago: timezone.local(2021, 3, 31, 0, 0, 0),
-      under_3_months_ago: timezone.local(2021, 4, 1, 0, 0, 0),
       end_of_month: timezone.local(2021, 6, 30, 23, 59, 59), # End of current month
+      under_3_months_ago: timezone.local(year, month - 2, 1, 0, 0, 0),
+      over_3_months_ago: timezone.local(year, month - 2, 1, 0, 0, 0) - 1.second,
       two_years_ago: month_date - 2.years,
       twelve_months_ago: month_date - 12.months,
       eleven_months_ago: month_date - 11.months,
