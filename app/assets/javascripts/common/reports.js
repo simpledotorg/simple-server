@@ -531,8 +531,8 @@ Reports = function ({
       "nov",
       "dec",
     ];
-    
-     return months.indexOf(month.toLowerCase());
+
+    return months.indexOf(month.toLowerCase());
   }
 
   function calculateGoalUpwards(monthValue, improvementRatio) {
@@ -569,7 +569,7 @@ Reports = function ({
     const chartBottom = chartArea.bottom;
     const chartHeight = chart.chartArea.height;
     const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
-  
+
     ctx.beginPath();
     ctx.moveTo(chartArea.left + 1, lineYPosition);
     ctx.lineTo(chartArea.right - 1, lineYPosition);
@@ -580,7 +580,52 @@ Reports = function ({
     ctx.stroke();
     ctx.restore();
   }
-  
+
+  function canvasDrawGoalZone(chart, goalValue, goalDownwards) {
+    const ctx = chart.ctx;
+    ctx.save();
+    const chartArea = chart.chartArea;
+    const chartBottom = chartArea.bottom;
+    const chartTop = chartArea.top;
+    const chartHeight = chart.chartArea.height;
+    const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, lineYPosition);
+    ctx.lineTo(chartArea.right, lineYPosition);
+    ctx.lineTo(chartArea.right, goalDownwards ? chartBottom : chartTop);
+    ctx.lineTo(chartArea.left, goalDownwards ? chartBottom : chartTop);
+    ctx.closePath();
+
+    const rgbaChartColor = chart.config.data.datasets[0].borderColor;
+    const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.075);
+    const textColor = changeRGBAColorOpacity(rgbaChartColor, 0.4);
+
+    ctx.fillStyle = fillColor || "rgba(0, 0, 0, 0.1)";
+    ctx.fill();
+
+    // canvasDrawGoalZoneText(chart)
+    // Draw centered text
+
+    // const text = "Goal Zone";
+    // ctx.font = "normal 15px Roboto Condensed";
+    // ctx.fillStyle = textColor;
+    // ctx.textAlign = "center";
+    // ctx.textBaseline = "middle";
+    // const textSize = ctx.measureText(text);
+    // const textWidth = textSize.width;
+
+    // ctx.fillText(
+    //   text,
+    //   (chartArea.right - chartArea.left) / 2 + textWidth / 2 + 2,
+    //   (chartHeight) / 2 + chartTop
+    // );
+    ctx.restore();
+
+  }
+
+  function canvasDrawGoalZoneText(chart) {}
+
   function canvasDrawRoundRect(
     ctx,
     x,
@@ -593,7 +638,7 @@ Reports = function ({
     const radius = radiusVar || 5;
     const height = heightVar + 4;
     const cornerRadius = radius + 1;
-  
+
     ctx.beginPath();
     ctx.moveTo(x + cornerRadius, y);
     ctx.lineTo(x + width - cornerRadius, y);
@@ -611,7 +656,7 @@ Reports = function ({
     ctx.lineTo(x, y + cornerRadius);
     ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
     ctx.closePath();
-  
+
     ctx.fillStyle = fillStyle || "grey";
     ctx.fill();
   }
@@ -622,11 +667,11 @@ Reports = function ({
     const cornerRadius = 10;
     const xTextPadding = 7;
     const yTextPadding = 2;
-  
+
     const rgbaChartColor = chart.config.data.datasets[0].borderColor;
     const textColor = rgbaChartColor;
     const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.15);
-  
+
     const dateNow = new Date();
     const currentYearString = dateNow.getFullYear();
     const aboveOrBelowString = goalDownwards ? "Below" : "Above";
@@ -634,19 +679,19 @@ Reports = function ({
     const font = "14px Roboto Condensed";
     ctx.font = font;
     ctx.fillStyle = textColor;
-  
+
     const textSize = ctx.measureText(text);
     const textWidth = textSize.width;
     const textHeight = parseInt(font, 10);
     const chartRight = chart.chartArea.right;
     const textXPos = chartRight - textWidth - xTextPadding;
     const textYPos = textHeight + yTextPadding;
-  
+
     ctx.fillStyle = textColor;
     ctx.strokeStyle = textColor;
     ctx.fillText(text, textXPos, textYPos);
     ctx.restore();
-  
+
     // draw background
     const backgroundFillXPos = chartRight - textWidth - xTextPadding * 2;
     const rectWidth = textWidth + xTextPadding * 2;
@@ -661,12 +706,12 @@ Reports = function ({
       fillColor
     );
   }
-  
+
   function canvasDrawLineFromGoalToBubble(chart, goalValue) {
     const lineWidth = 2;
     const currentRGBAColor = chart.config.data.datasets[0].borderColor;
     const bgColorString = changeRGBAColorOpacity(currentRGBAColor, 0.3);
-  
+
     const ctx = chart.ctx;
     const chartArea = chart.chartArea;
     const chartBottom = chartArea.bottom;
@@ -675,7 +720,7 @@ Reports = function ({
     const chartHeight = chart.chartArea.height;
     const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
     const xPos = chartRight - (chartWidth / 18) * 1.5 - lineWidth;
-  
+
     ctx.beginPath();
     ctx.moveTo(xPos, 23);
     ctx.lineTo(xPos, lineYPosition);
@@ -702,7 +747,8 @@ Reports = function ({
           {
             label: "BP controlled",
             data: Object.values(controlledGraphRate),
-            backgroundColor: colors.lightGreen,
+            // backgroundColor: colors.lightGreen,
+            fill: false,
             borderColor: colors.mediumGreen,
           },
         ],
@@ -788,7 +834,8 @@ Reports = function ({
           {
             label: "BP uncontrolled",
             data: Object.values(uncontrolledGraphRate),
-            backgroundColor: colors.lightRed,
+            // backgroundColor: colors.lightRed,
+            fill: false,
             borderColor: colors.mediumRed,
           },
         ],
@@ -876,7 +923,8 @@ Reports = function ({
           {
             label: "Missed visits",
             data: Object.values(missedVisitsGraphRate),
-            backgroundColor: colors.lightBlue,
+            // backgroundColor: colors.lightBlue,
+            fill: false,
             borderColor: colors.mediumBlue,
           },
         ],
