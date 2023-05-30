@@ -438,6 +438,7 @@ Reports = function ({
         const ctx = chart.ctx;
         ctx.save();
         canvasDrawGoalLine(chart, goalValue);
+        canvasDrawGoalZone(chart, goalValue, goalDownwards)
         canvasDrawGoalTextBubble(chart, goalValue, goalDownwards);
         canvasDrawLineFromGoalToBubble(chart, goalValue);
       },
@@ -457,7 +458,14 @@ Reports = function ({
     const goalLineConfig = {
       plugins: [goalLinePlugin(goal, goalDownwards)],
     };
-    return mergeConfig(config, goalLineConfig);
+    const configWithoutFill = removeFillFromChartConfig(config)
+    return mergeConfig(configWithoutFill, goalLineConfig);
+  }
+
+  function removeFillFromChartConfig(config) {
+    const updatedConfig = config
+    updatedConfig.data.datasets.forEach(dataset => dataset.backgroundColor = colors.transparent)
+    return updatedConfig
   }
 
   function monthsSinceFirstRegistration(periodValues) {
@@ -575,7 +583,7 @@ Reports = function ({
     ctx.lineTo(chartArea.right - 1, lineYPosition);
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
-    ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
+    ctx.strokeStyle = changeRGBAColorOpacity(chart.config.data.datasets[0].borderColor, 0.75)
     ctx.setLineDash([1, 6]);
     ctx.stroke();
     ctx.restore();
@@ -598,7 +606,7 @@ Reports = function ({
     ctx.closePath();
 
     const rgbaChartColor = chart.config.data.datasets[0].borderColor;
-    const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.075);
+    const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.065);
     const textColor = changeRGBAColorOpacity(rgbaChartColor, 0.4);
 
     ctx.fillStyle = fillColor || "rgba(0, 0, 0, 0.1)";
@@ -623,8 +631,6 @@ Reports = function ({
     ctx.restore();
 
   }
-
-  function canvasDrawGoalZoneText(chart) {}
 
   function canvasDrawRoundRect(
     ctx,
@@ -747,8 +753,7 @@ Reports = function ({
           {
             label: "BP controlled",
             data: Object.values(controlledGraphRate),
-            // backgroundColor: colors.lightGreen,
-            fill: false,
+            backgroundColor: colors.lightGreen,
             borderColor: colors.mediumGreen,
           },
         ],
@@ -834,8 +839,7 @@ Reports = function ({
           {
             label: "BP uncontrolled",
             data: Object.values(uncontrolledGraphRate),
-            // backgroundColor: colors.lightRed,
-            fill: false,
+            backgroundColor: colors.lightRed,
             borderColor: colors.mediumRed,
           },
         ],
@@ -923,8 +927,7 @@ Reports = function ({
           {
             label: "Missed visits",
             data: Object.values(missedVisitsGraphRate),
-            // backgroundColor: colors.lightBlue,
-            fill: false,
+            backgroundColor: colors.lightBlue,
             borderColor: colors.mediumBlue,
           },
         ],
