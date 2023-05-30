@@ -5,11 +5,11 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     it { should belong_to(:facility) }
   end
 
-  around do |example|
-    freeze_time_for_reporting_specs(example)
-  end
-
   context "registrations" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     describe "cumulative_registrations" do
       it "has the total registrations from beginning of reporting_months (2018) until current month for every facility" do
         facility = create(:facility)
@@ -72,6 +72,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "assigned patients by care states" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     describe "under_care, lost_to_follow_up, dead" do
       it "computes the number of assigned patients correctly with each care state" do
         facility = create(:facility)
@@ -112,6 +116,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "treatment status in the last 3 months" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     it "computes totals for under care patients" do
       facility = create(:facility)
 
@@ -184,6 +192,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "monthly cohort outcomes" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     it "computes totals for under care patients" do
       facility = create(:facility)
 
@@ -228,6 +240,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "medication dispensed in last 3 months" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     it "counts the latest appointments scheduled per patient by days scheduled by bucket" do
       Timecop.return do
         Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
@@ -260,6 +276,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   context "Diabetes" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     context "registraions" do
       describe "cumulative_diabetes_registrations" do
         it "has the total number of diabetic registrations since the starting of time for every facility upto a given month" do
@@ -555,6 +575,10 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   end
 
   describe ".with_patients" do
+    around do |example|
+      freeze_time_for_reporting_specs(example)
+    end
+
     it "returns all rows where a facility has registered patients" do
       facility_1 = create(:facility)
       facility_2 = create(:facility)
