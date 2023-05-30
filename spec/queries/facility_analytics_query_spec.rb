@@ -183,7 +183,7 @@ RSpec.describe FacilityAnalyticsQuery do
         create(:blood_pressure, patient: patients.first, facility: facility, user: users.first)
         create(:blood_pressure, patient: patients.second, facility: facility, user: users.first)
       end
-      patients.first.discard_data
+      patients.first.discard_data(reason: nil)
     end
 
     describe "#registered_patients_by_period" do
