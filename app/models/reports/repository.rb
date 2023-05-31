@@ -58,6 +58,16 @@ module Reports
       diabetes_appts_scheduled_more_than_62_days_rates
       overdue_patients_rates
       contactable_overdue_patients_rates
+      overdue_patients_called_rates
+      contactable_overdue_called_patients_rates
+      overdue_patients_called_rates
+      contactable_overdue_patients_called_rates
+      patients_called_with_result_agreed_to_visit_rates
+      patients_called_with_result_remind_to_call_later_rates
+      patients_called_with_result_removed_from_list_rates
+      contactable_patients_called_with_result_agreed_to_visit_rates
+      contactable_patients_called_with_result_remind_to_call_later_rates
+      contactable_patients_called_with_result_removed_from_list_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -112,6 +122,14 @@ module Reports
       diabetes_under_care
       overdue_patients
       contactable_overdue_patients
+      overdue_patients_called
+      contactable_overdue_patients_called
+      patients_called_with_result_agreed_to_visit
+      patients_called_with_result_remind_to_call_later
+      patients_called_with_result_removed_from_list
+      contactable_patients_called_with_result_agreed_to_visit
+      contactable_patients_called_with_result_remind_to_call_later
+      contactable_patients_called_with_result_removed_from_list
     ]
 
     DELEGATED_BREAKDOWNS = %i[
