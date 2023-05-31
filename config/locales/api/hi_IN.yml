@@ -517,6 +517,9 @@ hi-IN:
     waist_tape: "कमर की परिधि को मापने के लिए टेप"
     # India
     glucometer_strips: "ग्लूकोमीटर स्ट्रिप्स"
+    bp_passport_stock: "बीपी पासपोर्ट स्टॉक"
+    functional_bp_monitors: "कार्यक्षम बीपी मॉनिटर"
+    functional_glucose_monitors: "कार्यक्षम ग्लूकोज मॉनिटर"
     # Sri Lanka
     equipment: "उपकरण"
     available_bp_devices: "कुल उपलब्ध बीपी डिवाइस"
