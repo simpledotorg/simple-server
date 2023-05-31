@@ -5,45 +5,22 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
     @region = region
     @data = data
     @period = period
-    @with_removed_from_overdue_list = with_removed_from_overdue_list
-    @rates = gen_rates
+    @contactable = !with_removed_from_overdue_list
   end
 
   def graph_data
-    # TODO: Implement toggle logic. We can reuse the keys in the graph_data but inject the
-    # filtered / non filtered data based on the toggle
     {
       assignedPatients: data[:cumulative_assigned_patients],
-      overduePatients: data[:overdue_patients],
-      overduePatientsPercentage: data[:overdue_patients_rates],
+      overduePatients: @contactable ? data[:contactable_overdue_patients] : data[:overdue_patients],
+      overduePatientsPercentage: @contactable ? data[:contactable_overdue_patients_rates] : data[:overdue_patients_rates],
       **period_data
     }
-  end
-
-  def gen_rates
-    periods
-      .reduce({}) { |merged_values, val| merged_values.merge({val => rand(1..10_000)}) }
-      .map do |period, value|
-        overdue_count = rand(0..value)
-        rate = overdue_count * 100 / value
-        {period => {assignedPatients: value,
-                    overduePatients: overdue_count,
-                    overduePatientsPercentage: rate}}
-      end
-      .reduce(:merge)
-  end
-
-  def periods
-    start_period = @period.advance(months: -17)
-    Range.new(start_period, @period)
   end
 
   private
 
   def period_data
-    result = {
-      endDate: period_info(:name)
-    }
+    {endDate: period_info(:name)}
   end
 
   def period_info(key)

@@ -61,6 +61,7 @@ module Reports
       dead
       diabetes_dead
       overdue_patients
+      contactable_overdue_patients
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[

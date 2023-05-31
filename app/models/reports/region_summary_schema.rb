@@ -181,6 +181,10 @@ module Reports
       values_at("overdue_patients")
     end
 
+    memoize def contactable_overdue_patients
+      values_at("contactable_overdue_patients")
+    end
+
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
@@ -233,6 +237,13 @@ module Reports
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         percentage(overdue_patients[slug][period], cumulative_assigned_patients[slug][period])
+      end
+    end
+
+    memoize def contactable_overdue_patients_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(contactable_overdue_patients[slug][period], cumulative_assigned_patients[slug][period])
       end
     end
 
