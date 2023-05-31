@@ -71,7 +71,11 @@ module Reports
         dead: dead[slug],
         diabetes_dead: diabetes_dead[slug],
         under_care: under_care[slug],
-        diabetes_under_care: diabetes_under_care[slug]
+        diabetes_under_care: diabetes_under_care[slug],
+        overdue_patients: overdue_patients[slug],
+        overdue_patients_rates: overdue_patients_rates[slug],
+        contactable_overdue_patients: contactable_overdue_patients[slug],
+        contactable_overdue_patients_rates: contactable_overdue_patients_rates[slug]
       }
     end
 

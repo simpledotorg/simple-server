@@ -56,6 +56,8 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days_rates
       diabetes_appts_scheduled_32_to_62_days_rates
       diabetes_appts_scheduled_more_than_62_days_rates
+      overdue_patients_rates
+      contactable_overdue_patients_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -108,6 +110,8 @@ module Reports
       diabetes_dead
       under_care
       diabetes_under_care
+      overdue_patients
+      contactable_overdue_patients
     ]
 
     DELEGATED_BREAKDOWNS = %i[
