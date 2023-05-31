@@ -2,7 +2,11 @@ require "rails_helper"
 
 RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
   around do |example|
-    freeze_time_for_reporting_specs(example)
+    if example.metadata[:run_with_custom_date]
+      freeze_time_for_reporting_specs(example, "#{Date.today.end_of_month} 23:00 IST")
+    else
+      freeze_time_for_reporting_specs(example)
+    end
   end
 
   describe "Associations" do
@@ -613,13 +617,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  context "monthly overdue patients" do
-    around do |example|
-      Timecop.return do
-        freeze_time_for_reporting_specs(example, "#{Date.today.end_of_month} 23:00 IST")
-      end
-    end
-
+  context "monthly overdue patients", run_with_custom_date: true do
     describe "overdue_patients" do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
         month_date = current_month[:beginning_of_month]
