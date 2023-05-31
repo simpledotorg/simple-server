@@ -9,6 +9,7 @@ class Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent < Application
     @region = region
     @period = period
     @repository = repository
+    # pp repository
   end
 
   def range
