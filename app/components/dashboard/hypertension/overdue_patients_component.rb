@@ -13,10 +13,9 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
     # TODO: Implement toggle logic. We can reuse the keys in the graph_data but inject the
     # filtered / non filtered data based on the toggle
     {
-      assignedPatients: @rates.map { |k, v| {k => v[:assignedPatients]} }.reduce(:merge),
-      overduePatients: @rates.map { |k, v| {k => v[:overduePatients]} }.reduce(:merge),
-      overduePatientsPercentage: @rates.map { |k, v| {k => v[:overduePatientsPercentage]} }.reduce(:merge),
-      testfigure: "test",
+      assignedPatients: data[:cumulative_assigned_patients],
+      overduePatients: data[:overdue_patients],
+      overduePatientsPercentage: data[:overdue_patients_rates],
       **period_data
     }
   end
@@ -45,7 +44,6 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
     result = {
       endDate: period_info(:name)
     }
-    pp result
   end
 
   def period_info(key)

@@ -177,6 +177,10 @@ module Reports
       values_at("diabetes_appts_scheduled_more_than_62_days")
     end
 
+    memoize def overdue_patients
+      values_at("overdue_patients")
+    end
+
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
@@ -222,6 +226,13 @@ module Reports
     memoize def diabetes_missed_visits_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         diabetes_treatment_outcome_rates(entry, with_ltfu)[:missed_visits_rates]
+      end
+    end
+
+    memoize def overdue_patients_rates
+      region_period_cached_query(__method__) do |entry|
+        slug, period = entry.slug, entry.period
+        percentage(overdue_patients[slug][period], cumulative_assigned_patients[slug][period])
       end
     end
 
