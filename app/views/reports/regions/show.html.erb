@@ -228,6 +228,60 @@
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
 
+<div class="d-flex jc-space-between">
+  <h4 class="mt-5 mb-32px">Overdue</h4>
+
+  <div class="d-flex" style="margin-top: 43px;">
+    <form method="get" name="overdue_form">
+      <div class="custom-control custom-switch checkbox-outside-card">
+        <input id="overdueFilter" type="checkbox" class="custom-control-input checkbox-outside-card">
+        <%# <input type="checkbox"
+              onChange="this.form.submit()"
+              name="with_ltfu"
+              for="ltfu_form"
+              class="custom-control-input"
+              id="<%= id %>
+        <%# <label class="font-weight-normal custom-control-label c-grey-dark"
+              for=""> %>
+          <label for="overdueFilter" class="font-weight-normal custom-control-label checkbox-outside-card">
+            Include filtered patients
+          </label>
+        <%# </label> %>
+        <% if params[:period].present? %>
+          <!-- Preserve period selection in reports header -->
+          <input type="hidden" for="ltfu_form" name="period[type]" value="<%= params[:period]["type"] %>">
+          <input type="hidden" for="ltfu_form" name="period[value]" value="<%= params[:period]["value"] %>">
+        <% end %>
+      </div>
+    </form>
+    <div class="ml-8px" style="margin-top: 2px;">
+      <%= render "definition_tooltip",
+                  definitions: { "" => t("overdue_toggle_tooltip.main"), 
+                                  "" => t("overdue_toggle_tooltip.additional"),
+                                  "list" => t("overdue_toggle_tooltip.list")} %>
+    </div>
+
+  </div>
+</div>
+
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledByUserComponent.new(
+    region: @region,
+    data: @data,
+    period: @period,
+    with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+</div>
+
   <% if current_admin.feature_enabled?(:medications_dispensation) %>
     <h4 class="mt-5 mb-32px">Medications</h4>
     <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
