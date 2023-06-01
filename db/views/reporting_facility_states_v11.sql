@@ -138,37 +138,34 @@ WITH
         GROUP BY facility_id, month_date
     ),
 
-    monthly_overdue_patients as (
-        SELECT assigned_facility_region_id as region_id, month_date,
-           COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes')  as overdue_patients,
-           COUNT(*) filter(where ltfu = 'no' and is_overdue = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_overdue_patients,
+    monthly_hypertension_overdue_patients as (
+        SELECT assigned_facility_region_id, month_date,
+           COUNT(*) filter(where is_overdue = 'yes')  as overdue_patients,
+           COUNT(*) filter(where is_overdue = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_overdue_patients,
 
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no') as overdue_patients_called,
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_overdue_patients_called,
+           COUNT(*) filter(where has_called = 'yes') as patients_called,
+           COUNT(*) filter(where has_called = 'yes' and next_call_result_type = 'agreed_to_visit') as patients_called_with_result_agreed_to_visit,
+           COUNT(*) filter(where has_called = 'yes' and next_call_result_type = 'remind_to_call_later') as patients_called_with_result_remind_to_call_later,
+           COUNT(*) filter(where has_called = 'yes' and next_call_result_type = 'removed_from_overdue_list') as patients_called_with_result_removed_from_list,
 
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as patients_called_with_result_agreed_to_visit,
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'agreed_to_visit') as contactable_patients_called_with_result_agreed_to_visit,
+           COUNT(*) filter(where has_called = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_patients_called,
+           COUNT(*) filter(where has_called = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'agreed_to_visit') as contactable_patients_called_with_result_agreed_to_visit,
+           COUNT(*) filter(where has_called = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as contactable_patients_called_with_result_remind_to_call_later,
+           COUNT(*) filter(where has_called = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as contactable_patients_called_with_result_removed_from_list,
 
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as patients_called_with_result_remind_to_call_later,
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as contactable_patients_called_with_result_remind_to_call_later,
+           COUNT(*) filter(where has_visited_following_call = 'yes') as patients_returned_after_call,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and next_call_result_type = 'agreed_to_visit') as patients_returned_with_result_agreed_to_visit,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and next_call_result_type = 'remind_to_call_later') as patients_returned_with_result_remind_to_call_later,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and next_call_result_type = 'removed_from_overdue_list') as patients_returned_with_result_removed_from_list,
 
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as patients_called_with_result_removed_from_list,
-           COUNT(*) filter(where has_called = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as contactable_patients_called_with_result_removed_from_list,
-
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no') as overdue_patients_returned_after_call,
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_overdue_patients_returned_after_call,
-
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit') as patients_returned_with_result_agreed_to_visit,
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'agreed_to_visit' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_patients_returned_with_result_agreed_to_visit,
-
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later') as patients_returned_with_result_remind_to_call_later,
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'remind_to_call_later' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_patients_returned_with_result_remind_to_call_later,
-
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list') as patients_returned_with_result_removed_from_list,
-           COUNT(*) filter(where has_visited_following_call = 'yes' and ltfu = 'no' and next_call_result_type = 'removed_from_overdue_list' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_patients_returned_with_result_removed_from_list
+           COUNT(*) filter(where has_visited_following_call = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes') as contactable_patients_returned_after_call,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'agreed_to_visit') as contactable_patients_returned_with_result_agreed_to_visit,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'remind_to_call_later') as contactable_patients_returned_with_result_remind_to_call_later,
+           COUNT(*) filter(where has_visited_following_call = 'yes' and removed_from_overdue_list = 'no' and has_phone = 'yes' and next_call_result_type = 'removed_from_overdue_list') as contactable_patients_returned_with_result_removed_from_list
 
         FROM reporting_overdue_patients
         WHERE hypertension = 'yes'
+            AND under_care = 'yes'
         GROUP BY assigned_facility_region_id, month_date
     )
 
@@ -269,87 +266,74 @@ reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_15_to_31_
 reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_32_to_62_days AS diabetes_appts_scheduled_32_to_62_days,
 reporting_facility_appointment_scheduled_days.diabetes_appts_scheduled_more_than_62_days AS diabetes_appts_scheduled_more_than_62_days,
 
--- overdue patients
-monthly_overdue_patients.overdue_patients,
+-- overdue patients at beginning of a month
+monthly_hypertension_overdue_patients.overdue_patients,
+monthly_hypertension_overdue_patients.contactable_overdue_patients,
 
-monthly_overdue_patients.contactable_overdue_patients,
+-- patients who got a call
+monthly_hypertension_overdue_patients.patients_called,
+monthly_hypertension_overdue_patients.contactable_patients_called,
 
--- overdue patients who got a call
-monthly_overdue_patients.overdue_patients_called,
+-- patients grouped by call result
+monthly_hypertension_overdue_patients.patients_called_with_result_agreed_to_visit,
+monthly_hypertension_overdue_patients.patients_called_with_result_remind_to_call_later,
+monthly_hypertension_overdue_patients.patients_called_with_result_removed_from_list,
+monthly_hypertension_overdue_patients.contactable_patients_called_with_result_agreed_to_visit,
+monthly_hypertension_overdue_patients.contactable_patients_called_with_result_remind_to_call_later,
+monthly_hypertension_overdue_patients.contactable_patients_called_with_result_removed_from_list,
 
-monthly_overdue_patients.contactable_overdue_patients_called,
+-- patients returned to care after a call
+monthly_hypertension_overdue_patients.patients_returned_after_call,
+monthly_hypertension_overdue_patients.contactable_patients_returned_after_call,
 
--- overdue patients grouped by call result
-monthly_overdue_patients.patients_called_with_result_agreed_to_visit,
-
-monthly_overdue_patients.patients_called_with_result_remind_to_call_later,
-
-monthly_overdue_patients.patients_called_with_result_removed_from_list,
-
-monthly_overdue_patients.contactable_patients_called_with_result_agreed_to_visit,
-
-monthly_overdue_patients.contactable_patients_called_with_result_remind_to_call_later,
-
-monthly_overdue_patients.contactable_patients_called_with_result_removed_from_list,
-
--- monthly overdue patients returned to care after a call
-monthly_overdue_patients.overdue_patients_returned_after_call,
-
-monthly_overdue_patients.contactable_overdue_patients_returned_after_call,
-
--- monthly overdue patients returned to care after a call grouped by call result
-monthly_overdue_patients.patients_returned_with_result_agreed_to_visit,
-
-monthly_overdue_patients.patients_returned_with_result_remind_to_call_later,
-
-monthly_overdue_patients.patients_returned_with_result_removed_from_list,
-
-monthly_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
-
-monthly_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
-
-monthly_overdue_patients.contactable_patients_returned_with_result_removed_from_list
+-- patients returned to care after a call grouped by call result
+monthly_hypertension_overdue_patients.patients_returned_with_result_agreed_to_visit,
+monthly_hypertension_overdue_patients.patients_returned_with_result_remind_to_call_later,
+monthly_hypertension_overdue_patients.patients_returned_with_result_removed_from_list,
+monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
+monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
+monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_removed_from_list
 
 FROM reporting_facilities rf
 INNER JOIN reporting_months cal
 -- ensure a row for every facility and month combination
-           ON TRUE
+    ON TRUE
 LEFT OUTER JOIN registered_patients
-                ON registered_patients.month_date = cal.month_date
-                    AND registered_patients.region_id = rf.facility_region_id
+    ON registered_patients.month_date = cal.month_date
+    AND registered_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN registered_diabetes_patients
-                ON registered_diabetes_patients.month_date = cal.month_date
-                    AND registered_diabetes_patients.region_id = rf.facility_region_id
+    ON registered_diabetes_patients.month_date = cal.month_date
+    AND registered_diabetes_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN registered_hypertension_and_diabetes_patients
-                ON registered_hypertension_and_diabetes_patients.month_date = cal.month_date
-                    AND registered_hypertension_and_diabetes_patients.region_id = rf.facility_region_id
+    ON registered_hypertension_and_diabetes_patients.month_date = cal.month_date
+    AND registered_hypertension_and_diabetes_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN assigned_patients
-                ON assigned_patients.month_date = cal.month_date
-                    AND assigned_patients.region_id = rf.facility_region_id
+    ON assigned_patients.month_date = cal.month_date
+    AND assigned_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN assigned_diabetes_patients
-                ON assigned_diabetes_patients.month_date = cal.month_date
-                    AND assigned_diabetes_patients.region_id = rf.facility_region_id
+    ON assigned_diabetes_patients.month_date = cal.month_date
+    AND assigned_diabetes_patients.region_id = rf.facility_region_id
 LEFT OUTER JOIN adjusted_outcomes
-                ON adjusted_outcomes.month_date = cal.month_date
-                    AND adjusted_outcomes.region_id = rf.facility_region_id
+    ON adjusted_outcomes.month_date = cal.month_date
+    AND adjusted_outcomes.region_id = rf.facility_region_id
 LEFT OUTER JOIN adjusted_diabetes_outcomes
-                ON adjusted_diabetes_outcomes.month_date = cal.month_date
-                    AND adjusted_diabetes_outcomes.region_id = rf.facility_region_id
+    ON adjusted_diabetes_outcomes.month_date = cal.month_date
+    AND adjusted_diabetes_outcomes.region_id = rf.facility_region_id
 LEFT OUTER JOIN monthly_cohort_outcomes
-                ON monthly_cohort_outcomes.month_date = cal.month_date
-                    AND monthly_cohort_outcomes.region_id = rf.facility_region_id
+    ON monthly_cohort_outcomes.month_date = cal.month_date
+    AND monthly_cohort_outcomes.region_id = rf.facility_region_id
 LEFT OUTER JOIN monthly_overdue_calls
-                ON monthly_overdue_calls.month_date = cal.month_date
-                    AND monthly_overdue_calls.region_id = rf.facility_region_id
+    ON monthly_overdue_calls.month_date = cal.month_date
+    AND monthly_overdue_calls.region_id = rf.facility_region_id
 LEFT OUTER JOIN monthly_follow_ups
-                ON monthly_follow_ups.month_date = cal.month_date
-                    AND monthly_follow_ups.facility_id = rf.facility_id
+    ON monthly_follow_ups.month_date = cal.month_date
+    AND monthly_follow_ups.facility_id = rf.facility_id
 LEFT OUTER JOIN monthly_diabetes_follow_ups
-                ON monthly_diabetes_follow_ups.month_date = cal.month_date
-                    AND monthly_diabetes_follow_ups.facility_id = rf.facility_id
+    ON monthly_diabetes_follow_ups.month_date = cal.month_date
+    AND monthly_diabetes_follow_ups.facility_id = rf.facility_id
 LEFT OUTER JOIN reporting_facility_appointment_scheduled_days
-                ON reporting_facility_appointment_scheduled_days.month_date = cal.month_date
-                    AND reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id
-LEFT OUTER JOIN monthly_overdue_patients
-                ON  monthly_overdue_patients.month_date = cal.month_date
-                    AND monthly_overdue_patients.region_id = rf.facility_region_id
+    ON reporting_facility_appointment_scheduled_days.month_date = cal.month_date
+    AND reporting_facility_appointment_scheduled_days.facility_id = rf.facility_id
+LEFT OUTER JOIN monthly_hypertension_overdue_patients
+    ON  monthly_hypertension_overdue_patients.month_date = cal.month_date
+    AND monthly_hypertension_overdue_patients.assigned_facility_region_id = rf.facility_region_id
