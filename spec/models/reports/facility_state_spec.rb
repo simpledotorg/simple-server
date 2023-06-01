@@ -622,15 +622,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
         month_date = reporting_dates[:beginning_of_month]
         facility = create(:facility)
-
-        overdue_patients = create_list(:patient, 2, assigned_facility: facility, registration_facility: facility)
-        overdue_patients.each { |overdue_patient|
-          create(:appointment, patient: overdue_patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-        }
-
-        patient = create(:patient, assigned_facility: facility, registration_facility: facility)
-        _appointment_2 = create(:appointment, patient: patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-        _visit = create(:blood_pressure, patient: patient, device_created_at: month_date - 15.days)
+        _overdue_patients = create_list(:patient, 2, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility)
+        _patient = create(:patient, :with_appointments, :with_visits, assigned_facility: facility, registration_facility: facility)
 
         RefreshReportingViews.refresh_v2
 
@@ -642,14 +635,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       it "should exclude overdue patients who are LTFU" do
         month_date = reporting_dates[:beginning_of_month]
         facility = create(:facility)
-
-        ltfu_patient = create(:patient, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
-        _appointment = create(:appointment, patient: ltfu_patient, device_created_at: reporting_dates[:twelve_months_ago], scheduled_date: reporting_dates[:twelve_months_ago] + 15.days)
-
-        overdue_patients = create_list(:patient, 2, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
-        overdue_patients.each { |overdue_patient|
-          create(:appointment, patient: overdue_patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-        }
+        _ltfu_patient = create(:patient, :lost_to_follow_up, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
+        _overdue_patients = create_list(:patient, 2, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
 
         RefreshReportingViews.refresh_v2
 
@@ -663,17 +650,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
         month_date = reporting_dates[:beginning_of_month]
         facility = create(:facility)
-
-        removed_patient = create(:patient, assigned_facility: facility, registration_facility: facility)
-        appointment = create(:appointment, patient: removed_patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-        create(:call_result, patient: removed_patient, device_created_at: month_date - 14.days, appointment: appointment,
-               result_type: :removed_from_overdue_list, remove_reason: :invalid_phone_number)
-
-        contactable_patients = create_list(:patient, 2, assigned_facility: facility, registration_facility: facility)
-        contactable_patients.each { |contactable_patient|
-          appointment = create(:appointment, patient: contactable_patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-          create(:call_result, patient: contactable_patient, device_created_at: month_date - 14.days, appointment: appointment, result_type: :agreed_to_visit)
-        }
+        _removed_patient = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
+        _contactable_patients = create_list(:patient, 2, :contactable, assigned_facility: facility, registration_facility: facility)
 
         RefreshReportingViews.refresh_v2
 
@@ -685,14 +663,8 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       it "should exclude overdue patients who does not have a phone number" do
         month_date = reporting_dates[:beginning_of_month]
         facility = create(:facility)
-
-        contactable_patients = create_list(:patient, 2, assigned_facility: facility, registration_facility: facility)
-        contactable_patients.each { |contactable_patient|
-          _appointment = create(:appointment, patient: contactable_patient, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
-        }
-
-        patient_without_phone = create(:patient, :without_phone_number, assigned_facility: facility, registration_facility: facility)
-        _appointment = create(:appointment, patient: patient_without_phone, device_created_at: reporting_dates[:two_months_ago], scheduled_date: month_date - 15.days)
+        _contactable_patients = create_list(:patient, 2, :contactable, assigned_facility: facility, registration_facility: facility)
+        _patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility)
 
         RefreshReportingViews.refresh_v2
 

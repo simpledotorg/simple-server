@@ -112,6 +112,24 @@ FactoryBot.define do
       under_care
       blood_pressures { build_list(:blood_pressure, 1, :hypertensive) }
     end
+
+    trait(:with_visits) do
+      appointments { build_list(:appointment, 2, facility: assigned_facility, device_created_at: 2.months.ago, scheduled_date: 1.month.ago) }
+      blood_pressures { build_list(:blood_pressure, 1, :under_control, recorded_at: 1.month.ago) }
+    end
+
+    trait(:contactable) do
+      recorded_at { 2.years.ago }
+      with_sanitized_phone_number
+      appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 2.months.ago, scheduled_date: 1.month.ago) }
+      call_results { build_list(:call_result, 1, result_type: CallResult.result_types.except(:removed_from_overdue_list).keys.sample) }
+    end
+
+    trait(:removed_from_overdue_list) do
+      recorded_at { 2.years.ago }
+      appointments { build_list(:appointment, 1, facility: assigned_facility, device_created_at: 2.months.ago, scheduled_date: 1.month.ago) }
+      call_result { build_list(:call_result, 1, result_type: :removed_from_overdue_list, remove_reason: CallResult.remove_reasons.keys.sample, device_created_at: 1.month.ago + 1.day) }
+    end
   end
 end
 
