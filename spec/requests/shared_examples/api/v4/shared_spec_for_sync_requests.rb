@@ -158,4 +158,24 @@ RSpec.shared_examples "v4 API sync requests" do
       expect(JSON(response.body)[response_key].count).to eq(1)
     end
   end
+
+  context "translations are correctly inferred" do
+    it "sets locale correctly" do
+      expect(I18n).to receive(:with_locale).with("bn-IN")
+
+      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "bn-IN"})
+    end
+
+    it "defaults to first primary language when it cannot find region" do
+      expect(I18n).to receive(:with_locale).with("bn-BD")
+
+      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "bn-LK"})
+    end
+
+    it "defaults to english when it cannot find both primary language and region" do
+      expect(I18n).to receive(:with_locale).with(:en)
+
+      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "garbage-string"})
+    end
+  end
 end
