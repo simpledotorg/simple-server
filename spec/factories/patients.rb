@@ -75,10 +75,12 @@ FactoryBot.define do
     end
 
     trait(:with_appointments) do
+      recorded_at { 2.years.ago }
       appointments { build_list(:appointment, 2, facility: registration_facility) }
     end
 
     trait(:with_overdue_appointments) do
+      recorded_at { 2.years.ago }
       appointments { build_list(:appointment, 2, :overdue, facility: registration_facility) }
     end
 
