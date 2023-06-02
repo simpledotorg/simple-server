@@ -16,7 +16,7 @@ describe "Questionnaires v4 API", swagger_doc: "v4/swagger.json" do
         parameter param
       end
 
-      let("Accept-Language") { "en-IND" }
+      let("Accept-Language") { "en-IN" }
       let(:dsl_version) { "1.1" }
 
       response "200", "Questionnaires Synced to user device" do

@@ -90,11 +90,11 @@ RSpec.describe "Questionnaires sync", type: :request do
   end
 
   it "does a force-resync when mismatch between locale in header and process token" do
-    get sync_route, params: {dsl_version: dsl_version}, headers: {"Accept-Language" => "en-IND"}.merge(headers)
+    get sync_route, params: {dsl_version: dsl_version}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
     expect(JSON(response.body)["questionnaires"].count).to eq 5
     process_token = JSON(response.body)["process_token"]
 
-    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "en-IND"}.merge(headers)
+    get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
     expect(JSON(response.body)["questionnaires"].count).to eq 1
 
     get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "hi-IN"}.merge(headers)
