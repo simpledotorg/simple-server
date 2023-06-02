@@ -76,7 +76,11 @@ FactoryBot.define do
 
     trait(:with_appointments) do
       recorded_at { 2.years.ago }
-      appointments { build_list(:appointment, 2, facility: registration_facility) }
+      transient do
+        appointment_creation_date { 1.month.ago }
+        scheduled_date { 30.day.from_now }
+      end
+      appointments { build_list(:appointment, 2, device_created_at: appointment_creation_date, facility: registration_facility) }
     end
 
     trait(:with_overdue_appointments) do
@@ -115,9 +119,17 @@ FactoryBot.define do
       blood_pressures { build_list(:blood_pressure, 1, :hypertensive) }
     end
 
-    trait(:with_visits) do
-      appointments { build_list(:appointment, 2, facility: assigned_facility, device_created_at: 2.months.ago, scheduled_date: 1.month.ago) }
+    trait(:with_visit) do
       blood_pressures { build_list(:blood_pressure, 1, :under_control, recorded_at: 1.month.ago) }
+    end
+
+    trait(:with_call_result) do
+      transient do
+        result_type { CallResult.result_types.except(:removed_from_overdue_list).keys.sample }
+        remove_reason { result_type == :removed_from_overdue_list ? CallResult.remove_reasons.keys.sample : nil }
+        call_date { 1.month.ago } # call made before the month_date
+      end
+      call_results { build_list(:call_result, 1, device_created_at: call_date, result_type: result_type, remove_reason: remove_reason) }
     end
 
     trait(:contactable_overdue) do
