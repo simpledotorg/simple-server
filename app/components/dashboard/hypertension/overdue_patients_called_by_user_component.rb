@@ -1,22 +1,49 @@
 class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < ApplicationComponent
   attr_reader :region, :period, :data, :children_data, :localized_region_type
 
-  def initialize(region:, data:, period:, with_removed_from_overdue_list:)
+  def initialize(region:, data:, repository:, period:, current_admin:, with_removed_from_overdue_list:)
     @region = region
     @data = data
+    @repository = repository
     @period = period
-    @children_data = gen_children_data
-    @with_removed_from_overdue_list = with_removed_from_overdue_list
+    @current_admin = current_admin
+    @children_data = patient_call_count_by_user
   end
 
-  def gen_children_data
-    user = {
-      user: User.first,
-      patients_called: periods.map { |p| {p => rand(0..200)} }.reduce(:merge),
-      total_patients: periods.map { |p| {p => rand(0..200)} }.reduce(:merge)
-    }
-    [user, user, user]
-    pp user
+  def patient_call_count_by_user
+    users = @current_admin.accessible_users(:view_reports)
+      .order(:full_name)
+      .map { |user| calls_made_by_user(user) }
+      .reduce(:merge)
+      .filter { |_user, call_count_by_period| atleast_one_call?(call_count_by_period) }
+  end
+
+  def atleast_one_call?(call_count_by_period)
+    call_count_by_period.sum { |_p, values| values }.nonzero?
+  end
+
+  def calls_made_by_user(user)
+    {user => periods.map { |p| monthly_calls_made_by_user(user, p).reduce(:merge) }}
+  end
+
+  def monthly_calls_made_by_user(user, period)
+    {period => @repository.overdue_patients_called_by_user.dig(region.slug, period, user.id) || 0}
+  end
+
+  def total_calls(period)
+    @repository.overdue_patients_called_by_user.dig(region.slug)
+      .map { |period, calls| {period => calls.values.sum} }
+      .reduce(:merge)
+      .dig(period) || 0
+  end
+
+  def overdue_patients(period)
+    data[:overdue_patients].dig(period)
+  end
+
+  def percentage(calls_made, total_calls)
+    return "-" if total_calls.blank? || total_calls.zero?
+    "#{calls_made * 100 / total_calls}%"
   end
 
   def table_headers
@@ -28,17 +55,7 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     Range.new(start_period, @period)
   end
 
-  def is_not_facility
-    return false
-    if region.child_region_type != "facility"
-      return true
-    end
-    false
+  def not_region?
+    region.child_region_type.nil?
   end
-  # def row_data(region:)
-  #   [repository.cumulative_diabetes_registrations[region.slug][period],
-  #     repository.cumulative_assigned_diabetic_patients[region.slug][period],
-  #     *range.map { |range_period| repository.monthly_diabetes_registrations[region.slug][range_period] },
-  #     *range.map { |range_period| repository.diabetes_follow_ups[region.slug][range_period] }]
-  # end
 end

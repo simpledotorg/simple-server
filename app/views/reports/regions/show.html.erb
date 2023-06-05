@@ -278,7 +278,9 @@
   <%= render(Dashboard::Hypertension::OverduePatientsCalledByUserComponent.new(
     region: @region,
     data: @data,
+    repository: @details_repository,
     period: @period,
+    current_admin: @current_admin,
     with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
 </div>
 

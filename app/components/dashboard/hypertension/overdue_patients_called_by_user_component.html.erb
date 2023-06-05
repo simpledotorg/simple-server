@@ -24,14 +24,12 @@
       <% periods.each do |period| %>
        <%= table.header(period, colspan: 2) %>
       <% end %>
-      <%= table.sub_header(region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+      <%= table.sub_header(not_region? ?  'Users' : region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
 
-      <%= table.sub_header("Patients called") %>
-      <%= table.sub_header("Percent") %>
-      <%= table.sub_header("Patients called") %>
-      <%= table.sub_header("Percent") %>
-      <%= table.sub_header("Patients called") %>
-      <%= table.sub_header("Percent") %>
+      <% periods.each do %>
+        <%= table.sub_header("Patients called") %>
+        <%= table.sub_header("Percent") %>
+      <% end %>
 
       <%= table.row do %>
         <tr class="row-title row-total" data-sort-method="none">
@@ -39,70 +37,35 @@
             <%= region.name %>
           </td>
 
-          <td class="row-total ta-right">
-            50
-          </td>
-          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-            <em data-rate="30" class="overdue-high-is-good">30%</em>
-            <span>of 350</span>
-          </td>
+          <% periods.each do |period| %>
+            <td class="row-total ta-right">
+              <%=total_calls(period)%>
+            </td>
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+              <em data-rate="30" class="overdue-high-is-good"><%=percentage(total_calls(period), overdue_patients(period))%></em>
+              <span>of <%=overdue_patients(period)%></span>
+            </td>
+          <% end %>
 
-          <td class="row-total ta-right">
-            50
-          </td>
-          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="23%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-            <em data-rate="23" class="overdue-high-is-good">23%</em>
-            <span>of 502</span>
-          </td>
-
-          <td class="row-total ta-right">
-            50
-          </td>
-          <td class="type-percent" data-sort-column-key="population-coverage" data-sort="58%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-            <em data-rate="58" class="overdue-high-is-good">58%</em>
-            <span>of 612</span>
-          </td>
         </tr>
       <% end %>
-      <%# <% children_data.each do |child| %>
-        <% table.row do %>
-          <tr>
-            <td class="row-title">
-              <%# <%= link_to child.name, reports_region_path(child.region, report_scope: child.region_type) %>
-              <%= children_data[:user][:full_name] %>
-            </td>
-            <%# <%= children_data[:patients_called][:period] %> 
-            <td class="row-total ta-right">
-              300
-            </td>
-            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
-              <% if is_not_facility %>
-                <span>of 350</span>
+        <% children_data.each do |(user, period_range)| %>
+          <% table.row do %>
+            <tr>
+              <td class="row-title">
+                <%= user[:full_name] %>
+              </td>
+              <% period_range.each do |(period, calls_made)| %>
+                <td class="row-total ta-right">
+                  <%= calls_made %>
+                </td>
+                <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+                  <em data-rate="30" class="<%= class_names('overdue-high-is-good': not_region?) %>"><%=percentage(calls_made, total_calls(period))%></em>
+                  <span></span>
+                </td>
               <% end %>
-            </td>
-            <td class="row-total ta-right">
-              300
-            </td>
-            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
-              <% if is_not_facility %>
-                <span>of 350</span>
-              <% end %>
-            </td>
-            <td class="row-total ta-right">
-              300
-            </td>
-            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-              <em data-rate="30" class="<%= class_names('overdue-high-is-good': is_not_facility) %>">30%</em>
-              <% if is_not_facility %>
-                <span>of 350</span>
-              <% end %>
-            </td>
-
-          </tr>
-        <% end %>
-      <%# <% end %>
-
+            </tr>
+         <% end %>
+      <% end %>
   <% end %>
 </div>
