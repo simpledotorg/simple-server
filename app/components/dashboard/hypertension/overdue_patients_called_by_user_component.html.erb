@@ -24,7 +24,7 @@
       <% periods.each do |period| %>
        <%= table.header(period, colspan: 2) %>
       <% end %>
-      <%= table.sub_header(not_region? ?  'Users' : region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+      <%= table.sub_header(facility? ? 'Users' : region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
 
       <% periods.each do %>
         <%= table.sub_header("Patients called") %>
@@ -60,7 +60,7 @@
                   <%= calls_made %>
                 </td>
                 <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-                  <em data-rate="30" class="<%= class_names('overdue-high-is-good': not_region?) %>"><%=percentage(calls_made, total_calls(period))%></em>
+                  <em data-rate="30" class="<%= class_names('overdue-high-is-good': facility?) %>"><%=percentage(calls_made, total_calls(period))%></em>
                   <span></span>
                 </td>
               <% end %>

@@ -41,9 +41,9 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     data[:overdue_patients].dig(period)
   end
 
-  def percentage(calls_made, total_calls)
-    return "-" if total_calls.blank? || total_calls.zero?
-    "#{calls_made * 100 / total_calls}%"
+  def percentage(numerator, denominator)
+    return "-" if denominator.blank? || denominator.zero?
+    "#{numerator * 100 / denominator}%"
   end
 
   def table_headers
@@ -55,7 +55,7 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     Range.new(start_period, @period)
   end
 
-  def not_region?
-    region.child_region_type.nil?
+  def facility?
+    region.region_type == "facility"
   end
 end
