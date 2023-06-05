@@ -11,20 +11,24 @@ module ReportingHelpers
   end
 
   def june_2021
+    reporting_dates(2021, 6)
+  end
+
+  def reporting_dates(year = Date.today.year, month = Date.today.month)
     # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
     # all the local vars we need
     timezone = Time.find_zone(Period::REPORTING_TIME_ZONE)
-    now = timezone.local(2021, 6, 1, 0, 0, 0)
+    now = timezone.local(year, month, 1, 0, 0, 0) # Beginning of the month
     {
       now: now,
       long_ago: now - 5.years,
-      under_12_months_ago: timezone.local(2020, 7, 1, 0, 0, 1), # Beginning of July 1 2020
-      over_12_months_ago: timezone.local(2020, 6, 30, 23, 59, 59), # End of June 30 2020
-      month_string: "2021-06",
-      beginning_of_month: now, # Beginning of June 1 2021
-      over_3_months_ago: timezone.local(2021, 3, 31, 0, 0, 0), # End of March 2021
-      under_3_months_ago: timezone.local(2021, 4, 1, 0, 0, 0), # Beginning of April 2021
-      end_of_month: timezone.local(2021, 6, 30, 23, 59, 59), # End of June 30 2021
+      under_12_months_ago: timezone.local(year - 1, month + 1, 1, 0, 0, 1),
+      over_12_months_ago: now - 11.months - 1.second,
+      month_string: "#{year}-#{"%02d" % month}",
+      beginning_of_month: now,
+      over_3_months_ago: now - 2.months - 1.day,
+      under_3_months_ago: now - 2.months,
+      end_of_month: now + 1.month - 1.second,
       two_years_ago: now - 2.years,
       twelve_months_ago: now - 12.months,
       eleven_months_ago: now - 11.months,

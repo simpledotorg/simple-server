@@ -517,6 +517,9 @@ en:
     waist_tape: "Tape for waist circumference measure"
     # India
     glucometer_strips: "Glucometer strips"
+    bp_passport_stock: "BP Passport stock"
+    functional_bp_monitors: "Functional BP monitors"
+    functional_glucose_monitors: "Functional Glucose monitors"
     # Sri Lanka
     equipment: "EQUIPMENT"
     available_bp_devices: "Total available BP devices"
