@@ -49,7 +49,6 @@
           <% end %>
         </tr>
       <% end %>
-
       <% region.reportable_children.filter { |child| child.diabetes_management_enabled? }.each do |child| %>
         <% table.row do %>
           <tr>
