@@ -60,6 +60,16 @@ module Reports
       diabetes_appts_scheduled_more_than_62_days
       dead
       diabetes_dead
+      overdue_patients
+      contactable_overdue_patients
+      overdue_patients_called
+      contactable_overdue_patients_called
+      patients_called_with_result_agreed_to_visit
+      patients_called_with_result_remind_to_call_later
+      patients_called_with_result_removed_from_list
+      contactable_patients_called_with_result_agreed_to_visit
+      contactable_patients_called_with_result_remind_to_call_later
+      contactable_patients_called_with_result_removed_from_list
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
