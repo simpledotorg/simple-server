@@ -63,7 +63,7 @@ module Reports
       overdue_patients_called_rates
       contactable_overdue_called_patients_rates
       overdue_patients_called_rates
-      contactable_overdue_patients_called_rates
+      contactable_patients_called_rates
       patients_called_with_result_agreed_to_visit_rates
       patients_called_with_result_remind_to_call_later_rates
       patients_called_with_result_removed_from_list_rates
@@ -124,8 +124,8 @@ module Reports
       diabetes_under_care
       overdue_patients
       contactable_overdue_patients
-      overdue_patients_called
-      contactable_overdue_patients_called
+      patients_called
+      contactable_patients_called
       patients_called_with_result_agreed_to_visit
       patients_called_with_result_remind_to_call_later
       patients_called_with_result_removed_from_list

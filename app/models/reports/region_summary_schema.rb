@@ -185,12 +185,12 @@ module Reports
       values_at("contactable_overdue_patients")
     end
 
-    memoize def overdue_patients_called
-      values_at("overdue_patients_called")
+    memoize def patients_called
+      values_at("patients_called")
     end
 
-    memoize def contactable_overdue_patients_called
-      values_at("contactable_overdue_patients_called")
+    memoize def contactable_patients_called
+      values_at("contactable_patients_called")
     end
 
     memoize def patients_called_with_result_agreed_to_visit
@@ -276,7 +276,7 @@ module Reports
     memoize def overdue_patients_called_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(overdue_patients_called[slug][period], overdue_patients[slug][period])
+        percentage(patients_called[slug][period], overdue_patients[slug][period])
       end
     end
 
@@ -287,10 +287,10 @@ module Reports
       end
     end
 
-    memoize def contactable_overdue_patients_called_rates
+    memoize def contactable_patients_called_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(contactable_overdue_patients_called[slug][period], contactable_overdue_patients[slug][period])
+        percentage(contactable_patients_called[slug][period], contactable_overdue_patients[slug][period])
       end
     end
 
