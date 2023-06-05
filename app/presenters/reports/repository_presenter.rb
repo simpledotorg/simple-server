@@ -77,7 +77,7 @@ module Reports
         contactable_overdue_patients: contactable_overdue_patients[slug],
         contactable_overdue_patients_rates: contactable_overdue_patients_rates[slug],
         patients_called: patients_called[slug],
-        overdue_patients_called_rates: overdue_patients_called_rates[slug],
+        patients_called_rates: patients_called_rates[slug],
         contactable_patients_called: contactable_patients_called[slug],
         contactable_patients_called_rates: contactable_patients_called_rates[slug],
         patients_called_with_result_agreed_to_visit: patients_called_with_result_agreed_to_visit[slug],

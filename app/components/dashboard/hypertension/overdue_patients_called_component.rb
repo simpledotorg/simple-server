@@ -12,8 +12,8 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     if @contactable
       return {
         overduePatients: data[:overdue_patients],
-        overduePatientsCalled: data[:overdue_patients_called],
-        overduePatientsCalledRate: data[:overdue_patients_called_rates],
+        overduePatientsCalled: data[:patients_called],
+        overduePatientsCalledRate: data[:patients_called_rates],
         startDate: @period.advance(months: -17),
         chartProportionalPercentageCalledWithResultAgreedToVisit: data[:contactable_patients_called_with_result_agreed_to_visit_rates],
         chartProportionalPercentageCalledWithResultRemindToCallLater: data[:contactable_patients_called_with_result_remind_to_call_later_rates],
@@ -24,8 +24,8 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
 
     {
       overduePatients: data[:overdue_patients],
-      overduePatientsCalled: data[:overdue_patients_called],
-      overduePatientsCalledRate: data[:overdue_patients_called_rates],
+      overduePatientsCalled: data[:patients_called],
+      overduePatientsCalledRate: data[:patients_called_rates],
       startDate: @period.advance(months: -17),
       chartProportionalPercentageCalledWithResultAgreedToVisit: data[:patients_called_with_result_agreed_to_visit_rates],
       chartProportionalPercentageCalledWithResultRemindToCallLater: data[:patients_called_with_result_remind_to_call_later_rates],

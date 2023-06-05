@@ -273,7 +273,7 @@ module Reports
       end
     end
 
-    memoize def overdue_patients_called_rates
+    memoize def patients_called_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
         percentage(patients_called[slug][period], overdue_patients[slug][period])

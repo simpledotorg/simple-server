@@ -8,6 +8,7 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     @period = period
     @current_admin = current_admin
     @children_data = patient_call_count_by_user
+    calls_made_by_region
   end
 
   def patient_call_count_by_user
@@ -35,6 +36,10 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
       .map { |period, calls| {period => calls.values.sum} }
       .reduce(:merge)
       .dig(period) || 0
+  end
+
+  def calls_made_by_region
+    region.reportable_children
   end
 
   def overdue_patients(period)
