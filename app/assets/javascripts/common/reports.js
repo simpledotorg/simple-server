@@ -483,6 +483,7 @@ Reports = function ({
     };
     return enabledRegions[countryAbbreviation].indexOf(regionType) === -1;
   }
+  
   function calculateGoal(periodValues, goalDownwards) {
     const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
     const improvementRatio = relativeImprovementRatio(goalMonthIndex);
