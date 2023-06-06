@@ -351,7 +351,6 @@ DashboardReports = () => {
     },
 
     overdueTrend: function (data) {
-      console.log(data.overduePatientsPercentage);
       const config = {
         data: {
           labels: Object.keys(data.overduePatientsPercentage),
