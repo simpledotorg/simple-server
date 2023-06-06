@@ -607,27 +607,9 @@ Reports = function ({
 
     const rgbaChartColor = chart.config.data.datasets[0].borderColor;
     const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.065);
-    const textColor = changeRGBAColorOpacity(rgbaChartColor, 0.4);
 
     ctx.fillStyle = fillColor || "rgba(0, 0, 0, 0.1)";
     ctx.fill();
-
-    // canvasDrawGoalZoneText(chart)
-    // Draw centered text
-
-    // const text = "Goal Zone";
-    // ctx.font = "normal 15px Roboto Condensed";
-    // ctx.fillStyle = textColor;
-    // ctx.textAlign = "center";
-    // ctx.textBaseline = "middle";
-    // const textSize = ctx.measureText(text);
-    // const textWidth = textSize.width;
-
-    // ctx.fillText(
-    //   text,
-    //   (chartArea.right - chartArea.left) / 2 + textWidth / 2 + 2,
-    //   (chartHeight) / 2 + chartTop
-    // );
     ctx.restore();
 
   }
