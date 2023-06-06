@@ -42,26 +42,26 @@
               <%=total_calls(period)%>
             </td>
             <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-              <em data-rate="30" class="overdue-high-is-good"><%=percentage(total_calls(period), overdue_patients(period))%></em>
-              <span>of <%=overdue_patients(period)%></span>
+              <em data-rate="30" class="overdue-high-is-good"><%=percentage(total_calls(period), overdue_patients(region, period))%></em>
+              <span>of <%=overdue_patients(region, period)%></span>
             </td>
           <% end %>
 
         </tr>
       <% end %>
-        <% children_data.each do |(user, period_range)| %>
+        <% children_data.each do |(row, period_range)| %>
           <% table.row do %>
             <tr>
               <td class="row-title">
-                <%= user[:full_name] %>
+                <%= row_title(row) %>
               </td>
-              <% period_range.each do |(period, calls_made)| %>
+              <% periods.each do |period| %>
                 <td class="row-total ta-right">
-                  <%= calls_made %>
+                  <%= period_range[period] %>
                 </td>
                 <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
-                  <em data-rate="30" class="<%= class_names('overdue-high-is-good': facility?) %>"><%=percentage(calls_made, total_calls(period))%></em>
-                  <span></span>
+                  <em data-rate="30" class="<%= class_names('overdue-high-is-good': facility?) %>"><%=percentage(period_range[period], overdue_patients(region, period))%></em>
+                  <span><%= facility? ? "" : overdue_patients(row, period) %></span>
                 </td>
               <% end %>
             </tr>

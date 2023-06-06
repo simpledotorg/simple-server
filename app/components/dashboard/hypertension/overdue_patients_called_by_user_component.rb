@@ -7,24 +7,25 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
     @repository = repository
     @period = period
     @current_admin = current_admin
-    @children_data = patient_call_count_by_user
-    calls_made_by_region
+    @children_data = facility? ? patient_call_count_by_user : patients_call_count_by_region
+  end
+
+  def patients_call_count_by_region
+    region
+      .reportable_children
+      .map { |sub_region| {sub_region => @repository.patients_called[sub_region.slug]} }
+      .reduce(:merge)
   end
 
   def patient_call_count_by_user
-    users = @current_admin.accessible_users(:view_reports)
+    @current_admin.accessible_users(:view_reports)
       .order(:full_name)
       .map { |user| calls_made_by_user(user) }
       .reduce(:merge)
-      .filter { |_user, call_count_by_period| atleast_one_call?(call_count_by_period) }
-  end
-
-  def atleast_one_call?(call_count_by_period)
-    call_count_by_period.sum { |_p, values| values }.nonzero?
   end
 
   def calls_made_by_user(user)
-    {user => periods.map { |p| monthly_calls_made_by_user(user, p).reduce(:merge) }}
+    {user => periods.map { |p| monthly_calls_made_by_user(user, p) }.flatten.reduce(:merge)}
   end
 
   def monthly_calls_made_by_user(user, period)
@@ -38,12 +39,12 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
       .dig(period) || 0
   end
 
-  def calls_made_by_region
-    region.reportable_children
+  def row_title(row)
+    facility? ? row[:full_name] : row[:name]
   end
 
-  def overdue_patients(period)
-    data[:overdue_patients].dig(period)
+  def overdue_patients(region, period)
+    @repository.overdue_patients.dig(region.slug, period)
   end
 
   def percentage(numerator, denominator)
@@ -62,5 +63,11 @@ class Dashboard::Hypertension::OverduePatientsCalledByUserComponent < Applicatio
 
   def facility?
     region.region_type == "facility"
+  end
+
+  private
+
+  def atleast_one_call?(call_count_by_period)
+    call_count_by_period.sum { |_p, values| values }.nonzero?
   end
 end
