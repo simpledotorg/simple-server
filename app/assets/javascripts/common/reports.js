@@ -474,17 +474,15 @@ Reports = function ({
   }
 
   function disabledForRegionLevel() {
-    const enabledRegions = [
-      "organization",
-      "region",
-      "division",
-      "districtBD",
-    ];
-    // region types present in multiple countries
-    if (regionType === "district" || regionType === "facility") {
-      return enabledRegions.indexOf(regionType + countryAbbreviation) === -1;
-    }
-    return enabledRegions.indexOf(regionType) === -1;
+    console.log(regionType);
+    // region names top to bottom: 'organization' > 'state' > 'district' > 'block' > 'facility' (all countries)
+    const enabledRegions = {
+      IN: [],
+      BD: ["organization", "state", "district"],
+      ET: ["organization", "state"],
+      LK: ["organization"],
+    };
+    return enabledRegions[countryAbbreviation].indexOf(regionType) === -1;
   }
   function calculateGoal(periodValues, goalDownwards) {
     const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
