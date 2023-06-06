@@ -402,7 +402,12 @@ DashboardReports = () => {
   }
 }
 
-Reports = function ({ withLtfu, showGoalLines }) {
+Reports = function ({
+  withLtfu,
+  showGoalLines,
+  regionType,
+  countryAbbreviation,
+}) {
   const colors = dashboardReportsChartJSColors();
 
   this.initialize = () => {
@@ -426,14 +431,15 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   // goal-line functions
   // - config and calculations
-  function goalLinePlugin(goalValue) {
+  function goalLinePlugin(goalValue, goalDownwards = false) {
     return {
       id: "goalLine",
       beforeDraw: (chart) => {
         const ctx = chart.ctx;
         ctx.save();
         canvasDrawGoalLine(chart, goalValue);
-        canvasDrawGoalTextBubble(chart, goalValue);
+        canvasDrawGoalZone(chart, goalValue, goalDownwards)
+        canvasDrawGoalTextBubble(chart, goalValue, goalDownwards);
         canvasDrawLineFromGoalToBubble(chart, goalValue);
       },
     };
@@ -441,15 +447,25 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   const defaultMonthsRequired = 6;
   function withGoalLineConfig(config, periodValues, goalDownwards = false) {
-    if (monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired) {
+    if (
+      disabledForRegionLevel() ||
+      monthsSinceFirstRegistration(periodValues) < defaultMonthsRequired
+    ) {
       return config;
     }
 
     const goal = calculateGoal(periodValues, goalDownwards);
     const goalLineConfig = {
-      plugins: [goalLinePlugin(goal)],
+      plugins: [goalLinePlugin(goal, goalDownwards)],
     };
-    return mergeConfig(config, goalLineConfig);
+    const configWithoutFill = removeFillFromChartConfig(config)
+    return mergeConfig(configWithoutFill, goalLineConfig);
+  }
+
+  function removeFillFromChartConfig(config) {
+    const updatedConfig = config
+    updatedConfig.data.datasets.forEach(dataset => dataset.backgroundColor = colors.transparent)
+    return updatedConfig
   }
 
   function monthsSinceFirstRegistration(periodValues) {
@@ -457,6 +473,19 @@ Reports = function ({ withLtfu, showGoalLines }) {
     return periodKeysArray.length;
   }
 
+  function disabledForRegionLevel() {
+    const enabledRegions = [
+      "organization",
+      "region",
+      "division",
+      "districtBD",
+    ];
+    // region types present in multiple countries
+    if (regionType === "district" || regionType === "facility") {
+      return enabledRegions.indexOf(regionType + countryAbbreviation) === -1;
+    }
+    return enabledRegions.indexOf(regionType) === -1;
+  }
   function calculateGoal(periodValues, goalDownwards) {
     const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
     const improvementRatio = relativeImprovementRatio(goalMonthIndex);
@@ -469,7 +498,13 @@ Reports = function ({ withLtfu, showGoalLines }) {
 
   function goalPeriodValue(periodValues) {
     const dateKeysArray = Object.keys(periodValues);
+
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
+    const isLastDateKeysArrayMonthDec =
+      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
+    if (isLastDateKeysArrayMonthDec) {
+      decemberKeys.splice(-1);
+    }
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
     const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
 
@@ -483,7 +518,6 @@ Reports = function ({ withLtfu, showGoalLines }) {
         goalMonthIndex,
       };
     }
-
     return {
       goalMonthValue: periodValues[mostRecentDecemberKey],
     };
@@ -505,8 +539,8 @@ Reports = function ({ withLtfu, showGoalLines }) {
       "nov",
       "dec",
     ];
-    
-     return months.indexOf(month.toLowerCase());
+
+    return months.indexOf(month.toLowerCase());
   }
 
   function calculateGoalUpwards(monthValue, improvementRatio) {
@@ -543,18 +577,43 @@ Reports = function ({ withLtfu, showGoalLines }) {
     const chartBottom = chartArea.bottom;
     const chartHeight = chart.chartArea.height;
     const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
-  
+
     ctx.beginPath();
     ctx.moveTo(chartArea.left + 1, lineYPosition);
     ctx.lineTo(chartArea.right - 1, lineYPosition);
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
-    ctx.strokeStyle = chart.config.data.datasets[0].borderColor;
+    ctx.strokeStyle = changeRGBAColorOpacity(chart.config.data.datasets[0].borderColor, 0.75)
     ctx.setLineDash([1, 6]);
     ctx.stroke();
     ctx.restore();
   }
-  
+
+  function canvasDrawGoalZone(chart, goalValue, goalDownwards) {
+    const ctx = chart.ctx;
+    ctx.save();
+    const chartArea = chart.chartArea;
+    const chartBottom = chartArea.bottom;
+    const chartTop = chartArea.top;
+    const chartHeight = chart.chartArea.height;
+    const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
+
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, lineYPosition);
+    ctx.lineTo(chartArea.right, lineYPosition);
+    ctx.lineTo(chartArea.right, goalDownwards ? chartBottom : chartTop);
+    ctx.lineTo(chartArea.left, goalDownwards ? chartBottom : chartTop);
+    ctx.closePath();
+
+    const rgbaChartColor = chart.config.data.datasets[0].borderColor;
+    const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.065);
+
+    ctx.fillStyle = fillColor || "rgba(0, 0, 0, 0.1)";
+    ctx.fill();
+    ctx.restore();
+
+  }
+
   function canvasDrawRoundRect(
     ctx,
     x,
@@ -567,7 +626,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
     const radius = radiusVar || 5;
     const height = heightVar + 4;
     const cornerRadius = radius + 1;
-  
+
     ctx.beginPath();
     ctx.moveTo(x + cornerRadius, y);
     ctx.lineTo(x + width - cornerRadius, y);
@@ -585,41 +644,42 @@ Reports = function ({ withLtfu, showGoalLines }) {
     ctx.lineTo(x, y + cornerRadius);
     ctx.arcTo(x, y, x + cornerRadius, y, cornerRadius);
     ctx.closePath();
-  
+
     ctx.fillStyle = fillStyle || "grey";
     ctx.fill();
   }
   
-  function canvasDrawGoalTextBubble(chart, goalValue) {
+  function canvasDrawGoalTextBubble(chart, goalValue, goalDownwards) {
     // draw text
     const ctx = chart.ctx;
     const cornerRadius = 10;
     const xTextPadding = 7;
     const yTextPadding = 2;
-  
+
     const rgbaChartColor = chart.config.data.datasets[0].borderColor;
     const textColor = rgbaChartColor;
     const fillColor = changeRGBAColorOpacity(rgbaChartColor, 0.15);
-  
+
     const dateNow = new Date();
     const currentYearString = dateNow.getFullYear();
-    const text = `Goal: ${goalValue}% by end of ${currentYearString}`;
+    const aboveOrBelowString = goalDownwards ? "Below" : "Above";
+    const text = `Goal: ${aboveOrBelowString} ${goalValue}% by end of ${currentYearString}`;
     const font = "14px Roboto Condensed";
     ctx.font = font;
     ctx.fillStyle = textColor;
-  
+
     const textSize = ctx.measureText(text);
     const textWidth = textSize.width;
     const textHeight = parseInt(font, 10);
     const chartRight = chart.chartArea.right;
     const textXPos = chartRight - textWidth - xTextPadding;
     const textYPos = textHeight + yTextPadding;
-  
+
     ctx.fillStyle = textColor;
     ctx.strokeStyle = textColor;
     ctx.fillText(text, textXPos, textYPos);
     ctx.restore();
-  
+
     // draw background
     const backgroundFillXPos = chartRight - textWidth - xTextPadding * 2;
     const rectWidth = textWidth + xTextPadding * 2;
@@ -634,12 +694,12 @@ Reports = function ({ withLtfu, showGoalLines }) {
       fillColor
     );
   }
-  
+
   function canvasDrawLineFromGoalToBubble(chart, goalValue) {
     const lineWidth = 2;
     const currentRGBAColor = chart.config.data.datasets[0].borderColor;
     const bgColorString = changeRGBAColorOpacity(currentRGBAColor, 0.3);
-  
+
     const ctx = chart.ctx;
     const chartArea = chart.chartArea;
     const chartBottom = chartArea.bottom;
@@ -648,7 +708,7 @@ Reports = function ({ withLtfu, showGoalLines }) {
     const chartHeight = chart.chartArea.height;
     const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
     const xPos = chartRight - (chartWidth / 18) * 1.5 - lineWidth;
-  
+
     ctx.beginPath();
     ctx.moveTo(xPos, 23);
     ctx.lineTo(xPos, lineYPosition);
