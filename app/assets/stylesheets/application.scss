@@ -732,3 +732,19 @@ span.inactive {
 .w-full {
   width: 100%;
 }
+.jc-space-between { justify-content: space-between; }
+
+.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::before {
+  background-color: #ADB2B8;
+  border-color: #ADB2B8;
+}
+
+.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::after {
+  background-color: #fff;
+}
+
+.checkbox-outside-card.custom-control-label {
+  color: #2f363d;
+}
+
+.o-65 { opacity: 0.65; }
