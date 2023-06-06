@@ -1,9 +1,9 @@
 class OverduePatientsQuery
   def count_patients_called(region, period_type, group_by: nil)
     query = Reports::OverduePatient
-            .group_by_period(period_type, :month_date, { format: Period.formatter(period_type) })
-            .where(has_called: 'yes')
-            .where('assigned_facility_region_id in (?)', region.facility_regions.pluck(:id))
+      .group_by_period(period_type, :month_date, {format: Period.formatter(period_type)})
+      .where(has_called: "yes")
+      .where("assigned_facility_region_id in (?)", region.facility_regions.pluck(:id))
     if group_by.present?
       results = query.group(group_by).count
       sum_groups_by_period(results)

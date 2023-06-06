@@ -60,7 +60,6 @@ module Reports
       diabetes_appts_scheduled_more_than_62_days_rates
       overdue_patients_rates
       contactable_overdue_patients_rates
-      contactable_overdue_called_patients_rates
       patients_called_rates
       contactable_patients_called_rates
       patients_called_with_result_agreed_to_visit_rates
