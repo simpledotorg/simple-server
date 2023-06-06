@@ -121,6 +121,16 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         diabetes_appts_scheduled_more_than_62_days
         diabetes_dead
         dead
+        overdue_patients
+        contactable_overdue_patients
+        patients_called
+        contactable_patients_called
+        patients_called_with_result_agreed_to_visit
+        patients_called_with_result_remind_to_call_later
+        patients_called_with_result_removed_from_list
+        contactable_patients_called_with_result_agreed_to_visit
+        contactable_patients_called_with_result_remind_to_call_later
+        contactable_patients_called_with_result_removed_from_list
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results[facility_1.region.slug][period].keys).to match_array(expected_keys)
