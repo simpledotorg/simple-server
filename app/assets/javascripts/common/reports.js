@@ -609,7 +609,6 @@ Reports = function ({
     ctx.fillStyle = fillColor || "rgba(0, 0, 0, 0.1)";
     ctx.fill();
     ctx.restore();
-
   }
 
   function canvasDrawRoundRect(
