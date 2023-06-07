@@ -53,13 +53,14 @@
           <% table.row do %>
             <tr>
               <td class="row-title">
-                <%= row_title(row) %>
+              <%= link_to row.name, reports_region_path(row.region, report_scope: row.region_type) unless facility?%>
+              <%= link_to row.full_name, admin_user_path(row, period: @period) if facility?%>
               </td>
               <% periods.each do |period| %>
                 <td class="row-total ta-right">
                   <%= period_range[period] %>
                 </td>
-                <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+                <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(period_range[period], overdue_patients(region, period)) %>">
                   <em data-rate="30" class="<%= class_names('overdue-high-is-good': facility?) %>"><%=percentage(period_range[period], overdue_patients(region, period))%></em>
                   <span><%= facility? ? "" : overdue_patients(row, period) %></span>
                 </td>
