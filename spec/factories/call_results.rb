@@ -11,6 +11,11 @@ FactoryBot.define do
     device_updated_at { Time.current }
     deleted_at { nil }
   end
+
+  trait :remove_from_overdue_list do
+    remove_reason { CallResult.remove_reasons.keys.sample }
+    result_type { CallResult.result_types[:removed_from_overdue_list] }
+  end
 end
 
 def build_call_result_payload(call_result = FactoryBot.build(:call_result, result_type: :agreed_to_visit))
