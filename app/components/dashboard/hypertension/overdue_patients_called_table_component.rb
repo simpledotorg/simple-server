@@ -65,6 +65,10 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     region.region_type == "facility"
   end
 
+  def patients_called_tooltip(numerator, denominator)
+    "#{numerator} / #{denominator} overdue patients called"
+  end
+
   private
 
   def atleast_one_call?(call_count_by_period)

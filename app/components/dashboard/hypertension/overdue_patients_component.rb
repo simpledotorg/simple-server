@@ -1,10 +1,11 @@
 class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
   attr_reader :region, :data, :period
 
-  def initialize(region:, data:, period:)
+  def initialize(region:, data:, period:, with_non_contactable:)
     @region = region
     @data = data
     @period = period
+    @contactable = !with_non_contactable
   end
 
   def graph_data

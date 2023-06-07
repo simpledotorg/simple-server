@@ -41,7 +41,7 @@
             <td class="row-total ta-right">
               <%=total_calls(period)%>
             </td>
-            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="2,201 / 20,000 patients">
+            <td class="type-percent" data-sort-column-key="population-coverage" data-sort="30%" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(total_calls(period), overdue_patients(region, period))%>">
               <em data-rate="30" class="overdue-high-is-good"><%=percentage(total_calls(period), overdue_patients(region, period))%></em>
               <span>of <%=overdue_patients(region, period)%></span>
             </td>
