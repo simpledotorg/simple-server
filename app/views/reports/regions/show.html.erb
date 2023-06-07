@@ -275,7 +275,7 @@
     data: @data,
     period: @period,
     with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
-  <%= render(Dashboard::Hypertension::OverduePatientsCalledByUserComponent.new(
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledTableComponent.new(
     region: @region,
     data: @data,
     repository: @details_repository,

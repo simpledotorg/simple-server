@@ -375,7 +375,7 @@ DashboardReports = () => {
             {
               label: "Agreed to visit",
               data: Object.values(
-                data.chartProportionalPercentageCalledWithResultAgreedToVisit
+                data.calledWithResultAgreedToVisit
               ),
               backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
@@ -387,7 +387,7 @@ DashboardReports = () => {
             {
               label: "Remind to call later",
               data: Object.values(
-                data.chartProportionalPercentageCalledWithResultRemindToCallLater
+                data.calledWithResultRemindToCallLater
               ),
               backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
@@ -399,7 +399,7 @@ DashboardReports = () => {
             {
               label: "Remove from overdue list",
               data: Object.values(
-                data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList
+                data.calledWithResultRemoveFromOverdueList
               ),
               backgroundColor: colors.overdueCalledChartFillLightRed,
               borderColor: colors.overdueCalledChartLineDarkYellow,
