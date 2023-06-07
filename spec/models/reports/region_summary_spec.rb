@@ -520,14 +520,12 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
 
       (("Apr 2019".to_period)..("Dec 2019".to_period)).each do |period|
-        print period
         expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 4
         expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 3
         expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 7
       end
 
       (("Jan 2020".to_period)..("May 2020".to_period)).each do |period|
-        print period
         expect(facility_1_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
         expect(facility_2_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0
         expect(region_results[period]["adjusted_bs_missed_visit_under_care"]).to eq 0

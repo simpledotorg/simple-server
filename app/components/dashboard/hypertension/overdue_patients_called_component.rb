@@ -74,8 +74,8 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     end
 
     data[numerator].map do |period, value|
-      denominotar = denominator_keys.map {|k| data[k][period]}.sum
-      {period => denominotar.zero? ? 0 : value * 100 / denominotar}
+      denominator = denominator_keys.map {|k| data[k][period]}.sum
+      {period => denominator.zero? ? 0 : value * 100 / denominator}
     end.reduce(:merge)
   end
 end
