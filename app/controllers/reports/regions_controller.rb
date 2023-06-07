@@ -57,7 +57,7 @@ class Reports::RegionsController < AdminController
     @overview_data = @presenter.call(@region)
     @latest_period = Period.current
     @with_ltfu = with_ltfu?
-    @with_removed_from_overdue_list = with_removed_from_overdue_list? # TODO: Better name
+    @with_non_contactable = with_non_contactable?
 
     @child_regions = @region.reportable_children
     repo = Reports::Repository.new(@child_regions, periods: @period)
@@ -459,8 +459,8 @@ class Reports::RegionsController < AdminController
     params[:with_ltfu].present?
   end
 
-  def with_removed_from_overdue_list? # TODO: Better name
-    params[:with_removed_from_overdue_list].present?
+  def with_non_contactable?
+    params[:with_non_contactable].present?
   end
 
   def log_cache_metrics

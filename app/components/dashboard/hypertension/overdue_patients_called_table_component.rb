@@ -1,7 +1,7 @@
 class Dashboard::Hypertension::OverduePatientsCalledTableComponent < ApplicationComponent
   attr_reader :region, :period, :data, :children_data, :localized_region_type
 
-  def initialize(region:, data:, repository:, period:, current_admin:, with_removed_from_overdue_list:)
+  def initialize(region:, data:, repository:, period:, current_admin:, with_non_contactable:)
     @region = region
     @data = data
     @repository = repository
