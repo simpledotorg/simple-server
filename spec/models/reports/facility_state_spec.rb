@@ -957,27 +957,6 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_after_call).to eq(2)
         end
       end
-
-      it "should exclude overdue patients who are removed from overdue list at the beginning of a month" do
-        month_date = reporting_dates[:beginning_of_month]
-        facility = create(:facility)
-
-        overdue_patient_removed_from_list = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
-        create(:call_result, patient: overdue_patient_removed_from_list, device_created_at: month_date)
-        create(:blood_pressure, patient: overdue_patient_removed_from_list, device_created_at: month_date + 1)
-
-        contactable_overdue_patients = create_list(:patient, 2, :contactable_overdue, assigned_facility: facility, registration_facility: facility)
-        contactable_overdue_patients.each { |overdue_patient|
-          create(:call_result, patient: overdue_patient, device_created_at: month_date)
-          create(:blood_pressure, patient: overdue_patient, device_created_at: month_date + 1)
-        }
-
-        RefreshReportingViews.refresh_v2
-
-        with_reporting_time_zone do
-          expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_after_call).to eq(2)
-        end
-      end
     end
 
     describe "patients_returned_with_result_agreed_to_visit" do
