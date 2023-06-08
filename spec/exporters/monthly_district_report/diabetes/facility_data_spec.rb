@@ -3,7 +3,7 @@ require "rails_helper"
 describe MonthlyDistrictReport::Diabetes::FacilityData do
   around(:example) do |example|
     previous_locale = I18n.locale
-    I18n.locale = :en_IN
+    I18n.locale = :en-IN
     example.run
     I18n.locale = previous_locale
   end

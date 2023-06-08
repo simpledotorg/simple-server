@@ -1,4 +1,4 @@
-en:
+en-IN:
   faker:
     phone_number:
       formats: ['##########']
