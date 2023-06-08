@@ -11,9 +11,9 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
   def graph_data
     if @contactable
       return {
-        overduePatients: data[:overdue_patients],
-        overduePatientsCalled: data[:patients_called],
-        overduePatientsCalledRate: data[:patients_called_rates],
+        overduePatients: data[:contactable_overdue_patients],
+        overduePatientsCalled: data[:contactable_patients_called],
+        overduePatientsCalledRate: data[:contactable_patients_called_rates],
         startDate: @period.advance(months: -17),
         calledWithResultAgreedToVisit: data[:contactable_patients_called_with_result_agreed_to_visit_rates],
         calledWithResultRemindToCallLater: data[:contactable_patients_called_with_result_remind_to_call_later_rates],
