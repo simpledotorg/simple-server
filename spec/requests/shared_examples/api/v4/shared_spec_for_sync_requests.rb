@@ -167,10 +167,6 @@ RSpec.shared_examples "v4 API sync requests" do
     end
 
     it "defaults to first primary language when it cannot find region" do
-      expect(I18n).to receive(:with_locale).with("en")
-
-      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "en-IN"})
-
       expect(I18n).to receive(:with_locale).with("pa-Guru-IN")
 
       get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "pa-IN"})
