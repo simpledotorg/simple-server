@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [ "$#" -ne 4 ]; then
   echo "Usage: $0 <argocd-endpoint> <argocd-user> <argocd-password> <image-tag>" >&2
   exit 1
