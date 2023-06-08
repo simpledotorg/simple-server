@@ -10,7 +10,7 @@ class Dashboard::Hypertension::OverduePatientsComponent < ApplicationComponent
 
   def graph_data
     {
-      assignedPatients: data[:cumulative_assigned_patients],
+      assignedPatients: data[:under_care],
       overduePatients: @contactable ? data[:contactable_overdue_patients] : data[:overdue_patients],
       overduePatientsPercentage: @contactable ? data[:contactable_overdue_patients_rates] : data[:overdue_patients_rates],
       **period_data
