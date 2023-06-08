@@ -319,7 +319,9 @@
   window.addEventListener("DOMContentLoaded", () => {
     new Reports({
       withLtfu: <%= @with_ltfu %>,
-      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>
+      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>,
+      regionType: '<%= @region.region_type %>',
+      countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
     }).initialize();
   });
 </script>
