@@ -22,6 +22,12 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
+    orange: 'rgb(223,104,15)',
+    lightOrange: 'rgba(255,156,8,0.15)',
+    overdueCalledChartLineDarkYellow: "rgba(228, 180, 57, 1)",
+    overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
+    overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
+    overdueCalledChartFillLightRed: "rgba(255,146,122,0.2)",
   };
 }
 
@@ -50,13 +56,13 @@ DashboardReports = () => {
 
     switch (format) {
       case "percentage":
-        return formatPercentage(value)
+        return formatPercentage(value);
       case "numberWithCommas":
-        return formatNumberWithCommas(value)
+        return formatNumberWithCommas(value);
       default:
         throw `Unknown format ${format}`;
     }
-  }
+  };
 
   const createAxisMaxAndStepSize = (data) => {
     const maxDataValue = Math.max(...Object.values(data));
@@ -87,9 +93,13 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
 
-    cumulativeDiabetesRegistrationsTrend: function(data) {
-      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.cumulativeDiabetesRegistrations);
-      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(data.monthlyDiabetesRegistrations);
+    cumulativeDiabetesRegistrationsTrend: function (data) {
+      const cumulativeDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.cumulativeDiabetesRegistrations
+      );
+      const monthlyDiabetesRegistrationsYAxis = createAxisMaxAndStepSize(
+        data.monthlyDiabetesRegistrations
+      );
       const config = {
         data: {
           labels: Object.keys(data.cumulativeDiabetesRegistrations),
@@ -132,15 +142,15 @@ DashboardReports = () => {
               },
               max: cumulativeDiabetesRegistrationsYAxis.max,
             },
-    
+
             yMonthlyDiabetesRegistrations: {
               display: false,
               beginAtZero: true,
               min: 0,
               max: monthlyDiabetesRegistrationsYAxis.max,
             },
-          }
-        }
+          },
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -165,7 +175,7 @@ DashboardReports = () => {
             },
           ],
         },
-        options: { 
+        options: {
           scales: {
             x: {
               stacked: true,
@@ -195,12 +205,12 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
-  
-    diabetesVisitDetails: function(data) {
+
+    diabetesVisitDetails: function (data) {
       const maxBarsToDisplay = 6;
       const barsToDisplay = Math.min(
-          Object.keys(data.bsBelow200Rate).length,
-          maxBarsToDisplay
+        Object.keys(data.bsBelow200Rate).length,
+        maxBarsToDisplay
       );
       const config = {
         data: {
@@ -227,7 +237,7 @@ DashboardReports = () => {
             {
               label: "Visit but no blood sugar measure",
               data: Object.values(data.visitButNoBSMeasureRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumGrey,
               hoverBackgroundColor: colors.darkGrey,
@@ -235,19 +245,19 @@ DashboardReports = () => {
             {
               label: "Missed visits",
               data: Object.values(data.diabetesMissedVisitsRate).slice(
-                  -barsToDisplay
+                -barsToDisplay
               ),
               backgroundColor: colors.mediumBlue,
               hoverBackgroundColor: colors.darkBlue,
             },
           ],
-        }
-      }
+        },
+      };
       return withBaseBarConfig(config);
     },
 
-    MedicationsDispensation: function(data) {
-      const graphPeriods = Object.keys(Object.values(data)[0]["counts"])
+    MedicationsDispensation: function (data) {
+      const graphPeriods = Object.keys(Object.values(data)[0]["counts"]);
 
       let datasets = Object.keys(data).map(function (bucket, index) {
         return {
@@ -260,7 +270,7 @@ DashboardReports = () => {
         };
       });
       const config = {
-        type: 'bar',
+        type: "bar",
         data: {
           labels: graphPeriods,
           datasets: datasets,
@@ -305,7 +315,7 @@ DashboardReports = () => {
                   )} follow-up patients`;
                 },
               },
-            }
+            },
           },
           scales: {
             y: {
@@ -316,13 +326,13 @@ DashboardReports = () => {
                 display: false,
               },
             },
-          }
+          },
         },
         plugins: [ChartDataLabels],
-      }
-      return withBaseLineConfig(config)
+      };
+      return withBaseLineConfig(config);
     },
-    
+
     lostToFollowUpTrend: function (data) {
       const config = {
         data: {
@@ -339,68 +349,140 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
+
+    overdueTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsPercentage),
+          datasets: [
+            {
+              label: "Overdue Patients",
+              data: Object.values(data.overduePatientsPercentage),
+              backgroundColor: colors.lightOrange,
+              borderColor: colors.orange,
+            }
+          ]
+        }
+      };
+      return withBaseLineConfig(config);
+    },
+
+    overdueCalledTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsCalled),
+          datasets: [
+            {
+              label: "Agreed to visit",
+              data: Object.values(
+                data.calledWithResultAgreedToVisit
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightGreen,
+              borderWidth: 0,
+              hoverBorderWidth: 0,
+              radius: 0,
+              hoverRadius: 0,
+              fill: true,
+            },
+            {
+              label: "Remind to call later",
+              data: Object.values(
+                data.calledWithResultRemindToCallLater
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightYellow,
+              borderWidth: 0,
+              hoverBorderWidth: 0,
+              radius: 0,
+              hoverRadius: 0,
+              fill: "-1",
+            },
+            {
+              label: "Remove from overdue list",
+              data: Object.values(
+                data.calledWithResultRemoveFromOverdueList
+              ),
+              backgroundColor: colors.overdueCalledChartFillLightRed,
+              borderColor: colors.overdueCalledChartLineDarkYellow,
+              hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
+              fill: "-1",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(ctx, Object.keys(data.overduePatientsCalledRate).length),
+              },
+            },
+          ],
+        },
+        options: {
+          scales: {
+            y: {
+              stacked: true,
+            },
+          },
+        },
+      };
+      return withBaseLineConfig(config);
+    },
   };
 
   return {
-      ReportsTable: (id) => {
-        const tableSortAscending = { descending: false };
-        const table = document.getElementById(id);
+    ReportsTable: (id) => {
+      const tableSortAscending = { descending: false };
+      const table = document.getElementById(id);
 
-        if (table) {
-            new Tablesort(table, tableSortAscending);
-        }
-      },
-      ReportsGraph: (id, data) => {
-        const container = document.querySelector(`#${id}`);
-        const graphCanvas = container.querySelector('canvas')
-        const defaultPeriod = container.getAttribute("data-period");
-        const dataKeyNodes = container.querySelectorAll("[data-key]");
-
-        const populateDynamicComponents = (period) => {
-            dataKeyNodes.forEach(dataNode => {
-                const format = dataNode.dataset.format;
-                const key = dataNode.dataset.key;
-
-                if(!data[key]) {
-                    throw `${key}: Key not present in data.`
-                }
-
-                dataNode.innerHTML = formatValue(format, data[key][period]);
-            })
-        };
-
-        if(!ReportsGraphConfig[id]) {
-            throw `Config for ${id} is not defined`;
-        }
-
-        const graphConfig = ReportsGraphConfig[id](data);
-        if(!graphConfig) {
-            throw `Graph config not known for ${id}`
-        }
-
-        // comeback and improve
-        if (!graphConfig.options.plugins.tooltip.enabled) {
-          graphConfig.options.plugins.tooltip = {
-            enabled: false,
-            external: (context) => {
-              const isTooltipActive = context.tooltip._active.length > 0;
-              if (isTooltipActive) {
-                let hoveredDatapoint = context.tooltip.dataPoints;
-                populateDynamicComponents(hoveredDatapoint[0].label);
-              }
-              else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
-            },
-          };
-        }
-
-        if(graphCanvas) {
-            // Assumes ChartJS is already imported
-            new Chart(graphCanvas.getContext("2d"), graphConfig);
-            populateDynamicComponents(defaultPeriod);
-        }
+      if (table) {
+        new Tablesort(table, tableSortAscending);
       }
-  }
-}
+    },
+    ReportsGraph: (id, data) => {
+      const container = document.querySelector(`#${id}`);
+      const graphCanvas = container.querySelector("canvas");
+      const defaultPeriod = container.getAttribute("data-period");
+      const dataKeyNodes = container.querySelectorAll("[data-key]");
+
+      const populateDynamicComponents = (period) => {
+        dataKeyNodes.forEach((dataNode) => {
+          const format = dataNode.dataset.format;
+          const key = dataNode.dataset.key;
+
+          if (!data[key]) {
+            throw `${key}: Key not present in data.`;
+          }
+
+          dataNode.innerHTML = formatValue(format, data[key][period]);
+        });
+      };
+
+      if (!ReportsGraphConfig[id]) {
+        throw `Config for ${id} is not defined`;
+      }
+
+      const graphConfig = ReportsGraphConfig[id](data);
+      if (!graphConfig) {
+        throw `Graph config not known for ${id}`;
+      }
+
+      // comeback and improve
+      if (!graphConfig.options.plugins.tooltip.enabled) {
+        graphConfig.options.plugins.tooltip = {
+          enabled: false,
+          external: (context) => {
+            const isTooltipActive = context.tooltip._active.length > 0;
+            if (isTooltipActive) {
+              let hoveredDatapoint = context.tooltip.dataPoints;
+              populateDynamicComponents(hoveredDatapoint[0].label);
+            } else populateDynamicComponents(defaultPeriod); // remove 'defaultPeriod' parameter - internalise
+          },
+        };
+      }
+
+      if (graphCanvas) {
+        // Assumes ChartJS is already imported
+        new Chart(graphCanvas.getContext("2d"), graphConfig);
+        populateDynamicComponents(defaultPeriod);
+      }
+    },
+  };
+};
 
 Reports = function ({
   withLtfu,
@@ -1013,8 +1095,7 @@ Reports = function ({
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateCumulativeRegistrationsGraph(hoveredDatapoint[0].label);
-              }
-              else populateCumulativeRegistrationsGraphDefault();
+              } else populateCumulativeRegistrationsGraphDefault();
             },
           },
         },
@@ -1034,9 +1115,9 @@ Reports = function ({
             beginAtZero: true,
             min: 0,
             max: monthlyRegistrationsYAxis.max,
-          }
-        }
-      }
+          },
+        },
+      },
     };
 
     const populateCumulativeRegistrationsGraph = (period) => {
@@ -1053,16 +1134,18 @@ Reports = function ({
       );
 
       const hypertensionOnlyRegistrationsNode = cardNode.querySelector(
-          "[data-hypertension-only-registrations]"
+        "[data-hypertension-only-registrations]"
       );
 
-      const hypertensionAndDiabetesOnlyRegistrationsNode = cardNode.querySelector(
+      const hypertensionAndDiabetesOnlyRegistrationsNode =
+        cardNode.querySelector(
           "[data-hypertension-and-diabetes-registrations]"
-      );
+        );
 
       const periodInfo = data.periodInfo[period];
       const cumulativeRegistrations = data.cumulativeRegistrations[period];
-      const cumulativeHypertensionAndDiabetesRegistrations = data.cumulativeHypertensionAndDiabetesRegistrations[period];
+      const cumulativeHypertensionAndDiabetesRegistrations =
+        data.cumulativeHypertensionAndDiabetesRegistrations[period];
       const monthlyRegistrations = data.monthlyRegistrations[period];
 
       monthlyRegistrationsNode.innerHTML =
@@ -1073,16 +1156,19 @@ Reports = function ({
       registrationsPeriodEndNode.innerHTML = periodInfo.bp_control_end_date;
       registrationsMonthEndNode.innerHTML = period;
 
-      if(hypertensionOnlyRegistrationsNode) {
-        hypertensionOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
-            cumulativeRegistrations - cumulativeHypertensionAndDiabetesRegistrations
-        );
+      if (hypertensionOnlyRegistrationsNode) {
+        hypertensionOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
+            cumulativeRegistrations -
+              cumulativeHypertensionAndDiabetesRegistrations
+          );
       }
 
-      if(hypertensionAndDiabetesOnlyRegistrationsNode) {
-        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML = this.formatNumberWithCommas(
+      if (hypertensionAndDiabetesOnlyRegistrationsNode) {
+        hypertensionAndDiabetesOnlyRegistrationsNode.innerHTML =
+          this.formatNumberWithCommas(
             cumulativeHypertensionAndDiabetesRegistrations
-        );
+          );
       }
     };
 
@@ -1151,13 +1237,12 @@ Reports = function ({
               if (isTooltipActive) {
                 let hoveredDatapoint = context.tooltip.dataPoints;
                 populateVisitDetailsGraph(hoveredDatapoint[0].label);
-              }
-              else populateVisitDetailsGraphDefault();
+              } else populateVisitDetailsGraphDefault();
             },
-          }
+          },
         },
-      }
-    }
+      },
+    };
 
     const populateVisitDetailsGraph = (period) => {
       const cardNode = document.getElementById("visit-details");
@@ -1293,8 +1378,10 @@ Reports = function ({
       adjustedPatientCounts: jsonData.adjusted_patient_counts,
       adjustedPatientCountsWithLtfu: jsonData.adjusted_patient_counts_with_ltfu,
       cumulativeRegistrations: jsonData.cumulative_registrations,
-      cumulativeDiabetesRegistrations: jsonData.cumulative_diabetes_registrations,
-      cumulativeHypertensionAndDiabetesRegistrations: jsonData.cumulative_hypertension_and_diabetes_registrations,
+      cumulativeDiabetesRegistrations:
+        jsonData.cumulative_diabetes_registrations,
+      cumulativeHypertensionAndDiabetesRegistrations:
+        jsonData.cumulative_hypertension_and_diabetes_registrations,
       uncontrolledPatients: jsonData.uncontrolled_patients,
       uncontrolledRate: jsonData.uncontrolled_patients_rate,
       uncontrolledWithLtfuRate: jsonData.uncontrolled_patients_with_ltfu_rate,
@@ -1349,7 +1436,7 @@ Reports = function ({
 };
 
 function baseLineGraphConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "line",
     options: {
@@ -1377,7 +1464,7 @@ function baseLineGraphConfig() {
           tension: 0.4,
           borderWidth: 2,
           fill: true,
-        }
+        },
       },
       interaction: {
         mode: "index",
@@ -1435,7 +1522,7 @@ function baseLineGraphConfig() {
 }
 
 function baseBarChartConfig() {
-  const colors = dashboardReportsChartJSColors()
+  const colors = dashboardReportsChartJSColors();
   return {
     type: "bar",
     options: {
@@ -1502,11 +1589,36 @@ function baseBarChartConfig() {
           min: 0,
           beginAtZero: true,
         },
-      }
+      },
     },
     plugins: [intersectDataVerticalLine],
-  }
+  };
 }
+
+
+// [Segment] Functions
+// 
+/**
+ * Create a dashed line for the last X segments of dynamic charts starting from the end, default is 1 segment
+ * @param {*} ctx - ChartJS object 
+ * @param {number} numberOfXAxisTicks - number of labels in x axis (.length)
+ * @param {number} [numberOfDashedSegments] - how many segments to dash starting from the last segment of the chart. A segment is the line between 2 points.
+ * @returns 
+ */
+
+const dynamicChartSegementDashed = (
+  ctx,
+  numberOfXAxisTicks,
+  numberOfDashedSegments = 1
+) => {
+  const dashStyle = [4, 3]
+  const segmentStartIndex = ctx.p0DataIndex
+  return isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, numberOfDashedSegments) ? dashStyle : undefined;
+};
+
+function isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, segmentsToDashFromEnd) {
+  return segmentStartIndex >= numberOfXAxisTicks - (segmentsToDashFromEnd + 1)
+};
 
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
