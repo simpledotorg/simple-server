@@ -721,14 +721,13 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
   end
 
   context "overdue patient" do
-
-    let(:timezone) {Time.find_zone(Period::REPORTING_TIME_ZONE)}
-    let(:this_month) {timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0)}
-    let(:one_month_ago) {this_month - 1.month}
-    let(:two_months_ago) {this_month - 2.month}
-    let(:three_months_ago) {this_month - 3.month}
-    let(:four_months_ago) {this_month - 4.month}
-    let(:five_months_ago) {this_month - 5.month}
+    let(:timezone) { Time.find_zone(Period::REPORTING_TIME_ZONE) }
+    let(:this_month) { timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0) }
+    let(:one_month_ago) { this_month - 1.month }
+    let(:two_months_ago) { this_month - 2.month }
+    let(:three_months_ago) { this_month - 3.month }
+    let(:four_months_ago) { this_month - 4.month }
+    let(:five_months_ago) { this_month - 5.month }
     let(:district_with_facilities) { setup_district_with_facilities }
     let(:region) { district_with_facilities[:region] }
     let(:facility_1) { district_with_facilities[:facility_1] }
@@ -737,13 +736,13 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     it "return the count of overdue patients" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:appointment, patient: facility_1_patients.first, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
-      create(:appointment, patient: facility_1_patients.second,scheduled_date: two_months_ago,  facility: facility_1, device_created_at: three_months_ago)
+      create(:appointment, patient: facility_1_patients.second, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
       create(:appointment, patient: facility_1_patients.third, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
-      create(:appointment, patient: facility_1_patients.fourth,scheduled_date: one_month_ago,  facility: facility_1, device_created_at: three_months_ago)
+      create(:appointment, patient: facility_1_patients.fourth, scheduled_date: one_month_ago, facility: facility_1, device_created_at: three_months_ago)
 
       facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: jan_2019)
       create(:appointment, patient: facility_2_patients.first, scheduled_date: two_months_ago, facility: facility_2, device_created_at: three_months_ago)
-      create(:appointment, patient: facility_2_patients.second,scheduled_date: two_months_ago,  facility: facility_2, device_created_at: three_months_ago)
+      create(:appointment, patient: facility_2_patients.second, scheduled_date: two_months_ago, facility: facility_2, device_created_at: three_months_ago)
       create(:appointment, patient: facility_2_patients.third, scheduled_date: one_month_ago, facility: facility_2, device_created_at: two_months_ago)
 
       refresh_views

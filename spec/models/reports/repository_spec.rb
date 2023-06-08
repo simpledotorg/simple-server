@@ -172,16 +172,15 @@ RSpec.describe Reports::Repository, type: :model do
       user_1 = create(:user, registration_facility: facility)
       user_2 = create(:user, registration_facility: facility)
 
-      patient_1 = create(:patient, assigned_facility: facility, recorded_at:  10.months.ago)
-      patient_2 = create(:patient, assigned_facility: facility, recorded_at:  10.months.ago)
-      patient_3 = create(:patient, assigned_facility: facility, recorded_at:  10.months.ago)
-      patient_4 = create(:patient, assigned_facility: facility, recorded_at:  10.months.ago)
+      patient_1 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_2 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_3 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_4 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
 
       create(:call_result, user: user_1, facility: facility, patient: patient_1, device_created_at: this_month)
       create(:call_result, user: user_2, facility: facility, patient: patient_2, device_created_at: this_month)
       create(:call_result, user: user_1, facility: facility, patient: patient_3, device_created_at: one_month_ago)
       create(:call_result, user: user_2, facility: facility, patient: patient_4, device_created_at: two_months_ago)
-
 
       refresh_views
 
