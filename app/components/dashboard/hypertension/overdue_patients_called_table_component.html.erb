@@ -63,10 +63,16 @@
                   <%= count_by_period[period] %>
                 </td>
                 <td class="type-percent" data-sort-column-key="population-coverage" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(count_by_period[period], overdue_patients(region, period)) %>">
-                  <em data-rate="<%=percentage(count_by_period[period], overdue_patients(region, period))%>" class="<%= class_names('overdue-high-is-good') unless facility? %>">
-                    <%=percentage_or_dash(count_by_period[period], overdue_patients(region, period))%>
-                  </em>
-                  <span><%= facility? ? "" : "of #{overdue_patients(row, period)}" %></span>
+                  <% if facility? %>
+                    <em data-rate="<%=percentage(count_by_period[period], overdue_patients(region, period))%>">
+                      <%=percentage_or_dash(count_by_period[period], overdue_patients(region, period))%>
+                    </em>
+                  <% else %>
+                    <em data-rate="<%=percentage(count_by_period[period], overdue_patients(row, period))%>" class="overdue-high-is-good">
+                      <%=percentage_or_dash(count_by_period[period], overdue_patients(row, period))%>
+                    </em>
+                    <span>of <%= overdue_patients(row, period) %></span>
+                  <% end %>
                 </td>
               <% end %>
             </tr>
