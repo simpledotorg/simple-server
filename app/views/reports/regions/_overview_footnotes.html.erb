@@ -159,25 +159,35 @@
     <% end %>
     <% if current_admin.feature_enabled?(:medications_dispensation) %>
       <div class="mb-0px">
-      <p class="mb-8px fs-16px fw-bold c-grey-dark">
-        Days of medications handed to follow-up patients
-      </p>
-      <div class="pl-16px">
-        <p class="mb-8px fs-14px c-grey-dark">
-          <strong>Numerator:</strong> <%= t("medications_dispensation_copy.numerator") %>
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Days of medications handed to follow-up patients
         </p>
-        <p class="mb-0px fs-14px c-grey-dark">
-          <strong>Denominator</strong> <%= t("medications_dispensation_copy.denominator") %>
-        </p>
-      </div>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <strong>Numerator:</strong> <%= t("medications_dispensation_copy.numerator") %>
+          </p>
+          <p class="mb-0px fs-14px c-grey-dark">
+            <strong>Denominator</strong> <%= t("medications_dispensation_copy.denominator") %>
+          </p>
+        </div>
       </div>
     <% end %>
+      <div class="mb-0px">
+        <p class="mb-8px fs-16px fw-bold c-grey-dark">
+          Overdue patient
+        </p>
+        <div class="pl-16px">
+          <p class="mb-8px fs-14px c-grey-dark">
+            <%= t("overdue_patients_definition") %>
+          </p>
+        </div>
+      </div>
     </div>
-    <% unless @region.region_type == "facility" %>
     <div class="col-lg-5">
       <h4 class="mb-16px pb-8px">
         Key for performance tables
       </h4>
+      <% unless @region.region_type == "facility" %>
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         BP controlled
       </p>
@@ -245,6 +255,41 @@
           0%
         </p>
       </div>
-    </div>
+
     <% end %>
+      <p class="mt-24px mb-8px fs-16px fw-bold c-grey-dark">
+        Overdue patients called
+      </p>
+      <div class="d-flex mt-3">
+        <em class="h-12px w-12px mr-8px bg-grey-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          0%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-red-light br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          1-24%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-orange br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          25-49%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-yellow br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          50-74%
+        </p>
+      </div>
+      <div class="d-flex">
+        <em class="h-12px w-12px mr-8px bg-green-medium br-6px"></em>
+        <p class="fs-12px lh-1 c-grey-dark">
+          &ge;75%
+        </p>
+      </div>
+    </div>
+    
 </div>
