@@ -69,7 +69,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   def patients_called_tooltip(numerator, denominator)
-    "#{numerator} / #{denominator} overdue patients called"
+    "#{numerator} / #{denominator} overdue patients"
   end
 
   private
