@@ -183,11 +183,11 @@
         </div>
       </div>
     </div>
-    <% unless @region.region_type == "facility" %>
     <div class="col-lg-5">
       <h4 class="mb-16px pb-8px">
         Key for performance tables
       </h4>
+      <% unless @region.region_type == "facility" %>
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         BP controlled
       </p>
@@ -256,6 +256,7 @@
         </p>
       </div>
 
+    <% end %>
       <p class="mt-24px mb-8px fs-16px fw-bold c-grey-dark">
         Overdue patients called
       </p>
@@ -290,6 +291,5 @@
         </p>
       </div>
     </div>
-    <% end %>
     
 </div>
