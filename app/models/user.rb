@@ -30,6 +30,14 @@ class User < ApplicationRecord
   end
 
   belongs_to :organization, optional: true
+  has_many :access_grants,
+    class_name: 'Doorkeeper::AccessGrant',
+    foreign_key: :resource_owner_id,
+    dependent: :delete_all # or :destroy if you need callbacks
+  has_many :access_tokens,
+    class_name: 'Doorkeeper::AccessToken',
+    foreign_key: :resource_owner_id,
+    dependent: :delete_all # or :destroy if you need callbacks
   has_many :user_authentications
   has_many :blood_pressures
   has_many :blood_sugars

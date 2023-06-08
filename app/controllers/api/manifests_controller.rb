@@ -1,4 +1,5 @@
 class Api::ManifestsController < ApplicationController
+  before_action :doorkeeper_authorize!
   def show
     if ENV["SIMPLE_SERVER_ENV"].in?(%w[development profiling review android_review])
       @countries = %w[IN BD ET US UK]

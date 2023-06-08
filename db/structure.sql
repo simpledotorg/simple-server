@@ -10,13 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
--- *not* creating schema, since initdb creates it
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -1520,6 +1513,58 @@ CREATE TABLE public.notifications (
     subject_type character varying,
     subject_id uuid,
     purpose character varying NOT NULL
+);
+
+
+--
+-- Name: oauth_access_grants; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_access_grants (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    resource_owner_id uuid NOT NULL,
+    application_id uuid NOT NULL,
+    token character varying NOT NULL,
+    expires_in integer NOT NULL,
+    redirect_uri text NOT NULL,
+    scopes character varying DEFAULT ''::character varying NOT NULL,
+    created_at timestamp without time zone NOT NULL,
+    revoked_at timestamp without time zone
+);
+
+
+--
+-- Name: oauth_access_tokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_access_tokens (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    resource_owner_id uuid,
+    application_id uuid NOT NULL,
+    token character varying NOT NULL,
+    refresh_token character varying,
+    expires_in integer,
+    scopes character varying,
+    created_at timestamp without time zone NOT NULL,
+    revoked_at timestamp without time zone,
+    previous_refresh_token character varying DEFAULT ''::character varying NOT NULL
+);
+
+
+--
+-- Name: oauth_applications; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.oauth_applications (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    name character varying NOT NULL,
+    uid character varying NOT NULL,
+    secret character varying NOT NULL,
+    redirect_uri text,
+    scopes character varying DEFAULT ''::character varying NOT NULL,
+    confidential boolean DEFAULT true NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -4220,748 +4265,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
 
 
 --
--- Name: MATERIALIZED VIEW reporting_facility_states; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON MATERIALIZED VIEW public.reporting_facility_states IS 'Monthly summary of a facility''s indicators. This table has one row per facility, per month, from the month of the facility''s first registration.';
-
-
---
--- Name: COLUMN reporting_facility_states.month_date; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_date IS 'The reporting month for this row, represented as the date at the beginning of the month';
-
-
---
--- Name: COLUMN reporting_facility_states.month; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month IS 'Month (1-12) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter IS 'Quarter (1-4) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.year; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.year IS 'Year in YYYY format';
-
-
---
--- Name: COLUMN reporting_facility_states.month_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_string IS 'String that represents a month, in YYYY-MM format';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter_string IS 'String that represents a quarter, in YYYY-Q format';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_id IS 'ID of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_name IS 'Name of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_type IS 'Type of the facility (eg. ''District Hospital'')';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_size IS 'Size of the facility (community, small, medium, large)';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_id IS 'ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_name IS 'Name of the facility region. Usually the same as the facility name';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_slug IS 'Human readable ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_region_id IS 'ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_name IS 'Name of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_slug IS 'Human readable ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_id IS 'ID of the facility group that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_region_id IS 'ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_name IS 'Name of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_slug IS 'Human readable ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_region_id IS 'ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_name IS 'Name of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_slug IS 'Human readable ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_id IS 'ID of the organization that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_region_id IS 'ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_name IS 'Name of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_slug IS 'Human readable ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_registrations IS 'The total number of hypertensive patients registered at the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_registrations IS 'The number of hypertensive patients registered at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_diabetes_registrations IS 'The total number of diabetic patients registered at the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registrations IS 'The number of diabetic patients registered at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_hypertension_and_diabetes_registrations IS 'The total number of patients registered at the facility with both hypertension and diabetes up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_hypertension_and_diabetes_registrations IS 'The number of patients registered at the facility with both hypertensio and diabetes in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.lost_to_follow_up IS 'The number of patients assigned to the facility as of the reporting month where the patient did not have a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.dead; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of hypertensive patients assigned to the facility as of the reporting month who are dead';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_assigned_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_patients IS 'The total number of hypertensive patients assigned to the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a blood sugar recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility as of the reporting month where the patient did not have a blood sugar recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_dead; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_dead IS 'The number of diabetic patients assigned to the facility as of the reporting month who are dead';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_assigned_diabetic_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_diabetic_patients IS 'The total number of diabetic patients assigned to the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_controlled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_controlled_under_care IS 'The number of hypertensive patients registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_uncontrolled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_uncontrolled_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with a BP >= 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no BP taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_lost_to_follow_up IS 'adjusted_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up IS 'adjusted_visited_no_bp_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_lost_to_follow_up IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar < 126  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar < 7%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_below_200. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 200  mg/dL and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 126 and < 200 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 200 and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 7% and < 9%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_200_to_300. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 200 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 9%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_over_300. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bs_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bs_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no blood sugar taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up IS 'adjusted_diabetes_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_controlled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_controlled IS 'The number of patients from `monthly_cohort_patients` with a BP <140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with a controlled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_uncontrolled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_uncontrolled IS 'The number of patients from `monthly_cohort_patients` with a BP >=140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with an uncontrolled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_missed_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_missed_visit IS 'The number of patients from `monthly_cohort_patients` with no visit in the next two months. Eg. The number of patients registered in Jan 2020 with no visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_visited_no_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_visited_no_bp IS 'The number of patients from `monthly_cohort_patients` with no BP recorded at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with no BP recorded at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_patients IS 'The number of patients assigned to the facility that were registered two months before the reporting month, and have a . Eg. For a March 2020 report, the number of patients registered in Jan 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_overdue_calls; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_overdue_calls IS 'The number of overdue calls made by healthcare workers at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_follow_ups; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_follow_ups IS 'The number of hypertensive follow-up patient visits at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_diabetes_follow_ups; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_follow_ups IS 'The number of diabetic follow-up patient visits at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.total_appts_scheduled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.total_appts_scheduled IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_0_to_14_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_0_to_14_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 0 and 14 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 15 and 31 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 32 and 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month more than 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_total_appts_scheduled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_total_appts_scheduled IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_0_to_14_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_0_to_14_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 0 and 14 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 15 and 31 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 32 and 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month more than 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.overdue_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_overdue_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month excluding patients who are removed from overdue list. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_removed_from_list IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_removed_from_list IS 'The total of overdue patients having call result type marked as ''removed_from_overdue_list'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_removed_from_list IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_removed_from_list IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
 -- Name: reporting_quarterly_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -5566,6 +4869,30 @@ ALTER TABLE ONLY public.medical_histories
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT notifications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_access_grants oauth_access_grants_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_grants
+    ADD CONSTRAINT oauth_access_grants_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_access_tokens oauth_access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_tokens
+    ADD CONSTRAINT oauth_access_tokens_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oauth_applications oauth_applications_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_applications
+    ADD CONSTRAINT oauth_applications_pkey PRIMARY KEY (id);
 
 
 --
@@ -6458,6 +5785,62 @@ CREATE INDEX index_notifications_on_subject_type_and_subject_id ON public.notifi
 
 
 --
+-- Name: index_oauth_access_grants_on_application_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_grants_on_application_id ON public.oauth_access_grants USING btree (application_id);
+
+
+--
+-- Name: index_oauth_access_grants_on_resource_owner_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_grants_on_resource_owner_id ON public.oauth_access_grants USING btree (resource_owner_id);
+
+
+--
+-- Name: index_oauth_access_grants_on_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oauth_access_grants_on_token ON public.oauth_access_grants USING btree (token);
+
+
+--
+-- Name: index_oauth_access_tokens_on_application_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_tokens_on_application_id ON public.oauth_access_tokens USING btree (application_id);
+
+
+--
+-- Name: index_oauth_access_tokens_on_refresh_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oauth_access_tokens_on_refresh_token ON public.oauth_access_tokens USING btree (refresh_token);
+
+
+--
+-- Name: index_oauth_access_tokens_on_resource_owner_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_oauth_access_tokens_on_resource_owner_id ON public.oauth_access_tokens USING btree (resource_owner_id);
+
+
+--
+-- Name: index_oauth_access_tokens_on_token; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oauth_access_tokens_on_token ON public.oauth_access_tokens USING btree (token);
+
+
+--
+-- Name: index_oauth_applications_on_uid; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_oauth_applications_on_uid ON public.oauth_applications USING btree (uid);
+
+
+--
 -- Name: index_observations_on_deleted_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7073,6 +6456,14 @@ ALTER TABLE ONLY public.patients
 
 
 --
+-- Name: oauth_access_grants fk_rails_330c32d8d9; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_grants
+    ADD CONSTRAINT fk_rails_330c32d8d9 FOREIGN KEY (resource_owner_id) REFERENCES public.users(id);
+
+
+--
 -- Name: patients fk_rails_39783febcc; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7142,6 +6533,14 @@ ALTER TABLE ONLY public.observations
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_66733b5dc0 FOREIGN KEY (assigned_facility_id) REFERENCES public.facilities(id);
+
+
+--
+-- Name: oauth_access_tokens fk_rails_732cb83ab7; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_tokens
+    ADD CONSTRAINT fk_rails_732cb83ab7 FOREIGN KEY (application_id) REFERENCES public.oauth_applications(id);
 
 
 --
@@ -7225,6 +6624,14 @@ ALTER TABLE ONLY public.notifications
 
 
 --
+-- Name: oauth_access_grants fk_rails_b4b53e07b8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_grants
+    ADD CONSTRAINT fk_rails_b4b53e07b8 FOREIGN KEY (application_id) REFERENCES public.oauth_applications(id);
+
+
+--
 -- Name: exotel_phone_number_details fk_rails_b7da75c721; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7294,6 +6701,14 @@ ALTER TABLE ONLY public.accesses
 
 ALTER TABLE ONLY public.notifications
     ADD CONSTRAINT fk_rails_e966d86b08 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+
+
+--
+-- Name: oauth_access_tokens fk_rails_ee63f25419; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.oauth_access_tokens
+    ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.users(id);
 
 
 --
@@ -7435,6 +6850,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230512070306'),
 ('20230512070357'),
 ('20230522081701'),
-('20230523084623');
+('20230523084623'),
+('20230607073014');
 
 

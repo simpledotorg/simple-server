@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
   resources :home
 
+  use_doorkeeper
   devise_scope :email_authentication do
     authenticated :email_authentication do
       get "/", to: "admin#root", as: :root

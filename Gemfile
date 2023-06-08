@@ -143,3 +143,5 @@ group :test do
   gem "webdrivers", ">= 5.2.0"
   gem "webmock"
 end
+
+gem "doorkeeper", "~> 5.6"
