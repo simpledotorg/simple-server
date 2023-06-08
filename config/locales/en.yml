@@ -173,7 +173,7 @@ en:
       <br>
       <br>
       ‘Remove from overdue list‘ reason must be one of following:
-    list: "‘Patient not responding’, ‘Phone number does not work’, ‘Transferred to another public health facility’, ‘Moved to a private practitioner’, ‘Refused to visit’, ‘Other reason’"
+    list: "‘Patient not responding’, ‘Phone number does not work’, ‘Transferred to another public health facility’, ‘Moved to a private practitioner’, ‘Other reason’"
 
 
   admin:
