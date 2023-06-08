@@ -13,6 +13,7 @@ module Reports
     attr_reader :periods
     attr_reader :regions
     attr_reader :registered_patients_query
+    attr_reader :overdue_patient_query
     attr_reader :schema
     alias_method :range, :periods
 
@@ -29,6 +30,7 @@ module Reports
       @measures_query = MeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
+      @overdue_patient_query = OverduePatientsQuery.new
       @overdue_calls_query = OverdueCallsQuery.new
     end
 
@@ -56,6 +58,16 @@ module Reports
       diabetes_appts_scheduled_15_to_31_days_rates
       diabetes_appts_scheduled_32_to_62_days_rates
       diabetes_appts_scheduled_more_than_62_days_rates
+      overdue_patients_rates
+      contactable_overdue_patients_rates
+      patients_called_rates
+      contactable_patients_called_rates
+      patients_called_with_result_agreed_to_visit_rates
+      patients_called_with_result_remind_to_call_later_rates
+      patients_called_with_result_removed_from_list_rates
+      contactable_patients_called_with_result_agreed_to_visit_rates
+      contactable_patients_called_with_result_remind_to_call_later_rates
+      contactable_patients_called_with_result_removed_from_list_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -108,6 +120,16 @@ module Reports
       diabetes_dead
       under_care
       diabetes_under_care
+      overdue_patients
+      contactable_overdue_patients
+      patients_called
+      contactable_patients_called
+      patients_called_with_result_agreed_to_visit
+      patients_called_with_result_remind_to_call_later
+      patients_called_with_result_removed_from_list
+      contactable_patients_called_with_result_agreed_to_visit
+      contactable_patients_called_with_result_remind_to_call_later
+      contactable_patients_called_with_result_removed_from_list
     ]
 
     DELEGATED_BREAKDOWNS = %i[
@@ -143,6 +165,7 @@ module Reports
         monthly_registrations_by_user(diagnosis: :hypertension)
         monthly_registrations_by_user(diagnosis: :diabetes)
         overdue_calls_by_user
+        overdue_patients_called_by_user
       end
     end
 
@@ -256,6 +279,16 @@ module Reports
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         @overdue_calls_query.count(entry.region, period_type, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def overdue_patients_called_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        @overdue_patient_query.count_patients_called(entry.region, period_type, group_by: :called_by_user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
