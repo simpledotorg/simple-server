@@ -179,7 +179,7 @@ RSpec.shared_examples "v4 API sync requests" do
     end
 
     it "ensures I18n.available_locales only contains locales whose translations are present" do
-      I18n.available_locales.should match_array(I18n.backend.available_locales)
+      expect(I18n.available_locales).to match_array(I18n.backend.available_locales)
     end
   end
 end

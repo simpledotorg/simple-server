@@ -48,19 +48,19 @@ RSpec.describe Region, type: :model do
       district = build(:region, region_type: :district)
       block = build(:region, region_type: :block)
       facility = build(:region, region_type: :facility)
-      I18n.with_locale(:en-IN) do
+      I18n.with_locale("en-IN") do
         expect(state.localized_region_type).to eq("state")
         expect(district.localized_region_type).to eq("district")
         expect(block.localized_region_type).to eq("block")
         expect(facility.localized_region_type).to eq("facility")
       end
-      I18n.with_locale(:en-BD) do
+      I18n.with_locale("en-BD") do
         expect(state.localized_region_type).to eq("division")
         expect(district.localized_region_type).to eq("district")
         expect(block.localized_region_type).to eq("upazila")
         expect(facility.localized_region_type).to eq("facility")
       end
-      I18n.with_locale(:en-ET) do
+      I18n.with_locale("en-ET") do
         expect(state.localized_region_type).to eq("region")
         expect(district.localized_region_type).to eq("zone")
         expect(block.localized_region_type).to eq("woreda")
@@ -87,19 +87,19 @@ RSpec.describe Region, type: :model do
       district = build(:region, region_type: :district)
       block = build(:region, region_type: :block)
       facility = build(:region, region_type: :facility)
-      I18n.with_locale(:en-IN) do
+      I18n.with_locale("en-IN") do
         expect(state.localized_child_region_type).to eq("district")
         expect(district.localized_child_region_type).to eq("block")
         expect(block.localized_child_region_type).to eq("facility")
         expect(facility.localized_child_region_type).to be_nil
       end
-      I18n.with_locale(:en-BD) do
+      I18n.with_locale("en-BD") do
         expect(state.localized_child_region_type).to eq("district")
         expect(district.localized_child_region_type).to eq("upazila")
         expect(block.localized_child_region_type).to eq("facility")
         expect(facility.localized_child_region_type).to be_nil
       end
-      I18n.with_locale(:en-ET) do
+      I18n.with_locale("en-ET") do
         expect(state.localized_child_region_type).to eq("zone")
         expect(district.localized_child_region_type).to eq("woreda")
         expect(block.localized_child_region_type).to eq("facility")
