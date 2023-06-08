@@ -179,7 +179,7 @@ en:
       unconfirmed: "You have to confirm your email address before continuing."
     invitations:
       send_instructions: "An invitation email has been sent to %{email}."
-      invitation_token_invalid: "The invitation token provided is not valid!"
+      invitation_token-INvalid: "The invitation token provided is not valid!"
       updated: "Your password was set successfully. You are now signed in."
       updated_not_active: "Your password was set successfully."
       no_invitations_remaining: "No invitations remaining"
