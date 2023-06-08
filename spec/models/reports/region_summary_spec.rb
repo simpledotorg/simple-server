@@ -766,8 +766,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     it "return the count of patients called" do
-      user_1 = create(:user, registration_facility: facility_1)
-      user_2 = create(:user, registration_facility: facility_2)
+      create(:user, registration_facility: facility_1)
+      create(:user, registration_facility: facility_2)
 
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
@@ -805,8 +805,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     it "return the count of patients called who agreed to visit" do
-      user_1 = create(:user, registration_facility: facility_1)
-      user_2 = create(:user, registration_facility: facility_2)
+      create(:user, registration_facility: facility_1)
+      create(:user, registration_facility: facility_2)
 
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, result_type: "agreed_to_visit", device_created_at: this_month + 15.days)
@@ -844,8 +844,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     it "return the count of patients called who needs to be called again later" do
-      user_1 = create(:user, registration_facility: facility_1)
-      user_2 = create(:user, registration_facility: facility_2)
+      create(:user, registration_facility: facility_1)
+      create(:user, registration_facility: facility_2)
 
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, result_type: "remind_to_call_later", device_created_at: this_month + 15.days)
@@ -883,8 +883,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     it "return the count of patients called and were removed from overdue list" do
-      user_1 = create(:user, registration_facility: facility_1)
-      user_2 = create(:user, registration_facility: facility_2)
+      create(:user, registration_facility: facility_1)
+      create(:user, registration_facility: facility_2)
 
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
