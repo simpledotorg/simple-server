@@ -63,18 +63,18 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
   end
 
   def proportional_call_rate(numerator)
-    if @contactable
-      denominator_keys = %i[contactable_patients_called_with_result_agreed_to_visit_rates
-                            contactable_patients_called_with_result_remind_to_call_later_rates
+    denominator_keys = if @contactable
+      %i[contactable_patients_called_with_result_agreed_to_visit_rates
+        contactable_patients_called_with_result_remind_to_call_later_rates
         contactable_patients_called_with_result_removed_from_list_rates]
     else
-      denominator_keys = %i[patients_called_with_result_agreed_to_visit_rates
-                            patients_called_with_result_remind_to_call_later_rates
+      %i[patients_called_with_result_agreed_to_visit_rates
+        patients_called_with_result_remind_to_call_later_rates
         patients_called_with_result_removed_from_list_rates]
     end
 
     data[numerator].map do |period, value|
-      denominator = denominator_keys.map {|k| data[k][period]}.sum
+      denominator = denominator_keys.map { |k| data[k][period] }.sum
       {period => denominator.zero? ? 0 : value * 100 / denominator}
     end.reduce(:merge)
   end

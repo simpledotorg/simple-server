@@ -18,9 +18,9 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   def patient_call_count_by_user
-     @current_admin.accessible_users(:view_reports)
+    @current_admin.accessible_users(:view_reports)
       .order(:full_name)
-      .filter {|accessible_user| accessible_user.registration_facility_id == @region.facilities.first.id}
+      .filter { |accessible_user| accessible_user.registration_facility_id == @region.facilities.first.id }
       .map { |user| calls_made_by_user(user) }
       .reduce(:merge)
   end
@@ -37,16 +37,22 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     @repository.overdue_patients_called_by_user.dig(region.slug)
       .map { |period, calls| {period => calls.values.sum} }
       .reduce(:merge)
-      .dig(period) || 0
+      &.dig(period) || 0
   end
 
   def overdue_patients(region, period)
     @repository.overdue_patients.dig(region.slug, period)
   end
 
+  def percentage_or_dash(numerator, denominator)
+    percent = percentage(numerator, denominator)
+    return "-" if percent.zero?
+    "#{percent}%"
+  end
+
   def percentage(numerator, denominator)
-    return "-" if denominator.blank? || denominator.zero?
-    "#{numerator * 100 / denominator}%"
+    return 0 if denominator.blank? || denominator.zero?
+    numerator * 100 / denominator
   end
 
   def table_headers
