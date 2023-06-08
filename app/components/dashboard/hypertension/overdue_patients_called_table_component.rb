@@ -44,10 +44,8 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     @repository.overdue_patients.dig(region.slug, period)
   end
 
-  def percentage_or_dash(numerator, denominator)
-    percent = percentage(numerator, denominator)
-    return "-" if percent.zero?
-    "#{percent}%"
+  def percentage_string(numerator, denominator)
+    "#{percentage(numerator, denominator)}%"
   end
 
   def percentage(numerator, denominator)
