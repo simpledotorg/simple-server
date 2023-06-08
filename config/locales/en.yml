@@ -169,10 +169,10 @@ en:
   overdue_toggle_tooltip:
     main: "Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded."
     additional: |
-      "Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded.
+      Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded.
       <br>
       <br>
-      ‘Remove from overdue list‘ reason must be one of following:"
+      ‘Remove from overdue list‘ reason must be one of following:
     list: "‘Patient not responding’, ‘Phone number does not work’, ‘Transferred to another public health facility’, ‘Moved to a private practitioner’, ‘Refused to visit’, ‘Other reason’"
 
 
