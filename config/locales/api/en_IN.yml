@@ -1,0 +1,5 @@
+# A place-holder file for en-IN locale.
+# All translations for en-IN default to :en
+# Value of `en-IN` needs to be non-empty for rails to pick it.
+en-IN:
+  place: "holder"

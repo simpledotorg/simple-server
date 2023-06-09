@@ -43,7 +43,7 @@ module SimpleServer
 
     # Locale configuration
     config.i18n.load_path += Dir[Rails.root.join("config", "locales", "**", "*.{rb,yml}")]
-    config.i18n.available_locales = %w[en mr-IN pa-Guru-IN bn-BD kn-IN en_BD en_IN en_ET en_LK en-IND bn-IN hi-IN ta-IN te-IN am-ET om-ET si-LK sid-ET so-ET ta-LK ti-ET es]
+    config.i18n.available_locales = %w[am-ET bn-BD bn-IN en en-BD en-ET en-IN en-IND en-LK es hi-IN kn-IN mr-IN om-ET pa-Guru-IN si-LK sid-ET so-ET ta-IN ta-LK te-IN ti-ET]
     config.i18n.fallbacks = [:en]
     config.i18n.default_locale = :en
 

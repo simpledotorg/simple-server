@@ -43,7 +43,7 @@ RSpec.describe Csv::FacilitiesParser do
 
     context "when provided localized facility sizes" do
       around do |example|
-        I18n.with_locale(:en_IN) do
+        I18n.with_locale("en-IN") do
           example.run
         end
       end
