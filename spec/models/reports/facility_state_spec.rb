@@ -617,7 +617,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  xcontext "monthly hypertension overdue patients", run_with_custom_date: true do
+  context "monthly hypertension overdue patients", run_with_custom_date: true do
     describe "overdue_patients" do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
         month_date = reporting_dates[:beginning_of_month]
@@ -625,7 +625,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients = create_list(:patient, 2, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility)
         _patient = create(:patient, :with_appointments, appointment_creation_date: month_date - 1, scheduled_date: month_date + 15.days, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients).to eq(2)
@@ -638,7 +646,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _ltfu_patient = create(:patient, :lost_to_follow_up, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
         _overdue_patients = create_list(:patient, 2, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility, device_created_at: reporting_dates[:long_ago])
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).overdue_patients).to eq(2)
@@ -653,7 +669,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _removed_patient = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
         _contactable_patients = create_list(:patient, 2, :contactable_overdue, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(2)
@@ -666,7 +690,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _contactable_patients = create_list(:patient, 2, :contactable_overdue, assigned_facility: facility, registration_facility: facility)
         _patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_overdue_patients).to eq(2)
@@ -681,7 +713,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients_called = create_list(:patient, 2, :with_overdue_appointments, :with_call_result, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         _overdue_patient = create(:patient, :with_overdue_appointments, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called).to eq(2)
@@ -696,7 +736,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         overdue_patient = create(:patient, :with_overdue_appointments, :with_call_result, result_type: :agreed_to_visit, assigned_facility: facility, registration_facility: facility)
         create(:call_result, patient: overdue_patient, device_created_at: month_date)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called).to eq(2)
@@ -711,7 +759,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients_called_during_month = create_list(:patient, 2, :with_overdue_appointments, :with_call_result, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         _overdue_patient_called_before_month = create(:patient, :with_overdue_appointments, :with_call_result, call_date: month_date - 1, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called).to eq(2)
@@ -728,7 +784,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:call_result, patient: overdue_patient_called, device_created_at: month_date)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called).to eq(2)
@@ -741,7 +805,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patient_without_phone = create(:patient, :with_overdue_appointments, :without_phone_number, :with_call_result, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         _contactable_overdue_patients = create_list(:patient, 2, :contactable_overdue, :with_call_result, call_date: month_date, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called).to eq(2)
@@ -757,7 +829,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :remind_to_call_later, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :removed_from_overdue_list, call_date: month_date, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_agreed_to_visit).to eq(1)
@@ -773,7 +853,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :remind_to_call_later, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :removed_from_overdue_list, call_date: month_date, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_remind_to_call_later).to eq(1)
@@ -789,7 +877,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :remind_to_call_later, call_date: month_date, assigned_facility: facility, registration_facility: facility)
         create(:patient, :with_overdue_appointments, :with_call_result, result_type: :removed_from_overdue_list, call_date: month_date, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_called_with_result_removed_from_list).to eq(1)
@@ -805,7 +901,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         removed_overdue_patient = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
         create(:call_result, patient: removed_overdue_patient, result_type: :agreed_to_visit, device_created_at: month_date)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(2)
@@ -818,7 +922,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients_contactable = create_list(:patient, 2, :with_sanitized_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :agreed_to_visit, assigned_facility: facility, registration_facility: facility)
         _overdue_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :agreed_to_visit, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_agreed_to_visit).to eq(2)
@@ -834,7 +946,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         removed_overdue_patient = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
         create(:call_result, patient: removed_overdue_patient, result_type: :remind_to_call_later, device_created_at: month_date)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(2)
@@ -847,7 +967,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients_contactable = create_list(:patient, 2, :with_sanitized_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :remind_to_call_later, assigned_facility: facility, registration_facility: facility)
         _overdue_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :remind_to_call_later, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_remind_to_call_later).to eq(2)
@@ -863,7 +991,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         removed_overdue_patient = create(:patient, :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
         create(:call_result, patient: removed_overdue_patient, result_type: :removed_from_overdue_list, remove_reason: :other, device_created_at: month_date)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(2)
@@ -876,7 +1012,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patients_contactable = create_list(:patient, 2, :with_sanitized_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
         _overdue_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :with_call_result, call_date: month_date, result_type: :removed_from_overdue_list, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_called_with_result_removed_from_list).to eq(2)
@@ -891,7 +1035,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _overdue_patient = create(:patient, :with_overdue_appointments, :with_visit, assigned_facility: facility, registration_facility: facility)
         _overdue_patients_called = create_list(:patient, 2, :with_overdue_appointments, :with_visit, :with_call_result, call_date: month_date, assigned_facility: facility, registration_facility: facility)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_after_call).to eq(2)
@@ -907,7 +1059,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: overdue_patient_called, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_after_call).to eq(2)
@@ -926,7 +1086,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create(:call_result, patient: contactable_overdue_patient, device_created_at: month_date)
         create(:blood_pressure, patient: contactable_overdue_patient, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_after_call).to eq(2)
@@ -951,7 +1119,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: overdue_patient_with_phone, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_after_call).to eq(2)
@@ -972,7 +1148,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: overdue_patient, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_after_call).to eq(2)
@@ -1000,7 +1184,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _second_call = create(:call_result, patient: overdue_patient_3, device_created_at: month_date + 1.day, result_type: :agreed_to_visit)
         create(:blood_pressure, patient: overdue_patient_3, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_agreed_to_visit).to eq(1)
@@ -1020,7 +1212,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
 
         create(:blood_pressure, patient: overdue_patient_2, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_agreed_to_visit).to eq(2)
@@ -1048,7 +1248,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _second_call = create(:call_result, patient: overdue_patient_3, device_created_at: month_date + 1.day, result_type: :agreed_to_visit)
         create(:blood_pressure, patient: overdue_patient_3, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_remind_to_call_later).to eq(1)
@@ -1067,7 +1275,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _call_during_month = create(:call_result, patient: overdue_patient_called, device_created_at: month_date, result_type: :remind_to_call_later)
         create(:blood_pressure, patient: overdue_patient_called, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_remind_to_call_later).to eq(2)
@@ -1095,7 +1311,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _second_call = create(:call_result, patient: overdue_patient_3, device_created_at: month_date + 1.day, result_type: :agreed_to_visit)
         create(:blood_pressure, patient: overdue_patient_3, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_removed_from_list).to eq(1)
@@ -1114,7 +1338,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         _call_during_month = create(:call_result, patient: overdue_patient_called, device_created_at: month_date, result_type: :removed_from_overdue_list, remove_reason: :other)
         create(:blood_pressure, patient: overdue_patient_called, device_created_at: month_date + 1)
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).patients_returned_with_result_removed_from_list).to eq(2)
@@ -1137,7 +1369,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: overdue_patient, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_agreed_to_visit).to eq(2)
@@ -1157,7 +1397,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           _call_during_month = create(:call_result, patient: overdue_patient_with_phone, device_created_at: month_date, result_type: :agreed_to_visit)
           create(:blood_pressure, patient: overdue_patient_with_phone, device_created_at: month_date + 1)
         }
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_agreed_to_visit).to eq(2)
@@ -1179,7 +1427,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           _call_during_month = create(:call_result, patient: overdue_patient, device_created_at: month_date, result_type: :remind_to_call_later)
           create(:blood_pressure, patient: overdue_patient, device_created_at: month_date + 1)
         }
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_remind_to_call_later).to eq(2)
@@ -1200,7 +1456,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: overdue_patient_with_phone, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_remind_to_call_later).to eq(2)
@@ -1222,7 +1486,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           _call_during_month = create(:call_result, patient: contactable_overdue_patient, device_created_at: month_date, result_type: :removed_from_overdue_list, remove_reason: :other)
           create(:blood_pressure, patient: contactable_overdue_patient, device_created_at: month_date + 1)
         }
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_removed_from_list).to eq(2)
@@ -1243,7 +1515,15 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:blood_pressure, patient: contactable_overdue_patient, device_created_at: month_date + 1)
         }
 
-        RefreshReportingViews.refresh_v2
+        views = %w[
+          Reports::Month
+          Reports::Facility
+          Reports::PatientVisit
+          Reports::PatientState
+          Reports::OverduePatient
+          Reports::FacilityState
+        ].freeze
+        RefreshReportingViews.new(views: views).call
 
         with_reporting_time_zone do
           expect(described_class.find_by(month_date: month_date, facility_id: facility.id).contactable_patients_returned_with_result_removed_from_list).to eq(2)
