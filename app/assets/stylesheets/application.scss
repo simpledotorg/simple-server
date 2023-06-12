@@ -734,16 +734,16 @@ span.inactive {
 }
 .jc-space-between { justify-content: space-between; }
 
-.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::before {
+.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::before {
   background-color: #ADB2B8;
   border-color: #ADB2B8;
 }
 
-.checkbox-outside-card.custom-control-input:not(:checked) ~ .custom-control-label::after {
+.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::after {
   background-color: #fff;
 }
 
-.checkbox-outside-card.custom-control-label {
+.checkbox-outside-card .custom-control-label {
   color: #2f363d;
 }
 
