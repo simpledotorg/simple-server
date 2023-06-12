@@ -7,6 +7,7 @@ function dashboardReportsChartJSColors() {
     mediumRed: "rgba(255, 51, 85, 1)",
     lightRed: "rgba(255, 235, 238, 0.5)",
     darkPurple: "rgba(83, 0, 224, 1)",
+    lightestPurple: "rgba(84, 0, 197, 0.05)",
     lightPurple: "rgba(169, 128, 239, 0.5)",
     darkBlue: "rgba(12, 57, 102, 1)",
     mediumBlue: "rgba(0, 117, 235, 1)",
@@ -438,6 +439,161 @@ DashboardReports = () => {
               stacked: true,
             },
           },
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+    overdueReturnToCareTrend: function (data) {
+      console.log(data);
+      const fakeData = {
+        agree: {
+          "Jan-2022": 15,
+          "Feb-2022": 21,
+          "Mar-2022": 25,
+          "Apr-2022": 28,
+          "May-2022": 29,
+          "Jun-2022": 40,
+          "Jul-2022": 41,
+          "Aug-2022": 40,
+          "Sep-2022": 65,
+          "Oct-2022": 44,
+          "Nov-2022": 45,
+          "Dec-2022": 59,
+          "Jan-2023": 55,
+          "Feb-2023": 56,
+          "Mar-2023": 53,
+          "Apr-2023": 61,
+          "May-2023": 62,
+          "Jun-2023": 64,
+        },
+        remind: {
+          "Jan-2022": 0,
+          "Feb-2022": 0,
+          "Mar-2022": 0,
+          "Apr-2022": 2,
+          "May-2022": 5,
+          "Jun-2022": 0,
+          "Jul-2022": 1,
+          "Aug-2022": 0,
+          "Sep-2022": 0,
+          "Oct-2022": 1,
+          "Nov-2022": 2,
+          "Dec-2022": 0,
+          "Jan-2023": 1,
+          "Feb-2023": 5,
+          "Mar-2023": 7,
+          "Apr-2023": 0,
+          "May-2023": 0,
+          "Jun-2023": 1,
+        },
+        remove: {
+          "Jan-2022": 10,
+          "Feb-2022": 14,
+          "Mar-2022": 18,
+          "Apr-2022": 19,
+          "May-2022": 24,
+          "Jun-2022": 20,
+          "Jul-2022": 25,
+          "Aug-2022": 30,
+          "Sep-2022": 31,
+          "Oct-2022": 10,
+          "Nov-2022": 28,
+          "Dec-2022": 30,
+          "Jan-2023": 40,
+          "Feb-2023": 45,
+          "Mar-2023": 48,
+          "Apr-2023": 47,
+          "May-2023": 42,
+          "Jun-2023": 44,
+        },
+        average: {
+          "Jan-2022": 20,
+          "Feb-2022": 24,
+          "Mar-2022": 28,
+          "Apr-2022": 29,
+          "May-2022": 34,
+          "Jun-2022": 30,
+          "Jul-2022": 35,
+          "Aug-2022": 40,
+          "Sep-2022": 51,
+          "Oct-2022": 20,
+          "Nov-2022": 38,
+          "Dec-2022": 40,
+          "Jan-2023": 50,
+          "Feb-2023": 55,
+          "Mar-2023": 58,
+          "Apr-2023": 57,
+          "May-2023": 52,
+          "Jun-2023": 54,
+        },
+      };
+      const config = {
+        data: {
+          labels: Object.keys(fakeData.agree),
+          datasets: [
+            {
+              label: "All patients returning to care",
+              data: Object.values(fakeData.average),
+              backgroundColor: colors.lightestPurple,
+              borderColor: colors.darkPurple,
+              hoverBorderColor: colors.darkPurple,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsCalledRate).length
+                  ),
+              },
+            },
+            {
+              label: "Agreed to visit",
+              data: Object.values(fakeData.agree),
+              borderColor: colors.mediumGreen,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.mediumGreen,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsCalledRate).length
+                  ),
+              },
+            },
+            {
+              label: "Remind to call later",
+              data: Object.values(fakeData.remind),
+              borderColor: colors.amber,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.amber,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsCalledRate).length
+                  ),
+              },
+            },
+            {
+              label: "Remove from overdue list",
+              data: Object.values(fakeData.remove),
+              borderColor: colors.mediumRed,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.mediumRed,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsCalledRate).length
+                  ),
+              },
+            },
+          ],
         },
       };
       return withBaseLineConfig(config);
