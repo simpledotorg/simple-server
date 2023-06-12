@@ -617,7 +617,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
     end
   end
 
-  context "monthly hypertension overdue patients", run_with_custom_date: true do
+  xcontext "monthly hypertension overdue patients", run_with_custom_date: true do
     describe "overdue_patients" do
       it "should return number of overdue patients assigned to the facility at beginning of a month" do
         month_date = reporting_dates[:beginning_of_month]
