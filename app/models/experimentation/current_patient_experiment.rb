@@ -2,10 +2,11 @@ module Experimentation
   class CurrentPatientExperiment < NotificationsExperiment
     default_scope { where(experiment_type: %w[current_patients]) }
 
-    def eligible_patients(date)
+    def eligible_patients(date, filters)
       appointment_date = date - earliest_remind_on.days
 
-      self.class.superclass.eligible_patients
+      self.class.superclass
+        .eligible_patients(filters)
         .joins(:appointments)
         .merge(Appointment.status_scheduled)
         .where("appointments.scheduled_date BETWEEN ? and ?", appointment_date.beginning_of_day, appointment_date.end_of_day)

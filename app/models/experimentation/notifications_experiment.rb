@@ -21,7 +21,7 @@ module Experimentation
     # See https://docs.google.com/document/d/1IMXu_ca9xKU8Xox_3v403ZdvNGQzczLWljy7LQ6RQ6A for more details.
     def self.conduct_daily(date)
       time(__method__) do
-        enrolling.each { |experiment| experiment.enroll_patients(date) }
+        enrolling.each { |experiment| experiment.enroll_patients(date, experiment.filters) }
         monitoring.each { |experiment| experiment.monitor }
         notifying.each { |experiment| experiment.schedule_notifications(date) }
       end
@@ -29,7 +29,7 @@ module Experimentation
 
     # Returns patients who are eligible for enrollment. These should be
     # filtered further by individual notification experiments based on their criteria.
-    def self.eligible_patients
+    def self.eligible_patients(filters = {})
       Patient.with_hypertension
         .contactable
         .joins(:assigned_facility)
@@ -42,34 +42,59 @@ module Experimentation
                                              "end_time > ? OR treatment_group_memberships.created_at > ?",
                                              Time.current, MONITORING_BUFFER.ago
                                            ).select(:patient_id))
-        .then { |patients| exclude_bangladesh_blocks(patients) }
-        .then { |patients| include_only_allowed_india_states(patients) }
+        .then { |patients| filter_patients(patients, filters) }
+             # .to_sql
     end
 
-    def self.exclude_bangladesh_blocks(patients)
-      return patients unless CountryConfig.current_country?("Bangladesh")
-
+    def self.filter_patients(patients, filters)
       patients
         .merge(Facility.with_block_region_id)
         .select("patients.*")
-        .where.not(block_region: {id: excluded_block_ids.presence})
+        .then { |patients| filter_states(patients, filters["states"]) }
+        .then { |patients| filter_blocks(patients, filters["blocks"]) }
+        .then { |patients| filter_facilities(patients, filters["facilities"]) }
     end
 
-    def self.include_only_allowed_india_states(patients)
-      return patients unless CountryConfig.current_country?("India") && SimpleServer.env.production?
-      return patients unless ENV["EXPERIMENT_ALLOWED_STATES"].present?
+    def self.filter_states(patients, states)
+      return patients unless states
 
-      states = ENV.fetch("EXPERIMENT_ALLOWED_STATES", "").split(",").map(&:strip)
-      patients.where(facilities: {state: states})
+      if states["include"]
+        patients.where(facilities: {state: states["include"]})
+      elsif states["exclude"]
+        patients.where.not(facilities: {state: states["exclude"]})
+      else
+        patients
+      end
     end
 
-    def self.excluded_block_ids
-      ENV.fetch("EXPERIMENT_EXCLUDED_BLOCKS", "").split(",").map(&:strip)
+    def self.filter_blocks(patients, blocks)
+      return patients unless blocks
+
+      if blocks["include"]
+        patients.where.not(block_region: {id: blocks["include"]})
+      elsif blocks["exclude"]
+        patients.where.not(block_region: {id: blocks["exclude"]})
+      else
+        patients
+      end
     end
 
-    def enroll_patients(date, limit = max_patients_per_day)
+    def self.filter_facilities(patients, facilities)
+      return patients unless facilities
+
+      # require 'pry'; binding.pry
+      if facilities["include"]
+        patients.where('"patients"."assigned_facility_id" IN (?)', facilities["include"])
+      elsif facilities["exclude"]
+        patients.where('"patients"."assigned_facility_id" NOT IN (?)', facilities["exclude"])
+      else
+        patients
+      end
+    end
+
+    def enroll_patients(date, filters, limit = max_patients_per_day)
       time(__method__) do
-        eligible_patients(date)
+        eligible_patients(date, filters)
           .limit([remaining_enrollments_allowed(date), limit].min)
           .includes(:assigned_facility, :registration_facility, :medical_history)
           .includes(latest_scheduled_appointments: [:facility, :creation_facility])
