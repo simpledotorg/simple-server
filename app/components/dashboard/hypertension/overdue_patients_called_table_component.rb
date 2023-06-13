@@ -33,10 +33,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   def total_calls(period)
-    @repository.overdue_patients_called_by_user.dig(region.slug)
-      .map { |period, calls| {period => calls.values.sum} }
-      .reduce(:merge)
-      &.dig(period) || 0
+    @data[:patients_called][period]
   end
 
   def overdue_patients(region, period)
