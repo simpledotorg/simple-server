@@ -50,18 +50,18 @@ module Experimentation
       patients
         .merge(Facility.with_block_region_id)
         .select("patients.*")
-        .then { |patients| filter_states(patients, filters[:states]) }
-        .then { |patients| filter_blocks(patients, filters[:blocks]) }
-        .then { |patients| filter_facilities(patients, filters[:facilities]) }
+        .then { |patients| filter_states(patients, filters["states"]) }
+        .then { |patients| filter_blocks(patients, filters["blocks"]) }
+        .then { |patients| filter_facilities(patients, filters["facilities"]) }
     end
 
     def self.filter_states(patients, states)
       return patients unless states
 
-      if states[:include]
-        patients.where(facilities: {state: states[:include]})
-      elsif states[:exclude]
-        patients.where.not(facilities: {state: states[:exclude]})
+      if states["include"]
+        patients.where(facilities: {state: states["include"]})
+      elsif states["exclude"]
+        patients.where.not(facilities: {state: states["exclude"]})
       else
         patients
       end
@@ -70,10 +70,10 @@ module Experimentation
     def self.filter_blocks(patients, blocks)
       return patients unless blocks
 
-      if blocks[:include]
-        patients.where.not(block_region: {id: blocks[:include]})
-      elsif blocks[:exclude]
-        patients.where.not(block_region: {id: blocks[:exclude]})
+      if blocks["include"]
+        patients.where.not(block_region: {id: blocks["include"]})
+      elsif blocks["exclude"]
+        patients.where.not(block_region: {id: blocks["exclude"]})
       else
         patients
       end
@@ -82,10 +82,10 @@ module Experimentation
     def self.filter_facilities(patients, facilities)
       return patients unless facilities
 
-      if facilities[:include]
-        patients.where(assigned_facility_ids: facilities[:include])
-      elsif facilities[:exclude]
-        patients.where.not(assigned_facility_ids: facilities[:exclude])
+      if facilities["include"]
+        patients.where(assigned_facility_ids: facilities["include"])
+      elsif facilities["exclude"]
+        patients.where.not(assigned_facility_ids: facilities["exclude"])
       else
         patients
       end
