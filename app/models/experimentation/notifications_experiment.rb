@@ -82,9 +82,9 @@ module Experimentation
       return patients unless facilities
 
       if facilities["include"]
-        patients.where(assigned_facility_ids: facilities["include"])
+        patients.where(assigned_facility_id: facilities["include"])
       elsif facilities["exclude"]
-        patients.where.not(assigned_facility_ids: facilities["exclude"])
+        patients.where.not(assigned_facility_id: facilities["exclude"])
       else
         patients
       end
