@@ -20,7 +20,6 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   def patient_call_count_by_user
     @current_admin.accessible_users(:view_reports)
       .order(:full_name)
-      .filter { |accessible_user| accessible_user.registration_facility_id == @region.facilities.first.id }
       .map { |user| calls_made_by_user(user) }
       .reduce(:merge)
   end
