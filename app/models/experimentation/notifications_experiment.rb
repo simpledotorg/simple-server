@@ -43,7 +43,6 @@ module Experimentation
                                              Time.current, MONITORING_BUFFER.ago
                                            ).select(:patient_id))
         .then { |patients| filter_patients(patients, filters) }
-        .then { |patients| include_only_allowed_india_states(patients) }
     end
 
     def self.filter_patients(patients, filters)
@@ -89,14 +88,6 @@ module Experimentation
       else
         patients
       end
-    end
-
-    def self.include_only_allowed_india_states(patients)
-      return patients unless CountryConfig.current_country?("India") && SimpleServer.env.production?
-      return patients unless ENV["EXPERIMENT_ALLOWED_STATES"].present?
-
-      states = ENV.fetch("EXPERIMENT_ALLOWED_STATES", "").split(",").map(&:strip)
-      patients.where(facilities: {state: states})
     end
 
     def enroll_patients(date, filters, limit = max_patients_per_day)
