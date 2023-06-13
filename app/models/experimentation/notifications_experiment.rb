@@ -70,7 +70,7 @@ module Experimentation
       return patients unless blocks
 
       if blocks["include"]
-        patients.where.not(block_region: {id: blocks["include"]})
+        patients.where(block_region: {id: blocks["include"]})
       elsif blocks["exclude"]
         patients.where.not(block_region: {id: blocks["exclude"]})
       else
@@ -82,9 +82,9 @@ module Experimentation
       return patients unless facilities
 
       if facilities["include"]
-        patients.where(assigned_facility_id: facilities["include"])
+        patients.where('"patients"."assigned_facility_id" IN (?)', facilities["include"])
       elsif facilities["exclude"]
-        patients.where.not(assigned_facility_id: facilities["exclude"])
+        patients.where('"patients"."assigned_facility_id" NOT IN (?)', facilities["exclude"])
       else
         patients
       end
