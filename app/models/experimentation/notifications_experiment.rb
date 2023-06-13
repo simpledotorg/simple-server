@@ -43,6 +43,7 @@ module Experimentation
                                              Time.current, MONITORING_BUFFER.ago
                                            ).select(:patient_id))
         .then { |patients| filter_patients(patients, filters) }
+             # .to_sql
     end
 
     def self.filter_patients(patients, filters)
@@ -81,10 +82,11 @@ module Experimentation
     def self.filter_facilities(patients, facilities)
       return patients unless facilities
 
+      # require 'pry'; binding.pry
       if facilities["include"]
-        patients.where(assigned_facility_id: facilities["include"])
+        patients.where('"patients"."assigned_facility_id" IN (?)', facilities["include"])
       elsif facilities["exclude"]
-        patients.where.not(assigned_facility_id: facilities["exclude"])
+        patients.where('"patients"."assigned_facility_id" NOT IN (?)', facilities["exclude"])
       else
         patients
       end
