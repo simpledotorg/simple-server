@@ -167,60 +167,46 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       expect(described_class.eligible_patients).to include(included_patient)
     end
 
-    it "doesn't include patients who are assigned in the excluded blocks list" do
-      facility = create(:facility)
-      patient = create(:patient, age: 18, assigned_facility: facility)
-      eligible_patient = create(:patient, age: 18)
-      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("Bangladesh")
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return(facility.block_region.id)
+    it "excludes patients who are excluded in the filters" do
+      facility1 = create(:facility)
+      patient1 = create(:patient, age: 18, assigned_facility: facility1)
 
-      expect(described_class.eligible_patients).not_to include(patient)
+      facility2 = create(:facility, state: "Excluded State")
+      patient2 = create(:patient, age: 18, assigned_facility: facility2)
+
+      facility3 = create(:facility)
+      patient3 = create(:patient, age: 18, assigned_facility: facility3)
+
+      filters = {
+        "states" => {"exclude" => ["Excluded State"]},
+        "blocks" => {"exclude" => [facility3.block_region.id]},
+        "facilities" => {"exclude" => [facility1.id]}
+      }
+
+      eligible_patient = create(:patient, age: 18)
+
+      expect(described_class.eligible_patients(filters)).not_to include(patient1, patient2, patient3)
       expect(described_class.eligible_patients).to include(eligible_patient)
     end
 
-    it "only includes patients from states in India production" do
-      included_facility = create(:facility, state: "included_state")
-      excluded_facility = create(:facility, state: "excluded_state")
-      included_patient = create(:patient, age: 18, assigned_facility: included_facility)
-      excluded_patient = create(:patient, age: 18, assigned_facility: excluded_facility)
-      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("India")
-      stub_const("SIMPLE_SERVER_ENV", "production")
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(included_facility.state)
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return(included_facility.state)
+    it "includes patients who are included in the filters" do
+      facility1 = create(:facility, state: "Test State")
+      patient1 = create(:patient, age: 18, assigned_facility: facility1)
 
-      expect(described_class.eligible_patients).not_to include(excluded_patient)
-      expect(described_class.eligible_patients).to include(included_patient)
-    end
+      excluded_facility1 = create(:facility, state: "Test State")
+      excluded_patient1 = create(:patient, age: 18, assigned_facility: excluded_facility1)
 
-    it "includes patients from all states in non-IHCI envs" do
-      patient = create(:patient, age: 18)
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(patient.assigned_facility.state)
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return(patient.assigned_facility.state)
+      excluded_facility2 = create(:facility)
+      excluded_patient2 = create(:patient, age: 18, assigned_facility: excluded_facility2)
 
-      expect(described_class.eligible_patients).to include(patient)
-    end
+      filters = {
+        "states" => {"include" => [facility1.state]},
+        "blocks" => {"include" => [facility1.block_region.id]},
+        "facilities" => {"include" => [facility1.id]}
+      }
 
-    it "includes patients from all states if the config isn't supplied" do
-      patient = create(:patient, age: 18)
-      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("India")
-      stub_const("SIMPLE_SERVER_ENV", "production")
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:[]).with("EXPERIMENT_ALLOWED_STATES").and_return(nil)
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_ALLOWED_STATES", "").and_return("")
-
-      expect(described_class.eligible_patients).to include(patient)
-    end
-
-    it "includes all patients if a country is not in the excluded blocks list" do
-      eligible_patient = create(:patient, age: 18)
-      allow(Rails.application.config.country).to receive(:[]).with(:name).and_return("Bangladesh")
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:fetch).with("EXPERIMENT_EXCLUDED_BLOCKS", "").and_return("")
-
-      expect(described_class.eligible_patients).to include(eligible_patient)
+      expect(described_class.eligible_patients(filters)).to include(patient1)
+      expect(described_class.eligible_patients(filters)).not_to include(excluded_patient1, excluded_patient2)
     end
   end
 
@@ -228,9 +214,12 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     it "assigns eligible_patients to treatment groups" do
       patients = Patient.where(id: create_list(:patient, 2, age: 18))
       create(:experiment, :with_treatment_group, experiment_type: "current_patients")
-      allow_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).and_return(patients)
 
-      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today)
+      date = Date.today
+      filters = {"states" => {"exclude" => ["Non Existent State"]}}
+      expect_any_instance_of(Experimentation::CurrentPatientExperiment).to receive(:eligible_patients).with(date, filters).and_return(patients)
+
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(date, filters)
 
       expect(Experimentation::CurrentPatientExperiment.first.treatment_group_memberships.pluck(:patient_id)).to match_array(patients.pluck(:id))
     end
@@ -321,9 +310,9 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       create(:reminder_template, message: "1", treatment_group: treatment_group, remind_on_in_days: 0)
 
       expect(Experimentation::CurrentPatientExperiment.first.eligible_patients(Date.today).size).to eq(2)
-      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, {}, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
-      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, 1)
+      Experimentation::CurrentPatientExperiment.first.enroll_patients(Date.today, {}, 1)
       expect(Experimentation::TreatmentGroupMembership.count).to eq(1)
     end
 

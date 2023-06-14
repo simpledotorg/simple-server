@@ -129,16 +129,16 @@ RSpec.describe Experimentation::Experiment, type: :model do
     context "filters" do
       let(:experiment) { build(:experiment) }
       it "validates only supported keys are present" do
-        experiment.filters = { "districts" => { "include" => ["id-1", "id-2"] } }
+        experiment.filters = {"districts" => {"include" => ["id-1", "id-2"]}}
         expect(experiment).to be_invalid
         expect(experiment.errors.messages[:filters]).to eq ["unsupported filters present"]
       end
 
       it "validates include/exclude are mutually exclusive" do
         invalid_filters = [
-          { "states" => { "include" => ["state-1"], "exclude" => ["state-2"] } },
-          { "blocks" => { "include" => ["block-1"], "exclude" => ["block-2"] } },
-          { "facilities" => { "include" => ["facility-1"], "exclude" => ["facility-2"] } }
+          {"states" => {"include" => ["state-1"], "exclude" => ["state-2"]}},
+          {"blocks" => {"include" => ["block-1"], "exclude" => ["block-2"]}},
+          {"facilities" => {"include" => ["facility-1"], "exclude" => ["facility-2"]}}
         ]
         invalid_filters.each do |invalid_filter|
           experiment.filters = invalid_filter

@@ -45,6 +45,11 @@ module Experimentation
         .then { |patients| filter_patients(patients, filters) }
     end
 
+    # Filters are based on AND condition, not OR.
+    # "include" filters should have intersection and
+    # be consistent top-down in order of State > Block > Facility.
+    # If 2 states are included, and a facility outside of those states is included,
+    # 0 patients will be selected.
     def self.filter_patients(patients, filters)
       patients
         .merge(Facility.with_block_region_id)
@@ -90,7 +95,7 @@ module Experimentation
       end
     end
 
-    def enroll_patients(date, filters, limit = max_patients_per_day)
+    def enroll_patients(date, filters = {}, limit = max_patients_per_day)
       time(__method__) do
         eligible_patients(date, filters)
           .limit([remaining_enrollments_allowed(date), limit].min)

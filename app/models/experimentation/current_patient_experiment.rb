@@ -2,7 +2,7 @@ module Experimentation
   class CurrentPatientExperiment < NotificationsExperiment
     default_scope { where(experiment_type: %w[current_patients]) }
 
-    def eligible_patients(date, filters)
+    def eligible_patients(date, filters = {})
       appointment_date = date - earliest_remind_on.days
 
       self.class.superclass
