@@ -374,7 +374,7 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Overdue called percent",
-              data: Object.values(capOverduePatientsCallRate(data.overduePatientsCalledRate)),
+              data: Object.values(data.overduePatientsCalledRate),
               borderColor: colors.overdueCalledChartLineDarkYellow,
               hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
               fill: false,
@@ -389,9 +389,7 @@ DashboardReports = () => {
             },
             {
               label: "Agreed to visit",
-              data: Object.values(
-		capOverduePatientsCallRate(data.calledWithResultAgreedToVisit)
-              ),
+              data: Object.values(data.calledWithResultAgreedToVisit),
               backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
               hoverBorderWidth: 0,
@@ -403,9 +401,7 @@ DashboardReports = () => {
             },
             {
               label: "Remind to call later",
-              data: Object.values(
-                capOverduePatientsCallRate(data.calledWithResultRemindToCallLater)
-              ),
+              data: Object.values(data.calledWithResultRemindToCallLater),
               backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
               hoverBorderWidth: 0,
@@ -417,9 +413,7 @@ DashboardReports = () => {
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(
-                capOverduePatientsCallRate(data.calledWithResultRemoveFromOverdueList)
-              ),
+              data: Object.values(data.calledWithResultRemoveFromOverdueList),
               backgroundColor: colors.overdueCalledChartFillLightRed,
               borderWidth: 0,
               hoverBorderWidth: 0,
