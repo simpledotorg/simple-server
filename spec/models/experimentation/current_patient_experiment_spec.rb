@@ -4,10 +4,11 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
   describe "#eligible_patients" do
     it "calls super to get default eligible patients" do
       create(:experiment, experiment_type: "current_patients")
-      allow(Experimentation::NotificationsExperiment).to receive(:eligible_patients).and_call_original
-      expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients)
+      filters = {"states" => {"exclude" => ["Non Existent State"]}}
 
-      described_class.first.eligible_patients(Date.today)
+      expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients).with(filters).and_call_original
+
+      described_class.first.eligible_patients(Date.today, filters)
     end
 
     it "includes patients who have an appointment on the date the first reminder is to be sent" do

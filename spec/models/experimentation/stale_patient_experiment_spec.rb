@@ -4,11 +4,11 @@ RSpec.describe Experimentation::StalePatientExperiment do
   describe "#eligible_patients" do
     it "calls super to get default eligible patients" do
       create(:experiment, experiment_type: "stale_patients")
-      allow(Experimentation::NotificationsExperiment).to receive(:eligible_patients).and_call_original
-      expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients)
-      RefreshReportingViews.refresh_v2
+      filters = {"states" => {"exclude" => ["Non Existent State"]}}
 
-      described_class.first.eligible_patients(Date.today)
+      expect(Experimentation::NotificationsExperiment).to receive(:eligible_patients).with(filters).and_call_original
+
+      described_class.first.eligible_patients(Date.today, filters)
     end
 
     it "only selects from patients 18 and older" do
