@@ -3908,6 +3908,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
     patient_with_call_results_and_phone.previous_call_result_type,
     patient_with_call_results_and_phone.previous_call_removed_from_overdue_list_reason,
         CASE
+            WHEN (patient_with_call_results_and_phone.previous_appointment_id IS NULL) THEN 'no'::text
             WHEN (patient_with_call_results_and_phone.previous_appointment_schedule_date >= patient_with_call_results_and_phone.month_date) THEN 'no'::text
             WHEN ((patient_with_call_results_and_phone.previous_appointment_schedule_date < patient_with_call_results_and_phone.month_date) AND (patient_with_call_results_and_phone.visited_at_after_appointment < patient_with_call_results_and_phone.month_date)) THEN 'no'::text
             ELSE 'yes'::text
@@ -7430,6 +7431,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230512070357'),
 ('20230522081701'),
 ('20230523084623'),
-('20230613090949');
+('20230613090949'),
+('20230614171507');
 
 
