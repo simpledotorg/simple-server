@@ -374,7 +374,7 @@ DashboardReports = () => {
           datasets: [
             {
               label: "Overdue called percent",
-              data: Object.values(data.overduePatientsCalledRate),
+              data: Object.values(capOverduePatientsCallRate(data.overduePatientsCalledRate)),
               borderColor: colors.overdueCalledChartLineDarkYellow,
               hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
               fill: false,
