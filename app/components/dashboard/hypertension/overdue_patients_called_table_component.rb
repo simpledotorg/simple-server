@@ -23,6 +23,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
       .order(:full_name)
       .map { |user| calls_made_by_user(user) }
       .reduce(:merge)
+      .filter { |user, period| show_user?(user, period) }
   end
 
   def calls_made_by_user(user)
@@ -87,6 +88,14 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     else
       @repository.patients_called[region.slug]
     end
+  end
+
+  def show_user?(user, call_count_by_period)
+    registered_in_current_facility(user) || atleast_one_call?(call_count_by_period)
+  end
+
+  def registered_in_current_facility(user)
+    user.registration_facility_id == @region.facilities.first.id 
   end
 
   def atleast_one_call?(call_count_by_period)
