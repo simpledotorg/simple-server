@@ -12,6 +12,7 @@ module Experimentation
     validates :experiment_type, presence: true
     validate :validate_date_range
     validate :one_active_experiment_per_type
+    validate :validate_filters
 
     enum experiment_type: {
       current_patients: "current_patients",
@@ -53,6 +54,23 @@ module Experimentation
       errors.add(:start_time, "must be present") if start_time.blank?
       errors.add(:end_time, "must be present") if end_time.blank?
       errors.add(:date_range, "start time must precede end time") if start_time.present? && end_time.present? && start_time > end_time
+    end
+
+    def validate_filters
+      mutually_exclusive_filters(filters["states"])
+      mutually_exclusive_filters(filters["blocks"])
+      mutually_exclusive_filters(filters["facilities"])
+
+      if (filters.keys - %w[states blocks facilities]).present?
+        errors.add(:filters, "unsupported filters present")
+      end
+    end
+
+    def mutually_exclusive_filters(filter)
+      return unless filter
+      if filter["include"] && filter["exclude"]
+        errors.add(:filters, "include/exclude are mutually exclusive")
+      end
     end
   end
 end

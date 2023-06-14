@@ -10,13 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
--- *not* creating schema, since initdb creates it
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -735,7 +728,8 @@ CREATE TABLE public.experiments (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    max_patients_per_day integer DEFAULT 0
+    max_patients_per_day integer DEFAULT 0,
+    filters json DEFAULT '{}'::json
 );
 
 
@@ -7435,6 +7429,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230512070306'),
 ('20230512070357'),
 ('20230522081701'),
-('20230523084623');
+('20230523084623'),
+('20230613090949');
 
 
