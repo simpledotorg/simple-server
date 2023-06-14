@@ -390,7 +390,7 @@ DashboardReports = () => {
             {
               label: "Agreed to visit",
               data: Object.values(
-                data.calledWithResultAgreedToVisit
+		capOverduePatientsCallRate(data.calledWithResultAgreedToVisit)
               ),
               backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
@@ -404,7 +404,7 @@ DashboardReports = () => {
             {
               label: "Remind to call later",
               data: Object.values(
-                data.calledWithResultRemindToCallLater
+                capOverduePatientsCallRate(data.calledWithResultRemindToCallLater)
               ),
               backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
@@ -418,7 +418,7 @@ DashboardReports = () => {
             {
               label: "Remove from overdue list",
               data: Object.values(
-                data.calledWithResultRemoveFromOverdueList
+                capOverduePatientsCallRate(data.calledWithResultRemoveFromOverdueList)
               ),
               backgroundColor: colors.overdueCalledChartFillLightRed,
               borderWidth: 0,
@@ -1669,6 +1669,11 @@ const intersectDataVerticalLine = {
     }
   },
 };
+
+function capOverduePatientsCallRate(data) {
+  return Object.keys(data)
+		.reduce((o, key) => Object.assign(o, {[key]: Math.min(data[key], 100)}), {})
+}
 
 function withBaseLineConfig(config) {
   return _.mergeWith(
