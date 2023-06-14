@@ -153,7 +153,6 @@ RSpec.describe OverduePatientsQuery do
     end
   end
 
-
   context "count_contactable_patients_called" do
     it "should return count of contactable overdue patients called" do
       facility = create(:facility)
@@ -168,13 +167,13 @@ RSpec.describe OverduePatientsQuery do
       create(:call_result, patient: patient_1, device_created_at: this_month + 15.days)
       create(:call_result, :remove_from_overdue_list, patient: patient_2, device_created_at: this_month + 1.days)
       create(:call_result, patient: patient_3, device_created_at: this_month + 27.days)
-      create(:call_result,patient: patient_4, device_created_at: this_month - 4.days)
+      create(:call_result, patient: patient_4, device_created_at: this_month - 4.days)
 
       RefreshReportingViews.refresh_v2
 
       previous_month = Date.today - 1.month
       expected = {
-        Period.month("#{Date::MONTHNAMES[previous_month.month]} #{Date.today.year}") => 2 
+        Period.month("#{Date::MONTHNAMES[previous_month.month]} #{Date.today.year}") => 2
       }
 
       expect(described_class.new.count_contactable_patients_called(facility.region, :month)).to eq(expected)
