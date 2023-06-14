@@ -8,12 +8,13 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     @period = period
     @current_admin = current_admin
     @children_data = facility? ? patient_call_count_by_user : patients_call_count_by_region
+    @contactable = !with_non_contactable
   end
 
   def patients_call_count_by_region
     region
       .reportable_children
-      .map { |sub_region| {sub_region => @repository.patients_called[sub_region.slug]} }
+      .map { |sub_region| {sub_region => patients_called(sub_region)} }
       .reduce(:merge)
   end
 
@@ -29,15 +30,27 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   def monthly_calls_made_by_user(user, period)
-    {period => @repository.overdue_patients_called_by_user.dig(region.slug, period, user.id) || 0}
+    if @contactable
+      {period => @repository.contactable_overdue_patients_called_by_user.dig(region.slug, period, user.id) || 0}
+    else
+      {period => @repository.overdue_patients_called_by_user.dig(region.slug, period, user.id) || 0}
+    end
   end
 
   def total_calls(period)
-    @data[:patients_called][period]
+    if @contactable
+      @data[:contactable_patients_called][period]
+    else
+      @data[:patients_called][period]
+    end
   end
 
   def overdue_patients(region, period)
-    @repository.overdue_patients.dig(region.slug, period)
+    if @contactable
+      @repository.contactable_overdue_patients.dig(region.slug, period)
+    else
+      @repository.overdue_patients.dig(region.slug, period)
+    end
   end
 
   def percentage_string(numerator, denominator)
@@ -67,6 +80,14 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   private
+
+  def patients_called(region)
+    if @contactable
+      @repository.contactable_patients_called[region.slug]
+    else
+      @repository.patients_called[region.slug]
+    end
+  end
 
   def atleast_one_call?(call_count_by_period)
     call_count_by_period.sum { |_p, values| values }.nonzero?
