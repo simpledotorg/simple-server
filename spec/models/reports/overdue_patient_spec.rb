@@ -210,6 +210,17 @@ RSpec.describe Reports::OverduePatient, {type: :model, reporting_spec: true} do
     end
 
     describe "is_overdue" do
+      it "should be no when there is no previous appointments" do
+        patient = create(:patient)
+        month_date = this_month
+
+        RefreshReportingViews.refresh_v2
+
+        with_reporting_time_zone do
+          expect(described_class.find_by(patient_id: patient.id, month_date: month_date).is_overdue).to eq("no")
+        end
+      end
+
       it "should be no when the previous appointments scheduled date is during the month" do
         patient = create(:patient)
         month_date = this_month
