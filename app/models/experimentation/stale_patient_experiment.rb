@@ -12,7 +12,7 @@ module Experimentation
     # The stale experiment reminders are always centered around the experiment_inclusion_date.
     # Unlike the current patient experiment where reminders are scheduled around the expected_return_date,
     # it is not useful to schedule reminders around a date different than the experiment_inclusion_date.
-    def eligible_patients(date, filters)
+    def eligible_patients(date, filters={})
       current_month = date.beginning_of_month
       last_visit_since = (date + PATIENT_VISITED_SINCE).beginning_of_day
       last_visit_until = (date + PATIENT_VISITED_UNTIL).end_of_day
