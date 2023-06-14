@@ -13,18 +13,18 @@ RSpec.describe OverduePatientsQuery do
   context "count_patients_called" do
     it "should return count of overdue patients called" do
       facility = create(:facility)
-      _user_1 = create(:user, registration_facility: facility)
-      _user_2 = create(:user, registration_facility: facility)
+      create(:user, registration_facility: facility)
+      create(:user, registration_facility: facility)
 
       patient_1 = create(:patient, assigned_facility: facility)
       patient_2 = create(:patient, assigned_facility: facility)
       patient_3 = create(:patient, assigned_facility: facility)
       patient_4 = create(:patient, assigned_facility: facility)
 
-      _call_result_1 = create(:call_result, patient: patient_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, device_created_at: this_month + 27.days)
-      _call_result_1 = create(:call_result, patient: patient_4, device_created_at: this_month - 4.days)
+      create(:call_result, patient: patient_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, device_created_at: this_month + 27.days)
+      create(:call_result, patient: patient_4, device_created_at: this_month - 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -46,10 +46,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility)
       patient_4 = create(:patient, assigned_facility: facility)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 27.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 27.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -75,9 +75,9 @@ RSpec.describe OverduePatientsQuery do
       _patient_3 = create(:patient, assigned_facility: facility)
       patient_4 = create(:patient, assigned_facility: facility)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -104,10 +104,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility_1)
       patient_4 = create(:patient, assigned_facility: facility_2)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -133,10 +133,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility_2)
       patient_4 = create(:patient, assigned_facility: facility_2)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -189,10 +189,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility)
       patient_4 = create(:patient, assigned_facility: facility)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 27.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 27.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -218,9 +218,9 @@ RSpec.describe OverduePatientsQuery do
       _patient_3 = create(:patient, assigned_facility: facility)
       patient_4 = create(:patient, assigned_facility: facility)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -247,10 +247,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility_1)
       patient_4 = create(:patient, assigned_facility: facility_2)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_2, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_2, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
@@ -276,10 +276,10 @@ RSpec.describe OverduePatientsQuery do
       patient_3 = create(:patient, assigned_facility: facility_2)
       patient_4 = create(:patient, assigned_facility: facility_2)
 
-      _call_result_1 = create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
-      _call_result_1 = create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
-      _call_result_1 = create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
+      create(:call_result, patient: patient_1, user: user_1, device_created_at: this_month + 15.days)
+      create(:call_result, patient: patient_2, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_3, user: user_1, device_created_at: this_month + 1.days)
+      create(:call_result, patient: patient_4, user: user_2, device_created_at: this_month + 4.days)
 
       RefreshReportingViews.refresh_v2
 
