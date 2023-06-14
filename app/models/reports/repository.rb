@@ -166,6 +166,7 @@ module Reports
         monthly_registrations_by_user(diagnosis: :diabetes)
         overdue_calls_by_user
         overdue_patients_called_by_user
+        contactable_overdue_patients_called_by_user
       end
     end
 
@@ -279,6 +280,16 @@ module Reports
       items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
       result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
         @overdue_calls_query.count(entry.region, period_type, group_by: :user_id)
+      end
+      result.each_with_object({}) { |(region_entry, counts), hsh|
+        hsh[region_entry.region.slug] = counts
+      }
+    end
+
+    memoize def contactable_overdue_patients_called_by_user
+      items = regions.map { |region| RegionEntry.new(region, __method__, group_by: :user_id, period_type: period_type) }
+      result = cache.fetch_multi(*items, force: bust_cache?) do |entry|
+        @overdue_patient_query.count_contactable_patients_called(entry.region, period_type, group_by: :called_by_user_id)
       end
       result.each_with_object({}) { |(region_entry, counts), hsh|
         hsh[region_entry.region.slug] = counts
