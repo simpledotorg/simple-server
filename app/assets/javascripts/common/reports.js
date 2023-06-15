@@ -521,6 +521,12 @@ DashboardReports = () => {
           "Jun-2023": 54,
         },
       };
+      const monthsDashed = 2
+      // alternatively individual
+      const monthsDashedAll = 2
+      const monthsDashedAgreed = 2
+      const monthsDashedRemind = 1
+      const monthsDashedRemove = 1
       const config = {
         data: {
           labels: Object.keys(fakeData.agree),
@@ -535,7 +541,9 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(fakeData.average).length,
+                    monthsDashed,
+                    // monthsDashedAll,
                   ),
               },
             },
@@ -551,7 +559,9 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(fakeData.average).length,
+                    monthsDashed,
+                    // monthsDashedAgreed,
                   ),
               },
             },
@@ -567,7 +577,9 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(fakeData.average).length,
+                    monthsDashed,
+                    // monthsDashedRemind,
                   ),
               },
             },
@@ -583,7 +595,9 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(fakeData.average).length,
+                    monthsDashed,
+                    // monthsDashedRemove,
                   ),
               },
             },
