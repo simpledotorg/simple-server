@@ -95,7 +95,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
   end
 
   def registered_in_current_facility(user)
-    user.registration_facility_id == @region.facilities.first.id
+    user.registration_facility&.id == @region.facilities.first.id
   end
 
   def atleast_one_call?(call_count_by_period)
