@@ -19,6 +19,7 @@
           <col class="table-divider">
           <col>
           <col class="table-divider">
+          <col>
         </colgroup>
       <% end %>
       <% periods.each do |period| %>
@@ -63,13 +64,13 @@
                   <%= count_by_period[period] %>
                 </td>
                 <% if facility? %>
-                  <td class="type-percent" data-sort-column-key="population-coverage" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(count_by_period[period], overdue_patients(region, period)) %>">
+                  <td class="type-percent" data-sort-column-key="population-coverage" data-sort="<%=percentage(count_by_period[period], overdue_patients(region, period))%>" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(count_by_period[period], overdue_patients(region, period)) %>">
                     <em data-rate="<%=percentage(count_by_period[period], overdue_patients(region, period))%>">
                       <%=percentage_string(count_by_period[period], overdue_patients(region, period))%>
                     </em>
                   </td>
                 <% else %>
-                  <td class="type-percent" data-sort-column-key="population-coverage" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(count_by_period[period], overdue_patients(row, period)) %>">
+                  <td class="type-percent" data-sort-column-key="population-coverage" data-sort="<%=percentage(count_by_period[period], overdue_patients(row, period))%>" data-toggle="tooltip" title="" data-original-title="<%=patients_called_tooltip(count_by_period[period], overdue_patients(row, period)) %>">
                     <em data-rate="<%=percentage(count_by_period[period], overdue_patients(row, period))%>" class="overdue-high-is-good">
                       <%=percentage_string(count_by_period[period], overdue_patients(row, period))%>
                     </em>

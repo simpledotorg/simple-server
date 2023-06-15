@@ -3,7 +3,7 @@ require "rails_helper"
 RSpec.describe DrugStocksReportExporter do
   around do |example|
     Timecop.freeze do
-      I18n.with_locale(:en_IN) do
+      I18n.with_locale("en-IN") do
         example.run
       end
     end

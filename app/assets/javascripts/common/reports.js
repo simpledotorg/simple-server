@@ -373,43 +373,57 @@ DashboardReports = () => {
           labels: Object.keys(data.overduePatientsCalled),
           datasets: [
             {
+              label: "Overdue called percent",
+              data: Object.values(data.overduePatientsCalledRate),
+              borderColor: colors.overdueCalledChartLineDarkYellow,
+              hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
+              fill: false,
+              order: 0,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsCalledRate).length
+                  ),
+              },
+            },
+            {
               label: "Agreed to visit",
-              data: Object.values(
-                data.calledWithResultAgreedToVisit
-              ),
+              data: Object.values(data.calledWithResultAgreedToVisit),
               backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
               fill: true,
+              stack: 'callResult',
+              order: 1,
             },
             {
               label: "Remind to call later",
-              data: Object.values(
-                data.calledWithResultRemindToCallLater
-              ),
+              data: Object.values(data.calledWithResultRemindToCallLater),
               backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
               fill: "-1",
+              stack: 'callResult',
+              order: 1,
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(
-                data.calledWithResultRemoveFromOverdueList
-              ),
+              data: Object.values(data.calledWithResultRemoveFromOverdueList),
               backgroundColor: colors.overdueCalledChartFillLightRed,
-              borderColor: colors.overdueCalledChartLineDarkYellow,
-              hoverBorderColor: colors.overdueCalledChartLineDarkYellow,
+              borderWidth: 0,
+              hoverBorderWidth: 0,
+              radius: 0,
+              hoverRadius: 0,
               fill: "-1",
-              segment: {
-                borderDash: (ctx) =>
-                  dynamicChartSegementDashed(ctx, Object.keys(data.overduePatientsCalledRate).length),
-              },
+              stack: 'callResult',
+              order: 1,
             },
+            
           ],
         },
         options: {
@@ -1649,6 +1663,11 @@ const intersectDataVerticalLine = {
     }
   },
 };
+
+function capOverduePatientsCallRate(data) {
+  return Object.keys(data)
+		.reduce((o, key) => Object.assign(o, {[key]: Math.min(data[key], 100)}), {})
+}
 
 function withBaseLineConfig(config) {
   return _.mergeWith(

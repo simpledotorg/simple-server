@@ -10,13 +10,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: public; Type: SCHEMA; Schema: -; Owner: -
---
-
--- *not* creating schema, since initdb creates it
-
-
---
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -735,7 +728,8 @@ CREATE TABLE public.experiments (
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
-    max_patients_per_day integer DEFAULT 0
+    max_patients_per_day integer DEFAULT 0,
+    filters json DEFAULT '{}'::json
 );
 
 
@@ -3914,6 +3908,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
     patient_with_call_results_and_phone.previous_call_result_type,
     patient_with_call_results_and_phone.previous_call_removed_from_overdue_list_reason,
         CASE
+            WHEN (patient_with_call_results_and_phone.previous_appointment_id IS NULL) THEN 'no'::text
             WHEN (patient_with_call_results_and_phone.previous_appointment_schedule_date >= patient_with_call_results_and_phone.month_date) THEN 'no'::text
             WHEN ((patient_with_call_results_and_phone.previous_appointment_schedule_date < patient_with_call_results_and_phone.month_date) AND (patient_with_call_results_and_phone.visited_at_after_appointment < patient_with_call_results_and_phone.month_date)) THEN 'no'::text
             ELSE 'yes'::text
@@ -7435,6 +7430,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230512070306'),
 ('20230512070357'),
 ('20230522081701'),
-('20230523084623');
+('20230523084623'),
+('20230613090949'),
+('20230614171507');
 
 

@@ -5,6 +5,7 @@ FactoryBot.define do
     start_time { 1.week.ago }
     end_time { 1.week.from_now }
     max_patients_per_day { 10 }
+    filters { {"states" => {"exclude" => ["Test State"]}, "facilities" => {"exclude" => ["test-uuid"]}} }
   end
 
   trait :with_treatment_group do
