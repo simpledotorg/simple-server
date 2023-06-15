@@ -1,6 +1,6 @@
 class OverduePatientsQuery
-  FILTERS_CONTACTABLE_OVERDUE_PATIENTS_CALLED = {has_called: "yes", removed_from_overdue_list: "no", has_phone: "yes"}
-  FILTERS_PATIENTS_CALLED = {has_called: "yes"}
+  FILTERS_CONTACTABLE_OVERDUE_PATIENTS_CALLED = {has_called: "yes", removed_from_overdue_list: "no", has_phone: "yes", hypertension: "yes", under_care: "yes"}
+  FILTERS_PATIENTS_CALLED = {has_called: "yes", hypertension: "yes", under_care: "yes"}
 
   def count_patients_called(region, period_type, group_by: nil)
     count_patients(region, period_type, group_by: group_by, filters: FILTERS_PATIENTS_CALLED)
