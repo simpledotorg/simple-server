@@ -7,8 +7,8 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
     @repository = repository
     @period = period
     @current_admin = current_admin
-    @children_data = facility? ? patient_call_count_by_user : patients_call_count_by_region
     @contactable = !with_non_contactable
+    @children_data = facility? ? patient_call_count_by_user : patients_call_count_by_region
   end
 
   def patients_call_count_by_region
