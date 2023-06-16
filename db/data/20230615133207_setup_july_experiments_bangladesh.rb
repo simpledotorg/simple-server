@@ -1,4 +1,8 @@
 class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
+  START_TIME = DateTime.new(2023, 6, 18).beginning_of_day
+  END_TIME = DateTime.new(2023, 7, 17).beginning_of_day
+  CURRENT_PATIENTS_EXPERIMENT = "Current Patient July 2023"
+  STALE_PATIENTS_EXPERIMENT = "Stale Patient July 2023"
   PATIENTS_PER_DAY = 5000
   FILTERS = {
     "states" => {"include" => ["Sylhet"]},
@@ -10,9 +14,9 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
 
     transaction do
       Experimentation::Experiment.current_patients.create!(
-        name: "Current Patient July 2023",
-        start_time: DateTime.new(2023, 6, 18),
-        end_time: DateTime.new(2023, 7, 17).end_of_day,
+        name: CURRENT_PATIENTS_EXPERIMENT,
+        start_time: START_TIME,
+        end_time: END_TIME,
         max_patients_per_day: PATIENTS_PER_DAY,
         filters: FILTERS
       ).tap do |experiment|
@@ -38,9 +42,9 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
 
     transaction do
       Experimentation::Experiment.stale_patients.create!(
-        name: "Stale Patient July 2023",
-        start_time: DateTime.new(2023, 6, 18),
-        end_time: DateTime.new(2023, 7, 17).end_of_day,
+        name: STALE_PATIENTS_EXPERIMENT,
+        start_time: START_TIME,
+        end_time: END_TIME,
         max_patients_per_day: PATIENTS_PER_DAY,
         filters: FILTERS
       ).tap do |experiment|
@@ -67,6 +71,7 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
   end
 
   def down
-    raise ActiveRecord::IrreversibleMigration
+    Experimentation::Experiment.current_patients.find_by_name(CURRENT_PATIENTS_EXPERIMENT).cancel
+    Experimentation::Experiment.stale_patients.find_by_name(STALE_PATIENTS_EXPERIMENT).cancel
   end
 end
