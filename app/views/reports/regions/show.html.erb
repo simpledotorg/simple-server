@@ -324,4 +324,16 @@
       countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
     }).initialize();
   });
+  // Overdue toggle plage refresh scroll
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const checkbox = document.getElementById('overdue-section');
+
+    if (localStorage.getItem('overdueScrollPosition')) {
+      window.scrollTo(0, parseInt(localStorage.getItem('overdueScrollPosition')));
+      localStorage.removeItem('overdueScrollPosition')
+    }
+    checkbox.addEventListener('change', (event) => {
+      ocalStorage.setItem('overdueScrollPosition', window.pageYOffset);
+    });
+  });
 </script>
