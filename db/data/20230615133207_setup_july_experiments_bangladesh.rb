@@ -1,6 +1,6 @@
 class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
-  START_TIME = DateTime.new(2023, 6, 18).beginning_of_day
-  END_TIME = DateTime.new(2023, 7, 17).beginning_of_day
+  START_TIME = DateTime.new(2023, 6, 20).beginning_of_day
+  END_TIME = DateTime.new(2023, 7, 19).beginning_of_day
   CURRENT_PATIENTS_EXPERIMENT = "Current Patient July 2023"
   STALE_PATIENTS_EXPERIMENT = "Stale Patient July 2023"
   PATIENTS_PER_DAY = 5000
@@ -26,17 +26,17 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
         single_group.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
 
         cascade1 = experiment.treatment_groups.create!(description: "cascade1")
-        cascade1.reminder_templates.create!(message: "notifications.set01.basic", remind_on_in_days: -1)
-        cascade1.reminder_templates.create!(message: "notifications.set02.basic", remind_on_in_days: 0)
-        cascade1.reminder_templates.create!(message: "notifications.set03.free", remind_on_in_days: 3)
+        cascade1.reminder_templates.create!(message: "notifications.set01.official_short", remind_on_in_days: -1)
+        cascade1.reminder_templates.create!(message: "notifications.set02.official_short", remind_on_in_days: 0)
+        cascade1.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
 
         cascade2 = experiment.treatment_groups.create!(description: "cascade2")
-        cascade2.reminder_templates.create!(message: "notifications.set03.gratitude", remind_on_in_days: 1)
-        cascade2.reminder_templates.create!(message: "notifications.set03.short", remind_on_in_days: 3)
+        cascade2.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 1)
+        cascade2.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
 
         cascade3 = experiment.treatment_groups.create!(description: "cascade3")
-        cascade3.reminder_templates.create!(message: "notifications.set03.professional_request", remind_on_in_days: 3)
-        cascade3.reminder_templates.create!(message: "notifications.set03.alarm", remind_on_in_days: 7)
+        cascade3.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
+        cascade3.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 7)
       end
     end
 
@@ -55,17 +55,17 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
 
         cascade1 = experiment.treatment_groups.create!(description: "cascade1")
         cascade1.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
-        cascade1.reminder_templates.create!(message: "notifications.set03.free", remind_on_in_days: 3)
+        cascade1.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
         # Stale (5 buckets): control, 0,  0/3, 0/7, and 0/3/7
 
         cascade2 = experiment.treatment_groups.create!(description: "cascade2")
-        cascade2.reminder_templates.create!(message: "notifications.set03.gratitude", remind_on_in_days: 0)
-        cascade2.reminder_templates.create!(message: "notifications.set03.alarm", remind_on_in_days: 7)
+        cascade2.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
+        cascade2.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 7)
 
         cascade3 = experiment.treatment_groups.create!(description: "cascade3")
         cascade3.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
-        cascade3.reminder_templates.create!(message: "notifications.set03.professional_request", remind_on_in_days: 3)
-        cascade3.reminder_templates.create!(message: "notifications.set03.alarm", remind_on_in_days: 7)
+        cascade3.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
+        cascade3.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 7)
       end
     end
   end
