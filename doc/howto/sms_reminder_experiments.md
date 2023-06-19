@@ -12,6 +12,7 @@ To start an SMS experiment you'll need to gather information about the following
 - `max_patients_per_day` - The maximum number of patients to be enrolled per day.
 - `start_time` - Enrollments will begin at this point in time.
 - `end_time` - Enrollments will stop at this point in time.
+- `filters` - A hash of mutually exclusive `include/exclude` filters for `states`, `blocks` & `facilities`.
 
 #### Treatment Groups
 
@@ -26,6 +27,11 @@ To start an SMS experiment you'll need to gather information about the following
   - a `message` - The locale key of the message (for ex. `notifications.set01.basic`).
   - a `remind_on` -  The day on which this message will be sent out relative to the expected date of return.
   - The `message` texts must be added to `config/locales/notifications/`.
+- Reminder templates are classified in 3 sets defined as follows:
+  - `set01` is for upcoming appointments.
+  - `set02` is for patients having appointment on the same day of the notification.
+  - `set03` is for patients(current or stale) who have missed appointments.
+
 For India:
 - If the experiment has new messages and translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
   [config](../config/data/bsnl_templates.yml). See [bsnl/sms_reminders.md](bsnl/sms_reminders.md)
@@ -131,6 +137,11 @@ Creating a sample experiment
 ```ruby
 start_time = Date.parse("6 May 2023").beginning_of_day
 end_time = Date.parse("6 May 2023").beginning_of_day
+filters = {
+        "states" => {"include" => ["Himachal Pradesh", "Maharashtra"]},
+        "blocks" => {"exclude" => ["uuid-1", "uuid-2"]},
+        "facilities" => {"exclude" => ["uuid-3", "uuid-4"]}
+}
 
 # Creating an experiment that targets patients with upcoming visits.
 e = Experimentation::Experiment.create!(
@@ -138,7 +149,8 @@ e = Experimentation::Experiment.create!(
   experiment_type: "current_patients",
   start_time: start_time,
   end_time: end_time,
-  max_patients_per_day: 20000
+  max_patients_per_day: 20000,
+  filters: filters
 )
 # Create treatment groups. This group has 2 messages sent 3 days before and
 # 7 days after visit.
@@ -155,7 +167,8 @@ e = Experimentation::Experiment.create!(
   experiment_type: "stale_patients",
   start_time: start_time,
   end_time: end_time,
-  max_patients_per_day: 20000
+  max_patients_per_day: 20000,
+  filters: filters
 )
 tg = e.treatment_groups.create!(description: "official_short_cascade")
 tg.reminder_templates.create!(message: "notifications.set02.official_short", remind_on_in_days: 0)
