@@ -326,14 +326,14 @@
   });
   // Overdue toggle plage refresh scroll
   window.addEventListener('DOMContentLoaded', (event) => {
-    const overdueToggle = document.getElementById('overdue-section');
+    const overdueToggleElement = document.getElementById('overdue-section');
 
-    if (localStorage.getItem('overdueScrollPosition')) {
-      window.scrollTo(0, parseInt(localStorage.getItem('overdueScrollPosition')));
-      localStorage.removeItem('overdueScrollPosition')
+    if (localStorage.getItem('overdueToggleScrollPosition')) {
+      window.scrollTo(0, parseInt(localStorage.getItem('overdueToggleScrollPosition')));
+      localStorage.removeItem('overdueToggleScrollPosition')
     }
-    overdueToggle.addEventListener('change', (event) => {
-      localStorage.setItem('overdueScrollPosition', window.pageYOffset);
+    overdueToggleElement.addEventListener('change', (event) => {
+      localStorage.setItem('overdueToggleScrollPosition', window.pageYOffset);
     });
   });
 </script>
