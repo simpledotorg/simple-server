@@ -249,9 +249,13 @@
         </div>
       </form>
       <div class="ml-8px" style="margin-top: 2px;">
-        <%= render "definition_tooltip",
-                    definitions: {"" => t("overdue_toggle_tooltip.additional"),
-                                  "list" => t("overdue_toggle_tooltip.list")} %>
+        <%= render Dashboard::Card::TooltipComponent.new(
+                    [{ name: t("overdue_toggle_tooltip.main"),
+                       name_style: :p},
+                     { name: t("overdue_toggle_tooltip.additional"),
+                       description: t("overdue_toggle_tooltip.list"),
+                       description_style: :ul}
+                    ]) %>
       </div>
     </div>
   </div>

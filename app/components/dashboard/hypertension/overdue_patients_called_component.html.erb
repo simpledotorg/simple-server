@@ -1,10 +1,12 @@
 <div id="overdue-patients-called-trend" class="d-lg-flex w-lg-50 pl-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "overdueCalledTrend", data: graph_data, period: @period) do |c| %>
     <%= c.title(title: "Overdue patients called".html_safe, subtitle: t("overdue_patients_called.reports_card_subtitle")) do |title| %>
-        <%= title.tooltip({ "Numerator" => t("overdue_patients_called.numerator"),
-                            "note" => t("overdue_patients_called.numerator_note"),
-                            "divider" => "",
-                            "Denominator" => t("overdue_patients_called.denominator", region_name: @region.name) }) %>
+        <%= title.tooltip([
+          { name: "Numerator",
+            description: t("overdue_patients_called.numerator"),
+            footnote: t("overdue_patients_called.numerator_note"),
+            enable_divider: true},
+          { name: "Denominator", description: t("overdue_patients_called.denominator", region_name: @region.name)}])%>
       <%end%>
       <%= c.summary do %>
         <div class="mb-12px d-lg-flex align-lg-center">

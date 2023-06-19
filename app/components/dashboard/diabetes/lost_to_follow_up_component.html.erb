@@ -1,8 +1,8 @@
 <div id="diabetes-ltfu-trend"  class="d-lg-flex w-lg-50 pl-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "lostToFollowUpTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(title: "Lost to follow-up", subtitle: t("diabetes_lost_to_follow_up_copy.reports_card_subtitle")) do |title| %>
-      <%= title.tooltip({ "Numerator" => t("diabetes_lost_to_follow_up_copy.numerator"),
-                             "Denominator" => t("diabetes_ltfu_denominator_copy", region_name: @region.name) }) %>
+      <%= title.tooltip([{ name: "Numerator", description: t("diabetes_lost_to_follow_up_copy.numerator") },
+                         { name: "Denominator", description: t("diabetes_ltfu_denominator_copy", region_name: @region.name) }]) %>
       <%end%>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">

@@ -17,50 +17,50 @@ class Dashboard::Diabetes::MeasurementChildComparisonTableComponent < Applicatio
 
   def table_headers
     [{title: "RBS &lt;200".html_safe,
-      tooltip: {
-        "Numerator" => t("bs_below_200_copy.rbs_ppbs.numerator"),
-        "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-      }},
+      tooltip: [
+        {name: "Numerator", description: t("bs_below_200_copy.rbs_ppbs.numerator")},
+        {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+      ]},
       {title: "RBS 200-299".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_200_to_299.rbs_ppbs.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_200_to_299.rbs_ppbs.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "RBS &ge;300".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_over_300.rbs_ppbs.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_over_300.rbs_ppbs.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "FBS &lt;126".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_below_200_copy.fasting.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_below_200_copy.fasting.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "FBS 126-199".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_200_to_299.fasting.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_200_to_299.fasting.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "FBS &ge;200".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_over_300.fasting.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_over_300.fasting.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "HbA1c &lt;7.0".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_below_200_copy.hba1c.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_below_200_copy.hba1c.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "HbA1c 7.0-8.9".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_200_to_299.hba1c.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }},
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_200_to_299.hba1c.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]},
       {title: "HbA1c &ge;9.0".html_safe,
-       tooltip: {
-         "Numerator" => t("bs_over_200_copy.bs_over_300.hba1c.numerator"),
-         "Denominator" => t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)
-       }}]
+       tooltip: [
+         {name: "Numerator", description: t("bs_over_200_copy.bs_over_300.hba1c.numerator")},
+         {name: "Denominator", description: t("bs_measurement_details_copy.assigned_patients_with_bs_measurement", region_name: @region.name)}
+       ]}]
   end
 
   def row_data(data)

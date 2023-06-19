@@ -3,8 +3,8 @@
     <%= c.title(
       title: "Missed visits".html_safe,
       subtitle: t("diabetes_missed_visits_copy.reports_card_subtitle", region_name: @region.name)) do |title| %>
-      <%= title.tooltip({ "Numerator" => t("diabetes_missed_visits_copy.numerator"),
-                          "Denominator" => t("diabetes_missed_visits_copy.denominator", region_name: @region.name) }) %>
+      <%= title.tooltip([{ name: "Numerator", description: t("diabetes_missed_visits_copy.numerator")},
+                         { name: "Denominator", description:  t("diabetes_missed_visits_copy.denominator", region_name: @region.name) }]) %>
       <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
     <% end %>
 
