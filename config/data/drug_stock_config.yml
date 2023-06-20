@@ -493,14 +493,15 @@ Sylhet:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
 Mymensingh:
   load_coefficient: 1
   drug_categories:
@@ -508,14 +509,15 @@ Mymensingh:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
 Rajshahi:
   load_coefficient: 1
   drug_categories:
@@ -523,14 +525,15 @@ Rajshahi:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
 Dhaka:
   load_coefficient: 1
   drug_categories:
@@ -538,14 +541,15 @@ Dhaka:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
 Barishal:
   load_coefficient: 1
   drug_categories:
@@ -553,14 +557,15 @@ Barishal:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
 Chattogram:
   load_coefficient: 1
   drug_categories:
@@ -568,11 +573,12 @@ Chattogram:
       new_patient_coefficient: 0.88
       '329528': 1
       '329526': 2
-    hypertension_diuretic:
+    hypertension_arb:
       new_patient_coefficient: 0.72
       '979467': 1
       '979463': 2
-    hypertension_ace:
+    hypertension_diuretic:
       new_patient_coefficient: 0.35
-      '316049': 1
-      '316051': 1
+      '316047': 1
+      '316049': 2
+      '316051': 4
