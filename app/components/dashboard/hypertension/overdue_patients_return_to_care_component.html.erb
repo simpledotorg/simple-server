@@ -7,15 +7,15 @@
     <%end%>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
-        <p class="c-print-black graph-percent fs-28px c-purple" data-key="overduePatientsCalledRate" data-format="percentage"></p>
+        <p class="c-print-black graph-percent fs-28px c-purple" data-key="overduePatientsReturnedRate" data-format="percentage"></p>
         <div>
           <p class="m-0px c-black">
-            <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
+            <span data-key="overduePatientsReturned" data-format="numberWithCommas"></span>
             patients returned to care within 15 days
           </p>
           <p class="m-0px c-grey-dark c-print-black">
             of
-            <span data-key="overduePatients" data-format="numberWithCommas"></span>
+            <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
             overdue patients called in
             <span data-key="endDate"></span>
           </p>
@@ -26,18 +26,18 @@
           Returned to care by call result <span data-key="endDate"></span>
         </p>
         <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
-          <p data-title="chartProportionalPercentageCalledWithResultAgreedToVisit" title="'Agreed to visit'"
+          <p data-title="patientsReturnedAgreedToVisitRates" title="'Agreed to visit'"
                 class="card-chip card-chip-green">
-            <span data-key="chartProportionalPercentageCalledWithResultAgreedToVisit"></span>%
+            <span data-key="patientsReturnedAgreedToVisitRates"></span>%
             of 'Agreed to visit'
           </p>
-          <p data-title="chartProportionalPercentageCalledWithResultRemindToCallLater" title="'Remind to call'"
+          <p data-title="patientsReturnedRemindToCallLaterRates" title="'Remind to call'"
               class="card-chip card-chip-amber">
-            <span data-key="chartProportionalPercentageCalledWithResultRemindToCallLater"></span>% of 'Remind to call'
+            <span data-key="patientsReturnedRemindToCallLaterRates"></span>% of 'Remind to call'
           </p>
-          <p data-title="chartProportionalPercentageCalledWithResultRemoveFromOverdueList" title="'Remove from overdue list'"
+          <p data-title="patientsReturnedRemovedFromOverdueListRates" title="'Remove from overdue list'"
               class="card-chip card-chip-red">
-            <span data-key="chartProportionalPercentageCalledWithResultRemoveFromOverdueList"></span>% of 'Remove from...'
+            <span data-key="patientsReturnedRemovedFromOverdueListRates"></span>% of 'Remove from...'
           </p>
         </div>
       </div>

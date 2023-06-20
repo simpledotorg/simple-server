@@ -11,25 +11,23 @@ class Dashboard::Hypertension::OverduePatientsReturnToCareComponent < Applicatio
   def graph_data
     if @contactable
       return {
-        overduePatients: data[:overdue_patients],
-        overduePatientsCalled: data[:patients_called],
-        overduePatientsCalledRate: data[:patients_called_rates],
-        startDate: @period.advance(months: -17),
-        chartProportionalPercentageCalledWithResultAgreedToVisit: data[:contactable_patients_called_with_result_agreed_to_visit_rates],
-        chartProportionalPercentageCalledWithResultRemindToCallLater: data[:contactable_patients_called_with_result_remind_to_call_later_rates],
-        chartProportionalPercentageCalledWithResultRemoveFromOverdueList: data[:contactable_patients_called_with_result_removed_from_list_rates],
+        overduePatientsCalled: data[:contactable_patients_called],
+        overduePatientsReturned: data[:contactable_patients_returned_after_call],
+        overduePatientsReturnedRate: data[:contactable_patients_returned_after_call_rates],
+        patientsReturnedAgreedToVisitRates: data[:contactable_patients_returned_with_result_agreed_to_visit_rates],
+        patientsReturnedRemindToCallLaterRates: data[:contactable_patients_returned_with_result_remind_to_call_later_rates],
+        patientsReturnedRemovedFromOverdueListRates: data[:contactable_patients_returned_with_result_removed_from_list_rates],
         **period_data
       }
     end
 
     {
-      overduePatients: data[:overdue_patients],
       overduePatientsCalled: data[:patients_called],
-      overduePatientsCalledRate: data[:patients_called_rates],
-      startDate: @period.advance(months: -17),
-      chartProportionalPercentageCalledWithResultAgreedToVisit: data[:patients_called_with_result_agreed_to_visit_rates],
-      chartProportionalPercentageCalledWithResultRemindToCallLater: data[:patients_called_with_result_remind_to_call_later_rates],
-      chartProportionalPercentageCalledWithResultRemoveFromOverdueList: data[:patients_called_with_result_removed_from_list_rates],
+      overduePatientsReturned: data[:patients_returned_after_call],
+      overduePatientsReturnedRate: data[:patients_returned_after_call_rates],
+      patientsReturnedAgreedToVisitRates: data[:patients_returned_with_result_agreed_to_visit_rates],
+      patientsReturnedRemindToCallLaterRates: data[:patients_returned_with_result_remind_to_call_later_rates],
+      patientsReturnedRemovedFromOverdueListRates: data[:patients_returned_with_result_removed_from_list_rates],
       **period_data
     }
   end
@@ -40,10 +38,6 @@ class Dashboard::Hypertension::OverduePatientsReturnToCareComponent < Applicatio
   end
 
   private
-
-  def cap_percentage(percentage)
-    [percentage, 100].min
-  end
 
   def period_data
     {

@@ -438,102 +438,14 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
     overdueReturnToCareTrend: function (data) {
-      console.log(data);
-      const fakeData = {
-        agree: {
-          "Jan-2022": 15,
-          "Feb-2022": 21,
-          "Mar-2022": 25,
-          "Apr-2022": 28,
-          "May-2022": 29,
-          "Jun-2022": 40,
-          "Jul-2022": 41,
-          "Aug-2022": 40,
-          "Sep-2022": 20,
-          "Oct-2022": 20,
-          "Nov-2022": 45,
-          "Dec-2022": 59,
-          "Jan-2023": 55,
-          "Feb-2023": 56,
-          "Mar-2023": 53,
-          "Apr-2023": 61,
-          "May-2023": 62,
-          "Jun-2023": 64,
-        },
-        remind: {
-          "Jan-2022": 0,
-          "Feb-2022": 0,
-          "Mar-2022": 0,
-          "Apr-2022": 2,
-          "May-2022": 5,
-          "Jun-2022": 0,
-          "Jul-2022": 1,
-          "Aug-2022": 90,
-          "Sep-2022": 90,
-          "Oct-2022": 1,
-          "Nov-2022": 2,
-          "Dec-2022": 0,
-          "Jan-2023": 1,
-          "Feb-2023": 5,
-          "Mar-2023": 7,
-          "Apr-2023": 0,
-          "May-2023": 0,
-          "Jun-2023": 1,
-        },
-        remove: {
-          "Jan-2022": 10,
-          "Feb-2022": 14,
-          "Mar-2022": 18,
-          "Apr-2022": 19,
-          "May-2022": 24,
-          "Jun-2022": 20,
-          "Jul-2022": 25,
-          "Aug-2022": 30,
-          "Sep-2022": 31,
-          "Oct-2022": 10,
-          "Nov-2022": 28,
-          "Dec-2022": 30,
-          "Jan-2023": 40,
-          "Feb-2023": 45,
-          "Mar-2023": 90,
-          "Apr-2023": 90,
-          "May-2023": 46,
-          "Jun-2023": 44,
-        },
-        average: {
-          "Jan-2022": 20,
-          "Feb-2022": 24,
-          "Mar-2022": 28,
-          "Apr-2022": 29,
-          "May-2022": 34,
-          "Jun-2022": 30,
-          "Jul-2022": 35,
-          "Aug-2022": 40,
-          "Sep-2022": 51,
-          "Oct-2022": 20,
-          "Nov-2022": 38,
-          "Dec-2022": 40,
-          "Jan-2023": 50,
-          "Feb-2023": 55,
-          "Mar-2023": 58,
-          "Apr-2023": 57,
-          "May-2023": 52,
-          "Jun-2023": 54,
-        },
-      };
       const monthsDashed = 2
-      // alternatively individual
-      const monthsDashedAll = 2
-      const monthsDashedAgreed = 2
-      const monthsDashedRemind = 1
-      const monthsDashedRemove = 1
       const config = {
         data: {
-          labels: Object.keys(fakeData.agree),
+          labels: Object.keys(data.overduePatientsCalled),
           datasets: [
             {
               label: "All patients returning to care",
-              data: Object.values(fakeData.average),
+              data: Object.values(data.overduePatientsReturnedRate),
               backgroundColor: colors.lightestPurple,
               borderColor: colors.darkPurple,
               hoverBorderColor: colors.darkPurple,
@@ -541,15 +453,14 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(fakeData.average).length,
+                    Object.keys(data.overduePatientsReturnedRate).length,
                     monthsDashed,
-                    // monthsDashedAll,
                   ),
               },
             },
             {
               label: "Agreed to visit",
-              data: Object.values(fakeData.agree),
+              data: Object.values(data.patientsReturnedAgreedToVisitRates),
               borderColor: colors.mediumGreen,
               radius: 0,
               hoverRadius: 2,
@@ -559,15 +470,14 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(fakeData.average).length,
+                    Object.keys(data.patientsReturnedAgreedToVisitRates).length,
                     monthsDashed,
-                    // monthsDashedAgreed,
                   ),
               },
             },
             {
               label: "Remind to call later",
-              data: Object.values(fakeData.remind),
+              data: Object.values(data.patientsReturnedRemindToCallLaterRates),
               borderColor: colors.amber,
               radius: 0,
               hoverRadius: 2,
@@ -577,15 +487,14 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(fakeData.average).length,
+                    Object.keys(data.patientsReturnedRemindToCallLaterRates).length,
                     monthsDashed,
-                    // monthsDashedRemind,
                   ),
               },
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(fakeData.remove),
+              data: Object.values(data.patientsReturnedRemovedFromOverdueListRates),
               borderColor: colors.mediumRed,
               radius: 0,
               hoverRadius: 2,
@@ -595,9 +504,8 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(fakeData.average).length,
+                    Object.keys(data.patientsReturnedRemovedFromOverdueListRates).length,
                     monthsDashed,
-                    // monthsDashedRemove,
                   ),
               },
             },
