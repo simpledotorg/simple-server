@@ -5,8 +5,9 @@ class Csv::FacilitiesValidator
 
   attr_reader :errors
 
-  def initialize(facilities)
+  def initialize(facilities:, business_identifiers:)
     @facilities = facilities
+    @business_identifiers = business_identifiers
     @errors = []
   end
 
@@ -14,6 +15,7 @@ class Csv::FacilitiesValidator
     at_least_one_facility
     duplicate_rows
     per_facility_validations
+    duplicate_business_identifiers
     self
   end
 
@@ -22,6 +24,7 @@ class Csv::FacilitiesValidator
   STARTING_ROW = 2
 
   attr_reader :facilities
+  attr_reader :business_identifiers
   attr_writer :errors
 
   def at_least_one_facility
@@ -53,6 +56,11 @@ class Csv::FacilitiesValidator
     end
 
     group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
+  end
+
+  def duplicate_business_identifiers
+    identifiers = business_identifiers.pluck(:identifiers)
+    errors << "Uploaded file has duplicate business identifiers" if identifiers.count != identifiers.uniq.count
   end
 
   def group_row_errors(row_errors)

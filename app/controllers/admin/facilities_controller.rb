@@ -106,8 +106,8 @@ class Admin::FacilitiesController < AdminController
       return render :upload, status: :bad_request if @errors.present?
     end
 
-    if @facilities.present?
-      ImportFacilitiesJob.perform_later(@facilities)
+    if @facility_data_map.present?
+      ImportFacilitiesJob.perform_later(@facility_data_map)
       flash.now[:notice] = "File upload successful, your facilities will be created shortly."
     end
 
@@ -183,9 +183,11 @@ class Admin::FacilitiesController < AdminController
 
   def parse_file
     @file_contents = read_xlsx_or_csv_file(@file)
-    facilities = Facility.parse_facilities_from_file(@file_contents)
-    @errors = Csv::FacilitiesValidator.validate(facilities).errors
-    @facilities = facilities.map { |facility| facility.attributes.with_indifferent_access }
+    facility_data = Facility.parse_facilities_from_file(@file_contents)
+    @errors = Csv::FacilitiesValidator.validate(facility_data).errors
+    @facility_data_map = facility_data.transform_values! do |records|
+      records.map { |record| record.attributes.with_indifferent_access }
+    end
   end
 
   def file_exists?
