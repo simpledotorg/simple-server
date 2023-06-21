@@ -10,6 +10,7 @@ class Csv::FacilitiesParser
   CONVERTERS = [:strip_whitespace]
   HEADERS = true
   COLUMNS = {
+    business_identifier: "identifier (if exists)",
     organization_name: "organization",
     facility_group_name: "facility_group",
     name: "facility_name",
@@ -22,7 +23,7 @@ class Csv::FacilitiesParser
     pin: "pin (optional)",
     latitude: "latitude (optional)",
     longitude: "longitude (optional)",
-    facility_size: "size (optional)",
+    facility_size: "size",
     enable_diabetes_management: "enable_diabetes_management (true/false)",
     enable_monthly_screening_reports: "enable_monthly_screening_reports (true/false)",
     enable_monthly_supplies_reports: "enable_monthly_supplies_reports (true/false)"
@@ -35,24 +36,38 @@ class Csv::FacilitiesParser
   def initialize(file_contents)
     @file_contents = file_contents
     @facilities = []
+    @business_identifiers = []
   end
 
   def call
     parse
-    facilities
+    {
+      facilities: facilities,
+      business_identifiers: business_identifiers
+    }
   end
 
   private
 
   attr_reader :file_contents
   attr_accessor :facilities
+  attr_accessor :business_identifiers
 
   def parse
     CSV.parse(file_contents, headers: HEADERS, converters: CONVERTERS, encoding: "UTF-8") do |row|
       attrs = facility_attributes(row)
       next if attrs.values.all?(&:blank?)
 
-      facilities << Facility.new(attrs)
+      facility = Facility.new(attrs.merge!(id:SecureRandom.uuid).except(:business_identifier))
+      if attrs[:business_identifier]
+        business_identifiers << facility.business_identifiers.build(
+          identifier: attrs[:business_identifier],
+          identifier_type: :external_org_facility_id,
+          facility_id: facility.id
+        )
+      end
+
+      facilities << facility
     end
   end
 
