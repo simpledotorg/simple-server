@@ -10,6 +10,7 @@ class Csv::FacilitiesParser
   CONVERTERS = [:strip_whitespace]
   HEADERS = true
   COLUMNS = {
+    business_identifier: "identifier (if exists)",
     organization_name: "organization",
     facility_group_name: "facility_group",
     name: "facility_name",
@@ -18,11 +19,11 @@ class Csv::FacilitiesParser
     street_address: "street_address (optional)",
     village_or_colony: "village_or_colony (optional)",
     zone: "zone_or_block",
-    district: "district",
+    district: "district", # TODO: can remove this, and rename "facility group" above to "district"
     pin: "pin (optional)",
     latitude: "latitude (optional)",
     longitude: "longitude (optional)",
-    facility_size: "size (optional)",
+    facility_size: "size",
     enable_diabetes_management: "enable_diabetes_management (true/false)",
     enable_monthly_screening_reports: "enable_monthly_screening_reports (true/false)",
     enable_monthly_supplies_reports: "enable_monthly_supplies_reports (true/false)"
@@ -35,6 +36,7 @@ class Csv::FacilitiesParser
   def initialize(file_contents)
     @file_contents = file_contents
     @facilities = []
+    @business_identifiers = []
   end
 
   def call
@@ -52,7 +54,17 @@ class Csv::FacilitiesParser
       attrs = facility_attributes(row)
       next if attrs.values.all?(&:blank?)
 
-      facilities << Facility.new(attrs)
+      facility = Facility.new(attrs.merge!(id: SecureRandom.uuid).except(:business_identifier))
+      business_identifiers = []
+      if attrs[:business_identifier]
+        business_identifiers << facility.business_identifiers.build(
+          identifier: attrs[:business_identifier],
+          identifier_type: :external_org_facility_id,
+          facility_id: facility.id
+        )
+      end
+
+      facilities << {facility: facility, business_identifiers: business_identifiers}
     end
   end
 
