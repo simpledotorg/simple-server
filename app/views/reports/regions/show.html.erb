@@ -323,5 +323,10 @@
       regionType: '<%= @region.region_type %>',
       countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
     }).initialize();
+
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(element => {
+      createToggleListener(element.id)
+    });
   });
 </script>

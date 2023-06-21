@@ -67,5 +67,12 @@
     repository: @details_repository,
     period: @period) %>
 <% end %>
-
 <%= render "reports/regions/diabetes_footnotes" %>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(element => {
+      createToggleListener(element.id)
+    });
+  })
+</script>
