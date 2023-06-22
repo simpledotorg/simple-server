@@ -30,6 +30,6 @@ class Statsd
   private
 
   def create_connection
-    Datadog::Statsd.new("localhost", 8125)
+    Datadog::Statsd.new(ENV.fetch('DD_AGENT_HOST', 'localhost'), 8125)
   end
 end
