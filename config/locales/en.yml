@@ -151,6 +151,31 @@ en:
     numerator: "Number of days until a patient's next scheduled appointment"
     denominator: "Total appointments scheduled for follow-up patients during a month."
 
+  overdue_patients_definition: "A patient with a scheduled visit date which has passed with no visit."
+  overdue_patients:
+    reports_card_subtitle: "Hypertension patients that are overdue at the start of the month"
+    numerator: "Patients that are overdue at the start of the month."
+    denominator: "Hypertension patients assigned to %{region_name}. Deleted, dead and lost to follow-up patients are excluded."
+  overdue_patients_called: 
+      reports_card_subtitle: "Total overdue hypertension patients called during the month"
+      numerator: "Unique patients with at least one ‘Result of call...’ marked during the month."
+      numerator_note: "Note: This number includes patients that become overdue during the month and received a call, they may not be part of the denominator."
+      denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
+  overdue_patients_call_activity: 
+    reports_card_subtitle: "The number of overdue hypertension patients called during the month"
+    patients_called: "Unique patients with at least one ‘Result of call...’ marked during the month."
+    percent_called_numerator: "Unique patients with at least one ‘Result of call...’ marked by user during the month."
+    percent_called_denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
+  overdue_toggle_tooltip:
+    main: "Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded."
+    additional: |
+      Patients marked ‘Removed from overdue list’ before the 1st of the month and patients without a phone number are excluded.
+      <br>
+      <br>
+      ‘Remove from overdue list‘ reason must be one of following:
+    list: "Patient not responding, Phone number does not work, Transferred to another public health facility, Moved to a private practitioner, Other reason"
+
+
   admin:
     reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
     disable_access_alert: "Are you sure you want to disable the access for user?"

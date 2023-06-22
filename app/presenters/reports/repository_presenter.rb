@@ -71,7 +71,27 @@ module Reports
         dead: dead[slug],
         diabetes_dead: diabetes_dead[slug],
         under_care: under_care[slug],
-        diabetes_under_care: diabetes_under_care[slug]
+        diabetes_under_care: diabetes_under_care[slug],
+        overdue_patients: overdue_patients[slug],
+        overdue_patients_rates: overdue_patients_rates[slug],
+        contactable_overdue_patients: contactable_overdue_patients[slug],
+        contactable_overdue_patients_rates: contactable_overdue_patients_rates[slug],
+        patients_called: patients_called[slug],
+        patients_called_rates: patients_called_rates[slug],
+        contactable_patients_called: contactable_patients_called[slug],
+        contactable_patients_called_rates: contactable_patients_called_rates[slug],
+        patients_called_with_result_agreed_to_visit: patients_called_with_result_agreed_to_visit[slug],
+        patients_called_with_result_remind_to_call_later: patients_called_with_result_remind_to_call_later[slug],
+        patients_called_with_result_removed_from_list: patients_called_with_result_removed_from_list[slug],
+        contactable_patients_called_with_result_agreed_to_visit: contactable_patients_called_with_result_agreed_to_visit[slug],
+        contactable_patients_called_with_result_remind_to_call_later: contactable_patients_called_with_result_remind_to_call_later[slug],
+        contactable_patients_called_with_result_removed_from_list: contactable_patients_called_with_result_removed_from_list[slug],
+        patients_called_with_result_agreed_to_visit_rates: patients_called_with_result_agreed_to_visit_rates[slug],
+        patients_called_with_result_remind_to_call_later_rates: patients_called_with_result_remind_to_call_later_rates[slug],
+        patients_called_with_result_removed_from_list_rates: patients_called_with_result_removed_from_list_rates[slug],
+        contactable_patients_called_with_result_agreed_to_visit_rates: contactable_patients_called_with_result_agreed_to_visit_rates[slug],
+        contactable_patients_called_with_result_remind_to_call_later_rates: contactable_patients_called_with_result_remind_to_call_later_rates[slug],
+        contactable_patients_called_with_result_removed_from_list_rates: contactable_patients_called_with_result_removed_from_list_rates[slug]
       }
     end
 

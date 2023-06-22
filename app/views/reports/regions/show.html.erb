@@ -228,6 +228,55 @@
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
 
+<% if Flipper.enabled?(:overdue_patients, current_admin) %>
+  <div class="d-flex jc-space-between">
+    <h4 class="mt-5 mb-32px">Overdue</h4>
+
+    <div class="d-flex" style="margin-top: 43px;">
+      <form method="get" name="overdue_form">
+        <div class="custom-control custom-switch checkbox-outside-card">
+        <input type="checkbox"
+             onChange="this.form.submit()"
+             name="with_non_contactable"
+             for="overdue_form"
+             class="custom-control-input"
+             id="overdue-section"
+             <% if @with_non_contactable %>checked<% end %>>
+        <label class="font-weight-normal custom-control-label <% unless false %>c-grey-dark<% end %>"
+             for="overdue-section">
+             Include non-contactable patients
+        </label>
+        </div>
+      </form>
+      <div class="ml-8px" style="margin-top: 2px;">
+        <%= render "definition_tooltip",
+                    definitions: {"" => t("overdue_toggle_tooltip.additional"),
+                                  "list" => t("overdue_toggle_tooltip.list")} %>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-lg-flex flex-lg-wrap">
+    <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
+      region: @region,
+      data: @data,
+      period: @period,
+      with_non_contactable: @with_non_contactable)) %>
+    <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(
+      region: @region,
+      data: @data,
+      period: @period,
+      with_non_contactable: @with_non_contactable)) %>
+    <%= render(Dashboard::Hypertension::OverduePatientsCalledTableComponent.new(
+      region: @region,
+      data: @data,
+      repository: @details_repository,
+      period: @period,
+      current_admin: @current_admin,
+      with_non_contactable: @with_non_contactable)) %>
+  </div>
+<% end %>
+
   <% if current_admin.feature_enabled?(:medications_dispensation) %>
     <h4 class="mt-5 mb-32px">Medications</h4>
     <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
@@ -270,7 +319,9 @@
   window.addEventListener("DOMContentLoaded", () => {
     new Reports({
       withLtfu: <%= @with_ltfu %>,
-      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>
+      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>,
+      regionType: '<%= @region.region_type %>',
+      countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
     }).initialize();
   });
 </script>

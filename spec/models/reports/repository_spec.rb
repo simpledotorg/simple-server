@@ -160,6 +160,38 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.monthly_registrations_by_user(diagnosis: :diabetes)[facility_1.slug][july_2020.to_period]).to be_nil
     end
 
+    it "can count overdue patients called by user" do
+      timezone = Time.find_zone(Period::REPORTING_TIME_ZONE)
+      this_month = timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0)
+      one_month_ago = this_month - 1.months
+      two_months_ago = this_month - 2.months
+      three_months_ago = this_month - 3.months
+
+      facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
+      facility = facilities.first
+      user_1 = create(:user, registration_facility: facility)
+      user_2 = create(:user, registration_facility: facility)
+
+      patient_1 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_2 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_3 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+      patient_4 = create(:patient, assigned_facility: facility, recorded_at: 10.months.ago)
+
+      create(:call_result, user: user_1, facility: facility, patient: patient_1, device_created_at: this_month)
+      create(:call_result, user: user_2, facility: facility, patient: patient_2, device_created_at: this_month)
+      create(:call_result, user: user_1, facility: facility, patient: patient_3, device_created_at: one_month_ago)
+      create(:call_result, user: user_2, facility: facility, patient: patient_4, device_created_at: two_months_ago)
+
+      refresh_views
+
+      repo = Reports::Repository.new(facility.region, periods: (two_months_ago.to_period..this_month.to_period))
+      expect(repo.overdue_patients_called_by_user[facility.slug][this_month.to_period][user_1.id]).to eq(1)
+      expect(repo.overdue_patients_called_by_user[facility.slug][one_month_ago.to_period][user_1.id]).to eq(1)
+      expect(repo.overdue_patients_called_by_user[facility.slug][this_month.to_period][user_2.id]).to eq(1)
+      expect(repo.overdue_patients_called_by_user[facility.slug][two_months_ago.to_period][user_2.id]).to eq(1)
+      expect(repo.overdue_patients_called_by_user[facility.slug][three_months_ago.to_period]).to be_nil
+    end
+
     it "can count registrations and cumulative registrations by gender" do
       facility_1 = FactoryBot.create(:facility, facility_group: facility_group_1)
 

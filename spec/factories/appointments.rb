@@ -15,7 +15,8 @@ FactoryBot.define do
     user
 
     trait :overdue do
-      scheduled_date { rand(30..90).days.ago }
+      device_created_at { rand(61..90).days.ago }
+      scheduled_date { rand(35..60).days.ago }
       status { :scheduled }
     end
   end

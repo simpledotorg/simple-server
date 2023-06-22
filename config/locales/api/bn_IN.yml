@@ -517,6 +517,9 @@ bn-IN:
     waist_tape: "কোমরের পরিধি পরিমাপের জন্য টেপ"
     # India
     glucometer_strips: "গ্লুকোমিটার স্ট্রিপস"
+    bp_passport_stock: "বিপি পাসপোর্ট স্টক"
+    functional_bp_monitors: "কার্যকর বিপি মনিটর"
+    functional_glucose_monitors: "কার্যকর গ্লুকোজ মনিটর"
     # Sri Lanka
     equipment: "উপকরণ"
     available_bp_devices: "মোট উপলভ্য বিপি ডিভাইস"
