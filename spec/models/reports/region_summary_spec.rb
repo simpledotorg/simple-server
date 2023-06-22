@@ -131,6 +131,14 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         contactable_patients_called_with_result_agreed_to_visit
         contactable_patients_called_with_result_remind_to_call_later
         contactable_patients_called_with_result_removed_from_list
+        patients_returned_after_call
+        patients_returned_with_result_agreed_to_visit
+        patients_returned_with_result_remind_to_call_later
+        patients_returned_with_result_removed_from_list
+        contactable_patients_returned_after_call
+        contactable_patients_returned_with_result_agreed_to_visit
+        contactable_patients_returned_with_result_remind_to_call_later
+        contactable_patients_returned_with_result_removed_from_list
       ].map(&:to_s)
       (3.months.ago.to_period..now.to_period).each do |period|
         expect(results[facility_1.region.slug][period].keys).to match_array(expected_keys)
@@ -918,6 +926,182 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         expect(facility_1_results[period]["patients_called_with_result_removed_from_list"]).to eq 0
         expect(facility_2_results[period]["patients_called_with_result_removed_from_list"]).to eq 0
         expect(region_results[period]["patients_called_with_result_removed_from_list"]).to eq 0
+      end
+    end
+
+    it "return the count of patients returned to care after getting a call" do
+      facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.second, device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
+      create(:call_result, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 12.day)
+
+      create(:blood_pressure, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
+      create(:blood_pressure, patient: facility_1_patients.second, device_created_at: this_month + 16.days)
+      create(:blood_pressure, patient: facility_1_patients.third, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 28.days)
+
+      facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
+      create(:call_result, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
+      create(:call_result, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+      create(:blood_pressure, patient: facility_2_patients.first, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 18.days)
+      create(:blood_pressure, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      expect(facility_1_results[this_month.to_period]["patients_returned_after_call"]).to eq 2
+      expect(facility_1_results[one_month_ago.to_period]["patients_returned_after_call"]).to eq 0
+      expect(facility_1_results[two_months_ago.to_period]["patients_returned_after_call"]).to eq 0
+      expect(facility_2_results[this_month.to_period]["patients_returned_after_call"]).to eq 2
+      expect(facility_2_results[one_month_ago.to_period]["patients_returned_after_call"]).to eq 1
+      expect(facility_2_results[two_months_ago.to_period]["patients_returned_after_call"]).to eq 0
+      expect(region_results[this_month.to_period]["patients_returned_after_call"]).to eq 4
+      expect(region_results[one_month_ago.to_period]["patients_returned_after_call"]).to eq 1
+      expect(region_results[two_months_ago.to_period]["patients_returned_after_call"]).to eq 0
+
+      periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+      periods_before_three_months.each do |period|
+        expect(facility_1_results[period]["patients_returned_after_call"]).to eq 0
+        expect(facility_2_results[period]["patients_returned_after_call"]).to eq 0
+        expect(region_results[period]["patients_returned_after_call"]).to eq 0
+      end
+    end
+
+    it "return the count of patients returned to care who agreed to visit" do
+      facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_1_patients.first, result_type: "agreed_to_visit", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.second, result_type: "agreed_to_visit", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.third, result_type: "agreed_to_visit", device_created_at: this_month + 12.day)
+      create(:call_result, patient: facility_1_patients.fourth, result_type: "remind_to_call_later", device_created_at: one_month_ago + 12.day)
+
+      create(:blood_pressure, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
+      create(:blood_pressure, patient: facility_1_patients.second, device_created_at: this_month)
+      create(:blood_pressure, patient: facility_1_patients.third, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 28.days)
+
+      facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_2_patients.first, result_type: "agreed_to_visit", device_created_at: this_month + 12.days)
+      create(:call_result, patient: facility_2_patients.second, result_type: "remind_to_call_later", device_created_at: this_month + 3.days)
+      create(:call_result, patient: facility_2_patients.third, result_type: "remind_to_call_later", device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+      create(:blood_pressure, patient: facility_2_patients.first, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 18.days)
+      create(:blood_pressure, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      expect(facility_1_results[this_month.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 3
+      expect(facility_1_results[one_month_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      expect(facility_1_results[two_months_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      expect(facility_2_results[this_month.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 1
+      expect(facility_2_results[one_month_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      expect(facility_2_results[two_months_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      expect(region_results[this_month.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 4
+      expect(region_results[one_month_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      expect(region_results[two_months_ago.to_period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+
+      periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+      periods_before_three_months.each do |period|
+        expect(facility_1_results[period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+        expect(facility_2_results[period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+        expect(region_results[period]["patients_returned_with_result_agreed_to_visit"]).to eq 0
+      end
+    end
+
+    it "return the count of patients returned to care who needs to be called again later" do
+      facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_1_patients.first, result_type: "remind_to_call_later", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.second, result_type: "remind_to_call_later", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.third, result_type: "remind_to_call_later", device_created_at: this_month + 12.day)
+      create(:call_result, patient: facility_1_patients.fourth, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: one_month_ago + 12.day)
+
+      create(:blood_pressure, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
+      create(:blood_pressure, patient: facility_1_patients.second, device_created_at: this_month)
+      create(:blood_pressure, patient: facility_1_patients.third, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 28.days)
+
+      facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_2_patients.first, result_type: "remind_to_call_later", device_created_at: this_month + 12.days)
+      create(:call_result, patient: facility_2_patients.second, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month + 3.days)
+      create(:call_result, patient: facility_2_patients.third, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+      create(:blood_pressure, patient: facility_2_patients.first, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 18.days)
+      create(:blood_pressure, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      expect(facility_1_results[this_month.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 3
+      expect(facility_1_results[one_month_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      expect(facility_1_results[two_months_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      expect(facility_2_results[this_month.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 1
+      expect(facility_2_results[one_month_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      expect(facility_2_results[two_months_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      expect(region_results[this_month.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 4
+      expect(region_results[one_month_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      expect(region_results[two_months_ago.to_period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+
+      periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+      periods_before_three_months.each do |period|
+        expect(facility_1_results[period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+        expect(facility_2_results[period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+        expect(region_results[period]["patients_returned_with_result_remind_to_call_later"]).to eq 0
+      end
+    end
+
+    it "return the count of patients returned to care who were removed from overdue list" do
+      facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_1_patients.first, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.second, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month)
+      create(:call_result, patient: facility_1_patients.third, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month + 12.day)
+      create(:call_result, patient: facility_1_patients.fourth, result_type: "agreed_to_visit", device_created_at: one_month_ago + 12.day)
+
+      create(:blood_pressure, patient: facility_1_patients.first, device_created_at: this_month + 15.days)
+      create(:blood_pressure, patient: facility_1_patients.second, device_created_at: this_month)
+      create(:blood_pressure, patient: facility_1_patients.third, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 28.days)
+
+      facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+      create(:call_result, patient: facility_2_patients.first, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month + 12.days)
+      create(:call_result, patient: facility_2_patients.second, result_type: "agreed_to_visit", device_created_at: this_month + 3.days)
+      create(:call_result, patient: facility_2_patients.third, result_type: "agreed_to_visit", device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+      create(:blood_pressure, patient: facility_2_patients.first, device_created_at: this_month + 27.days)
+      create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 18.days)
+      create(:blood_pressure, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
+
+      refresh_views
+      facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
+      facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
+      region_results = described_class.call(region)[region.slug]
+
+      expect(facility_1_results[this_month.to_period]["patients_returned_with_result_removed_from_list"]).to eq 3
+      expect(facility_1_results[one_month_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+      expect(facility_1_results[two_months_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+      expect(facility_2_results[this_month.to_period]["patients_returned_with_result_removed_from_list"]).to eq 1
+      expect(facility_2_results[one_month_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+      expect(facility_2_results[two_months_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+      expect(region_results[this_month.to_period]["patients_returned_with_result_removed_from_list"]).to eq 4
+      expect(region_results[one_month_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+      expect(region_results[two_months_ago.to_period]["patients_returned_with_result_removed_from_list"]).to eq 0
+
+      periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+      periods_before_three_months.each do |period|
+        expect(facility_1_results[period]["patients_returned_with_result_removed_from_list"]).to eq 0
+        expect(facility_2_results[period]["patients_returned_with_result_removed_from_list"]).to eq 0
+        expect(region_results[period]["patients_returned_with_result_removed_from_list"]).to eq 0
       end
     end
   end

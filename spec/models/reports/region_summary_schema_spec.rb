@@ -777,4 +777,43 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.cumulative_hypertension_and_diabetes_registrations[region.slug][("Mar 2019".to_period)]).to eq(5)
     end
   end
+
+  describe "overdue hypertension patients" do
+    describe "#patients_returned_to_care_after_call" do
+      it "returns the percentage of overdue patients who returned to care after getting a call" do
+      end
+    end
+
+    describe "#contactable_patients_returned_to_care_after_call" do
+      it "returns the percentage of contactable overdue patients who returned to care after getting a call" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_agreed_to_visit" do
+      it "returns the percentage of overdue patients who returned to care who agreed to visit" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_agreed_to_visit" do
+      it "returns the percentage of contactable overdue patients who returned to care who agreed to visit" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_remind_to_call_later" do
+      it "returns the percentage of overdue patients who returned to care who needs to be called again later" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_remind_to_call_later" do
+      it "returns the percentage of contactable overdue patients who returned to care who needs to be called again later" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_removed_from_list" do
+      it "returns the percentage of overdue patients who returned to care who were removed from list" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_removed_from_list" do
+      it "returns the percentage of contactable overdue patients who returned to care who were removed from list" do
+      end
+    end
+  end
 end
