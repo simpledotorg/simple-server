@@ -19,7 +19,7 @@ class SetUpSixMonthIhciSmsReminders < ActiveRecord::Migration[6.1]
     return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
 
     MONTHS.map do |month|
-      transaction do
+      ActiveRecord::Base.transaction do
         Experimentation::Experiment.current_patients.create!(
           name: month[:current_patients_experiment_name],
           start_time: month[:start_time],
@@ -33,7 +33,7 @@ class SetUpSixMonthIhciSmsReminders < ActiveRecord::Migration[6.1]
         end
       end
 
-      transaction do
+      ActiveRecord::Base.transaction do
         Experimentation::Experiment.stale_patients.create!(
           name: month[:stale_patients_experiment_name],
           start_time: month[:start_time],
