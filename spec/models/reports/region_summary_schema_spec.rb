@@ -777,4 +777,55 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.cumulative_hypertension_and_diabetes_registrations[region.slug][("Mar 2019".to_period)]).to eq(5)
     end
   end
+
+  describe "overdue hypertension patients" do
+    let(:timezone) { Time.find_zone(Period::REPORTING_TIME_ZONE) }
+    let(:this_month) { timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0) }
+    let(:one_month_ago) { this_month - 1.month }
+    let(:two_months_ago) { this_month - 2.month }
+    let(:three_months_ago) { this_month - 3.month }
+    let(:four_months_ago) { this_month - 4.month }
+    let(:five_months_ago) { this_month - 5.month }
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+    let(:facility_1) { district_with_facilities[:facility_1] }
+    let(:facility_2) { district_with_facilities[:facility_2] }
+
+    describe "#patients_returned_to_care_after_call" do
+      it "returns the percentage of overdue patients who returned to care after getting a call" do
+      end
+    end
+
+    describe "#contactable_patients_returned_to_care_after_call" do
+      it "returns the percentage of contactable overdue patients who returned to care after getting a call" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_agreed_to_visit" do
+      it "returns the percentage of overdue patients who returned to care who agreed to visit" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_agreed_to_visit" do
+      it "returns the percentage of contactable overdue patients who returned to care who agreed to visit" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_remind_to_call_later" do
+      it "returns the percentage of overdue patients who returned to care who needs to be called again later" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_remind_to_call_later" do
+      it "returns the percentage of contactable overdue patients who returned to care who needs to be called again later" do
+      end
+    end
+
+    describe "#patients_returned_to_care_with_result_removed_from_list" do
+      it "returns the percentage of overdue patients who returned to care who were removed from list" do
+      end
+    end
+    describe "#contactable_patients_returned_to_care_with_result_removed_from_list" do
+      it "returns the percentage of contactable overdue patients who returned to care who were removed from list" do
+      end
+    end
+  end
 end
