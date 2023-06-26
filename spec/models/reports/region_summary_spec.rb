@@ -740,6 +740,14 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     let(:region) { district_with_facilities[:region] }
     let(:facility_1) { district_with_facilities[:facility_1] }
     let(:facility_2) { district_with_facilities[:facility_2] }
+    let(:views) {
+      %w[ Reports::Month
+        Reports::Facility
+        Reports::PatientVisit
+        Reports::PatientState
+        Reports::OverduePatient
+        Reports::FacilityState].freeze
+    }
 
     it "return the count of overdue patients" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
@@ -753,7 +761,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:appointment, patient: facility_2_patients.second, scheduled_date: two_months_ago, facility: facility_2, device_created_at: three_months_ago)
       create(:appointment, patient: facility_2_patients.third, scheduled_date: one_month_ago, facility: facility_2, device_created_at: two_months_ago)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -789,7 +798,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_patients.third, device_created_at: two_months_ago + 2.days)
       create(:call_result, patient: facility_2_patients.fourth, device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -828,7 +838,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_patients.third, result_type: "remind_to_call_later", device_created_at: two_months_ago + 2.days)
       create(:call_result, patient: facility_2_patients.fourth, result_type: "remind_to_call_later", device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -867,7 +878,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_patients.third, result_type: "remind_to_call_later", device_created_at: two_months_ago + 2.days)
       create(:call_result, patient: facility_2_patients.fourth, result_type: "remind_to_call_later", device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -906,7 +918,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.third, device_created_at: two_months_ago + 2.days)
       create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.fourth, device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -950,7 +963,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 18.days)
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -996,7 +1010,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: this_month + 3.days)
       create(:blood_pressure, patient: facility_2_patients.fourth, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1042,7 +1057,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: this_month + 3.days)
       create(:blood_pressure, patient: facility_2_patients.fourth, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1088,7 +1104,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: this_month + 15.days)
       create(:blood_pressure, patient: facility_2_patients.fourth, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1127,7 +1144,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_contactable_patients.second, device_created_at: one_month_ago + 3.days)
       create(:call_result, patient: facility_2_patient_with_out_phone, device_created_at: this_month + 2.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1167,7 +1185,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_contactable_patients.third, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
       create(:call_result, patient: facility_2_patient_with_out_phone, result_type: "agreed_to_visit", device_created_at: one_month_ago + 2.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1206,7 +1225,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_contactable_patients.third, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
       create(:call_result, patient: facility_2_patient_with_out_phone, result_type: "remind_to_call_later", device_created_at: one_month_ago + 2.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1245,7 +1265,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:call_result, patient: facility_2_contactable_patients.third, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
       create(:call_result, patient: facility_2_patient_with_out_phone, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: one_month_ago + 2.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1291,7 +1312,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.second, device_created_at: one_month_ago.end_of_month.beginning_of_day + 14.days)
       create(:blood_pressure, patient: facility_2_patient_without_phone, device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1303,8 +1325,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(region_results[this_month.to_period]["contactable_patients_returned_after_call"]).to eq 3
       expect(region_results[one_month_ago.to_period]["contactable_patients_returned_after_call"]).to eq 1
 
-      periods_before_three_months = five_months_ago.to_period..two_months_ago.to_period
-      periods_before_three_months.each do |period|
+      periods_before_two_months = five_months_ago.to_period..two_months_ago.to_period
+      periods_before_two_months.each do |period|
         expect(facility_1_results[period]["contactable_patients_returned_after_call"]).to eq 0
         expect(facility_2_results[period]["contactable_patients_returned_after_call"]).to eq 0
         expect(region_results[period]["contactable_patients_returned_after_call"]).to eq 0
@@ -1339,7 +1361,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.second, device_created_at: this_month + 7.days)
       create(:blood_pressure, patient: facility_2_patient_without_phone, device_created_at: one_month_ago + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1386,7 +1409,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: this_month + 3.days)
       create(:blood_pressure, patient: facility_2_patients.fourth, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
@@ -1436,7 +1460,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_2_patients.third, device_created_at: this_month + 3.days)
       create(:blood_pressure, patient: facility_2_patients.fourth, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
 
-      refresh_views
+      RefreshReportingViews.new(views: views).call
+
       facility_1_results = described_class.call(facility_1)[facility_1.region.slug]
       facility_2_results = described_class.call(facility_2)[facility_2.region.slug]
       region_results = described_class.call(region)[region.slug]
