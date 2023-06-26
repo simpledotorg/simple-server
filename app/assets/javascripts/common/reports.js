@@ -7,6 +7,7 @@ function dashboardReportsChartJSColors() {
     mediumRed: "rgba(255, 51, 85, 1)",
     lightRed: "rgba(255, 235, 238, 0.5)",
     darkPurple: "rgba(83, 0, 224, 1)",
+    lightestPurple: "rgba(84, 0, 197, 0.05)",
     lightPurple: "rgba(169, 128, 239, 0.5)",
     darkBlue: "rgba(12, 57, 102, 1)",
     mediumBlue: "rgba(0, 117, 235, 1)",
@@ -432,6 +433,83 @@ DashboardReports = () => {
               stacked: true,
             },
           },
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+    overdueReturnToCareTrend: function (data) {
+      const monthsDashed = 2
+      const config = {
+        data: {
+          labels: Object.keys(data.overduePatientsCalled),
+          datasets: [
+            {
+              label: "All patients returning to care",
+              data: Object.values(data.overduePatientsReturnedRate),
+              backgroundColor: colors.lightestPurple,
+              borderColor: colors.darkPurple,
+              hoverBorderColor: colors.darkPurple,
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.overduePatientsReturnedRate).length,
+                    monthsDashed,
+                  ),
+              },
+            },
+            {
+              label: "Agreed to visit",
+              data: Object.values(data.patientsReturnedAgreedToVisitRates),
+              borderColor: colors.mediumGreen,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.mediumGreen,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.patientsReturnedAgreedToVisitRates).length,
+                    monthsDashed,
+                  ),
+              },
+            },
+            {
+              label: "Remind to call later",
+              data: Object.values(data.patientsReturnedRemindToCallLaterRates),
+              borderColor: colors.amber,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.amber,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.patientsReturnedRemindToCallLaterRates).length,
+                    monthsDashed,
+                  ),
+              },
+            },
+            {
+              label: "Remove from overdue list",
+              data: Object.values(data.patientsReturnedRemovedFromOverdueListRates),
+              borderColor: colors.mediumRed,
+              radius: 0,
+              hoverRadius: 2,
+              hoverBackgroundColor: colors.mediumRed,
+              fill: "false",
+              segment: {
+                borderDash: (ctx) =>
+                  dynamicChartSegementDashed(
+                    ctx,
+                    Object.keys(data.patientsReturnedRemovedFromOverdueListRates).length,
+                    monthsDashed,
+                  ),
+              },
+            },
+          ],
         },
       };
       return withBaseLineConfig(config);
