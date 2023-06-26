@@ -741,7 +741,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     let(:facility_1) { district_with_facilities[:facility_1] }
     let(:facility_2) { district_with_facilities[:facility_2] }
 
-    xit "return the count of overdue patients" do
+    it "return the count of overdue patients" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:appointment, patient: facility_1_patients.first, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
       create(:appointment, patient: facility_1_patients.second, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
@@ -773,7 +773,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients called" do
+    it "return the count of patients called" do
       create(:user, registration_facility: facility_1)
       create(:user, registration_facility: facility_2)
 
@@ -812,7 +812,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients called who agreed to visit" do
+    it "return the count of patients called who agreed to visit" do
       create(:user, registration_facility: facility_1)
       create(:user, registration_facility: facility_2)
 
@@ -851,7 +851,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients called who needs to be called again later" do
+    it "return the count of patients called who needs to be called again later" do
       create(:user, registration_facility: facility_1)
       create(:user, registration_facility: facility_2)
 
@@ -890,7 +890,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients called and were removed from overdue list" do
+    it "return the count of patients called and were removed from overdue list" do
       create(:user, registration_facility: facility_1)
       create(:user, registration_facility: facility_2)
 
@@ -929,7 +929,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients returned to care after getting a call" do
+    it "return the count of patients returned to care after getting a call" do
       facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
       create(:call_result, patient: facility_1_patients.second, device_created_at: this_month)
@@ -973,7 +973,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients returned to care who agreed to visit" do
+    it "return the count of patients returned to care who agreed to visit" do
       facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, result_type: "agreed_to_visit", device_created_at: this_month)
       create(:call_result, patient: facility_1_patients.second, result_type: "agreed_to_visit", device_created_at: this_month)
@@ -1017,7 +1017,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients returned to care who needs to be called again later" do
+    it "return the count of patients returned to care who needs to be called again later" do
       facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, result_type: "remind_to_call_later", device_created_at: this_month)
       create(:call_result, patient: facility_1_patients.second, result_type: "remind_to_call_later", device_created_at: this_month)
@@ -1061,7 +1061,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of patients returned to care who were removed from overdue list" do
+    it "return the count of patients returned to care who were removed from overdue list" do
       facility_1_patients = create_list(:patient, 4, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month)
       create(:call_result, patient: facility_1_patients.second, result_type: "removed_from_overdue_list", remove_reason: "invalid_phone_number", device_created_at: this_month)
@@ -1353,10 +1353,10 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of contactable patients returned to care who needs to be called again later" do
+    it "return the count of contactable patients returned to care who needs to be called again later" do
     end
 
-    xit "return the count of contactable patients returned to care who were removed from overdue list" do
+    it "return the count of contactable patients returned to care who were removed from overdue list" do
     end
   end
 
