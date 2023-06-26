@@ -1289,7 +1289,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     it "return the count of contactable patients returned to care after getting a call" do
-      facility_1_patients = create_list(:patient, 2, :contactable_overdue, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      facility_1_patients = create_list(:patient, 2, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_patient_removed_from_list = create(:patient, :removed_from_overdue_list, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
@@ -1302,7 +1302,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: facility_1_patient_without_phone, device_created_at: one_month_ago + 27.days)
       create(:blood_pressure, patient: facility_1_patient_removed_from_list, device_created_at: this_month + 18.days)
 
-      facility_2_patients = create_list(:patient, 2, :contactable_overdue, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+      facility_2_patients = create_list(:patient, 2, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
       facility_2_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:call_result, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
       create(:call_result, patient: facility_2_patients.second, device_created_at: one_month_ago.end_of_month.beginning_of_day)
