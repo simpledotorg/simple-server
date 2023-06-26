@@ -852,7 +852,56 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#contactable_patients_returned_after_call_rates" do
       it "returns the percentage of contactable overdue patients who returned to care after getting a call" do
+        facility_1_contactable_patients = create_list(:patient, 3, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients_without_phone = create_list(:patient, 2, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        create(:call_result, patient: facility_1_contactable_patients.first, device_created_at: this_month)
+        create(:call_result, patient: facility_1_contactable_patients.second, device_created_at: this_month)
+        create(:call_result, patient: facility_1_contactable_patients.third, device_created_at: one_month_ago + 12.day)
+        create(:call_result, patient: facility_1_patients_without_phone.first, device_created_at: one_month_ago + 12.day)
+        create(:call_result, patient: facility_1_patients_without_phone.second, device_created_at: two_months_ago + 12.day)
+
+        create(:blood_pressure, patient: facility_1_contactable_patients.first, device_created_at: this_month + 15.days)
+        create(:blood_pressure, patient: facility_1_contactable_patients.second, device_created_at: this_month + 16.days)
+        create(:blood_pressure, patient: facility_1_contactable_patients.third, device_created_at: one_month_ago + 13.days)
+        create(:blood_pressure, patient: facility_1_patients_without_phone.second, device_created_at: two_months_ago + 27.days)
+
+        facility_2_contactable_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+
+        create(:call_result, patient: facility_2_contactable_patients.first, device_created_at: this_month + 12.days)
+        create(:call_result, patient: facility_2_contactable_patients.second, device_created_at: this_month + 3.days)
+        create(:call_result, patient: facility_2_contactable_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+        create(:call_result, patient: facility_2_patient_without_phone, device_created_at: this_month)
+
+        create(:blood_pressure, patient: facility_2_contactable_patients.first, device_created_at: this_month + 27.days)
+        create(:blood_pressure, patient: facility_2_contactable_patients.second, device_created_at: this_month + 18.days)
+        create(:blood_pressure, patient: facility_2_contactable_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day + 15.days)
+        create(:blood_pressure, patient: facility_2_patient_without_phone, device_created_at: this_month + 15.days)
+
         RefreshReportingViews.new(views: views).call
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        facility_1_results = schema.contactable_patients_returned_after_call_rates[facility_1.region.slug]
+        facility_2_results = schema.contactable_patients_returned_after_call_rates[facility_2.region.slug]
+        region_results = schema.contactable_patients_returned_after_call_rates[region.slug]
+
+        expect(facility_1_results[this_month.to_period]).to eq 50
+        expect(facility_1_results[one_month_ago.to_period]).to eq 100
+        expect(facility_1_results[two_months_ago.to_period]).to eq 0
+        expect(facility_2_results[this_month.to_period]).to eq 100
+        expect(facility_2_results[one_month_ago.to_period]).to eq 100
+        expect(facility_2_results[two_months_ago.to_period]).to eq 0
+        expect(region_results[this_month.to_period]).to eq 75
+        expect(region_results[one_month_ago.to_period]).to eq 100
+        expect(region_results[two_months_ago.to_period]).to eq 0
+
+        periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+        periods_before_three_months.each do |period|
+          expect(facility_1_results[period]).to eq 0
+          expect(facility_2_results[period]).to eq 0
+          expect(region_results[period]).to eq 0
+        end
       end
     end
 
