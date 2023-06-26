@@ -9,7 +9,7 @@ class SetUpSixMonthIhciSmsReminders < ActiveRecord::Migration[6.1]
     month = Date::ABBR_MONTHNAMES[month_number]
     {
       start_time: DateTime.new(2023, month_number, 1).beginning_of_day,
-      end_time: DateTime.new(2023, month_number, 1).next_month.prev_day,
+      end_time: DateTime.new(2023, month_number, 1).end_of_month
       current_patients_experiment_name: "Current Patient #{month} 2023",
       stale_patients_experiment_name: "Stale Patient #{month} 2023"
     }
