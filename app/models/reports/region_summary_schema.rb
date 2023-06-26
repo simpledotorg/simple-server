@@ -249,7 +249,6 @@ module Reports
       values_at("contactable_patients_returned_with_result_removed_from_list")
     end
 
-
     memoize def ltfu_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
