@@ -68,6 +68,14 @@ module Reports
       contactable_patients_called_with_result_agreed_to_visit_rates
       contactable_patients_called_with_result_remind_to_call_later_rates
       contactable_patients_called_with_result_removed_from_list_rates
+      patients_returned_after_call_rates
+      patients_returned_with_result_agreed_to_visit_rates
+      patients_returned_with_result_remind_to_call_later_rates
+      patients_returned_with_result_removed_from_list_rates
+      contactable_patients_returned_after_call_rates
+      contactable_patients_returned_with_result_agreed_to_visit_rates
+      contactable_patients_returned_with_result_remind_to_call_later_rates
+      contactable_patients_returned_with_result_removed_from_list_rates
     ]
 
     DELEGATED_COUNTS = %i[
@@ -130,6 +138,14 @@ module Reports
       contactable_patients_called_with_result_agreed_to_visit
       contactable_patients_called_with_result_remind_to_call_later
       contactable_patients_called_with_result_removed_from_list
+      patients_returned_after_call
+      patients_returned_with_result_agreed_to_visit
+      patients_returned_with_result_remind_to_call_later
+      patients_returned_with_result_removed_from_list
+      contactable_patients_returned_after_call
+      contactable_patients_returned_with_result_agreed_to_visit
+      contactable_patients_returned_with_result_remind_to_call_later
+      contactable_patients_returned_with_result_removed_from_list
     ]
 
     DELEGATED_BREAKDOWNS = %i[

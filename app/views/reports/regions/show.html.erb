@@ -274,19 +274,28 @@
       period: @period,
       current_admin: @current_admin,
       with_non_contactable: @with_non_contactable)) %>
+    <%= render(Dashboard::Hypertension::OverduePatientsReturnToCareComponent.new(
+      region: @region,
+      data: @data,
+      period: @period,
+      with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+    <div class="d-lg-flex w-lg-50 pl-lg-2 hidden" style="margin-bottom: 16px;">
+      <div class="" style="display: flex; justify-content: center; align-items: center; border: dashed 2px #CECECE; width: 50%; border-radius: 4px; width: 100%;">
+        <p style="color: #A0A0A0;">
+          Intentionally blank
+        </p>
+      </div>
+    </div>
   </div>
 <% end %>
-
-  <% if current_admin.feature_enabled?(:medications_dispensation) %>
-    <h4 class="mt-5 mb-32px">Medications</h4>
-    <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
-  <% end %>
-
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
+<% end %>
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
-
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
   <%= render "facility_details" %>
