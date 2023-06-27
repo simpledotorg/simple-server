@@ -1106,13 +1106,13 @@ describe Reports::RegionSummarySchema, type: :model do
 
         expect(facility_1_results[this_month.to_period]).to eq 67
         expect(facility_1_results[one_month_ago.to_period]).to eq 100
-        expect(facility_1_results[two_months_ago.to_period]).to eq 0
+        expect(facility_1_results[two_months_ago.to_period]).to eq 100
         expect(facility_2_results[this_month.to_period]).to eq 100
         expect(facility_2_results[one_month_ago.to_period]).to eq 100
         expect(facility_2_results[two_months_ago.to_period]).to eq 0
         expect(region_results[this_month.to_period]).to eq 80
         expect(region_results[one_month_ago.to_period]).to eq 100
-        expect(region_results[two_months_ago.to_period]).to eq 0
+        expect(region_results[two_months_ago.to_period]).to eq 100
 
         periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
         periods_before_three_months.each do |period|
