@@ -802,7 +802,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#patients_returned_after_call_rates" do
       it "returns the percentage of overdue patients who returned to care after getting a call" do
-        facility_1_patients = create_list(:patient, 5, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -814,7 +815,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.third, device_created_at: this_month + 27.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 27.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -852,8 +854,10 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#contactable_patients_returned_after_call_rates" do
       it "returns the percentage of contactable overdue patients who returned to care after getting a call" do
-        facility_1_contactable_patients = create_list(:patient, 3, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
-        facility_1_patients_without_phone = create_list(:patient, 2, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_contactable_patients = create_list(:patient, 3, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_contactable_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        facility_1_patients_without_phone = create_list(:patient, 2, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients_without_phone.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, patient: facility_1_contactable_patients.first, device_created_at: this_month)
         create(:call_result, patient: facility_1_contactable_patients.second, device_created_at: this_month)
         create(:call_result, patient: facility_1_contactable_patients.third, device_created_at: one_month_ago + 12.day)
@@ -865,8 +869,10 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_contactable_patients.third, device_created_at: one_month_ago + 13.days)
         create(:blood_pressure, patient: facility_1_patients_without_phone.second, device_created_at: two_months_ago + 27.days)
 
-        facility_2_contactable_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
-        facility_2_patient_without_phone = create(:patient, :without_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_contactable_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_contactable_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        facility_2_patient_without_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        create(:appointment, patient: facility_2_patient_without_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
 
         create(:call_result, patient: facility_2_contactable_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, patient: facility_2_contactable_patients.second, device_created_at: this_month + 3.days)
@@ -907,7 +913,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#patients_returned_with_result_agreed_to_visit_rates" do
       it "returns the percentage of overdue patients who returned to care who agreed to visit" do
-        facility_1_patients = create_list(:patient, 5, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -920,7 +927,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -958,7 +966,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#contactable_patients_returned_with_result_agreed_to_visit_rates" do
       it "returns the percentage of contactable overdue patients who returned to care who agreed to visit" do
-        facility_1_patients = create_list(:patient, 5, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -971,7 +980,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, result_type: :agreed_to_visit, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -990,13 +1000,13 @@ describe Reports::RegionSummarySchema, type: :model do
 
         expect(facility_1_results[this_month.to_period]).to eq 67
         expect(facility_1_results[one_month_ago.to_period]).to eq 100
-        expect(facility_1_results[two_months_ago.to_period]).to eq 0
+        expect(facility_1_results[two_months_ago.to_period]).to eq 100
         expect(facility_2_results[this_month.to_period]).to eq 100
         expect(facility_2_results[one_month_ago.to_period]).to eq 100
         expect(facility_2_results[two_months_ago.to_period]).to eq 0
         expect(region_results[this_month.to_period]).to eq 80
         expect(region_results[one_month_ago.to_period]).to eq 100
-        expect(region_results[two_months_ago.to_period]).to eq 0
+        expect(region_results[two_months_ago.to_period]).to eq 100
 
         periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
         periods_before_three_months.each do |period|
@@ -1009,7 +1019,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#patients_returned_with_result_remind_to_call_later_rates" do
       it "returns the percentage of overdue patients who returned to care who needs to be called again later" do
-        facility_1_patients = create_list(:patient, 5, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -1022,7 +1033,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -1060,7 +1072,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#contactable_patients_returned_with_result_remind_to_call_later_rates" do
       it "returns the percentage of contactable overdue patients who returned to care who needs to be called again later" do
-        facility_1_patients = create_list(:patient, 5, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -1073,7 +1086,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_sanitized_phone_number, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, result_type: :remind_to_call_later, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -1111,7 +1125,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#patients_returned_with_result_removed_from_list_rates" do
       it "returns the percentage of overdue patients who returned to care who were removed from list" do
-        facility_1_patients = create_list(:patient, 5, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -1124,7 +1139,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
@@ -1162,7 +1178,8 @@ describe Reports::RegionSummarySchema, type: :model do
 
     describe "#contactable_patients_returned_with_result_removed_from_list_rates" do
       it "returns the percentage of contactable overdue patients who returned to care who were removed from list" do
-        facility_1_patients = create_list(:patient, 5, :with_overdue_appointments, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.first, device_created_at: this_month)
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.second, device_created_at: this_month)
         create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
@@ -1175,7 +1192,8 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_pressure, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 14.days)
         create(:blood_pressure, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 14.days)
 
-        facility_2_patients = create_list(:patient, 3, :with_overdue_appointments, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
         create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
