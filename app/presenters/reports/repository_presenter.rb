@@ -91,7 +91,17 @@ module Reports
         patients_called_with_result_removed_from_list_rates: patients_called_with_result_removed_from_list_rates[slug],
         contactable_patients_called_with_result_agreed_to_visit_rates: contactable_patients_called_with_result_agreed_to_visit_rates[slug],
         contactable_patients_called_with_result_remind_to_call_later_rates: contactable_patients_called_with_result_remind_to_call_later_rates[slug],
-        contactable_patients_called_with_result_removed_from_list_rates: contactable_patients_called_with_result_removed_from_list_rates[slug]
+        contactable_patients_called_with_result_removed_from_list_rates: contactable_patients_called_with_result_removed_from_list_rates[slug],
+        patients_returned_after_call: patients_returned_after_call[slug],
+        patients_returned_after_call_rates: patients_returned_after_call_rates[slug],
+        patients_returned_with_result_agreed_to_visit_rates: patients_returned_with_result_agreed_to_visit_rates[slug],
+        patients_returned_with_result_remind_to_call_later_rates: patients_returned_with_result_remind_to_call_later_rates[slug],
+        patients_returned_with_result_removed_from_list_rates: patients_returned_with_result_removed_from_list_rates[slug],
+        contactable_patients_returned_after_call: contactable_patients_returned_after_call[slug],
+        contactable_patients_returned_after_call_rates: contactable_patients_returned_after_call_rates[slug],
+        contactable_patients_returned_with_result_agreed_to_visit_rates: contactable_patients_returned_with_result_agreed_to_visit_rates[slug],
+        contactable_patients_returned_with_result_remind_to_call_later_rates: contactable_patients_returned_with_result_remind_to_call_later_rates[slug],
+        contactable_patients_returned_with_result_removed_from_list_rates: contactable_patients_returned_with_result_removed_from_list_rates[slug]
       }
     end
 
