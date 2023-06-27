@@ -70,6 +70,14 @@ module Reports
       contactable_patients_called_with_result_agreed_to_visit
       contactable_patients_called_with_result_remind_to_call_later
       contactable_patients_called_with_result_removed_from_list
+      patients_returned_after_call
+      patients_returned_with_result_agreed_to_visit
+      patients_returned_with_result_remind_to_call_later
+      patients_returned_with_result_removed_from_list
+      contactable_patients_returned_after_call
+      contactable_patients_returned_with_result_agreed_to_visit
+      contactable_patients_returned_with_result_remind_to_call_later
+      contactable_patients_returned_with_result_removed_from_list
     ].sort.freeze
 
     UNDER_CARE_WITH_LTFU = %i[
