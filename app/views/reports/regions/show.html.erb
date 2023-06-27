@@ -274,18 +274,20 @@
       period: @period,
       current_admin: @current_admin,
       with_non_contactable: @with_non_contactable)) %>
-    <%= render(Dashboard::Hypertension::OverduePatientsReturnToCareComponent.new(
-      region: @region,
-      data: @data,
-      period: @period,
-      with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
-    <div class="d-lg-flex w-lg-50 pl-lg-2 hidden" style="margin-bottom: 16px;">
-      <div class="" style="display: flex; justify-content: center; align-items: center; border: dashed 2px #CECECE; width: 50%; border-radius: 4px; width: 100%;">
-        <p style="color: #A0A0A0;">
-          Intentionally blank
-        </p>
+    <% if current_admin.feature_enabled?(:overdue_patients_returned) %>
+      <%= render(Dashboard::Hypertension::OverduePatientsReturnToCareComponent.new(
+        region: @region,
+        data: @data,
+        period: @period,
+        with_removed_from_overdue_list: @with_removed_from_overdue_list)) %>
+      <div class="d-lg-flex w-lg-50 pl-lg-2 hidden" style="margin-bottom: 16px;">
+        <div class="" style="display: flex; justify-content: center; align-items: center; border: dashed 2px #CECECE; width: 50%; border-radius: 4px; width: 100%;">
+          <p style="color: #A0A0A0;">
+            Intentionally blank
+          </p>
+        </div>
       </div>
-    </div>
+  <% end %>
   </div>
 <% end %>
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
