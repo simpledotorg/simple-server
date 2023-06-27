@@ -175,6 +175,10 @@ en:
       ‘Remove from overdue list‘ reason must be one of following:
     list: "Patient not responding, Phone number does not work, Transferred to another public health facility, Moved to a private practitioner, Other reason"
 
+  overdue_patients_return_to_care:
+    reports_card_subtitle: "Overdue hypertension patients that returned to care within 15 days of receiving their first call"
+    numerator: "Patients that returned to care within 15 days of their first call."
+    denominator: "Hypertension patients assigned to %{region_name} with at least one ‘Result of call...’ marked during the month. Deleted, dead and lost to follow-up are excluded."
 
   admin:
     reset_otp_alert: "Are you sure you want to reset the OTP? This will invalidate the previous OTP and a SMS will be sent to the user with the new OTP"
