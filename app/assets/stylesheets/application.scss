@@ -772,3 +772,22 @@ span.inactive {
   background: rgba(232, 144, 80, 0.15);
   color: rgb(143, 17, 12);
 }
+.no-card-gap-filler {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  border: dashed 2px #cecece;
+  width: 50%;
+  border-radius: 4px;
+  width: 100%;
+}
+
+@media screen and (min-width: 992px) {
+  .no-card-gap-filler {
+    display: flex;
+  }
+}
+
+.no-card-gap-filler p {
+  color: #A0A0A0;
+}
