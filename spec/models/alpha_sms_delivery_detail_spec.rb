@@ -54,8 +54,8 @@ RSpec.describe AlphaSmsDeliveryDetail, type: :model do
           request_id: request_id,
           recipient_number: phone_number,
           message: message
-        ).tap do |communication|
-          communication.detailable.request_status = "Sent"
+        ).tap do |c|
+          c.detailable.result = "Sent"
         end
 
       expect(communication.detailable.recipient_number).to eq phone_number
