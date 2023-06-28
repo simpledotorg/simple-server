@@ -1,0 +1,46 @@
+<div id="overdue-patients-return-to-care-trend" class="d-lg-flex w-lg-50 pr-lg-2">
+  <%= render Dashboard::Card::GraphComponent.new(id: "overdueReturnToCareTrend", data: graph_data, period: @period) do |c| %>
+    <%= c.title(title: "Called overdue patients that returned to care".html_safe, subtitle: t("overdue_patients_return_to_care.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Numerator" => t("overdue_patients_return_to_care.numerator"),
+                            "divider" => "",
+                            "Denominator" => t("overdue_patients_return_to_care.denominator", region_name: @region.name) }) %>
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black graph-percent fs-28px c-purple" data-key="overduePatientsReturnedRate" data-format="percentage"></p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="overduePatientsReturned" data-format="numberWithCommas"></span>
+            patients returned to care within 15 days
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
+            overdue patients called in
+            <span data-key="endDate"></span>
+          </p>
+        </div>
+      </div>
+      <div class="pb-8px">
+        <p class="fw-bold mb-4px">
+          Returned to care by call result <span data-key="endDate"></span>
+        </p>
+        <div style="white-space: nowrap; display: flex; flex-direction: row; grid-gap: 8px;">
+          <p data-title="patientsReturnedAgreedToVisitRates" title="'Agreed to visit'"
+                class="card-chip card-chip-green">
+            <span data-key="patientsReturnedAgreedToVisitRates"></span>%
+            of 'Agreed to visit'
+          </p>
+          <p data-title="patientsReturnedRemindToCallLaterRates" title="'Remind to call'"
+              class="card-chip card-chip-amber">
+            <span data-key="patientsReturnedRemindToCallLaterRates"></span>% of 'Remind to call'
+          </p>
+          <p data-title="patientsReturnedRemovedFromOverdueListRates" title="'Remove from overdue list'"
+              class="card-chip card-chip-red">
+            <span data-key="patientsReturnedRemovedFromOverdueListRates"></span>% of 'Remove from...'
+          </p>
+        </div>
+      </div>
+    <%end%>
+  <% end %>
+</div>
