@@ -748,6 +748,12 @@ span.inactive {
 }
 
 .o-65 { opacity: 0.65; }
+.card-chip-container {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  grid-gap: 8px;
+}
 
 .card-chip {
   width: 33%;
@@ -789,5 +795,5 @@ span.inactive {
 }
 
 .no-card-gap-filler p {
-  color: #A0A0A0;
+  color: #a0a0a0;
 }
