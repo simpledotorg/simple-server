@@ -748,6 +748,12 @@ span.inactive {
 }
 
 .o-65 { opacity: 0.65; }
+.card-chip-container {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  grid-gap: 8px;
+}
 
 .card-chip {
   width: 33%;
@@ -771,4 +777,23 @@ span.inactive {
 .card-chip-red {
   background: rgba(232, 144, 80, 0.15);
   color: rgb(143, 17, 12);
+}
+.no-card-gap-filler {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  border: dashed 2px #cecece;
+  width: 50%;
+  border-radius: 4px;
+  width: 100%;
+}
+
+@media screen and (min-width: 992px) {
+  .no-card-gap-filler {
+    display: flex;
+  }
+}
+
+.no-card-gap-filler p {
+  color: #a0a0a0;
 }
