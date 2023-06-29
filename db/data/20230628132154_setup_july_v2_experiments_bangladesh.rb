@@ -12,11 +12,11 @@ class SetupJulyV2ExperimentsBangladesh < ActiveRecord::Migration[6.1]
   def up
     return unless CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
 
-    buggy_current_experiment = Experimentation::Experiment.find_by_name("Current Patient July 2023")
+    buggy_current_experiment = Experimentation::CurrentPatientExperiment.find_by_name("Current Patient July 2023")
     buggy_current_experiment.cancel
     buggy_current_experiment.evict_patients
 
-    buggy_stale_experiment = Experimentation::Experiment.find_by_name("Stale Patient July 2023")
+    buggy_stale_experiment = Experimentation::StalePatientExperiment.find_by_name("Stale Patient July 2023")
     buggy_stale_experiment.cancel
     buggy_stale_experiment.evict_patients
 
