@@ -14,11 +14,11 @@ class SetupJulyV2ExperimentsBangladesh < ActiveRecord::Migration[6.1]
 
     buggy_current_experiment = Experimentation::Experiment.find_by_name("Current Patient July 2023")
     buggy_current_experiment.cancel
-    buggy_current_experiment.treatment_group_memberships.each { |tgm| tgm.evict(reason: "Patients were in buggy experiment") }
+    buggy_current_experiment.evict_patients
 
     buggy_stale_experiment = Experimentation::Experiment.find_by_name("Stale Patient July 2023")
     buggy_stale_experiment.cancel
-    buggy_stale_experiment.treatment_group_memberships.each { |tgm| tgm.evict(reason: "Patients were in buggy experiment") }
+    buggy_stale_experiment.evict_patients
 
     transaction do
       Experimentation::Experiment.current_patients.create!(
