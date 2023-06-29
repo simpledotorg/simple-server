@@ -17,6 +17,10 @@ class AlphaSmsDeliveryDetail < DeliveryDetail
     request_status.blank?
   end
 
+  def result
+    request_status
+  end
+
   def self.create_with_communication!(request_id:, recipient_number:, message:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
