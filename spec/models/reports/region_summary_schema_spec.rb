@@ -1228,5 +1228,95 @@ describe Reports::RegionSummarySchema, type: :model do
         end
       end
     end
+
+    describe "#patients_called_breakdown_rates" do
+      it "returns the breakdown of patients called percentage by call result" do
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_1_patients.first, device_created_at: this_month)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_1_patients.second, device_created_at: this_month)
+        create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_1_patients.fourth, device_created_at: one_month_ago + 12.day)
+        create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 12.day)
+
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_2_patients.first, device_created_at: this_month + 12.days)
+        create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+        RefreshReportingViews.new(views: views).call
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        expect(schema.patients_called_breakdown_rates(facility_1.region.slug, this_month.to_period)).to eq({agreed_to_visit: 33, remind_to_call_later: 33, removed_from_overdue_list: 34})
+        expect(schema.patients_called_breakdown_rates(facility_1.region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 100, remind_to_call_later: 0, removed_from_overdue_list: 0})
+        expect(schema.patients_called_breakdown_rates(facility_1.region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 100})
+
+        expect(schema.patients_called_breakdown_rates(facility_2.region.slug, this_month.to_period)).to eq({agreed_to_visit: 50, remind_to_call_later: 0, removed_from_overdue_list: 50})
+        expect(schema.patients_called_breakdown_rates(facility_2.region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 100, removed_from_overdue_list: 0})
+        expect(schema.patients_called_breakdown_rates(facility_2.region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+
+        expect(schema.patients_called_breakdown_rates(region.slug, this_month.to_period)).to eq({agreed_to_visit: 40, remind_to_call_later: 20, removed_from_overdue_list: 40})
+        expect(schema.patients_called_breakdown_rates(region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 50, remind_to_call_later: 50, removed_from_overdue_list: 0})
+        expect(schema.patients_called_breakdown_rates(region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 100})
+
+        periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+        periods_before_three_months.each do |period|
+          expect(schema.patients_called_breakdown_rates(facility_1.region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+          expect(schema.patients_called_breakdown_rates(facility_2.region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+          expect(schema.patients_called_breakdown_rates(region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+        end
+      end
+    end
+
+    describe "#contactable_patients_called_breakdown_rates" do
+      it "returns the breakdown of contactable patients called percentage by call result" do
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        facility_1_patient_without_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        create(:appointment, patient: facility_1_patient_without_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_1_patients.first, device_created_at: this_month)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_1_patients.second, device_created_at: this_month)
+        create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_1_patient_without_phone, device_created_at: this_month)
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_1_patients.fourth, device_created_at: one_month_ago + 12.day)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_1_patient_without_phone, device_created_at: one_month_ago)
+        create(:call_result, :remove_from_overdue_list, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 12.day)
+
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        facility_2_patient_without_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        create(:appointment, patient: facility_2_patient_without_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_2_patients.first, device_created_at: this_month + 12.days)
+        create(:call_result, :remove_from_overdue_list, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_2_patient_without_phone, device_created_at: this_month)
+        create(:call_result, result_type: "agreed_to_visit", patient: facility_2_patient_without_phone, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+        create(:call_result, result_type: "remind_to_call_later", patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+        RefreshReportingViews.new(views: views).call
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        expect(schema.contactable_patients_called_breakdown_rates(facility_1.region.slug, this_month.to_period)).to eq({agreed_to_visit: 33, remind_to_call_later: 33, removed_from_overdue_list: 34})
+        expect(schema.contactable_patients_called_breakdown_rates(facility_1.region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 100, remind_to_call_later: 0, removed_from_overdue_list: 0})
+        expect(schema.contactable_patients_called_breakdown_rates(facility_1.region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 100})
+
+        expect(schema.contactable_patients_called_breakdown_rates(facility_2.region.slug, this_month.to_period)).to eq({agreed_to_visit: 50, remind_to_call_later: 0, removed_from_overdue_list: 50})
+        expect(schema.contactable_patients_called_breakdown_rates(facility_2.region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 100, removed_from_overdue_list: 0})
+        expect(schema.contactable_patients_called_breakdown_rates(facility_2.region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+
+        expect(schema.contactable_patients_called_breakdown_rates(region.slug, this_month.to_period)).to eq({agreed_to_visit: 40, remind_to_call_later: 20, removed_from_overdue_list: 40})
+        expect(schema.contactable_patients_called_breakdown_rates(region.slug, one_month_ago.to_period)).to eq({agreed_to_visit: 50, remind_to_call_later: 50, removed_from_overdue_list: 0})
+        expect(schema.contactable_patients_called_breakdown_rates(region.slug, two_months_ago.to_period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 100})
+
+        periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+        periods_before_three_months.each do |period|
+          expect(schema.contactable_patients_called_breakdown_rates(facility_1.region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+          expect(schema.contactable_patients_called_breakdown_rates(facility_2.region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+          expect(schema.contactable_patients_called_breakdown_rates(region.slug, period)).to eq({agreed_to_visit: 0, remind_to_call_later: 0, removed_from_overdue_list: 0})
+        end
+      end
+    end
   end
 end
