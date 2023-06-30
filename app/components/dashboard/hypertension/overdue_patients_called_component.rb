@@ -66,9 +66,9 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
       :overduePatients
     end
 
-    data[numerator_key].map do |period, value|
-      denominator = data[denominator_key][period]
-      {period => percentage(value, denominator)}
+    data[numerator_key].map do |period, patients_called_by_result|
+      overdue_patients = data[denominator_key][period]
+      {period => percentage(patients_called_by_result, overdue_patients)}
     end.reduce(:merge)
   end
 end
