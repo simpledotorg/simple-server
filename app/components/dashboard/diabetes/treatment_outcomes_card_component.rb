@@ -33,8 +33,8 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
       title: "Missed visits",
       description: "patients with no visit",
       tooltip: [
-        {name: "Numerator", description: t("diabetes_missed_visits_copy.numerator")},
-        {name: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
+        {label: "Numerator", description: t("diabetes_missed_visits_copy.numerator")},
+        {label: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
       ]},
       {key: "visitButNoBSMeasureRate",
        count: "visitButNoBSMeasure",
@@ -42,8 +42,8 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        title: "Visit but no blood sugar taken",
        description: "patients with a visit but no blood sugar taken",
        tooltip: [
-         {name: "Numerator", description: t("visit_but_no_bs_taken_copy.numerator")},
-         {name: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
+         {label: "Numerator", description: t("visit_but_no_bs_taken_copy.numerator")},
+         {label: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
        ]},
       {key: "bsOver300Rate",
        count: "bsOver300Patients",
@@ -51,8 +51,8 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        title: "Blood sugar &ge;300".html_safe,
        description: "patients with blood sugar ≥300 taken",
        tooltip: [
-         {name: "Numerator", description: t("bs_over_200_copy.bs_over_300.numerator")},
-         {name: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
+         {label: "Numerator", description: t("bs_over_200_copy.bs_over_300.numerator")},
+         {label: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
        ]},
       {key: "bs200to300Rate",
        count: "bs200to300Patients",
@@ -60,8 +60,8 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        description: "patients with blood sugar 200-299 taken",
        class: "c-amber",
        tooltip: [
-         {name: "Numerator", description: t("bs_over_200_copy.bs_200_to_299.numerator")},
-         {name: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
+         {label: "Numerator", description: t("bs_over_200_copy.bs_200_to_299.numerator")},
+         {label: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
        ]},
       {key: "bsBelow200Rate",
        count: "bsBelow200Patients",
@@ -69,8 +69,8 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
        title: "Blood sugar &lt;200".html_safe,
        description: "patients with blood sugar <200 taken",
        tooltip: [
-         {name: "Numerator", description: t("bs_below_200_copy.numerator")},
-         {name: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
+         {label: "Numerator", description: t("bs_below_200_copy.numerator")},
+         {label: "Denominator", description: t("diabetes_denominator_copy", region_name: @region.name)}
        ]}]
   end
 

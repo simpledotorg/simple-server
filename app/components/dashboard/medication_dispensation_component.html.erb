@@ -3,8 +3,8 @@
     <%= render Dashboard::Card::TitleComponent.new(
       title: 'Days of medications dispensed to follow-up patients',
       subtitle: 'Number of days until a patient’s next scheduled appointment') do |c| %>
-      <%= c.tooltip({ "Numerator" => t("medications_dispensation_copy.numerator"),
-                      "Denominator" => t("medications_dispensation_copy.denominator") }) %>
+      <%= c.tooltip([{ label: "Numerator", description: t("medications_dispensation_copy.numerator")},
+                     { label: "Denominator", description:  t("medications_dispensation_copy.denominator")}]) %>
     <% end %>
   </div>
 

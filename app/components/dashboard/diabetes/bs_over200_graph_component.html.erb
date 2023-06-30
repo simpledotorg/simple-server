@@ -3,9 +3,9 @@
     <%= c.title(
       title: "Blood sugar 200-299 or &ge;300".html_safe,
       subtitle: t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name)) do |title| %>
-      <%= title.tooltip([{ name: "Blood sugar 200-299 numerator", description: t("bs_over_200_copy.bs_200_to_299.numerator") },
-                         { name: "Blood sugar ≥300 numerator", description: t("bs_over_200_copy.bs_over_300.numerator") },
-                         { name: "Denominator", description: t(denominator_copy, region_name: @region.name) }]) %>
+      <%= title.tooltip([{ label: "Blood sugar 200-299 numerator", description: t("bs_over_200_copy.bs_200_to_299.numerator") },
+                         { label: "Blood sugar ≥300 numerator", description: t("bs_over_200_copy.bs_over_300.numerator") },
+                         { label: "Denominator", description: t(denominator_copy, region_name: @region.name) }]) %>
       <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
     <% end %>
 

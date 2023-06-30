@@ -9,10 +9,9 @@ class Dashboard::Card::TooltipComponent < ApplicationComponent
     definitions.present?
   end
 
-  def display_name(name, style)
-    return content_tag(:strong, name) unless style
-
-    content_tag(style, name)
+  def display_label(label, style)
+    return content_tag(:strong, label) unless style
+    content_tag(style, label)
   end
 
   def display_description(description, style)
@@ -31,10 +30,11 @@ class Dashboard::Card::TooltipComponent < ApplicationComponent
 
   def display_definition(definition)
     content_tag :p, class: "mb-4px" do
-      name = display_name(definition[:name], definition[:name_style])
-      return name unless definition[:description]
+      styled_label = display_label(definition[:label], definition[:label_style])
+      return styled_label unless definition[:description]
 
-      name << ": " << display_description(definition[:description], definition[:description_style])
+      styled_description = display_description(definition[:description], definition[:description_style])
+      styled_label << ": " << styled_description
     end
   end
 

@@ -250,9 +250,9 @@
       </form>
       <div class="ml-8px" style="margin-top: 2px;">
         <%= render Dashboard::Card::TooltipComponent.new(
-                    [{ name: t("overdue_toggle_tooltip.main"),
-                       name_style: :p},
-                     { name: t("overdue_toggle_tooltip.additional"),
+                    [{ label: t("overdue_toggle_tooltip.main"),
+                       label_style: :p},
+                     { label: t("overdue_toggle_tooltip.additional"),
                        description: t("overdue_toggle_tooltip.list"),
                        description_style: :ul}
                     ]) %>
