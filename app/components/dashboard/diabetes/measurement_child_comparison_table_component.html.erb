@@ -7,7 +7,7 @@
                 period_start: @data.dig(:period_info, @period, :bp_control_start_date),
                 period_end: @data.dig(:period_info, @period, :bp_control_end_date))
   ) do |c| %>
-    <%= c.tooltip({ "Types of blood sugars measured" => t("bs_measurement_details_copy.numerator", region_name: @region.name) }) %>
+    <%= c.tooltip([{ label: "Types of blood sugars measured", description: t("bs_measurement_details_copy.numerator", region_name: @region.name) }]) %>
   <% end %>
   <div class="table-responsive">
     <%= render Dashboard::Card::TableComponent.new(id: "measurementChildComparisonTable") do |table| %>

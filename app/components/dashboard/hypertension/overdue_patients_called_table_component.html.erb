@@ -3,13 +3,14 @@
     title: "Overdue patients called",
     subtitle: t("overdue_patients_call_activity.reports_card_subtitle") 
   ) do |c| %>
-    <%= c.tooltip({ "Patients called" => t("overdue_patients_call_activity.patients_called"),
-                    "Percent called" => "",
-                    "Numerator" => t("overdue_patients_call_activity.percent_called_numerator"),
-                    "note" => t("overdue_patients_called.numerator_note"),
-                    "divider" => "",
-                    "Denominator" => t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name)
-                  }) %>
+    <%= c.tooltip([{ label: "Patients called", description: t("overdue_patients_call_activity.patients_called")},
+                   { label: "Percent called", description: ""},
+                   { label: "Numerator",
+                     description: t("overdue_patients_call_activity.percent_called_numerator"),
+                     footnote: t("overdue_patients_called.numerator_note"),
+                      enable_divider: true},
+                   { label: "Denominator", description: t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name) }
+    ]) %>
   <% end %>
   <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |table| %>
       <% table.column_group do %>
