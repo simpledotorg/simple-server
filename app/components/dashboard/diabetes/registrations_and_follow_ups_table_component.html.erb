@@ -1,7 +1,7 @@
 <div class="card pr-md-3 pb-inside-avoid">
   <%= render Dashboard::Card::TitleComponent.new(title: "Diabetes patient registrations and follow-ups") do |c| %>
-    <%= c.tooltip({ "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
-                    "Follow-up patients" => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
+    <%= c.tooltip([{ label: "Monthly registered patients", description: t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name)},
+                   { label: "Follow-up patients", description: t(:diabetes_follow_up_patients_copy, region_name: region.name) }]) %>
   <% end %>
   <div class="table-responsive">
     <%= render Dashboard::Card::TableComponent.new(id: "diabetesRegistrationsAndFollowUpsTable") do |table| %>
