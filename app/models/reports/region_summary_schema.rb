@@ -325,8 +325,7 @@ module Reports
       end
     end
 
-    memoize def patients_called_breakdown_rates(entry)
-      slug, period = entry.slug, entry.period
+    memoize def patients_called_breakdown_rates(slug, period)
       rounded_percentages({
         agreed_to_visit: patients_called_with_result_agreed_to_visit[slug][period],
         remind_to_call_later: patients_called_with_result_remind_to_call_later[slug][period],
@@ -334,8 +333,7 @@ module Reports
       })
     end
 
-    memoize def contactable_patients_called_breakdown_rates(entry)
-      slug, period = entry.slug, entry.period
+    memoize def contactable_patients_called_breakdown_rates(slug, period)
       rounded_percentages({
         agreed_to_visit: contactable_patients_called_with_result_agreed_to_visit[slug][period],
         remind_to_call_later: contactable_patients_called_with_result_remind_to_call_later[slug][period],
@@ -345,37 +343,37 @@ module Reports
 
     memoize def patients_called_with_result_agreed_to_visit_rates
       region_period_cached_query(__method__) do |entry|
-        patients_called_breakdown_rates(entry)[:agreed_to_visit]
+        patients_called_breakdown_rates(entry.slug, entry.period)[:agreed_to_visit]
       end
     end
 
     memoize def patients_called_with_result_remind_to_call_later_rates
       region_period_cached_query(__method__) do |entry|
-        patients_called_breakdown_rates(entry)[:remind_to_call_later]
+        patients_called_breakdown_rates(entry.slug, entry.period)[:remind_to_call_later]
       end
     end
 
     memoize def patients_called_with_result_removed_from_list_rates
       region_period_cached_query(__method__) do |entry|
-        patients_called_breakdown_rates(entry)[:removed_from_overdue_list]
+        patients_called_breakdown_rates(entry.slug, entry.period)[:removed_from_overdue_list]
       end
     end
 
     memoize def contactable_patients_called_with_result_agreed_to_visit_rates
       region_period_cached_query(__method__) do |entry|
-        contactable_patients_called_breakdown_rates(entry)[:agreed_to_visit]
+        contactable_patients_called_breakdown_rates(entry.slug, entry.period)[:agreed_to_visit]
       end
     end
 
     memoize def contactable_patients_called_with_result_remind_to_call_later_rates
       region_period_cached_query(__method__) do |entry|
-        contactable_patients_called_breakdown_rates(entry)[:remind_to_call_later]
+        contactable_patients_called_breakdown_rates(entry.slug, entry.period)[:remind_to_call_later]
       end
     end
 
     memoize def contactable_patients_called_with_result_removed_from_list_rates
       region_period_cached_query(__method__) do |entry|
-        contactable_patients_called_breakdown_rates(entry)[:removed_from_overdue_list]
+        contactable_patients_called_breakdown_rates(entry.slug, entry.period)[:removed_from_overdue_list]
       end
     end
 
