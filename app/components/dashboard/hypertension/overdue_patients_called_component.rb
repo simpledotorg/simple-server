@@ -1,4 +1,5 @@
 class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationComponent
+  include Reports::Percentage
   attr_reader :data
 
   def initialize(region:, data:, period:, with_non_contactable:)
@@ -13,14 +14,14 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
       return {
         overduePatients: data[:contactable_overdue_patients],
         overduePatientsCalled: data[:contactable_patients_called],
-        overduePatientsCalledRate: data[:contactable_patients_called_rates].map { |k, v| [k, cap_percentage(v)] }.to_h,
+        overduePatientsCalledRate: data[:contactable_patients_called_rates].map { |k, v| [k, cap_percentage_at(v, 100)] }.to_h,
         startDate: @period.advance(months: -17),
-        calledWithResultAgreedToVisit: cap_call_result_rates(:contactable_patients_called_with_result_agreed_to_visit_rates),
-        calledWithResultRemindToCallLater: cap_call_result_rates(:contactable_patients_called_with_result_remind_to_call_later_rates),
-        calledWithResultRemoveFromOverdueList: cap_call_result_rates(:contactable_patients_called_with_result_removed_from_list_rates),
-        chartProportionalPercentageCalledWithResultAgreedToVisit: proportional_call_rate(:contactable_patients_called_with_result_agreed_to_visit_rates),
-        chartProportionalPercentageCalledWithResultRemindToCallLater: proportional_call_rate(:contactable_patients_called_with_result_remind_to_call_later_rates),
-        chartProportionalPercentageCalledWithResultRemoveFromOverdueList: proportional_call_rate(:contactable_patients_called_with_result_removed_from_list_rates),
+        calledWithResultAgreedToVisit: data[:contactable_patients_called_with_result_agreed_to_visit_rates],
+        calledWithResultRemindToCallLater: data[:contactable_patients_called_with_result_remind_to_call_later_rates],
+        calledWithResultRemoveFromOverdueList: data[:contactable_patients_called_with_result_removed_from_list_rates],
+        chartProportionalPercentageCalledWithResultAgreedToVisit: proportional_call_rate(:contactable_patients_called_with_result_agreed_to_visit),
+        chartProportionalPercentageCalledWithResultRemindToCallLater: proportional_call_rate(:contactable_patients_called_with_result_remind_to_call_later),
+        chartProportionalPercentageCalledWithResultRemoveFromOverdueList: proportional_call_rate(:contactable_patients_called_with_result_removed_from_list),
         **period_data
       }
     end
@@ -28,14 +29,14 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     {
       overduePatients: data[:overdue_patients],
       overduePatientsCalled: data[:patients_called],
-      overduePatientsCalledRate: data[:patients_called_rates].map { |k, v| [k, cap_percentage(v)] }.to_h,
+      overduePatientsCalledRate: data[:patients_called_rates].map { |k, v| [k, cap_percentage_at(v, 100)] }.to_h,
       startDate: @period.advance(months: -17),
-      calledWithResultAgreedToVisit: cap_call_result_rates(:patients_called_with_result_agreed_to_visit_rates),
-      calledWithResultRemindToCallLater: cap_call_result_rates(:patients_called_with_result_remind_to_call_later_rates),
-      calledWithResultRemoveFromOverdueList: cap_call_result_rates(:patients_called_with_result_removed_from_list_rates),
-      chartProportionalPercentageCalledWithResultAgreedToVisit: proportional_call_rate(:patients_called_with_result_agreed_to_visit_rates),
-      chartProportionalPercentageCalledWithResultRemindToCallLater: proportional_call_rate(:patients_called_with_result_remind_to_call_later_rates),
-      chartProportionalPercentageCalledWithResultRemoveFromOverdueList: proportional_call_rate(:patients_called_with_result_removed_from_list_rates),
+      calledWithResultAgreedToVisit: data[:patients_called_with_result_agreed_to_visit_rates],
+      calledWithResultRemindToCallLater: data[:patients_called_with_result_remind_to_call_later_rates],
+      calledWithResultRemoveFromOverdueList: data[:patients_called_with_result_removed_from_list_rates],
+      chartProportionalPercentageCalledWithResultAgreedToVisit: proportional_call_rate(:patients_called_with_result_agreed_to_visit),
+      chartProportionalPercentageCalledWithResultRemindToCallLater: proportional_call_rate(:patients_called_with_result_remind_to_call_later),
+      chartProportionalPercentageCalledWithResultRemoveFromOverdueList: proportional_call_rate(:patients_called_with_result_removed_from_list),
       **period_data
     }
   end
@@ -46,10 +47,6 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
   end
 
   private
-
-  def cap_percentage(percentage)
-    [percentage, 100].min
-  end
 
   def period_data
     {
@@ -62,41 +59,16 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     data[:period_info].map { |k, v| [k, v[key]] }.to_h
   end
 
-  def cap_call_result_rates(numerator)
-    denominator_keys = if @contactable
-      %i[contactable_patients_called_with_result_agreed_to_visit_rates
-        contactable_patients_called_with_result_remind_to_call_later_rates
-        contactable_patients_called_with_result_removed_from_list_rates]
+  def proportional_call_rate(numerator_key)
+    denominator_key = if @contactable
+      :contactable_overdue_patients
     else
-      %i[patients_called_with_result_agreed_to_visit_rates
-        patients_called_with_result_remind_to_call_later_rates
-        patients_called_with_result_removed_from_list_rates]
+      :overduePatients
     end
 
-    data[numerator].map do |period, value|
-      denominator = denominator_keys.map { |k| data[k][period] }.sum
-      if denominator > 100
-        {period => denominator.zero? ? 0 : value * 100 / denominator}
-      else
-        {period => value}
-      end
-    end.reduce(:merge)
-  end
-
-  def proportional_call_rate(numerator)
-    denominator_keys = if @contactable
-      %i[contactable_patients_called_with_result_agreed_to_visit_rates
-        contactable_patients_called_with_result_remind_to_call_later_rates
-        contactable_patients_called_with_result_removed_from_list_rates]
-    else
-      %i[patients_called_with_result_agreed_to_visit_rates
-        patients_called_with_result_remind_to_call_later_rates
-        patients_called_with_result_removed_from_list_rates]
-    end
-
-    data[numerator].map do |period, value|
-      denominator = denominator_keys.map { |k| data[k][period] }.sum
-      {period => denominator.zero? ? 0 : value * 100 / denominator}
+    data[numerator_key].map do |period, value|
+      denominator = data[denominator_key][period]
+      {period => percentage(value, denominator)}
     end.reduce(:merge)
   end
 end

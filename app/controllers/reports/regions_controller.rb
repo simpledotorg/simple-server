@@ -91,10 +91,6 @@ class Reports::RegionsController < AdminController
       [@region, @region.reportable_children].flatten
     end
 
-    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-      regions.concat(@region.district_regions)
-    end
-
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
 
     chart_range = (@period.advance(months: months)..@period)
@@ -135,10 +131,6 @@ class Reports::RegionsController < AdminController
       [@region]
     else
       [@region, @region.reportable_children].flatten
-    end
-
-    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-      regions.concat(@region.district_regions)
     end
 
     @repository = Reports::Repository.new(regions, periods: @details_period_range)
@@ -194,10 +186,6 @@ class Reports::RegionsController < AdminController
       [@region]
     else
       [@region, @region.reportable_children].flatten
-    end
-
-    if current_admin.feature_enabled?(:show_call_results) && @region.state_region?
-      regions.concat(@region.district_regions)
     end
 
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
