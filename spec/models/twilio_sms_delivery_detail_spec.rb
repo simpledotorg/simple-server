@@ -19,6 +19,7 @@ describe TwilioSmsDeliveryDetail, type: :model do
         )
 
       expect(communication.detailable.callee_phone_number).to eq phone_number
+      expect(communication.detailable.result).to eq("sent")
     end
   end
 end
