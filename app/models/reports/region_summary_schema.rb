@@ -328,42 +328,42 @@ module Reports
     memoize def patients_called_with_result_agreed_to_visit_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(patients_called_with_result_agreed_to_visit[slug][period], overdue_patients[slug][period])
+        percentage(patients_called_with_result_agreed_to_visit[slug][period], patients_called[slug][period])
       end
     end
 
     memoize def patients_called_with_result_remind_to_call_later_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(patients_called_with_result_remind_to_call_later[slug][period], overdue_patients[slug][period])
+        percentage(patients_called_with_result_remind_to_call_later[slug][period], patients_called[slug][period])
       end
     end
 
     memoize def patients_called_with_result_removed_from_list_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(patients_called_with_result_removed_from_list[slug][period], overdue_patients[slug][period])
+        percentage(patients_called_with_result_removed_from_list[slug][period], patients_called[slug][period])
       end
     end
 
     memoize def contactable_patients_called_with_result_agreed_to_visit_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(contactable_patients_called_with_result_agreed_to_visit[slug][period], contactable_overdue_patients[slug][period])
+        percentage(contactable_patients_called_with_result_agreed_to_visit[slug][period], contactable_patients_called[slug][period])
       end
     end
 
     memoize def contactable_patients_called_with_result_remind_to_call_later_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(contactable_patients_called_with_result_remind_to_call_later[slug][period], contactable_overdue_patients[slug][period])
+        percentage(contactable_patients_called_with_result_remind_to_call_later[slug][period], contactable_patients_called[slug][period])
       end
     end
 
     memoize def contactable_patients_called_with_result_removed_from_list_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
-        percentage(contactable_patients_called_with_result_removed_from_list[slug][period], contactable_overdue_patients[slug][period])
+        percentage(contactable_patients_called_with_result_removed_from_list[slug][period], contactable_patients_called[slug][period])
       end
     end
 
