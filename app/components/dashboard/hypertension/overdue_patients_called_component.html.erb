@@ -1,20 +1,20 @@
 <div id="overdue-patients-called-trend" class="d-lg-flex w-lg-50 pl-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "overdueCalledTrend", data: graph_data, period: @period) do |c| %>
     <%= c.title(title: "Overdue patients called".html_safe, subtitle: t("overdue_patients_called.reports_card_subtitle")) do |title| %>
-        <%= title.tooltip({ "Numerator" => t("overdue_patients_called.numerator"),
+      <%= title.tooltip({ "Numerator" => t("overdue_patients_called.numerator"),
                             "note" => t("overdue_patients_called.numerator_note"),
                             "divider" => "",
                             "Denominator" => t("overdue_patients_called.denominator", region_name: @region.name) }) %>
-      <%end%>
-      <%= c.summary do %>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black graph-percent fs-28px" data-key="overduePatientsCalledRate" data-format="percentage"  style="color: #e0b000;"></p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
-              patients called in
-              <span data-key="endDate"></span>
-            </p>
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black graph-percent fs-28px" data-key="overduePatientsCalledRate" data-format="percentage"  style="color: #e0b000;"></p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="overduePatientsCalled" data-format="numberWithCommas"></span>
+            patients called in
+            <span data-key="endDate"></span>
+          </p>
           <p class="m-0px c-grey-dark c-print-black">
             of
             <span data-key="overduePatients" data-format="numberWithCommas"></span>
@@ -22,27 +22,27 @@
             <span data-key="endDate"></span>
           </p>
         </div>
-        </div>
-        <div class="pb-8px">
-          <p class="fw-bold mb-4px">
-            Call results <span data-key="endDate"></span>
-          </p>
+      </div>
+      <div class="pb-8px">
+        <p class="fw-bold mb-4px">
+          Call results <span data-key="endDate"></span>
+        </p>
         <div class="card-chip-container">
-            <p data-title="calledWithResultAgreedToVisit"
-                style="border-radius: 30px; text-align: center; width: 33%; margin: 0; padding: 2px 8px; overflow: hidden; color: rgba(44, 115, 0, 1); background: rgba(78, 206, 0, 0.15);">
-              <span data-key="calledWithResultAgreedToVisit"></span>%
-              'Agreed to visit'
-            </p>
-            <p data-title="calledWithResultRemindToCallLater"
-              style="border-radius: 30px; text-align: center; background: rgba(252, 247, 193, 0.8); color:rgb(118, 93, 3); margin: 0; white-space: nowrap;  width: 33%; margin: 0; padding: 2px 8px; overflow: hidden;">
-              <span data-key="calledWithResultRemindToCallLater"></span>% 'Remind to call'
-            </p>
-            <p data-title="calledWithResultRemoveFromOverdueList"
-               style="background: rgba(232, 144, 80, 0.15); color:rgb(143,17,12 ); border-radius: 30px; margin: 0; text-align: center; white-space: nowrap; overflow: hidden; width: 33%; margin: 0; padding: 2px 16px; overflow: hidden;">
-              <span data-key="calledWithResultRemoveFromOverdueList"></span>% 'Remove from...'
-            </p>
-          </div>
+          <p data-title="calledWithResultAgreedToVisit" title="'Agreed to visit'"
+                class="card-chip card-chip-green">
+            <span data-key="calledWithResultAgreedToVisit"></span>%
+            'Agreed to visit'
+          </p>
+          <p data-title="calledWithResultRemindToCallLater" title="'Remind to call'"
+              class="card-chip card-chip-amber">
+            <span data-key="calledWithResultRemindToCallLater"></span>% 'Remind to call'
+          </p>
+          <p data-title="calledWithResultRemoveFromOverdueList" title="'Remove from overdue list'"
+               class="card-chip card-chip-red">
+            <span data-key="calledWithResultRemoveFromOverdueList"></span>% 'Remove from...'
+          </p>
         </div>
-      <%end%>
-    <% end %>
-  </div>
+      </div>
+    <%end%>
+  <% end %>
+</div>
