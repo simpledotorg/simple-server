@@ -117,7 +117,7 @@ every :day, at: local("05:00 am"), roles: [:cron] do
 end
 
 every :day, at: local("05:45 am"), roles: [:cron] do
-  runner "Experimentation::Runner.call;AppointmentNotification::ScheduleExperimentReminders.call"
+  rake "experiments:conduct_daily"
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
