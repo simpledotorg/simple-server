@@ -307,6 +307,7 @@ module Reports
     memoize def patients_called_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
+        return 100 if patients_called[slug][period] > overdue_patients[slug][period]
         percentage(patients_called[slug][period], overdue_patients[slug][period])
       end
     end
@@ -314,6 +315,7 @@ module Reports
     memoize def contactable_overdue_patients_rates
       region_period_cached_query(__method__) do |entry|
         slug, period = entry.slug, entry.period
+        return 100 if contactable_overdue_patients[slug][period] > under_care[slug][period]
         percentage(contactable_overdue_patients[slug][period], under_care[slug][period])
       end
     end
