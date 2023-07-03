@@ -60,15 +60,18 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
   end
 
   def proportional_call_rate(numerator_key)
-    denominator_key = if @contactable
-      :contactable_overdue_patients
-    else
-      :overduePatients
-    end
-
+    patients_called_rates = @contactable ? :contactable_patients_called_rates : :patients_called_rates
+    denominator_key = @contactable ? :contactable_overdue_patients : :overdue_patients
+    # when number of patients called > number of overdue patients
+    # then area graph in proportional to percentage of patients called
+    # else area graph in proportional to overdue patients
     data[numerator_key].map do |period, patients_called_by_result|
-      overdue_patients = data[denominator_key][period]
-      {period => percentage(patients_called_by_result, overdue_patients)}
+      if data[patients_called_rates][period] == 100
+        {period => data["#{numerator_key}_rates".to_sym][period]}
+      else
+        overdue_patients = data[denominator_key][period]
+        {period => percentage(patients_called_by_result, overdue_patients)}
+      end
     end.reduce(:merge)
   end
 end
