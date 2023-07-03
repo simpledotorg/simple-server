@@ -30,6 +30,10 @@ module Reports::Percentage
     end
   end
 
+  def cap_percentage_at(percentage, max)
+    [percentage, max].min
+  end
+
   private
 
   def fractional_part(number)
