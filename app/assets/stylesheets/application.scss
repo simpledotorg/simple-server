@@ -749,6 +749,13 @@ span.inactive {
 
 .o-65 { opacity: 0.65; }
 
+.card-chip-container {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  grid-gap: 8px;
+}
+
 .card-chip {
   width: 33%;
   margin: 0;
