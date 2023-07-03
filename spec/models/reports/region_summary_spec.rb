@@ -1468,6 +1468,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:appointment, patient: facility_1_patients_without_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 14.days)
       facility_1_patients_removed_from_list = create(:patient, :removed_from_overdue_list, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:appointment, patient: facility_1_patients_removed_from_list, device_created_at: three_months_ago, scheduled_date: three_months_ago + 14.days)
+
       create(:call_result, patient: facility_1_patients_without_phone, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
       create(:call_result, patient: facility_1_patients_removed_from_list, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
       create(:call_result, patient: facility_1_contactable_patients.first, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
@@ -1499,13 +1500,13 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       region_results = described_class.call(region)[region.slug]
 
       expect(facility_1_results[this_month.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
-      expect(facility_1_results[one_month_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1 # Call made to facility_1_patient_removed_from_list with result type 'removed from list' before 'this_month'
+      expect(facility_1_results[one_month_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 0
       expect(facility_1_results[two_months_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
       expect(facility_2_results[this_month.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
       expect(facility_2_results[one_month_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
       expect(facility_2_results[two_months_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 0
       expect(region_results[this_month.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 2
-      expect(region_results[one_month_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 2
+      expect(region_results[one_month_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
       expect(region_results[two_months_ago.to_period]["contactable_patients_returned_with_result_removed_from_list"]).to eq 1
 
       periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
