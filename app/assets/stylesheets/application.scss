@@ -749,6 +749,13 @@ span.inactive {
 
 .o-65 { opacity: 0.65; }
 
+.card-chip-container {
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  grid-gap: 8px;
+}
+
 .card-chip {
   width: 33%;
   margin: 0;
@@ -759,16 +766,39 @@ span.inactive {
 
   text-align: center;
   text-overflow: ellipsis;
+
+  &.card-chip-green {
+    background: rgba(78, 206, 0, 0.15);
+    color: rgba(44, 115, 0, 1);
+  }
+
+  &.card-chip-amber {
+    background: rgba(252, 247, 193, 0.8);
+    color: rgb(118, 93, 3);
+  }
+
+  &.card-chip-red {
+    background: rgba(232, 144, 80, 0.15);
+    color: rgb(143, 17, 12);
+  }
 }
-.card-chip-green {
-  background: rgba(78, 206, 0, 0.15);
-  color: rgba(44, 115, 0, 1);
+
+.no-card-gap-filler {
+  display: none;
+  justify-content: center;
+  align-items: center;
+  border: dashed 2px #cecece;
+  width: 50%;
+  border-radius: 4px;
+  width: 100%;
 }
-.card-chip-amber {
-  background: rgba(252, 247, 193, 0.8);
-  color: rgb(118, 93, 3);
+
+@media screen and (min-width: 992px) {
+  .no-card-gap-filler {
+    display: flex;
+  }
 }
-.card-chip-red {
-  background: rgba(232, 144, 80, 0.15);
-  color: rgb(143, 17, 12);
+
+.no-card-gap-filler p {
+  color: #A0A0A0;
 }
