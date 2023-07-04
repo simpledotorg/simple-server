@@ -438,7 +438,10 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
     overdueReturnToCareTrend: function (data) {
-      const monthsDashed = 2
+      const currentDate = new Date();
+      const currentDayOfTheMonth = currentDate.getDate();
+      const monthsDashed = currentDayOfTheMonth > 15 ? 1 : 2;
+
       const config = {
         data: {
           labels: Object.keys(data.overduePatientsCalled),
