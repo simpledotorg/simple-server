@@ -14,7 +14,7 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
       return {
         overduePatients: data[:contactable_overdue_patients],
         overduePatientsCalled: data[:contactable_patients_called],
-        overduePatientsCalledRate: data[:contactable_patients_called_rates].map { |k, v| [k, cap_percentage_at(v, 100)] }.to_h,
+        overduePatientsCalledRate: data[:contactable_patients_called_rates],
         startDate: @period.advance(months: -17),
         calledWithResultAgreedToVisit: data[:contactable_patients_called_with_result_agreed_to_visit_rates],
         calledWithResultRemindToCallLater: data[:contactable_patients_called_with_result_remind_to_call_later_rates],
@@ -29,7 +29,7 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
     {
       overduePatients: data[:overdue_patients],
       overduePatientsCalled: data[:patients_called],
-      overduePatientsCalledRate: data[:patients_called_rates].map { |k, v| [k, cap_percentage_at(v, 100)] }.to_h,
+      overduePatientsCalledRate: data[:patients_called_rates],
       startDate: @period.advance(months: -17),
       calledWithResultAgreedToVisit: data[:patients_called_with_result_agreed_to_visit_rates],
       calledWithResultRemindToCallLater: data[:patients_called_with_result_remind_to_call_later_rates],
@@ -60,15 +60,18 @@ class Dashboard::Hypertension::OverduePatientsCalledComponent < ApplicationCompo
   end
 
   def proportional_call_rate(numerator_key)
-    denominator_key = if @contactable
-      :contactable_overdue_patients
-    else
-      :overduePatients
-    end
-
+    patients_called_rates = @contactable ? :contactable_patients_called_rates : :patients_called_rates
+    denominator_key = @contactable ? :contactable_overdue_patients : :overdue_patients
+    # when number of patients called > number of overdue patients
+    # then area graph in proportional to percentage of patients called
+    # else area graph in proportional to overdue patients
     data[numerator_key].map do |period, patients_called_by_result|
-      overdue_patients = data[denominator_key][period]
-      {period => percentage(patients_called_by_result, overdue_patients)}
+      if data[patients_called_rates][period] == 100
+        {period => data["#{numerator_key}_rates".to_sym][period]}
+      else
+        overdue_patients = data[denominator_key][period]
+        {period => percentage(patients_called_by_result, overdue_patients)}
+      end
     end.reduce(:merge)
   end
 end
