@@ -800,6 +800,114 @@ describe Reports::RegionSummarySchema, type: :model do
         Reports::FacilityState].freeze
     }
 
+    describe "#patients_called_rates" do
+      it "should return percentage of calls made to overdue patients" do
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient|
+          create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        }
+        overdue_patients_during_month = create_list(:patient, 6, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        overdue_patients_during_month.each { |patient|
+          create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: this_month + 1.day)
+          create(:call_result, patient: patient, device_created_at: this_month + 2.days)
+        }
+        create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
+        create(:call_result, patient: facility_1_patients.second, device_created_at: this_month)
+        create(:call_result, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
+        create(:call_result, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 12.day)
+        create(:call_result, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 12.day)
+
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        create(:call_result, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
+        create(:call_result, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
+        create(:call_result, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+        RefreshReportingViews.new(views: views).call
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        facility_1_results = schema.patients_called_rates[facility_1.region.slug]
+        facility_2_results = schema.patients_called_rates[facility_2.region.slug]
+        region_results = schema.patients_called_rates[region.slug]
+
+        expect(facility_1_results[this_month.to_period]).to eq 100
+        expect(facility_1_results[one_month_ago.to_period]).to eq 20
+        expect(facility_1_results[two_months_ago.to_period]).to eq 20
+        expect(facility_2_results[this_month.to_period]).to eq 67
+        expect(facility_2_results[one_month_ago.to_period]).to eq 33
+        expect(facility_2_results[two_months_ago.to_period]).to eq 0
+        expect(region_results[this_month.to_period]).to eq 100
+        expect(region_results[one_month_ago.to_period]).to eq 25
+        expect(region_results[two_months_ago.to_period]).to eq 13
+
+        periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+        periods_before_three_months.each do |period|
+          expect(facility_1_results[period]).to eq 0
+          expect(facility_2_results[period]).to eq 0
+          expect(region_results[period]).to eq 0
+        end
+      end
+    end
+
+    describe "#contactable_patients_called_rates" do
+      it "should return percentage of calls made to overdue patients" do
+        facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        facility_1_patients.each { |patient|
+          create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        }
+        patient_1_with_out_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        create(:appointment, patient: patient_1_with_out_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        create(:call_result, patient: patient_1_with_out_phone, device_created_at: two_months_ago + 2.days)
+
+        overdue_patients_during_month = create_list(:patient, 6, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        overdue_patients_during_month.each { |patient|
+          create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: this_month + 1.day)
+          create(:call_result, patient: patient, device_created_at: this_month + 2.days)
+        }
+        create(:call_result, patient: facility_1_patients.first, device_created_at: this_month)
+        create(:call_result, patient: facility_1_patients.second, device_created_at: this_month)
+        create(:call_result, patient: facility_1_patients.third, device_created_at: this_month + 12.day)
+        create(:call_result, patient: facility_1_patients.fourth, device_created_at: one_month_ago + 12.day)
+        create(:call_result, patient: facility_1_patients.fifth, device_created_at: two_months_ago + 12.day)
+
+        facility_2_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_2, recorded_at: five_months_ago)
+        facility_2_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days) }
+        create(:call_result, patient: facility_2_patients.first, device_created_at: this_month + 12.days)
+        create(:call_result, patient: facility_2_patients.second, device_created_at: this_month + 3.days)
+        create(:call_result, patient: facility_2_patients.third, device_created_at: one_month_ago.end_of_month.beginning_of_day)
+
+        patient_2_with_out_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+        create(:appointment, patient: patient_2_with_out_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 15.days)
+        create(:call_result, patient: patient_2_with_out_phone, device_created_at: one_month_ago + 2.days)
+
+        RefreshReportingViews.new(views: views).call
+
+        schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
+
+        facility_1_results = schema.contactable_patients_called_rates[facility_1.region.slug]
+        facility_2_results = schema.contactable_patients_called_rates[facility_2.region.slug]
+        region_results = schema.contactable_patients_called_rates[region.slug]
+
+        expect(facility_1_results[this_month.to_period]).to eq 100
+        expect(facility_1_results[one_month_ago.to_period]).to eq 20
+        expect(facility_1_results[two_months_ago.to_period]).to eq 20
+        expect(facility_2_results[this_month.to_period]).to eq 67
+        expect(facility_2_results[one_month_ago.to_period]).to eq 33
+        expect(facility_2_results[two_months_ago.to_period]).to eq 0
+        expect(region_results[this_month.to_period]).to eq 100
+        expect(region_results[one_month_ago.to_period]).to eq 25
+        expect(region_results[two_months_ago.to_period]).to eq 13
+
+        periods_before_three_months = five_months_ago.to_period..three_months_ago.to_period
+        periods_before_three_months.each do |period|
+          expect(facility_1_results[period]).to eq 0
+          expect(facility_2_results[period]).to eq 0
+          expect(region_results[period]).to eq 0
+        end
+      end
+    end
+
     describe "#patients_returned_after_call_rates" do
       it "returns the percentage of overdue patients who returned to care after getting a call" do
         facility_1_patients = create_list(:patient, 5, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
