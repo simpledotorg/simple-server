@@ -43,6 +43,17 @@ class Api::Schema
       }
     end
 
+    def import_api_security_definitions
+      {
+        import_auth: {
+          type: :oauth2,
+          flow: :application,
+          tokenUrl: "/oauth/token",
+          scopes: {"write" => "modify resources belonging to an organisation"}
+        }
+      }
+    end
+
     def swagger_doc(version, definitions)
       {
         swagger: "2.0",
@@ -57,10 +68,26 @@ class Api::Schema
       }
     end
 
+    def swagger_for_import_api
+      {
+        swagger: "2.0",
+        basePath: "/api/v4/",
+        produces: ["application/json"],
+        consumes: ["application/json"],
+        schemes: ["https"],
+        info: swagger_info(:import)
+          .merge!(description: I18n.t("api.documentation.import_description")), # FIXME
+        paths: {},
+        definitions: Api::V4::Imports.all_definitions,
+        securityDefinitions: import_api_security_definitions
+      }
+    end
+
     def swagger_docs
       {
         "v4/swagger.json" => swagger_doc(:v4, Api::V4::Schema.all_definitions),
-        "v3/swagger.json" => swagger_doc(:v3, Api::V3::Schema.all_definitions)
+        "v3/swagger.json" => swagger_doc(:v3, Api::V3::Schema.all_definitions),
+        "v4/import.json" => swagger_for_import_api
       }
     end
   end
