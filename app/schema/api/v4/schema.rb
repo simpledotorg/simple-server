@@ -244,7 +244,7 @@ class Api::V4::Schema
 
     def definitions
       {error: error,
-       errors: Api::V4::Models.array_of("error"),
+       errors: Api::CommonDefinitions.array_of("error"),
        process_token: process_token}
     end
 
