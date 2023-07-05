@@ -1,0 +1,1388 @@
+{
+  "swagger": "2.0",
+  "basePath": "/api/v4/",
+  "produces": [
+    "application/json"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "schemes": [
+    "https"
+  ],
+  "info": {
+    "description": "# API spec for Simple Server\nThis API spec documents the Import API for partner organizations that want to send their data to Simple. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.\n\n## Authorization\nAuthorization is done via OAuth 2.0, using the [Client Credential flow](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/). At the end of this flow, clients will receive an access token which is attached to all the requests to import data.\n\nWe recommend using popular open source [OAuth client libraries](https://oauth.net/code/) that will perform the flow in order to obtain the access token.\n",
+    "version": "import",
+    "title": "Simple Server",
+    "x-logo": {
+      "url": "/assets/rtsl_logo-90ad9b477469fd15ef3b36063601e9857417cb3e336d8408226260297fa4fed9.png",
+      "backgroundColor": "#FFFFFF"
+    },
+    "contact": {
+      "email": "eng-backend@resolvetosavelives.org"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
+    }
+  },
+  "paths": {
+    "/import": {
+      "put": {
+        "summary": "Send bulk resources to Simple",
+        "tags": [
+          "import"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "import_auth": [
+              "write"
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "organization_header",
+            "in": "header",
+            "type": "uuid",
+            "description": "UUID of organization"
+          },
+          {
+            "name": "import_request",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "resources": {
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "$ref": "#/definitions/patient"
+                      },
+                      {
+                        "$ref": "#/definitions/appointment"
+                      },
+                      {
+                        "$ref": "#/definitions/observation_blood_pressure"
+                      },
+                      {
+                        "$ref": "#/definitions/observation_blood_sugar"
+                      },
+                      {
+                        "$ref": "#/definitions/condition"
+                      },
+                      {
+                        "$ref": "#/definitions/medication_request"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Accepted"
+          },
+          "400": {
+            "description": "Bad Request"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "patient": {
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "Patient"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "identifier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "ID of the patient in the partner org database"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Status of the patient. Will be ignored and marked as dead if deceasedBoolean is true",
+          "default": true
+        },
+        "name": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "text": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "description": "Full name of the patient. Client can send anonymised names.                           If name is unset, Simple will generate a random name.",
+          "required": [
+            "text"
+          ]
+        },
+        "telecom": {
+          "type": [
+            "null",
+            "array"
+          ],
+          "items": {
+            "$ref": "#/definitions/contact_point"
+          }
+        },
+        "gender": {
+          "type": "string",
+          "nullable": false,
+          "enum": [
+            "male",
+            "female",
+            "other"
+          ],
+          "description": "FHIR does not have a code for transgender, but Simple does.                    To accomodate this use case, we are considering 'other' to mean transgender."
+        },
+        "birthDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Date of birth. Can be an approximation."
+        },
+        "deceasedBoolean": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "managingOrganization": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "Currently assigned facility ID"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "registrationOrganization": {
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "Registration facility ID"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": true,
+          "minItems": 0,
+          "maxItems": 1
+        },
+        "address": {
+          "type": "array",
+          "maxItems": 1,
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "line": {
+                "type": [
+                  "null",
+                  "array"
+                ],
+                "maxItems": 1,
+                "items": {
+                  "type": "string",
+                  "description": "street address"
+                }
+              },
+              "city": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "village or colony"
+              },
+              "district": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "state": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "postalCode": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "pin"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "identifier",
+        "gender",
+        "birthDate",
+        "managingOrganization"
+      ]
+    },
+    "contact_point": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "nullable": false,
+          "description": "Phone number of the patient. Not having phone numbers will impact overdue reporting."
+        },
+        "use": {
+          "type": "string",
+          "nullable": false,
+          "enum": [
+            "home",
+            "work",
+            "temp",
+            "old",
+            "mobile"
+          ],
+          "description": "Phone number type of the patient. \\\n                  Everything else other than \"mobile\" and \"old\", is marked as landline in Simple. \\\n                  \"old\" would mark the phone number as inactive."
+        }
+      },
+      "required": [
+        "value"
+      ]
+    },
+    "appointment": {
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "Appointment"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "identifier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "ID of the appointment in the partner org database"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "status": {
+          "type": "string",
+          "nullable": false,
+          "enum": [
+            "pending",
+            "fulfilled",
+            "cancelled"
+          ],
+          "description": "Status of appointment. Translation to simple statuses:\n- pending: scheduled\n- fulfilled: visited\n- cancelled: cancelled\nThis is a subset of all valid status codes in the FHIR standard.\n"
+        },
+        "start": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time",
+          "nullable": false,
+          "description": "Start datetime of appointment. Simple will truncate it to a date granularity."
+        },
+        "participant": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "actor": {
+                "type": "object",
+                "properties": {
+                  "identifier": {
+                    "type": "string",
+                    "nullable": false
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "identifier"
+                ],
+                "description": "ID of patient"
+              }
+            },
+            "nullable": false,
+            "required": [
+              "actor"
+            ]
+          },
+          "minItems": 1,
+          "maxItems": 1,
+          "nullable": false
+        },
+        "appointmentOrganization": {
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false
+            }
+          },
+          "nullable": false,
+          "required": [
+            "identifier"
+          ],
+          "description": "The reference to a facility in which the appointment is taking place. Modification to FHIR"
+        },
+        "appointmentCreationOrganization": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false
+            }
+          },
+          "nullable": true,
+          "required": [
+            "identifier"
+          ],
+          "description": "The reference to a facility in which the appointment was created. Modification to FHIR"
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "identifier",
+        "participant",
+        "status",
+        "appointmentOrganization"
+      ]
+    },
+    "observation_blood_pressure": {
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "Observation"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "identifier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "ID of the Blood Pressure in the partner org database"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false
+            }
+          },
+          "nullable": false,
+          "required": [
+            "identifier"
+          ],
+          "description": "Patient ID"
+        },
+        "performer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "identifier": {
+                "type": "string",
+                "nullable": false
+              }
+            },
+            "nullable": false,
+            "required": [
+              "identifier"
+            ],
+            "description": "Facility ID"
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "code": {
+          "type": "object",
+          "properties": {
+            "coding": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string",
+                    "enum": [
+                      "http://loinc.org"
+                    ],
+                    "nullable": false
+                  },
+                  "code": {
+                    "type": "string",
+                    "enum": [
+                      "85354-9"
+                    ],
+                    "nullable": false,
+                    "description": "Code for Blood Pressure panel"
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "system",
+                  "code"
+                ]
+              },
+              "nullable": false,
+              "minItems": 1,
+              "maxItems": 1
+            }
+          },
+          "nullable": false,
+          "required": [
+            "coding"
+          ]
+        },
+        "component": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "object",
+                "properties": {
+                  "coding": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "system": {
+                          "type": "string",
+                          "enum": [
+                            "http://loinc.org"
+                          ],
+                          "nullable": false
+                        },
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "8480-6",
+                            "8462-4"
+                          ],
+                          "nullable": false,
+                          "description": "8480-6 for Systolic, 8462-4 for Diastolic"
+                        }
+                      },
+                      "nullable": false,
+                      "required": [
+                        "system",
+                        "code"
+                      ]
+                    },
+                    "nullable": false,
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "coding"
+                ]
+              },
+              "valueQuantity": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "number",
+                    "nullable": false
+                  },
+                  "unit": {
+                    "type": "string",
+                    "enum": [
+                      "mmHg"
+                    ],
+                    "nullable": false
+                  },
+                  "system": {
+                    "type": "string",
+                    "enum": [
+                      "http://unitsofmeasure.org"
+                    ],
+                    "nullable": false
+                  },
+                  "code": {
+                    "type": "string",
+                    "enum": [
+                      "mm[Hg]"
+                    ],
+                    "nullable": false
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "value",
+                  "unit",
+                  "system",
+                  "code"
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "valueQuantity"
+            ],
+            "nullable": false,
+            "minItems": 2,
+            "maxItems": 2
+          }
+        },
+        "effectiveDateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When was this observation recorded?",
+          "nullable": false
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "identifier",
+        "subject",
+        "performer",
+        "code",
+        "component",
+        "effectiveDateTime"
+      ]
+    },
+    "observation_blood_sugar": {
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "Observation"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "identifier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "ID of the Blood Sugar in the partner org database"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "subject": {
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false
+            }
+          },
+          "nullable": false,
+          "required": [
+            "identifier"
+          ],
+          "description": "Patient ID"
+        },
+        "performer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "identifier": {
+                "type": "string",
+                "nullable": false
+              }
+            },
+            "nullable": false,
+            "required": [
+              "identifier"
+            ],
+            "description": "Facility ID"
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "code": {
+          "type": "object",
+          "properties": {
+            "coding": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string",
+                    "enum": [
+                      "http://loinc.org"
+                    ],
+                    "nullable": false
+                  },
+                  "code": {
+                    "type": "string",
+                    "enum": [
+                      "2339-0"
+                    ],
+                    "nullable": false,
+                    "description": "Code for Glucose [Mass/volume] in Blood"
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "system",
+                  "code"
+                ]
+              },
+              "nullable": false,
+              "minItems": 1,
+              "maxItems": 1
+            }
+          },
+          "nullable": false,
+          "required": [
+            "coding"
+          ]
+        },
+        "component": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "object",
+                "properties": {
+                  "coding": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "system": {
+                          "type": "string",
+                          "enum": [
+                            "http://loinc.org"
+                          ],
+                          "nullable": false
+                        },
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "2339-0",
+                            "87422-2",
+                            "88365-24548-4"
+                          ],
+                          "nullable": false,
+                          "description": "2339-0 for random,                                                   87422-2 for post-prandial,                                                   88365-2 for fasting,                                                   4548-4 for hba1c"
+                        }
+                      },
+                      "nullable": false,
+                      "required": [
+                        "system",
+                        "code"
+                      ]
+                    },
+                    "nullable": false,
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "coding"
+                ]
+              },
+              "valueQuantity": {
+                "oneOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "number",
+                        "nullable": false
+                      },
+                      "unit": {
+                        "type": "string",
+                        "enum": [
+                          "mg/dL"
+                        ],
+                        "nullable": false
+                      },
+                      "system": {
+                        "type": "string",
+                        "enum": [
+                          "http://unitsofmeasure.org"
+                        ],
+                        "nullable": false
+                      },
+                      "code": {
+                        "type": "string",
+                        "enum": [
+                          "mg/dL"
+                        ],
+                        "nullable": false
+                      }
+                    },
+                    "nullable": false,
+                    "required": [
+                      "value",
+                      "unit",
+                      "system",
+                      "code"
+                    ],
+                    "description": "Unit for random, post-prandial and fasting"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "number",
+                        "nullable": false
+                      },
+                      "unit": {
+                        "type": "string",
+                        "enum": [
+                          "%"
+                        ],
+                        "nullable": false
+                      },
+                      "system": {
+                        "type": "string",
+                        "enum": [
+                          "http://unitsofmeasure.org"
+                        ],
+                        "nullable": false
+                      },
+                      "code": {
+                        "type": "string",
+                        "enum": [
+                          "%"
+                        ],
+                        "nullable": false
+                      }
+                    },
+                    "nullable": false,
+                    "required": [
+                      "value",
+                      "unit",
+                      "system",
+                      "code"
+                    ],
+                    "description": "Unit for hba1c"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "code",
+              "valueQuantity"
+            ],
+            "nullable": false,
+            "minItems": 1,
+            "maxItems": 1
+          }
+        },
+        "effectiveDateTime": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When was this observation recorded?",
+          "nullable": false
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "identifier",
+        "subject",
+        "performer",
+        "code",
+        "component",
+        "effectiveDateTime"
+      ]
+    },
+    "condition": {
+      "type": "object",
+      "properties": {
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "Condition"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "subject": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "Patient ID"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "code": {
+          "type": "object",
+          "properties": {
+            "coding": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "system": {
+                    "type": "string",
+                    "enum": [
+                      "http://snomed.info/sct"
+                    ],
+                    "nullable": false
+                  },
+                  "code": {
+                    "oneOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "38341003"
+                        ],
+                        "description": "Code for HTN",
+                        "nullable": false
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "73211009"
+                        ],
+                        "description": "Code for diabetes",
+                        "nullable": false
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "system",
+                  "code"
+                ]
+              },
+              "nullable": false,
+              "minItems": 1,
+              "maxItems": 2
+            }
+          },
+          "nullable": false,
+          "required": [
+            "coding"
+          ]
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "subject",
+        "code"
+      ]
+    },
+    "medication_request": {
+      "type": "object",
+      "properties": {
+        "contained": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "resourceType": {
+                "type": "string",
+                "enum": [
+                  "Medication"
+                ],
+                "nullable": false
+              },
+              "id": {
+                "type": "string",
+                "nullable": false
+              },
+              "code": {
+                "type": "object",
+                "properties": {
+                  "coding": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "system": {
+                          "type": "string",
+                          "enum": [
+                            "http://www.nlm.nih.gov/research/umls/rxnorm"
+                          ]
+                        },
+                        "code": {
+                          "type": "string"
+                        },
+                        "display": {
+                          "type": "string",
+                          "description": "Name of medicine"
+                        }
+                      }
+                    },
+                    "nullable": false,
+                    "minItems": 1,
+                    "maxItems": 1
+                  }
+                },
+                "nullable": false,
+                "required": [
+                  "coding"
+                ]
+              }
+            },
+            "nullable": false,
+            "required": [
+              "resourceType",
+              "id",
+              "code"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "resourceType": {
+          "type": "string",
+          "enum": [
+            "MedicationRequest"
+          ],
+          "nullable": false
+        },
+        "meta": {
+          "type": "object",
+          "properties": {
+            "lastUpdated": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            },
+            "createdAt": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Timestamp with millisecond precision."
+            }
+          },
+          "nullable": false,
+          "required": [
+            "lastUpdated",
+            "createdAt"
+          ]
+        },
+        "identifier": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "ID of medication request"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "subject": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "Patient ID"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "performer": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "nullable": false,
+                "description": "Facility ID"
+              }
+            },
+            "required": [
+              "value"
+            ]
+          },
+          "nullable": false,
+          "minItems": 1,
+          "maxItems": 1
+        },
+        "medicationReference": {
+          "type": "object",
+          "properties": {
+            "reference": {
+              "type": "string",
+              "pattern": "^#.*$",
+              "nullable": false
+            }
+          },
+          "required": [
+            "reference"
+          ],
+          "description": "This should reference the ID of contained medication resource"
+        },
+        "dispenseRequest": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "expectedSupplyDuration": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "properties": {
+                "value": {
+                  "type": "number",
+                  "nullable": false
+                },
+                "unit": {
+                  "type": "string",
+                  "enum": [
+                    "days"
+                  ],
+                  "nullable": false
+                },
+                "system": {
+                  "type": "string",
+                  "enum": [
+                    "http://unitsofmeasure.org"
+                  ],
+                  "nullable": false
+                },
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "d"
+                  ],
+                  "nullable": false
+                }
+              },
+              "nullable": true,
+              "required": [
+                "value",
+                "unit",
+                "system",
+                "code"
+              ]
+            }
+          }
+        },
+        "dosageInstruction": {
+          "type": "object",
+          "properties": {
+            "timing": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string",
+                  "enum": [
+                    "QD",
+                    "BID",
+                    "TID",
+                    "QID"
+                  ],
+                  "nullable": false,
+                  "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
+                }
+              }
+            },
+            "doseAndRate": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "doseQuantity": {
+                    "type": "object",
+                    "properties": {
+                      "value": {
+                        "type": "number",
+                        "nullable": false
+                      },
+                      "unit": {
+                        "type": "string",
+                        "enum": [
+                          "mg"
+                        ],
+                        "nullable": false
+                      },
+                      "system": {
+                        "type": "string",
+                        "enum": [
+                          "http://unitsofmeasure.org"
+                        ],
+                        "nullable": false
+                      },
+                      "code": {
+                        "type": "string",
+                        "enum": [
+                          "mg"
+                        ],
+                        "nullable": false
+                      }
+                    },
+                    "nullable": false,
+                    "required": [
+                      "value",
+                      "unit",
+                      "system",
+                      "code"
+                    ]
+                  }
+                }
+              },
+              "description": "Dosage in milligrams"
+            },
+            "text": {
+              "type": "string",
+              "description": "Use only if dosage cannot be expressed in terms of the other fields."
+            }
+          }
+        }
+      },
+      "required": [
+        "resourceType",
+        "meta",
+        "identifier",
+        "contained",
+        "medicationReference",
+        "subject",
+        "performer"
+      ]
+    }
+  },
+  "securityDefinitions": {
+    "import_auth": {
+      "type": "oauth2",
+      "flow": "application",
+      "tokenUrl": "/oauth/token",
+      "scopes": {
+        "write": "modify resources belonging to an organisation"
+      }
+    }
+  }
+}
