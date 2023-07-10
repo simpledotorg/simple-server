@@ -581,13 +581,13 @@ Reports = function ({
   }
   
   function calculateGoal(periodValues, goalDownwards) {
-    const { goalMonthValue, goalMonthIndex } = goalPeriodValue(periodValues);
-    const improvementRatio = relativeImprovementRatio(goalMonthIndex);
+    const { threeMonthAverage, monthThreeIndexOfYear } = goalPeriodValue(periodValues);
+    const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
 
     if (goalDownwards) {
-      return calculateGoalDownwards(goalMonthValue, improvementRatio);
+      return calculateGoalDownwards(threeMonthAverage, improvementRatio);
     }
-    return calculateGoalUpwards(goalMonthValue, improvementRatio);
+    return calculateGoalUpwards(threeMonthAverage, improvementRatio);
   }
 
   function goalPeriodValue(periodValues) {
@@ -602,18 +602,23 @@ Reports = function ({
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
     const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
 
-    if (indexOfLatestDecember < defaultMonthsRequired - 1) {
-      // zero index
-      // 'dec' value is within first 5 months (0-4) - or no 'dec' present (-1)
-      const monthDateKeyString = dateKeysArray[defaultMonthsRequired - 1];
-      const goalMonthIndex = monthIndexFromDateString(monthDateKeyString);
-      return {
-        goalMonthValue: periodValues[monthDateKeyString],
-        goalMonthIndex,
-      };
-    }
+    const monthThreeDateKey =
+      indexOfLatestDecember < defaultMonthsRequired - 1
+        ? dateKeysArray[defaultMonthsRequired - 1] // month 6
+        : mostRecentDecemberKey; // december
+
+    const monthThreeValue = periodValues[monthThreeDateKey];
+    const indexOfMonthThreeInDateKeys = dateKeysArray.indexOf(monthThreeDateKey);
+    const monthTwoValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 1]];
+    const monthOneValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 2]];
+
+    const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
+    const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
+
+    const monthThreeIndexOfYear = monthIndexFromDateString(monthThreeDateKey);
     return {
-      goalMonthValue: periodValues[mostRecentDecemberKey],
+      threeMonthAverage,
+      monthThreeIndexOfYear,
     };
   }
 
@@ -649,22 +654,19 @@ Reports = function ({
 
   function relativeImprovementRatio(goalMonthIndex) {
     const defaultRelativeImprovementPercentage = 10;
-    if (typeof goalMonthIndex !== "undefined") {
-      return (
-        (defaultRelativeImprovementPercentage / 100 / 12) *
-        (12 - goalMonthIndex)
-      );
-    }
-    return defaultRelativeImprovementPercentage / 100;
+    const improvementPercentagePerMonth =
+      defaultRelativeImprovementPercentage / 100 / 12;
+    const monthsRemainingInYear = 12 - (goalMonthIndex % 11); // dec is full year (0 index)
+    return improvementPercentagePerMonth * monthsRemainingInYear;
   }
 
+  // - canvas drawing
   function changeRGBAColorOpacity(colorString, opacity) {
     const rgbaArray = colorString.match(/\d+/g);
     rgbaArray[3] = opacity;
     return `rgba(${rgbaArray.join(", ")})`;
   }
 
-  // - canvas drawing
   function canvasDrawGoalLine(chart, goalValue) {
     const ctx = chart.ctx;
     const chartArea = chart.chartArea;
