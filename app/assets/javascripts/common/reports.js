@@ -880,7 +880,8 @@ Reports = function ({
     const chartWidth = chartArea.width;
     const chartHeight = chart.chartArea.height;
     const lineYPosition = chartBottom - (chartHeight / 100) * goalValue;
-    const xPos = chartRight - (chartWidth / 18) * 1.5 - lineWidth;
+    const dataNodes = chart.config.data.labels.length;
+    const xPos = chartRight - (chartWidth / dataNodes) * 1.5 - lineWidth;
 
     ctx.beginPath();
     ctx.moveTo(xPos, 23);
