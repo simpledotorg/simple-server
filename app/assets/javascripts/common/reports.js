@@ -439,8 +439,8 @@ DashboardReports = () => {
     },
     overdueReturnToCareTrend: function (data) {
       const currentDate = new Date();
-      const currentDayOfTheMonth = currentDate.getDate();
-      const monthsDashed = currentDayOfTheMonth > 15 ? 1 : 2;
+      const currentDateOfTheMonth = currentDate.getDate();
+      const monthsDashed = currentDateOfTheMonth > 15 ? 1 : 2;
 
       const config = {
         data: {
