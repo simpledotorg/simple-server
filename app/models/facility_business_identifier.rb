@@ -2,7 +2,8 @@ class FacilityBusinessIdentifier < ApplicationRecord
   belongs_to :facility
 
   enum identifier_type: {
-    dhis2_org_unit_id: "dhis2_org_unit_id"
+    dhis2_org_unit_id: "dhis2_org_unit_id",
+    external_org_facility_id: "external_org_facility_id"
   }
 
   validates :identifier, presence: true
