@@ -162,7 +162,7 @@ class Api::V3::Schema
 
     def definitions
       {error: error,
-       errors: Api::V3::Models.array_of("error"),
+       errors: Api::CommonDefinitions.array_of("error"),
        process_token: process_token}
     end
 
