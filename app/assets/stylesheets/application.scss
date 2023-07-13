@@ -768,18 +768,18 @@ span.inactive {
   text-overflow: ellipsis;
 
   &.card-chip-green {
-    background: rgba(78, 206, 0, 0.15);
-    color: rgba(44, 115, 0, 1);
+    background: $green-chip;
+    color: $green-dark;
   }
 
   &.card-chip-amber {
-    background: rgba(252, 247, 193, 0.8);
-    color: rgb(118, 93, 3);
+    background: $yellow-chip;
+    color: $brown-new;
   }
 
   &.card-chip-red {
-    background: rgba(232, 144, 80, 0.15);
-    color: rgb(143, 17, 12);
+    background: $red-chip;
+    color: $red-dark-new;
   }
 }
 
