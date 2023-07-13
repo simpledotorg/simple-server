@@ -5,9 +5,9 @@ RSpec.describe Csv::FacilitiesParser do
     let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
     it "parses the facilities" do
-      facilities = described_class.parse(upload_file)
+      first_facility, second_facility, *_facilities = described_class.parse(upload_file)
 
-      expect(facilities.first).to have_attributes(organization_name: "OrgOne",
+      expect(first_facility[:facility]).to have_attributes(organization_name: "OrgOne",
         facility_group_name: "FGTwo",
         name: "Test Facility",
         facility_type: "CHC",
@@ -18,27 +18,39 @@ RSpec.describe Csv::FacilitiesParser do
         enable_monthly_screening_reports: true,
         enable_monthly_supplies_reports: true)
 
-      expect(facilities.second).to have_attributes(organization_name: "OrgOne",
+      expect(first_facility[:business_identifiers].first).to have_attributes(
+        identifier: "id1",
+        identifier_type: FacilityBusinessIdentifier.identifier_types[:external_org_facility_id],
+        facility_id: first_facility[:facility].id
+      )
+
+      expect(second_facility[:facility]).to have_attributes(organization_name: "OrgOne",
         facility_group_name: "FGTwo",
         name: "Test Facility 2",
         facility_type: "CHC",
         district: "Bhatinda",
         facility_size: "large",
         country: "India")
+
+      expect(second_facility[:business_identifiers]).to be_empty
     end
 
     it "defaults enable_diabetes_management to false if blank" do
-      facilities = described_class.parse(upload_file)
+      _, second_facility, *_facilities = described_class.parse(upload_file)
 
-      expect(facilities.second.enable_diabetes_management).to be false
+      expect(second_facility[:facility].enable_diabetes_management).to be false
     end
 
     it "sets the state" do
       create(:facility_group, name: "FGTwo", state: "Maharashtra", organization: create(:organization, name: "OrgOne"))
 
-      facilities = described_class.parse(upload_file)
+      first_facility, *_facilities = described_class.parse(upload_file)
 
-      expect(facilities.first).to have_attributes(organization_name: "OrgOne", facility_group_name: "FGTwo", state: "Maharashtra")
+      expect(first_facility[:facility]).to have_attributes(
+        organization_name: "OrgOne",
+        facility_group_name: "FGTwo",
+        state: "Maharashtra"
+      )
     end
 
     context "when provided localized facility sizes" do
@@ -51,10 +63,10 @@ RSpec.describe Csv::FacilitiesParser do
       let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
       it "parses the facilities" do
-        facilities = described_class.parse(upload_file)
+        first_facility, second_facility, *_facilities = described_class.parse(upload_file)
 
-        expect(facilities.first.facility_size).to eq("community")
-        expect(facilities.second.facility_size).to eq("large")
+        expect(first_facility[:facility].facility_size).to eq("community")
+        expect(second_facility[:facility].facility_size).to eq("large")
       end
     end
   end

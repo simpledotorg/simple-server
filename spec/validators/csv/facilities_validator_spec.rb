@@ -10,13 +10,33 @@ RSpec.describe Csv::FacilitiesValidator do
     end
 
     context "when there are duplicate rows" do
-      let!(:organization) { create(:organization, name: "O") }
-      let!(:facility_group) { create(:facility_group, name: "FG", organization_id: organization.id) }
-      let!(:facilities) { create_list(:facility, 2, organization_name: "O", facility_group_name: "FG", name: "F") }
-      let!(:validator) { described_class.new(facilities) }
-      before { validator.validate }
+      it "returns an error message about duplicate facilities" do
+        organization = create(:organization, name: "O")
+        create(:facility_group, name: "FG", organization_id: organization.id)
+        facilities = FactoryBot.create_list(:facility, 2, organization_name: "O", facility_group_name: "FG", name: "F")
+          .map { |facility| {facility: facility, business_identifiers: []} }
+        validator = described_class.new(facilities)
 
-      specify { expect(validator.errors).to eq ["Uploaded file has duplicate facilities"] }
+        validator.validate
+
+        expect(validator.errors).to eq ["Uploaded file has duplicate facilities"]
+      end
+    end
+
+    context "when there are duplicate business identifiers" do
+      it "returns an error message about duplicate facilities" do
+        organization = create(:organization, name: "O")
+        create(:facility_group, name: "FG", organization_id: organization.id)
+        facility = FactoryBot.create(:facility, organization_name: "O", facility_group_name: "FG", name: "F")
+        business_identifier = create(:facility_business_identifier, identifier: "abc", facility_id: facility.id)
+        validator = described_class.new([
+          {facility: facility, business_identifiers: [business_identifier, business_identifier]}
+        ])
+
+        validator.validate
+
+        expect(validator.errors).to eq ["Uploaded file has duplicate business identifiers"]
+      end
     end
 
     context "per-facility validations" do
@@ -36,7 +56,7 @@ RSpec.describe Csv::FacilitiesValidator do
       end
 
       it "adds no errors when facility is valid" do
-        facilities = [facility]
+        facilities = [{facility: facility, business_identifiers: []}]
         validator = described_class.new(facilities)
         validator.validate
 
@@ -45,7 +65,7 @@ RSpec.describe Csv::FacilitiesValidator do
 
       it "adds an error when organization doesn't exist" do
         facility.assign_attributes(organization_name: "OrgTwo")
-        facilities = [facility]
+        facilities = [{facility: facility, business_identifiers: []}]
         validator = described_class.new(facilities)
         validator.validate
 
@@ -54,7 +74,7 @@ RSpec.describe Csv::FacilitiesValidator do
 
       it "adds an error when facility group doesn't exist" do
         facility.assign_attributes(facility_group_name: "FGTwo")
-        facilities = [facility]
+        facilities = [{facility: facility, business_identifiers: []}]
         validator = described_class.new(facilities)
         validator.validate
 
@@ -73,12 +93,12 @@ RSpec.describe Csv::FacilitiesValidator do
         }
 
         facilities = [
-          build(:facility, valid_params.merge(district: nil, state: "state")),
-          build(:facility, valid_params.merge(district: "district", state: nil)),
-          build(:facility, valid_params.merge(country: nil)),
-          build(:facility, valid_params.merge(facility_size: "invalid size")),
-          build(:facility, valid_params.merge(enable_diabetes_management: nil, organization_name: nil)),
-          build(:facility, valid_params.merge(zone: "Invalid Zone"))
+          {facility: build(:facility, valid_params.merge(district: nil, state: "state")), business_identifiers: []},
+          {facility: build(:facility, valid_params.merge(district: "district", state: nil)), business_identifiers: []},
+          {facility: build(:facility, valid_params.merge(country: nil)), business_identifiers: []},
+          {facility: build(:facility, valid_params.merge(facility_size: "invalid size")), business_identifiers: []},
+          {facility: build(:facility, valid_params.merge(enable_diabetes_management: nil, organization_name: nil)), business_identifiers: []},
+          {facility: build(:facility, valid_params.merge(zone: "Invalid Zone")), business_identifiers: []}
         ]
 
         validator = described_class.new(facilities)

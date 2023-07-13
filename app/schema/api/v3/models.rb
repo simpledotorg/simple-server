@@ -1,42 +1,5 @@
 class Api::V3::Models
   class << self
-    def timestamp
-      {type: :string,
-       format: "date-time",
-       description: "Timestamp with millisecond precision."}
-    end
-
-    def uuid
-      {type: :string,
-       format: :uuid,
-       pattern: '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'}
-    end
-
-    def nullable_uuid
-      uuid.merge(type: [:string, "null"])
-    end
-
-    def non_empty_string
-      {type: :string,
-       minLength: 1,
-       description: "This string should not be empty."}
-    end
-
-    def nullable_timestamp
-      timestamp.merge(type: [:string, "null"])
-    end
-
-    def bcrypt_password
-      {type: :string,
-       pattern: '^\$[0-9a-z]{2}\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$',
-       description: "Bcrypt password digest"}
-    end
-
-    def array_of(type)
-      {type: ["null", :array],
-       items: {"$ref" => "#/definitions/#{type}"}}
-    end
-
     def patient
       {type: :object,
        properties: {
@@ -360,43 +323,43 @@ class Api::V3::Models
     end
 
     def definitions
-      {timestamp: timestamp,
-       uuid: uuid,
-       nullable_uuid: nullable_uuid,
-       non_empty_string: non_empty_string,
-       nullable_timestamp: nullable_timestamp,
-       bcrypt_password: bcrypt_password,
+      {timestamp: Api::CommonDefinitions.timestamp,
+       uuid: Api::CommonDefinitions.uuid,
+       nullable_uuid: Api::CommonDefinitions.nullable_uuid,
+       non_empty_string: Api::CommonDefinitions.non_empty_string,
+       nullable_timestamp: Api::CommonDefinitions.nullable_timestamp,
+       bcrypt_password: Api::CommonDefinitions.bcrypt_password,
        patient: patient,
        address: address,
        phone_number: phone_number,
-       phone_numbers: array_of("phone_number"),
+       phone_numbers: Api::CommonDefinitions.array_of("phone_number"),
        nested_patient: nested_patient,
-       nested_patients: array_of("nested_patient"),
+       nested_patients: Api::CommonDefinitions.array_of("nested_patient"),
        encounter: encounter,
-       encounters: array_of("encounter"),
+       encounters: Api::CommonDefinitions.array_of("encounter"),
        blood_pressure: blood_pressure,
-       blood_pressures: array_of("blood_pressure"),
+       blood_pressures: Api::CommonDefinitions.array_of("blood_pressure"),
        facility: facility,
-       facilities: array_of("facility"),
+       facilities: Api::CommonDefinitions.array_of("facility"),
        protocol_drug: protocol_drug,
-       protocol_drugs: array_of("protocol_drug"),
+       protocol_drugs: Api::CommonDefinitions.array_of("protocol_drug"),
        protocol: protocol,
-       protocols: array_of("protocol"),
+       protocols: Api::CommonDefinitions.array_of("protocol"),
        prescription_drug: prescription_drug,
-       prescription_drugs: array_of("prescription_drug"),
+       prescription_drugs: Api::CommonDefinitions.array_of("prescription_drug"),
        user: user,
-       users: array_of("user"),
+       users: Api::CommonDefinitions.array_of("user"),
        login_user: login_user,
        communication: communication,
-       communications: array_of("communication"),
+       communications: Api::CommonDefinitions.array_of("communication"),
        appointment: appointment,
-       appointments: array_of("appointment"),
+       appointments: Api::CommonDefinitions.array_of("appointment"),
        medical_history: medical_history,
-       medical_histories: array_of("medical_history"),
+       medical_histories: Api::CommonDefinitions.array_of("medical_history"),
        patient_business_identifier: patient_business_identifier,
-       patient_business_identifiers: array_of("patient_business_identifier"),
+       patient_business_identifiers: Api::CommonDefinitions.array_of("patient_business_identifier"),
        blood_sugar: blood_sugar,
-       blood_sugars: array_of("blood_sugar")}
+       blood_sugars: Api::CommonDefinitions.array_of("blood_sugar")}
     end
   end
 end
