@@ -1,5 +1,6 @@
 class Api::V4::ImportsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :doorkeeper_authorize!
 
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
