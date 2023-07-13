@@ -1,47 +1,5 @@
 class Api::V4::Models
   class << self
-    def timestamp
-      {type: :string,
-       format: "date-time",
-       description: "Timestamp with millisecond precision."}
-    end
-
-    def month
-      {type: :string,
-       pattern: '[1-9]{1}[0-9]{1}\-[0-9]{2}'}
-    end
-
-    def uuid
-      {type: :string,
-       format: :uuid,
-       pattern: '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}'}
-    end
-
-    def non_empty_string
-      {type: :string,
-       minLength: 1,
-       description: "This string should not be empty."}
-    end
-
-    def nullable_timestamp
-      timestamp.merge(type: [:string, "null"])
-    end
-
-    def bcrypt_password
-      {type: :string,
-       pattern: '^\$[0-9a-z]{2}\$[0-9]{2}\$[A-Za-z0-9\.\/]{53}$',
-       description: "Bcrypt password digest"}
-    end
-
-    def array_of(type)
-      {type: ["null", :array],
-       items: {"$ref" => "#/definitions/#{type}"}}
-    end
-
-    def nullable_enum(enum_values)
-      {type: [:string, "null"], enum: enum_values << nil}
-    end
-
     def blood_sugar
       {type: :object,
        properties: {
@@ -296,7 +254,7 @@ class Api::V4::Models
               requester_id: {"$ref" => "#/definitions/uuid"},
               facility_id: {"$ref" => "#/definitions/uuid"},
               requested_at: {"$ref" => "#/definitions/timestamp"},
-              requester_completion_status: nullable_enum(Teleconsultation.requester_completion_statuses.keys)
+              requester_completion_status: Api::CommonDefinitions.nullable_enum(Teleconsultation.requester_completion_statuses.keys)
             }
           },
           record: {
@@ -348,8 +306,8 @@ class Api::V4::Models
        properties: {
          id: {"$ref" => "#/definitions/uuid"},
          name: {"$ref" => "#/definitions/non_empty_string"},
-         category: nullable_enum(Medication::CATEGORIES.keys),
-         frequency: nullable_enum(Medication::FREQUENCIES.keys),
+         category: Api::CommonDefinitions.nullable_enum(Medication::CATEGORIES.keys),
+         frequency: Api::CommonDefinitions.nullable_enum(Medication::FREQUENCIES.keys),
          composition: {type: [:string, "null"]},
          dosage: {type: [:string, "null"]},
          rxnorm_code: {type: [:string, "null"]},
@@ -370,7 +328,7 @@ class Api::V4::Models
          patient_id: {"$ref" => "#/definitions/nullable_uuid"},
          facility_id: {"$ref" => "#/definitions/nullable_uuid"},
          appointment_id: {"$ref" => "#/definitions/uuid"},
-         remove_reason: nullable_enum(CallResult.remove_reasons.keys),
+         remove_reason: Api::CommonDefinitions.nullable_enum(CallResult.remove_reasons.keys),
          result_type: {type: :string, enum: CallResult.result_types.keys},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
@@ -434,47 +392,47 @@ class Api::V4::Models
         address: Api::V3::Models.address,
         app_user_capabilities: app_user_capabilities,
         appointment: Api::V3::Models.appointment,
-        appointments: array_of("appointment"),
-        bcrypt_password: bcrypt_password,
+        appointments: Api::CommonDefinitions.array_of("appointment"),
+        bcrypt_password: Api::CommonDefinitions.bcrypt_password,
         blood_pressure: Api::V3::Models.blood_pressure,
-        blood_pressures: array_of("blood_pressure"),
+        blood_pressures: Api::CommonDefinitions.array_of("blood_pressure"),
         blood_sugar: blood_sugar,
-        blood_sugars: array_of("blood_sugar"),
+        blood_sugars: Api::CommonDefinitions.array_of("blood_sugar"),
         call_result: call_result,
-        call_results: array_of("call_result"),
+        call_results: Api::CommonDefinitions.array_of("call_result"),
         drug_stock: drug_stock,
         facility_medical_officer: facility_medical_officer,
-        facility_medical_officers: array_of("facility_medical_officer"),
+        facility_medical_officers: Api::CommonDefinitions.array_of("facility_medical_officer"),
         find_user: find_user,
         login_patient: login_patient,
         lookup_patient: lookup_patient,
-        lookup_patients: array_of("lookup_patient"),
+        lookup_patients: Api::CommonDefinitions.array_of("lookup_patient"),
         nullable_medical_history: Api::V3::Models.medical_history.merge(type: [:object, "null"]),
         medical_officer: medical_officer,
         medication: medication,
-        medications: array_of("medication"),
-        month: month,
-        non_empty_string: non_empty_string,
-        nullable_timestamp: nullable_timestamp,
-        nullable_uuid: Api::V3::Models.nullable_uuid,
+        medications: Api::CommonDefinitions.array_of("medication"),
+        month: Api::CommonDefinitions.month,
+        non_empty_string: Api::CommonDefinitions.non_empty_string,
+        nullable_timestamp: Api::CommonDefinitions.nullable_timestamp,
+        nullable_uuid: Api::CommonDefinitions.nullable_uuid,
         patient: patient,
         patient_business_identifier: Api::V3::Models.patient_business_identifier,
-        patient_business_identifiers: array_of("patient_business_identifier"),
+        patient_business_identifiers: Api::CommonDefinitions.array_of("patient_business_identifier"),
         phone_number: Api::V3::Models.phone_number,
-        phone_numbers: array_of("phone_number"),
+        phone_numbers: Api::CommonDefinitions.array_of("phone_number"),
         prescription_drug: Api::V3::Models.prescription_drug,
-        prescription_drugs: array_of("prescription_drug"),
+        prescription_drugs: Api::CommonDefinitions.array_of("prescription_drug"),
         questionnaire: Api::V4::Models.questionnaire,
-        questionnaires: array_of("questionnaire"),
+        questionnaires: Api::CommonDefinitions.array_of("questionnaire"),
         questionnaire_response: Api::V4::Models.questionnaire_response,
-        questionnaire_responses: array_of("questionnaire_response"),
+        questionnaire_responses: Api::CommonDefinitions.array_of("questionnaire_response"),
         **Api::V4::Models::Questionnaires::DSLVersion1.definitions,
         **Api::V4::Models::Questionnaires::DSLVersion1Dot1.definitions,
         teleconsultation: teleconsultation,
-        teleconsultations: array_of("teleconsultation"),
-        timestamp: timestamp,
+        teleconsultations: Api::CommonDefinitions.array_of("teleconsultation"),
+        timestamp: Api::CommonDefinitions.timestamp,
         user: user,
-        uuid: uuid
+        uuid: Api::CommonDefinitions.uuid
       }
     end
   end

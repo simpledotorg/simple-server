@@ -14,6 +14,7 @@ class Csv::FacilitiesValidator
     at_least_one_facility
     duplicate_rows
     per_facility_validations
+    duplicate_business_identifiers
     self
   end
 
@@ -30,7 +31,7 @@ class Csv::FacilitiesValidator
 
   def duplicate_rows
     fields = facilities
-      .map do |facility|
+      .map do |facility:, **|
         {name: facility[:name]&.gsub(/\s+/, ""),
          organization_name: facility[:organization_name],
          facility_group_name: facility[:facility_group_name]}
@@ -42,7 +43,8 @@ class Csv::FacilitiesValidator
   def per_facility_validations
     row_errors = []
 
-    facilities.each.with_index(STARTING_ROW) do |facility, row_num|
+    facilities.each.with_index(STARTING_ROW) do |facility_info, row_num|
+      facility = facility_info[:facility]
       row_validator = FacilityValidator.new(facility)
 
       # skip populating errors if both csv-specific validations and model validations succeed
@@ -53,6 +55,12 @@ class Csv::FacilitiesValidator
     end
 
     group_row_errors(row_errors).each { |error| errors << error } if row_errors.present?
+  end
+
+  def duplicate_business_identifiers
+    business_identifiers = facilities.flat_map { |facility| facility[:business_identifiers] }
+    identifiers = business_identifiers.pluck(:identifiers)
+    errors << "Uploaded file has duplicate business identifiers" if identifiers.count != identifiers.uniq.count
   end
 
   def group_row_errors(row_errors)
