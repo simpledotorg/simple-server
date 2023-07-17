@@ -52,7 +52,8 @@ class Questionnaire < ApplicationRecord
   def layout_schema
     layout_definitions = {
       "1" => Api::V4::Models::Questionnaires::DSLVersion1,
-      "1.1" => Api::V4::Models::Questionnaires::DSLVersion1Dot1
+      "1.1" => Api::V4::Models::Questionnaires::DSLVersion1Dot1,
+      "1.2" => Api::V4::Models::Questionnaires::DSLVersion1Dot2
     }
     layout_definitions.fetch(dsl_version).view_group.merge(definitions: Api::V4::Schema.all_definitions)
   end
