@@ -45,10 +45,10 @@
         ],
         "parameters": [
           {
-            "name": "organization_header",
+            "name": "HTTP_X_ORGANIZATION_ID",
             "in": "header",
             "type": "uuid",
-            "description": "UUID of organization"
+            "description": "UUID of organization. The header key should be passed as 'X-Organization-ID'"
           },
           {
             "name": "import_request",
@@ -86,9 +86,6 @@
           }
         ],
         "responses": {
-          "202": {
-            "description": "Accepted"
-          },
           "400": {
             "description": "Bad Request"
           }
