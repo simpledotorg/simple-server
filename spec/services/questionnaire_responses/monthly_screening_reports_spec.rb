@@ -73,7 +73,7 @@ RSpec.describe QuestionnaireResponses::MonthlyScreeningReports do
 
     it "links pre-filled reports to latest active questionnaire" do
       create(:questionnaire, :active, dsl_version: "1")
-      latest_questionnaire = Questionnaire.find_by_dsl_version("1.1")
+      latest_questionnaire = Questionnaire.find_by_dsl_version("1.2")
 
       QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
