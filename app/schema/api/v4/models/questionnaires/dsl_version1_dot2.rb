@@ -66,7 +66,8 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot2
           view_type: {type: :string, enum: %w[month_year_picker]},
           view_format: {
             type: :string,
-            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""},
+            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""
+          },
           validations: {
             type: :object,
             properties: {
@@ -74,12 +75,12 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot2
                 type: :integer,
                 description: "Maximum permissible days in the past from current date."
               },
-              allowed_days_from_now: {
+              allowed_days_in_future: {
                 type: :integer,
                 description: "Maximum permissible days in the future from current date."
               }
             },
-            required: %w[allowed_days_in_past allowed_days_from_now]
+            required: %w[allowed_days_in_past allowed_days_in_future]
           }
         },
         required: %w[type id link_id text view_type view_format validations]
