@@ -3566,13 +3566,13 @@
           {
             "id": "c2957249-a4d4-43ee-aade-0fb86a04c4ae",
             "type": "display",
-            "text": "EQUIPMENT",
+            "text": "AMLODIPINE 5mg",
             "view_type": "header"
           },
           {
             "id": "4e227bc7-1d01-48e2-8186-e5de2109e509",
             "type": "display",
-            "text": "TOTAL available BP devices",
+            "text": "Batch 1",
             "view_type": "sub_header"
           },
           {
@@ -3583,12 +3583,24 @@
               {
                 "id": "41c2c2fa-2bb2-4b0c-9a89-7d5c11bd4a9b",
                 "type": "integer",
-                "link_id": "monthly_supplies_report.total_available_bp_devices",
+                "link_id": "drug_stock_reports.amlodipinie_5mg_batch_1.stock",
                 "text": "Stock on hand",
                 "view_type": "input_field",
                 "validations": {
                   "min": 0,
                   "max": 1000000
+                }
+              },
+              {
+                "id": "d894e593-e0ec-46b4-b21e-810a8210d987",
+                "type": "date",
+                "link_id": "drug_stock_reports.amlodipinie_5mg_batch_1.expiry_date",
+                "text": "Expiry date",
+                "view_type": "month_year_picker",
+                "view_format": "MMM YYYY",
+                "validations": {
+                  "allowed_days_in_past": 180,
+                  "allowed_days_in_future": 3650
                 }
               }
             ]
@@ -3763,8 +3775,12 @@
         "view_type": {
           "type": "string",
           "enum": [
-            "input_field"
+            "month_year_picker"
           ]
+        },
+        "view_format": {
+          "type": "string",
+          "description": "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""
         },
         "validations": {
           "type": "object",
@@ -3790,6 +3806,7 @@
         "link_id",
         "text",
         "view_type",
+        "view_format",
         "validations"
       ]
     },
