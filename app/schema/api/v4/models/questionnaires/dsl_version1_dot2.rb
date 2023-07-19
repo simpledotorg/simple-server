@@ -66,7 +66,8 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot2
           view_type: {type: :string, enum: %w[month_year_picker]},
           view_format: {
             type: :string,
-            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""},
+            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""
+          },
           validations: {
             type: :object,
             properties: {

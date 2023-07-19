@@ -2742,7 +2742,8 @@
           "type": "string",
           "enum": [
             "monthly_screening_reports",
-            "monthly_supplies_reports"
+            "monthly_supplies_reports",
+            "drug_stock_reports"
           ]
         },
         "layout": {
@@ -2790,7 +2791,8 @@
           "type": "string",
           "enum": [
             "monthly_screening_reports",
-            "monthly_supplies_reports"
+            "monthly_supplies_reports",
+            "drug_stock_reports"
           ]
         },
         "facility_id": {
