@@ -275,10 +275,11 @@ module Api::V4::Models::Questionnaires::SpecimenLayout
             type: "date",
             link_id: "drug_stock_reports.amlodipinie_5mg_batch_1.expiry_date",
             text: "Expiry date",
-            view_type: "input_field",
+            view_type: "month_year_picker",
+            view_format: "MMM YYYY",
             validations: {
               allowed_days_in_past: 180,
-              allowed_days_from_now: 365
+              allowed_days_in_future: 3650
             }
           }
         ]
