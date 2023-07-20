@@ -195,6 +195,8 @@ GEM
     dogstatsd-ruby (5.5.0)
     domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
+    doorkeeper (5.6.6)
+      railties (>= 5)
     dotenv (2.8.1)
     dotenv-rails (2.8.1)
       dotenv (= 2.8.1)
@@ -729,6 +731,7 @@ DEPENDENCIES
   diffy
   discard (~> 1.2)
   dogstatsd-ruby (~> 5.2)
+  doorkeeper (~> 5.6)
   dotenv-rails
   ed25519 (~> 1.2)
   factory_bot_rails (~> 6.1)

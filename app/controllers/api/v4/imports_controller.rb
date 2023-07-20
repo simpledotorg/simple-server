@@ -1,5 +1,7 @@
 class Api::V4::ImportsController < ApplicationController
   skip_before_action :verify_authenticity_token
+  before_action :doorkeeper_authorize!
+  before_action :validate_token_organization
 
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
@@ -17,5 +19,12 @@ class Api::V4::ImportsController < ApplicationController
 
   def import_params
     params.require(:resources)
+  end
+
+  def validate_token_organization
+    token_organization = MachineUser.find_by(id: doorkeeper_token.application&.owner_id)&.organization_id
+    unless token_organization.present? && token_organization == request.headers["HTTP_X_ORGANIZATION_ID"]
+      head :forbidden
+    end
   end
 end
