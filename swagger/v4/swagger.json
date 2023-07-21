@@ -3791,14 +3791,14 @@
               "type": "integer",
               "description": "Maximum permissible days in the past from current date."
             },
-            "allowed_days_from_now": {
+            "allowed_days_in_future": {
               "type": "integer",
               "description": "Maximum permissible days in the future from current date."
             }
           },
           "required": [
             "allowed_days_in_past",
-            "allowed_days_from_now"
+            "allowed_days_in_future"
           ]
         }
       },

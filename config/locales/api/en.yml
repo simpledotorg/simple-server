@@ -538,7 +538,7 @@ en:
     others: "OTHERS"
     television_functional: "Are health education messages displayed at the Medical Clinic using a television screen?"
     wifi_functional: "Is Wi-Fi network available?"
-  drug_stock_reports:
+  drug_stock_report:
     instruction_1: "If you have more than 3 batches then add any additional batch stocks to batch 3 using the same date"
     batch_1: "Batch 1"
     batch_2: "Batch 2"
