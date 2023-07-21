@@ -9,7 +9,7 @@ RSpec.describe QuestionnaireResponses::MonthlyScreeningReports do
     Flipper.enable(:monthly_screening_reports)
 
     @questionnaire_types = stub_questionnaire_types
-    create(:questionnaire, :active)
+    create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports")
 
     one_month_ago = 1.month.ago
     two_months_ago = 2.months.ago
@@ -63,7 +63,8 @@ RSpec.describe QuestionnaireResponses::MonthlyScreeningReports do
 
     it "ignores existing monthly screening reports" do
       existing_content = {"month_date" => month_date.strftime("%Y-%m-%d")}
-      existing_monthly_screening_report = create(:questionnaire_response, facility: facility, content: existing_content)
+      random_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports")
+      existing_monthly_screening_report = create(:questionnaire_response, facility: facility, content: existing_content, questionnaire: random_questionnaire)
 
       QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
 
@@ -72,7 +73,7 @@ RSpec.describe QuestionnaireResponses::MonthlyScreeningReports do
     end
 
     it "links pre-filled reports to latest active questionnaire" do
-      create(:questionnaire, :active, dsl_version: "1")
+      create(:questionnaire, :active, dsl_version: "1", questionnaire_type: "monthly_screening_reports")
       latest_questionnaire = Questionnaire.find_by_dsl_version("1.2")
 
       QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill
