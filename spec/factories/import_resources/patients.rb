@@ -17,15 +17,14 @@ def build_patient_import_resource
     managingOrganization: [{value: Faker::Company.name}],
     registrationOrganization: [nil, [{value: Faker::Company.name}], []].sample,
     deceasedBoolean: Faker::Boolean.boolean,
-    telecom: (0...rand(3)).map do
-               {value: Faker::PhoneNumber.phone_number}.then do |telecom|
-                 if [true, false].sample
-                   telecom.merge!(
-                     use: %w[work home temp old mobile].sample
-                   )
-                 end
-               end
-             end,
+    telecom: [nil, (1...rand(2..4)).map do
+                     {value: Faker::PhoneNumber.phone_number}.then do |telecom|
+                       if [true, false].sample
+                         telecom[:use] = %w[work home temp old mobile].sample
+                       end
+                       telecom
+                     end
+                   end].sample,
     address: [
       {
         line: [(0...rand(2)).map { Faker::Address.street_address }, nil].sample,

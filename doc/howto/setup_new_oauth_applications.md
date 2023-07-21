@@ -8,6 +8,7 @@ organizations.
 
 To create a machine user and an OAuth application, run the following:
 
+# TODO fix this
 ```shell
 bundle exec cap <env> deploy:rake task='setup_oauth_application[<name>,<org_id>,<client_id>,<client_secret (optional)>]'
 ```
