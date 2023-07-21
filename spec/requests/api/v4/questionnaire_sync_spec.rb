@@ -15,7 +15,7 @@ RSpec.describe "Questionnaires sync", type: :request do
 
   let(:model) { Questionnaire }
   let(:response_key) { "questionnaires" }
-  let(:dsl_version) { 1 }
+  let(:dsl_version) { "1.2" }
 
   before do
     stub_questionnaire_types.take(5).each do |questionnaire_type|
