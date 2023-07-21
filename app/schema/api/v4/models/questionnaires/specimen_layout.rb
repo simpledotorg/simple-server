@@ -217,7 +217,7 @@ module Api::V4::Models::Questionnaires::SpecimenLayout
         id: "7c660864-b50a-4b3c-b019-c37a3fba3b8e",
         type: "display",
         view_type: "paragraph",
-        text: "Enter the supplies left in stock at the end of every month"
+        text: "If you have more than 3 batches then add any additional batch stocks to batch 3 using the same date"
       },
       {
         id: "5f98dcc1-504b-473a-bff8-2f1576a85bca",
