@@ -38,7 +38,11 @@ RSpec.describe QuestionnaireResponses::DrugStockReports do
 
       QuestionnaireResponses::DrugStockReports.new(three_months_ago).seed
 
-      expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq({"month_date" => three_months_ago.beginning_of_month.strftime("%Y-%m-%d"), "submitted" => false})
+      expected_content = {
+        "month_date" => three_months_ago.beginning_of_month.strftime("%Y-%m-%d"),
+        "submitted" => false
+      }
+      expect(QuestionnaireResponse.find_by_facility_id(facility).content).to eq(expected_content)
     end
   end
 
