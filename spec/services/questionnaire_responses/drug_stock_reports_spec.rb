@@ -48,7 +48,7 @@ RSpec.describe QuestionnaireResponses::DrugStockReports do
 
   describe "#drug_stock_report_exists?" do
     it "only checks for questionnaire responses of type drug_stock_reports" do
-      drug_stock_questionnaire = create(:questionnaire)
+      drug_stock_questionnaire = create(:questionnaire, questionnaire_type: "monthly_screening_reports")
       date = Time.now.beginning_of_month
 
       screening_content = {"month_date" => date.strftime("%Y-%m-%d")}
