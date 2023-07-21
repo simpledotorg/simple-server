@@ -17,13 +17,12 @@ module Seed
         description: "specimen report, supplies report, dsl version 1.1",
         layout: supplies_reports_seed_layout)
 
-
       FactoryBot.create(:questionnaire,
-                        questionnaire_type: "drug_stock_reports",
-                        dsl_version: "1.2",
-                        is_active: true,
-                        description: "specimen report, drug stock report, dsl version 1.2",
-                        layout: drug_stock_reports_seed_layout)
+        questionnaire_type: "drug_stock_reports",
+        dsl_version: "1.2",
+        is_active: true,
+        description: "specimen report, drug stock report, dsl version 1.2",
+        layout: drug_stock_reports_seed_layout)
 
       (1..3).map do |n|
         QuestionnaireResponses::MonthlyScreeningReports.new(n.month.ago).pre_fill
@@ -235,14 +234,14 @@ module Seed
                 "view_type" => "unordered_list_item",
                 "icon" => "check",
                 "icon_color" => "#00B849",
-                "text" => "questionnaire_layout.instruction_1",
+                "text" => "questionnaire_layout.instruction_1"
               },
               {
                 "type" => "display",
                 "view_type" => "unordered_list_item",
                 "icon" => "check",
                 "icon_color" => "#00B849",
-                "text" => "questionnaire_layout.instruction_2",
+                "text" => "questionnaire_layout.instruction_2"
               }
             ]
           },
