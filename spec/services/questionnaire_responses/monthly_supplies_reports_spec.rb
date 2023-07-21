@@ -44,15 +44,6 @@ RSpec.describe QuestionnaireResponses::MonthlySuppliesReports do
     end
   end
 
-  describe "#latest_active_supplies_reports_questionnaire" do
-    it "returns latest active questionnaire" do
-      _questionnaire_lower_version = create(:questionnaire, :active, dsl_version: "1", questionnaire_type: monthly_supplies_reports)
-
-      expect(QuestionnaireResponses::MonthlySuppliesReports.new.latest_active_supplies_reports_questionnaire_id)
-        .to eq(questionnaire.id)
-    end
-  end
-
   describe "#monthly_supplies_report_exists?" do
     it "only checks for questionnaire responses of type monthly_supplies_reports" do
       screening_questionnaire = create(:questionnaire)
