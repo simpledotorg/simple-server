@@ -17,9 +17,17 @@ module Seed
         description: "specimen report, supplies report, dsl version 1.1",
         layout: supplies_reports_seed_layout)
 
+      FactoryBot.create(:questionnaire,
+        questionnaire_type: "drug_stock_reports",
+        dsl_version: "1.2",
+        is_active: true,
+        description: "specimen report, drug stock report, dsl version 1.2",
+        layout: drug_stock_reports_seed_layout)
+
       (1..3).map do |n|
         QuestionnaireResponses::MonthlyScreeningReports.new(n.month.ago).pre_fill
         QuestionnaireResponses::MonthlySuppliesReports.new(n.month.ago).seed
+        QuestionnaireResponses::DrugStockReports.new(n.month.ago).seed
       end
     end
 
@@ -199,6 +207,109 @@ module Seed
                 view_type: "input_field",
                 validations: {
                   max_char: 1000
+                }
+              }
+            ]
+          }
+        ]
+      }
+    end
+
+    def self.drug_stock_reports_seed_layout
+      {
+        view_type: "view_group",
+        type: "group",
+        item: [
+          {
+            "type" => "display",
+            "view_type" => "paragraph",
+            "text" => "drug_stock_report.instruction_1"
+          },
+          {
+            "type" => "group",
+            "view_type" => "unordered_list_view_group",
+            "item" => [
+              {
+                "type" => "display",
+                "view_type" => "unordered_list_item",
+                "icon" => "check",
+                "icon_color" => "#00B849",
+                "text" => "questionnaire_layout.instruction_1"
+              },
+              {
+                "type" => "display",
+                "view_type" => "unordered_list_item",
+                "icon" => "check",
+                "icon_color" => "#00B849",
+                "text" => "questionnaire_layout.instruction_2"
+              }
+            ]
+          },
+          {
+            type: "display",
+            view_type: "header",
+            text: "drug_stock_report.amlodipine_5mg"
+          },
+          {
+            type: "display",
+            view_type: "sub_header",
+            text: "drug_stock_report.batch_1"
+          },
+          {
+            type: "group",
+            view_type: "input_view_group",
+            item: [
+              {
+                type: "integer",
+                view_type: "input_field",
+                text: "monthly_supplies_report.stock_on_hand",
+                link_id: "drug_stock_report.amlodipine_5mg.batch_1.stock",
+                validations: {
+                  min: 0,
+                  max: 100_000
+                }
+              },
+              {
+                type: "date",
+                view_type: "month_year_picker",
+                text: "drug_stock_report.expiry_date",
+                link_id: "drug_stock_report.amlodipine_5mg.batch_1.expiry_date",
+                view_format: "MMM YYYY",
+                validations: {
+                  allowed_days_in_past: 60,
+                  allowed_days_in_future: 1825
+                }
+              }
+            ]
+          },
+          {
+            type: "display",
+            view_type: "sub_header",
+            text: "drug_stock_report.batch_2"
+          },
+          {
+            type: "group",
+            view_type: "input_view_group",
+            item: [
+              {
+                type: "integer",
+                view_type: "input_field",
+                text: "monthly_supplies_report.stock_on_hand",
+                link_id: "drug_stock_report.amlodipine_5mg.batch_2.stock",
+                validations: {
+                  min: 0,
+                  max: 100_000
+                }
+              },
+              {
+                type: "date",
+                view_type: "month_year_picker",
+                text: "drug_stock_report.expiry_date",
+                link_id: "drug_stock_report.amlodipine_5mg.batch_2.expiry_date",
+                view_format: "MMM YYYY",
+                validations: {
+                  allowed_days_in_past: 60,
+                  allowed_days_in_future: 1825
                 }
               }
             ]
