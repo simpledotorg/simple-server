@@ -1,15 +1,15 @@
-class QuestionnaireResponses::MonthlySuppliesReports
+class QuestionnaireResponses::DrugStockReports
   include QuestionnaireResponsesHelper
 
   def initialize(date = 1.month.ago)
     @month_date = date.beginning_of_month
     @facility_ids = Facility.select("id").pluck(:id)
-    @questionnaire_id = latest_active_questionnaire_id(Questionnaire.questionnaire_types[:monthly_supplies_reports])
+    @questionnaire_id = latest_active_questionnaire_id(Questionnaire.questionnaire_types[:drug_stock_reports])
   end
 
   def seed
     @facility_ids.each do |facility_id|
-      unless monthly_supplies_report_exists?(facility_id)
+      unless drug_stock_report_exists?(facility_id)
         QuestionnaireResponse.create!(
           questionnaire_id: @questionnaire_id,
           facility_id: facility_id,
@@ -21,11 +21,11 @@ class QuestionnaireResponses::MonthlySuppliesReports
     end
   end
 
-  def monthly_supplies_report_exists?(facility_id)
+  def drug_stock_report_exists?(facility_id)
     QuestionnaireResponse
       .where(facility_id: facility_id)
       .joins(:questionnaire)
-      .merge(Questionnaire.monthly_supplies_reports)
+      .merge(Questionnaire.drug_stock_reports)
       .where("content->>'month_date' = ?", month_date_str)
       .any?
   end
