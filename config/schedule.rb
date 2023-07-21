@@ -127,6 +127,9 @@ every 1.month, at: local("06:00 am"), roles: [:cron] do
   if Flipper.enabled?(:monthly_supplies_reports)
     runner "QuestionnaireResponses::MonthlySuppliesReports.new.seed"
   end
+  if Flipper.enabled?(:drug_stock_questionnaires)
+    runner "QuestionnaireResponses::DrugStockReports.new.seed"
+  end
 end
 
 every 1.month, at: local("07:00 am"), roles: [:cron] do
