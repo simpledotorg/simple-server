@@ -207,4 +207,142 @@ module Api::V4::Models::Questionnaires::SpecimenLayout
       }
     ]
   }.freeze
+
+  DSLVERSION1DOT2 = {
+    id: "2e8ce537-616c-4c4c-a651-ad065d05f220",
+    type: "group",
+    view_type: "view_group",
+    item: [
+      {
+        id: "7c660864-b50a-4b3c-b019-c37a3fba3b8e",
+        type: "display",
+        view_type: "paragraph",
+        text: "If you have more than 3 batches then add any additional batch stocks to batch 3 using the same date"
+      },
+      {
+        id: "5f98dcc1-504b-473a-bff8-2f1576a85bca",
+        type: "group",
+        view_type: "unordered_list_view_group",
+        item: [
+          {
+            id: "ac2d9428-cd51-4dc0-9553-a2e7e4bc6edc",
+            type: "display",
+            view_type: "unordered_list_item",
+            icon: "check",
+            icon_color: "#00B849",
+            text: "Leave blank if you don't know an amount"
+          },
+          {
+            id: "a2f709fd-b4e7-4f3c-aa0f-2369c179d351",
+            type: "display",
+            view_type: "unordered_list_item",
+            icon: "check",
+            icon_color: "#00B849",
+            text: "Enter \"0\" if stock is out"
+          }
+        ]
+      },
+      {
+        id: "c2957249-a4d4-43ee-aade-0fb86a04c4ae",
+        type: "display",
+        text: "AMLODIPINE 5mg",
+        view_type: "header"
+      },
+      {
+        id: "4e227bc7-1d01-48e2-8186-e5de2109e509",
+        type: "display",
+        text: "Batch 1",
+        view_type: "sub_header"
+      },
+      {
+        id: "b39903c9-04e2-4fd8-9218-6ff5e5cf6466",
+        type: "group",
+        view_type: "input_view_group",
+        item: [
+          {
+            id: "41c2c2fa-2bb2-4b0c-9a89-7d5c11bd4a9b",
+            type: "integer",
+            link_id: "drug_stock_reports.amlodipinie_5mg_batch_1.stock",
+            text: "Stock on hand",
+            view_type: "input_field",
+            validations: {
+              min: 0,
+              max: 1_000_000
+            }
+          },
+          {
+            id: "d894e593-e0ec-46b4-b21e-810a8210d987",
+            type: "date",
+            link_id: "drug_stock_reports.amlodipinie_5mg_batch_1.expiry_date",
+            text: "Expiry date",
+            view_type: "month_year_picker",
+            view_format: "MMM YYYY",
+            validations: {
+              allowed_days_in_past: 180,
+              allowed_days_in_future: 3650
+            }
+          }
+        ]
+      },
+      {
+        id: "9a1a3cb4-33c1-4acd-a48a-e1fb31debd36",
+        type: "display",
+        view_type: "separator"
+      },
+      {
+        id: "b0003786-7310-44f5-9509-830d15f121f9",
+        type: "display",
+        text: "Enough drugs for next month: Losartan",
+        view_type: "sub_header"
+      },
+      {
+        id: "74ff3a76-82e1-4770-8d22-bcdc8c2bc70f",
+        type: "group",
+        view_type: "radio_view_group",
+        link_id: "monthly_supplies_report.losartan_enough_for_next_month",
+        item: [
+          {
+            id: "df0eb090-2c6a-4e29-bb32-bcae6c6d7209",
+            type: "radio",
+            view_type: "radio_button",
+            text: "Yes"
+          },
+          {
+            id: "48b3a1d5-7769-4f6b-b417-590c143a2690",
+            type: "radio",
+            view_type: "radio_button",
+            text: "No"
+          }
+        ]
+      },
+      {
+        id: "c0777808-7098-4a93-a40c-9860c716d9d3",
+        type: "display",
+        view_type: "line_separator"
+      },
+      {
+        id: "e751a383-c52e-40ad-aea1-7db138c9b734",
+        type: "display",
+        text: "Comments",
+        view_type: "sub_header"
+      },
+      {
+        id: "d7283442-8929-4c18-b6c1-f7bfe83c0927",
+        type: "group",
+        view_type: "input_view_group",
+        item: [
+          {
+            id: "5c3d4419-8591-43b5-93fb-12349caae93d",
+            type: "string",
+            link_id: "monthly_supplies_report.comments",
+            text: "",
+            view_type: "input_field",
+            validations: {
+              max_char: 1000
+            }
+          }
+        ]
+      }
+    ]
+  }.freeze
 end
