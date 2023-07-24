@@ -41,7 +41,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   def less_than_min_app_version?
     app_version = request.headers["HTTP_X_APP_VERSION"]
     return true unless app_version.present?
-    return false if !!app_version.match(/-qa$/) # QA apps follows semver versioning scheme followed by a suffix "-qa". For eg. "0.1-qa"
-    app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION
+    # QA apps follows semver versioning scheme followed by a suffix "-qa". For eg. "0.1-qa"
+    !app_version.match(/-qa$/) && (app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION)
   end
 end
