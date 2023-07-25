@@ -36,10 +36,8 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
       create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -2)
       patient_1 = create(:patient)
       patient_2 = create(:patient)
-      Time.use_zone(CountryConfig.current[:time_zone]) do
+      Time.use_zone("Asia/Kolkata") do
         treatment_group.enroll(patient_1, expected_return_date: 2.days.from_now.beginning_of_day)
-      end
-      Time.use_zone(CountryConfig.current[:time_zone]) do
         treatment_group.enroll(patient_2, expected_return_date: 2.days.from_now.middle_of_day)
       end
       membership_1 = experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
