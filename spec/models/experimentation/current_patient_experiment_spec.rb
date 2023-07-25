@@ -30,7 +30,7 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
   end
 
   describe "#memberships_to_notify" do
-    it "return memberships who were enrolled at any time of the day in the local timezone" do
+    it "returns memberships for any time of the day of expected_return_date in the local timezone on the day they need to be notified" do
       experiment = create(:experiment, experiment_type: "current_patients")
       treatment_group = create(:treatment_group, experiment: experiment)
       create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -2)
