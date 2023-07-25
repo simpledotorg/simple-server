@@ -39,6 +39,25 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "#notifying?" do
+    it "is true regardless of what time of day the start_time and end_time of the experiment are set to" do
+      experiment_1 = create(:experiment, start_time: Date.today.middle_of_day, end_time: 2.days.from_now.middle_of_day)
+      create(:reminder_template, treatment_group: create(:treatment_group, experiment: experiment_1))
+      Timecop.freeze(experiment_1.start_time.beginning_of_day) { expect(described_class.find(experiment_1.id).notifying?).to eq true }
+      experiment_1.cancel
+
+      experiment_2 = create(:experiment, start_time: Date.today.end_of_day, end_time: 2.days.from_now.middle_of_day)
+      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
+      create(:reminder_template, treatment_group: treatment_group_2)
+      Timecop.freeze(experiment_2.start_time.beginning_of_day) { expect(described_class.find(experiment_2.id).notifying?).to eq true }
+      experiment_2.cancel
+
+      experiment_3 = create(:experiment, start_time: Date.today.beginning_of_day, end_time: 2.days.from_now.middle_of_day)
+      treatment_group_3 = create(:treatment_group, experiment: experiment_3)
+      create(:reminder_template, treatment_group: treatment_group_3)
+      Timecop.freeze(experiment_3.end_time.beginning_of_day) { expect(described_class.find(experiment_3.id).notifying?).to eq true }
+      Timecop.freeze(experiment_3.end_time.end_of_day) { expect(described_class.find(experiment_3.id).notifying?).to eq true }
+      experiment_3.cancel
+    end
     it "is true from start date until after all the reminders have been sent out for patients enrolled on the last day" do
       expectations = [
         {remind_on_dates: [0, 1, 2], notifying_until_after_end_date: 2.days},
