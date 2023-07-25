@@ -2,6 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    TIMEZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -14,6 +15,7 @@ module Experimentation
 
       notification_buffer = (last_remind_on - earliest_remind_on).days
       notify_until = (end_time + notification_buffer).to_date
+      # BUG! time and date comparison returning wrong value
       start_time <= Date.current && notify_until >= Date.current
     end
 
