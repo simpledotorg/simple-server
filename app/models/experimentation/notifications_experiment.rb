@@ -15,8 +15,7 @@ module Experimentation
 
       notification_buffer = (last_remind_on - earliest_remind_on).days
       notify_until = (end_time + notification_buffer).to_date
-      # BUG! time and date comparison returning wrong value
-      start_time <= Date.current && notify_until >= Date.current
+      start_time.to_date <= Date.current && notify_until >= Date.current
     end
 
     # The order of operations is important.
