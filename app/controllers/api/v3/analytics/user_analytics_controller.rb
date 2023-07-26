@@ -4,8 +4,6 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   before_action :set_for_end_of_month
   before_action :set_bust_cache
 
-  NEW_PROGRESS_TAB_MIN_APP_VERSION = "2022-07-04-8318"
-
   layout false
 
   def show
@@ -25,7 +23,7 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
     end
 
     respond_to do |format|
-      format.html { render :progress_update_required if less_than_min_app_version? }
+      format.html
       format.json { render json: @user_analytics.statistics }
     end
   end
@@ -36,15 +34,5 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
 
   def set_bust_cache
     RequestStore.store[:bust_cache] = true if params[:bust_cache].present?
-  end
-
-  def less_than_min_app_version?
-    # Bypass check for all environments except production
-    env = ENV.fetch("SIMPLE_SERVER_ENV").to_sym
-    return false unless env == :production
-
-    app_version = request.headers["HTTP_X_APP_VERSION"]
-    return true unless app_version.present?
-    app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION
   end
 end
