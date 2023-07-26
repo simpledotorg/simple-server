@@ -39,9 +39,12 @@ class Api::V3::Analytics::UserAnalyticsController < Api::V3::AnalyticsController
   end
 
   def less_than_min_app_version?
+    # Bypass check for all environments except production
+    env = ENV.fetch("SIMPLE_SERVER_ENV").to_sym
+    return false unless env == :production
+
     app_version = request.headers["HTTP_X_APP_VERSION"]
     return true unless app_version.present?
-    # QA apps follows semver versioning scheme followed by a suffix "-qa". For eg. "0.1-qa"
-    !app_version.match(/-qa$/) && (app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION)
+    app_version < NEW_PROGRESS_TAB_MIN_APP_VERSION
   end
 end
