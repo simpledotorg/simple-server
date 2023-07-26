@@ -30,6 +30,24 @@ RSpec.describe Experimentation::CurrentPatientExperiment do
   end
 
   describe "#memberships_to_notify" do
+    it "returns memberships for any time of the day of expected_return_date in the local timezone on the day they need to be notified" do
+      experiment = create(:experiment, experiment_type: "current_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: -2)
+      patient_1 = create(:patient)
+      patient_2 = create(:patient)
+      Time.use_zone("Asia/Kolkata") do
+        treatment_group.enroll(patient_1, expected_return_date: 2.days.from_now.beginning_of_day)
+        treatment_group.enroll(patient_2, expected_return_date: 2.days.from_now.middle_of_day)
+      end
+      membership_1 = experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
+      membership_2 = experiment.treatment_group_memberships.find_by(patient_id: patient_2.id)
+
+      expect(membership_1.expected_return_date.to_date).to eq(1.day.from_now.to_date)
+      expect(membership_2.expected_return_date.to_date).to eq(2.day.from_now.to_date)
+      expect(described_class.first.memberships_to_notify(Date.today)).to contain_exactly(membership_1, membership_2)
+    end
+
     it "returns treatment_group_memberships whose expected visit is in the future and need to be reminded `remind_on_in_days` before" do
       experiment = create(:experiment, experiment_type: "current_patients")
       treatment_group = create(:treatment_group, experiment: experiment)
