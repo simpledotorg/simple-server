@@ -7,8 +7,8 @@ class SetUpAugust2023ExperimentsBangladesh < ActiveRecord::Migration[6.1]
   STALE_PATIENTS_EXPERIMENT = "Stale Patient August 2023"
   PATIENTS_PER_DAY = 5000
   FILTERS = {
-    "states" => { "include" => ["Sylhet"] },
-    "facilities" => { "exclude" => ["edaf3ebd-3dbd-48c3-9911-875ad1356f5d", "fe48375c-7826-41dd-9110-d716a9181e8f", "032b5549-eb26-4784-b3c2-162011297df6", "4d1e7df5-edcd-439c-a6c0-86078c9b7c50", "68603a37-175d-4f11-bd30-85fc6c4c3a38", "00db147c-5289-40b4-bd3c-090cac07c9ea", "0fad3822-9f5a-46ea-b02f-90501a184252", "130be963-f38e-4c58-b671-69b71949dfbd", "3d9e19a2-8a57-4248-98fe-e90967806f27", "8bf07061-0681-4224-af29-f265baaf6437"] }
+    "states" => {"include" => ["Sylhet"]},
+    "facilities" => {"exclude" => ["edaf3ebd-3dbd-48c3-9911-875ad1356f5d", "fe48375c-7826-41dd-9110-d716a9181e8f", "032b5549-eb26-4784-b3c2-162011297df6", "4d1e7df5-edcd-439c-a6c0-86078c9b7c50", "68603a37-175d-4f11-bd30-85fc6c4c3a38", "00db147c-5289-40b4-bd3c-090cac07c9ea", "0fad3822-9f5a-46ea-b02f-90501a184252", "130be963-f38e-4c58-b671-69b71949dfbd", "3d9e19a2-8a57-4248-98fe-e90967806f27", "8bf07061-0681-4224-af29-f265baaf6437"]}
   }.freeze
 
   def up
