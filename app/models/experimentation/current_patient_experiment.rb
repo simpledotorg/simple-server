@@ -23,7 +23,7 @@ module Experimentation
       treatment_group_memberships
         .status_enrolled
         .joins(treatment_group: :reminder_templates)
-        .where("date_trunc('day', expected_return_date AT TIME ZONE 'UTC' AT TIME ZONE ?) + make_interval(days := reminder_templates.remind_on_in_days) = ?", TIMEZONE, date)
+        .where("date_trunc('day', expected_return_date) + make_interval(days := reminder_templates.remind_on_in_days) = ?", date)
     end
   end
 end
