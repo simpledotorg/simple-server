@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class SetUpAugust2023ExperimentsBangladesh < ActiveRecord::Migration[6.1]
-  START_TIME = DateTime.new(2023, 8, 3)
-  END_TIME = DateTime.new(2023, 9, 3)
+  START_TIME = DateTime.new(2023, 8, 4)
+  END_TIME = DateTime.new(2023, 9, 4)
   CURRENT_PATIENTS_EXPERIMENT = "Current Patient August 2023"
   STALE_PATIENTS_EXPERIMENT = "Stale Patient August 2023"
   PATIENTS_PER_DAY = 5000
@@ -72,7 +72,7 @@ class SetUpAugust2023ExperimentsBangladesh < ActiveRecord::Migration[6.1]
   end
 
   def down
-    Experimentation::Experiment.current_patients.find_by_name(CURRENT_PATIENTS_EXPERIMENT).cancel
-    Experimentation::Experiment.stale_patients.find_by_name(STALE_PATIENTS_EXPERIMENT).cancel
+    Experimentation::Experiment.current_patients.find_by_name(CURRENT_PATIENTS_EXPERIMENT)&.cancel
+    Experimentation::Experiment.stale_patients.find_by_name(STALE_PATIENTS_EXPERIMENT)&.cancel
   end
 end
