@@ -39,6 +39,25 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
   end
 
   describe "#notifying?" do
+    it "is true regardless of what time of day the start_time and end_time of the experiment are set to" do
+      experiment_1 = create(:experiment, start_time: Date.today.middle_of_day, end_time: 2.days.from_now.middle_of_day)
+      create(:reminder_template, treatment_group: create(:treatment_group, experiment: experiment_1))
+      Timecop.freeze(experiment_1.start_time.beginning_of_day) { expect(described_class.find(experiment_1.id).notifying?).to eq true }
+      experiment_1.cancel
+
+      experiment_2 = create(:experiment, start_time: Date.today.end_of_day, end_time: 2.days.from_now.middle_of_day)
+      treatment_group_2 = create(:treatment_group, experiment: experiment_2)
+      create(:reminder_template, treatment_group: treatment_group_2)
+      Timecop.freeze(experiment_2.start_time.beginning_of_day) { expect(described_class.find(experiment_2.id).notifying?).to eq true }
+      experiment_2.cancel
+
+      experiment_3 = create(:experiment, start_time: Date.today.beginning_of_day, end_time: 2.days.from_now.middle_of_day)
+      treatment_group_3 = create(:treatment_group, experiment: experiment_3)
+      create(:reminder_template, treatment_group: treatment_group_3)
+      Timecop.freeze(experiment_3.end_time.beginning_of_day) { expect(described_class.find(experiment_3.id).notifying?).to eq true }
+      Timecop.freeze(experiment_3.end_time.end_of_day) { expect(described_class.find(experiment_3.id).notifying?).to eq true }
+      experiment_3.cancel
+    end
     it "is true from start date until after all the reminders have been sent out for patients enrolled on the last day" do
       expectations = [
         {remind_on_dates: [0, 1, 2], notifying_until_after_end_date: 2.days},
@@ -332,6 +351,91 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
       expect(overdue_patient_membership.expected_return_date).to eq(appointment_scheduled_date)
       expect(remind_on_patient_membership.expected_return_date).to eq(remind_on_date)
+    end
+
+    context "when local date is not the same as utc date" do
+      it "sets experiment_inclusion_date to local date when local is ahead of utc by 1 day" do
+        create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+        current_experiment = Experimentation::CurrentPatientExperiment.first
+        enrollment_date_dhaka = Date.parse("28 Jul 2023")
+        expected_inclusion_date_dhaka = Date.parse("28 Jul 2023")
+
+        # Bangladesh is 6 hours ahead of UTC. We expect the experiment_inclusion_date
+        # to be the same both before and after 6am BDT (12am UTC).
+
+        patient_1 = create(:patient)
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_1.id))
+        Time.use_zone("Asia/Dhaka") do
+          Timecop.freeze("5:59am") { current_experiment.enroll_patients(enrollment_date_dhaka) }
+        end
+        membership_1 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
+        expect(membership_1.experiment_inclusion_date.to_date).to eq(expected_inclusion_date_dhaka)
+
+        patient_2 = create(:patient)
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_2.id))
+        Time.use_zone("Asia/Dhaka") do
+          Timecop.freeze("6:01am") { current_experiment.enroll_patients(enrollment_date_dhaka) }
+        end
+        membership_2 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_2.id)
+        expect(membership_2.experiment_inclusion_date.to_date).to eq(expected_inclusion_date_dhaka)
+      end
+
+      it "sets experiment_inclusion_date to local date when local is behind utc by 1 day" do
+        create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+        current_experiment = Experimentation::CurrentPatientExperiment.first
+        enrollment_date_ny = Date.parse("27 Jul 2023")
+        expected_inclusion_date_ny = Date.parse("27 Jul 2023")
+
+        # New York is 4 hours behind UTC. We expect the experiment_inclusion_date
+        # to be the same both before and after 8pm EDT (12am UTC).
+
+        patient_1 = create(:patient)
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_1.id))
+        Time.use_zone("America/New_York") do
+          Timecop.freeze("8:01pm") { current_experiment.enroll_patients(enrollment_date_ny) }
+        end
+        membership_1 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
+        expect(membership_1.experiment_inclusion_date.to_date).to eq(expected_inclusion_date_ny)
+
+        patient_2 = create(:patient)
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_2.id))
+        Time.use_zone("America/New_York") do
+          Timecop.freeze("7:59pm") { current_experiment.enroll_patients(enrollment_date_ny) }
+        end
+        membership_2 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_2.id)
+        expect(membership_2.experiment_inclusion_date.to_date).to eq(expected_inclusion_date_ny)
+      end
+
+      it "sets expected_return_date to local date when the local tz is off from utc by 1 day" do
+        create(:experiment, :with_treatment_group, experiment_type: "current_patients")
+        current_experiment = Experimentation::CurrentPatientExperiment.first
+        enrollment_date = Date.parse("28 Jul 2023")
+
+        # expected_return_date is set to the latest appointment's scheduled_date
+        # or remind_on date values.
+        # We expect it to be set to the correct date both before and after UTC date
+        # changes over the course of the given local date, when the experiment is run.
+
+        patient_1 = create(:patient)
+        appointment_1 = create(:appointment, status: :scheduled, patient: patient_1)
+        expected_return_date_1 = appointment_1.scheduled_date
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_1.id))
+        Time.use_zone("Asia/Dhaka") do
+          Timecop.freeze("5:59am") { current_experiment.enroll_patients(enrollment_date) }
+        end
+        membership_1 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
+        expect(membership_1.expected_return_date.to_date).to eq(expected_return_date_1)
+
+        patient_2 = create(:patient)
+        appointment_2 = create(:appointment, status: :scheduled, patient: patient_2)
+        expected_return_date_2 = appointment_2.scheduled_date
+        allow(current_experiment).to receive(:eligible_patients).and_return(Patient.where(id: patient_2.id))
+        Time.use_zone("Asia/Dhaka") do
+          Timecop.freeze("6:01am") { current_experiment.enroll_patients(enrollment_date) }
+        end
+        membership_2 = current_experiment.treatment_group_memberships.find_by(patient_id: patient_2.id)
+        expect(membership_2.expected_return_date.to_date).to eq(expected_return_date_2)
+      end
     end
   end
 
