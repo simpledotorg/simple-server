@@ -3,8 +3,19 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated 4-Jul-2023. For feedback, email us: help@simple.org
+    Last updated 3-Aug-2023. For feedback, email us: help@simple.org
   </p>
+  <% if CountryConfig.current[:name] != "India" %>
+    <section class="update">
+      <div class="update-date">
+        Aug <b class="d-block">2023</b>
+      </div>
+      <p>
+        <b>Goal lines:</b>
+        Goals are now calculated using an average of 3 months. Established facilities will have a goal calculated using an average of Q4 performance (Oct, Nov, Dec) in the previous year.
+      </p>
+    </section>
+  <% end %>
   <section class="update">
     <div class="update-date">
       Jul <b class="d-block">2023</b>
@@ -96,25 +107,5 @@
         </span>
       </span>
     </a>
-  </section>
-  <section class="update">
-    <div class="update-date">
-      <% if CountryConfig.current[:name] == "India" || CountryConfig.current[:name] == "Bangladesh" %>
-        Nov <b class="d-block">2022</b>
-      <% else %>
-        Dec <b class="d-block">2022</b>
-      <% end %>
-    </div>
-    <p>
-      <b>Simple app:</b> Progress tab has been updated with a new design and includes several new reports:
-      <ul>
-        <li>Daily, monthly and yearly reports - showing activity at your facility</li>
-        <li>Hypertension report - overview of hypertension control at your facility</li>
-        <li>New facility achievements - 'calls made to overdue patients'</li>
-      </ul>
-    </p>
-    <p class="d-block bg-grey-lightest br-4px" style="margin-top: 8px; padding: 6px 10px;">
-      Please use this <a href="https://drive.google.com/file/d/1l5Mqyv-FzmRHVA-jsZFvIBZ44Q6gHRI2/view?usp=share_link">one pager</a> to train your users.
-    </p>
   </section>
 </div>
