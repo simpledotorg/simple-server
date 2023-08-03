@@ -2,6 +2,7 @@ module Experimentation
   class NotificationsExperiment < Experiment
     include ActiveSupport::Benchmarkable
     BATCH_SIZE = 1000
+    TIMEZONE = CountryConfig.current[:time_zone] || "Asia/Kolkata"
 
     default_scope { where(experiment_type: %w[current_patients stale_patients]) }
 
@@ -14,7 +15,7 @@ module Experimentation
 
       notification_buffer = (last_remind_on - earliest_remind_on).days
       notify_until = (end_time + notification_buffer).to_date
-      start_time <= Date.current && notify_until >= Date.current
+      start_time.to_date <= Date.current && notify_until >= Date.current
     end
 
     # The order of operations is important.
@@ -259,14 +260,16 @@ module Experimentation
       latest_scheduled_appointment = patient.latest_scheduled_appointment
       assigned_facility = patient.assigned_facility
       registration_facility = patient.registration_facility
+      expected_return_date = latest_scheduled_appointment&.remind_on || latest_scheduled_appointment&.scheduled_date
+      expected_return_date_utc_timestamp = expected_return_date&.to_time(:utc)
 
       {
         gender: patient.gender,
         age: patient.current_age,
         risk_level: patient.risk_priority,
         diagnosed_htn: medical_history.hypertension,
-        experiment_inclusion_date: date,
-        expected_return_date: latest_scheduled_appointment&.remind_on || latest_scheduled_appointment&.scheduled_date,
+        experiment_inclusion_date: date.to_time(:utc),
+        expected_return_date: expected_return_date_utc_timestamp,
         expected_return_facility_id: latest_scheduled_appointment&.facility_id,
         expected_return_facility_type: latest_scheduled_appointment&.facility&.facility_type,
         expected_return_facility_name: latest_scheduled_appointment&.facility&.name,

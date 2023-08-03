@@ -133,6 +133,27 @@ RSpec.describe Experimentation::StalePatientExperiment do
   end
 
   describe "#memberships_to_notify" do
+    it "returns memberships to be notified for the day with experiment_inclusion_date set to any time of day" do
+      experiment = create(:experiment, experiment_type: "stale_patients")
+      treatment_group = create(:treatment_group, experiment: experiment)
+      create(:reminder_template, treatment_group: treatment_group, remind_on_in_days: 0)
+      patient_1 = create(:patient)
+      patient_2 = create(:patient)
+      patient_3 = create(:patient)
+      date = Date.today
+
+      treatment_group.enroll(patient_1, experiment_inclusion_date: date.beginning_of_day)
+      treatment_group.enroll(patient_2, experiment_inclusion_date: date.middle_of_day)
+      treatment_group.enroll(patient_3, experiment_inclusion_date: (date + 1.day).end_of_day)
+
+      membership_1 = experiment.treatment_group_memberships.find_by(patient_id: patient_1.id)
+      membership_2 = experiment.treatment_group_memberships.find_by(patient_id: patient_2.id)
+      membership_3 = experiment.treatment_group_memberships.find_by(patient_id: patient_3.id)
+
+      expect(described_class.first.memberships_to_notify(date)).to contain_exactly(membership_1, membership_2)
+      expect(described_class.first.memberships_to_notify(date + 1.day)).to contain_exactly(membership_3)
+    end
+
     it "returns treatment_group_memberships who were enrolled today and need to be reminded today" do
       experiment = create(:experiment, experiment_type: "stale_patients")
       treatment_group = create(:treatment_group, experiment: experiment)
