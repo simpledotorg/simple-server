@@ -23,7 +23,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
       .order(:full_name)
       .map { |user| calls_made_by_user(user) }
       .reduce(:merge)
-      .filter { |user, period| show_user?(user, period) }
+      &.filter { |user, period| show_user?(user, period) }
   end
 
   def calls_made_by_user(user)
