@@ -53,7 +53,7 @@
 
         </tr>
       <% end %>
-        <% children_data.each do |(row, count_by_period)| %>
+        <% children_data&.each do |(row, count_by_period)| %>
           <% table.row do %>
             <tr>
               <td class="row-title">
