@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class SetUpAugust2023ExperimentsBangladesh < ActiveRecord::Migration[6.1]
-
   # This experiment ends on 8 Sep instead of on 30 Sep because we want
   # a full 30-day run of the experiment for a sufficient sample size.
   # We want to eventually revert back to starting and ending experiments
