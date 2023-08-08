@@ -1,8 +1,14 @@
 # frozen_string_literal: true
 
 class SetUpAugust2023ExperimentsBangladesh < ActiveRecord::Migration[6.1]
-  START_TIME = DateTime.new(2023, 8, 4).beginning_of_day
-  END_TIME = DateTime.new(2023, 8, 31).beginning_of_day
+
+  # This experiment ends on 8 Sep instead of on 30 Sep because we want
+  # a full 30-day run of the experiment for a sufficient sample size.
+  # We want to eventually revert back to starting and ending experiments
+  # on the first and last days of the month for ease of tracking.
+
+  START_TIME = DateTime.parse("9 Aug 2023").beginning_of_day
+  END_TIME = DateTime.parse("8 Sep 2023").beginning_of_day
   CURRENT_PATIENTS_EXPERIMENT = "Current Patient August 2023"
   STALE_PATIENTS_EXPERIMENT = "Stale Patient August 2023"
   PATIENTS_PER_DAY = 5000
