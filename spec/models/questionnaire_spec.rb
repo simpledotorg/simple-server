@@ -97,7 +97,8 @@ RSpec.describe Questionnaire, type: :model do
            {"text" => "test_translations.test_string"},
            {"text" => "test_translations.test_string"}
          ]},
-        {"text" => "test_translations.test_string"}
+        {"text" => "test_translations.test_string"},
+        {"text" => ""}
       ]}
 
       localized_layout = {"item" => [
@@ -106,7 +107,8 @@ RSpec.describe Questionnaire, type: :model do
            {"text" => "Test"},
            {"text" => "Test"}
          ]},
-        {"text" => "Test"}
+        {"text" => "Test"},
+        {"text" => ""}
       ]}
 
       questionnaire = build(:questionnaire, layout: layout)

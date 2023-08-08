@@ -446,7 +446,6 @@ am-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} በ %{registration_period} የተመዘገቡ"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} የ %{threshold}"
   questionnaire_layout:
-    empty: ""
     male: "ወንድ"
     female: "ሴት"
     transgender: "ወንዳገረድ"
