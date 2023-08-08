@@ -446,7 +446,6 @@ om-ET:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} kan %{registration_period} keessatti galmaa'an"
         cohort_bar_tooltip: "%{total_patients} %{patient_or_patients} kan %{threshold}"
   questionnaire_layout:
-    empty: ""
     male: "Dhiira"
     female: "Dubara"
     transgender: "Saaldarbaa"

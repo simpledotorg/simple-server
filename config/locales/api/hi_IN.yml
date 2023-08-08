@@ -446,7 +446,6 @@ hi-IN:
         cohort_subtitle: "%{registration_period} में %{number_of_patients} %{patient_or_patients} रजिस्टर किए गए"
         cohort_bar_tooltip: "%{threshold} वाले %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
-    empty: ""
     male: "पुरूष"
     female: "महिला"
     transgender: "ट्रांसजेंडर"
