@@ -197,7 +197,7 @@ class Api::V4::Imports
               This is a subset of all valid status codes in the FHIR standard.
             DESCRIPTION
           }),
-          start: {type: [:string, :null],
+          start: {type: :string,
                   format: "date-time",
                   nullable: false,
                   description: "Start datetime of appointment. Simple will truncate it to a date granularity."},

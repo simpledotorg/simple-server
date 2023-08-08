@@ -13,6 +13,8 @@ class BulkApiImport::Importer
     case resource[:resourceType]
     when "Patient"
       BulkApiImport::FhirPatientImporter.new(resource)
+    when "Appointment"
+      BulkApiImport::FhirAppointmentImporter.new(resource)
     else
       throw NotImplementedError
     end

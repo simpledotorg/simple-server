@@ -1,12 +1,10 @@
 class BulkApiImport::FhirPatientImporter
+  include BulkApiImport::FhirImportable
+
   GENDER_MAPPING = {"male" => "male", "female" => "female", "other" => "transgender"}
 
   def initialize(patient_resource)
     @resource = patient_resource
-  end
-
-  def import_user
-    PatientImport::ImportUser.find_or_create
   end
 
   def import
@@ -24,7 +22,7 @@ class BulkApiImport::FhirPatientImporter
   def build_attributes
     {
       id: translate_id(@resource.dig(:identifier, 0, :value)),
-      full_name: @resource.dig(:name, :value),
+      full_name: @resource.dig(:name, :value) || "Anonymous " + Faker::Name.first_name,
       gender: gender,
       status: status,
       date_of_birth: @resource[:birthDate],
@@ -37,20 +35,18 @@ class BulkApiImport::FhirPatientImporter
     }
   end
 
-  def timestamps
-    {
-      created_at: @resource.dig(:meta, :createdAt),
-      updated_at: @resource.dig(:meta, :lastUpdated)
-    }
-  end
-
   def gender
     GENDER_MAPPING[@resource[:gender]]
   end
 
   def status
-    "dead" if @resource[:deceasedBoolean]
-    @resource[:active] ? "active" : "inactive"
+    if @resource[:deceasedBoolean]
+      "dead"
+    elsif @resource[:active]
+      "active"
+    else
+      "inactive"
+    end
   end
 
   def phone_numbers
@@ -58,8 +54,8 @@ class BulkApiImport::FhirPatientImporter
       {
         id: SecureRandom.uuid,
         number: telecom[:value],
-        phone_type: telecom[:use] == "mobile" || telecom[:use] == "inactive" ? "mobile" : "landline",
-        active: !(telecom[:use] == "inactive"),
+        phone_type: telecom[:use] == "mobile" || telecom[:use] == "old" ? "mobile" : "landline",
+        active: !(telecom[:use] == "old"),
         **timestamps
       }
     end
@@ -91,9 +87,5 @@ class BulkApiImport::FhirPatientImporter
         **timestamps
       }
     ]
-  end
-
-  def translate_id(id)
-    Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, id)
   end
 end

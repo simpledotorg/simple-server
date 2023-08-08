@@ -1,6 +1,6 @@
 def build_patient_import_resource
-  created_at = Faker::Time.between(from: 3.days.ago, to: 1.day.ago, format: :rfc3339) # TODO iso8601
-  updated_at = Faker::Time.between(from: 1.day.ago, to: Time.current, format: :rfc3339)
+  created_at = Faker::Time.between(from: 3.days.ago, to: 1.day.ago, format: :iso8601)
+  updated_at = Faker::Time.between(from: 1.day.ago, to: Time.current, format: :iso8601)
   {
     resourceType: "Patient",
     meta: {
