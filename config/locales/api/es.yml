@@ -450,7 +450,6 @@ es:
         cohort_subtitle: "%{number_of_patients}%{patient_or_patients} registrados en %{registration_period}"
         cohort_bar_tooltip: "%{total_patients}%{patient_or_patients} con %{threshold}"
   questionnaire_layout:
-    empty: ""
     male: "Másculino"
     female: "Femenino"
     transgender: "Transgénero"

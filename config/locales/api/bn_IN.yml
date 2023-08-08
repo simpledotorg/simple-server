@@ -446,7 +446,6 @@ bn-IN:
         cohort_subtitle: "%{registration_period}-এ রেজিস্টার করা %{number_of_patients} %{patient_or_patients}"
         cohort_bar_tooltip: "%{threshold} থাকা %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
-    empty: ""
     male: "পুরুষ"
     female: "মহিলা"
     transgender: "ট্রান্সজেন্ডার"

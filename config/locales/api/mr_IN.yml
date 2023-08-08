@@ -446,7 +446,6 @@ mr-IN:
         cohort_subtitle: "%{number_of_patients} %{patient_or_patients} %{registration_period} मध्ये नोंदणीकृत आहेत"
         cohort_bar_tooltip: "%{threshold} सह %{total_patients} %{patient_or_patients}"
   questionnaire_layout:
-    empty: ""
     male: "पुरुष"
     female: "स्त्री"
     transgender: "किन्नर"

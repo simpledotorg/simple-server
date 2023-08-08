@@ -71,6 +71,7 @@ class Questionnaire < ApplicationRecord
   def localize_layout(sub_layout)
     text = sub_layout["text"]
     return sub_layout unless text
+    return sub_layout if text.empty?
 
     sub_layout.merge({"text" => I18n.t!(text)})
   end
