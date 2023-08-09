@@ -1,4 +1,4 @@
-class PatientImport::ImportUser
+class ImportUser
   IMPORT_USER_PHONE_NUMBER = "0000000001"
 
   def self.find_or_create
@@ -12,18 +12,9 @@ class PatientImport::ImportUser
   def self.create
     facility = Facility.first
 
-    user = User.new(
-      full_name: "import-user",
-      organization_id: facility.organization.id,
-      device_created_at: Time.current,
-      device_updated_at: Time.current
-    )
+    user = User.new(full_name: "import-user", organization_id: facility.organization.id, device_created_at: Time.current, device_updated_at: Time.current)
 
-    phone_number_authentication = PhoneNumberAuthentication.new(
-      phone_number: IMPORT_USER_PHONE_NUMBER,
-      password: generate_pin,
-      registration_facility_id: facility.id
-    ).tap do |pna|
+    phone_number_authentication = PhoneNumberAuthentication.new(phone_number: IMPORT_USER_PHONE_NUMBER, password: generate_pin, registration_facility_id: facility.id).tap do |pna|
       pna.set_otp
       pna.invalidate_otp
       pna.set_access_token
