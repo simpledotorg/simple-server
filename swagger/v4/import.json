@@ -384,10 +384,7 @@
           "description": "Status of appointment. Translation to simple statuses:\n- pending: scheduled\n- fulfilled: visited\n- cancelled: cancelled\nThis is a subset of all valid status codes in the FHIR standard.\n"
         },
         "start": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "format": "date-time",
           "nullable": false,
           "description": "Start datetime of appointment. Simple will truncate it to a date granularity."
@@ -402,14 +399,14 @@
                 "properties": {
                   "identifier": {
                     "type": "string",
-                    "nullable": false
+                    "nullable": false,
+                    "description": "ID of patient"
                   }
                 },
                 "nullable": false,
                 "required": [
                   "identifier"
-                ],
-                "description": "ID of patient"
+                ]
               }
             },
             "nullable": false,
@@ -426,14 +423,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "The reference to a facility in which the appointment is taking place. Modification to FHIR"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "The reference to a facility in which the appointment is taking place. Modification to FHIR"
+          ]
         },
         "appointmentCreationOrganization": {
           "type": [
@@ -443,14 +440,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "The reference to a facility in which the appointment was created. Modification to FHIR"
             }
           },
           "nullable": true,
           "required": [
             "identifier"
-          ],
-          "description": "The reference to a facility in which the appointment was created. Modification to FHIR"
+          ]
         }
       },
       "required": [
@@ -516,14 +513,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "Patient ID"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "Patient ID"
+          ]
         },
         "performer": {
           "type": "array",
@@ -532,14 +529,14 @@
             "properties": {
               "identifier": {
                 "type": "string",
-                "nullable": false
+                "nullable": false,
+                "description": "Facility ID"
               }
             },
             "nullable": false,
             "required": [
               "identifier"
-            ],
-            "description": "Facility ID"
+            ]
           },
           "nullable": false,
           "minItems": 1,
@@ -643,7 +640,8 @@
                     "enum": [
                       "mmHg"
                     ],
-                    "nullable": false
+                    "nullable": false,
+                    "description": "Unit for blood pressure measurement"
                   },
                   "system": {
                     "type": "string",
@@ -750,14 +748,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "Patient ID"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "Patient ID"
+          ]
         },
         "performer": {
           "type": "array",
@@ -766,14 +764,14 @@
             "properties": {
               "identifier": {
                 "type": "string",
-                "nullable": false
+                "nullable": false,
+                "description": "Facility ID"
               }
             },
             "nullable": false,
             "required": [
               "identifier"
-            ],
-            "description": "Facility ID"
+            ]
           },
           "nullable": false,
           "minItems": 1,
@@ -844,7 +842,8 @@
                           "enum": [
                             "2339-0",
                             "87422-2",
-                            "88365-24548-4"
+                            "88365-2",
+                            "4548-4"
                           ],
                           "nullable": false,
                           "description": "2339-0 for random,                                                   87422-2 for post-prandial,                                                   88365-2 for fasting,                                                   4548-4 for hba1c"
@@ -880,7 +879,8 @@
                         "enum": [
                           "mg/dL"
                         ],
-                        "nullable": false
+                        "nullable": false,
+                        "description": "Unit for random, post-prandial and fasting"
                       },
                       "system": {
                         "type": "string",
@@ -903,8 +903,7 @@
                       "unit",
                       "system",
                       "code"
-                    ],
-                    "description": "Unit for random, post-prandial and fasting"
+                    ]
                   },
                   {
                     "type": "object",
@@ -918,7 +917,8 @@
                         "enum": [
                           "%"
                         ],
-                        "nullable": false
+                        "nullable": false,
+                        "description": "Unit for hba1c"
                       },
                       "system": {
                         "type": "string",
@@ -941,10 +941,10 @@
                       "unit",
                       "system",
                       "code"
-                    ],
-                    "description": "Unit for hba1c"
+                    ]
                   }
-                ]
+                ],
+                "description": "Use mg/dL for random, post-prandial and fasting measurements. Use % for for hba1c."
               }
             },
             "required": [
@@ -1039,24 +1039,13 @@
                     "nullable": false
                   },
                   "code": {
-                    "oneOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "38341003"
-                        ],
-                        "description": "Code for HTN",
-                        "nullable": false
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "73211009"
-                        ],
-                        "description": "Code for diabetes",
-                        "nullable": false
-                      }
-                    ]
+                    "type": "string",
+                    "enum": [
+                      "38341003",
+                      "73211009"
+                    ],
+                    "description": "38341003: Code for HTN, 73211009: Code for Diabetes",
+                    "nullable": false
                   }
                 },
                 "required": [
@@ -1236,13 +1225,14 @@
             "reference": {
               "type": "string",
               "pattern": "^#.*$",
-              "nullable": false
+              "nullable": false,
+              "description": "The ID should be '#' followed by the ID of medication in the contained resource."
             }
           },
           "required": [
             "reference"
           ],
-          "description": "This should reference the ID of contained medication resource"
+          "description": "This should reference the ID of contained medication resource."
         },
         "dispenseRequest": {
           "type": [
@@ -1265,7 +1255,8 @@
                   "enum": [
                     "days"
                   ],
-                  "nullable": false
+                  "nullable": false,
+                  "description": null
                 },
                 "system": {
                   "type": "string",
@@ -1328,7 +1319,8 @@
                         "enum": [
                           "mg"
                         ],
-                        "nullable": false
+                        "nullable": false,
+                        "description": null
                       },
                       "system": {
                         "type": "string",
