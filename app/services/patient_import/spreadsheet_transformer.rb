@@ -217,7 +217,7 @@ module PatientImport
     end
 
     def import_user
-      @import_user = PatientImport::ImportUser.find_or_create
+      @import_user = ImportUser.find_or_create
     end
 
     def patient_status(row)
