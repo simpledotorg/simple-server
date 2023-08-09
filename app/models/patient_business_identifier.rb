@@ -10,7 +10,8 @@ class PatientBusinessIdentifier < ApplicationRecord
     sri_lanka_national_id: "sri_lanka_national_id",
     sri_lanka_personal_health_number: "sri_lanka_personal_health_number",
     ethiopia_medical_record: "ethiopia_medical_record",
-    india_national_health_id: "india_national_health_id"
+    india_national_health_id: "india_national_health_id",
+    external_import_id: "external_import_id"
   }
 
   validate :identifier_present
