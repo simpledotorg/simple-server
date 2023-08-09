@@ -28,12 +28,12 @@ class Api::V4::Imports
       }
     end
 
-    def value_quantity(system:, unit:, code:)
+    def value_quantity(system:, unit:, code:, description: nil)
       {
         type: :object,
         properties: {
           value: {type: "number", nullable: false},
-          unit: {type: :string, enum: [unit], nullable: false},
+          unit: {type: :string, enum: [unit], nullable: false, description: description},
           system: {type: :string, enum: [system], nullable: false},
           code: {type: :string, enum: [code], nullable: false}
         },
@@ -84,12 +84,12 @@ class Api::V4::Imports
         properties: {
           identifier: {
             type: :string,
-            nullable: false
+            nullable: false,
+            description: description
           }
         },
         nullable: false,
-        required: ["identifier"],
-        description: description
+        required: ["identifier"]
       }
     end
 
@@ -197,7 +197,7 @@ class Api::V4::Imports
               This is a subset of all valid status codes in the FHIR standard.
             DESCRIPTION
           }),
-          start: {type: [:string, :null],
+          start: {type: :string,
                   format: "date-time",
                   nullable: false,
                   description: "Start datetime of appointment. Simple will truncate it to a date granularity."},
@@ -218,7 +218,7 @@ class Api::V4::Imports
             description: "The reference to a facility in which the appointment was created. Modification to FHIR"
           )
         },
-        required: %w[resourceType meta identifier participant status appointmentOrganization]
+        required: %w[resourceType meta identifier start participant status appointmentOrganization]
       }
     end
 
@@ -267,7 +267,8 @@ class Api::V4::Imports
                 valueQuantity: value_quantity(
                   system: "http://unitsofmeasure.org",
                   unit: "mmHg",
-                  code: "mm[Hg]"
+                  code: "mm[Hg]",
+                  description: "Unit for blood pressure measurement"
                 )
               },
               required: %w[code valueQuantity],
@@ -318,7 +319,7 @@ class Api::V4::Imports
                          coding: {type: "array",
                                   items: codeable_concept(
                                     system: "http://loinc.org",
-                                    codes: %w[2339-0 87422-2 88365-24548-4],
+                                    codes: %w[2339-0 87422-2 88365-2 4548-4],
                                     description: "2339-0 for random, \
                                                   87422-2 for post-prandial, \
                                                   88365-2 for fasting, \
@@ -333,14 +334,17 @@ class Api::V4::Imports
                     value_quantity(
                       system: "http://unitsofmeasure.org",
                       unit: "mg/dL",
-                      code: "mg/dL"
-                    ).merge!(description: "Unit for random, post-prandial and fasting"),
+                      code: "mg/dL",
+                      description: "Unit for random, post-prandial and fasting"
+                    ),
                     value_quantity(
                       system: "http://unitsofmeasure.org",
                       unit: "%",
-                      code: "%"
-                    ).merge!(description: "Unit for hba1c")
-                  ]
+                      code: "%",
+                      description: "Unit for hba1c"
+                    )
+                  ],
+                  description: "Use mg/dL for random, post-prandial and fasting measurements. Use % for for hba1c."
                 }
               },
               required: %w[code valueQuantity],
@@ -374,17 +378,10 @@ class Api::V4::Imports
                             enum: ["http://snomed.info/sct"],
                             nullable: false},
                    code: {
-                     # TODO: make this an enum
-                     oneOf: [
-                       {type: :string,
-                        enum: ["38341003"],
-                        description: "Code for HTN",
-                        nullable: false},
-                       {type: :string,
-                        enum: ["73211009"],
-                        description: "Code for diabetes",
-                        nullable: false}
-                     ]
+                     type: :string,
+                     enum: %w[38341003 73211009],
+                     description: "38341003: Code for HTN, 73211009: Code for Diabetes",
+                     nullable: false
                    }
                  },
                  required: %w[system code]
@@ -447,9 +444,14 @@ class Api::V4::Imports
          performer: identifier(description: "Facility ID"),
          medicationReference: {
            type: :object,
-           properties: {reference: {type: :string, pattern: "^#.*$", nullable: false}},
+           properties: {
+             reference: {
+               type: :string, pattern: "^#.*$", nullable: false,
+               description: "The ID should be '#' followed by the ID of medication in the contained resource."
+             }
+           },
            required: ["reference"],
-           description: "This should reference the ID of contained medication resource"
+           description: "This should reference the ID of contained medication resource."
          },
          dispenseRequest: {
            type: [:object, :null],
