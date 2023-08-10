@@ -12,6 +12,10 @@ RSpec.describe BloodPressureExportService, type: :model do
     Flipper.enable(:my_facilities_csv)
   end
 
+  after :each do
+    I18n.default_locale = :en
+  end
+
   describe "#call" do
     context "when data is downloaded" do
       it "formats as expected" do
