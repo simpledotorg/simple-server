@@ -8,7 +8,6 @@ RSpec.describe BloodPressureExportService, type: :model do
   let(:end_period) { Period.month("May 1st 2021") }
 
   before :each do
-    I18n.default_locale = "en-IN"
     Flipper.enable(:my_facilities_csv)
   end
 
@@ -25,6 +24,8 @@ RSpec.describe BloodPressureExportService, type: :model do
 
         facility_set_1 = [facility_1, facility_2, facility_3]
         facility_set_2 = [facility_1, facility_3, facility_4]
+
+        allow(I18n).to receive(:default_locale).and_return("en-IN")
 
         refresh_views
 
