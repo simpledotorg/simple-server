@@ -11,7 +11,9 @@ class Api::V4::ImportsController < ApplicationController
       import_params.to_json
     )
 
-    BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
+    unless Flipper.enabled?(:mock_imports_api)
+      BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
+    end
 
     response = {errors: errors}
     return render json: response, status: :bad_request if errors.present?
