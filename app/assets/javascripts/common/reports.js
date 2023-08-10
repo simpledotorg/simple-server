@@ -361,9 +361,9 @@ DashboardReports = () => {
               data: Object.values(data.overduePatientsPercentage),
               backgroundColor: colors.lightOrange,
               borderColor: colors.orange,
-            }
-          ]
-        }
+            },
+          ],
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -384,7 +384,11 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(data.overduePatientsCalledRate).length,
+                    1,
+                    Object.keys(
+                      data.overduePatientsCalled
+                    )[Object.keys(data.overduePatientsCalled).length - 1]
                   ),
               },
             },
@@ -424,7 +428,6 @@ DashboardReports = () => {
               stack: 'callResult',
               order: 1,
             },
-            
           ],
         },
         options: {
@@ -441,6 +444,9 @@ DashboardReports = () => {
       const currentDate = new Date();
       const currentDateOfTheMonth = currentDate.getDate();
       const monthsDashed = currentDateOfTheMonth > 15 ? 1 : 2;
+      const lastMonthYearStringInLabels = Object.keys(
+        data.overduePatientsCalled
+      )[Object.keys(data.overduePatientsCalled).length - 1];
 
       const config = {
         data: {
@@ -458,6 +464,7 @@ DashboardReports = () => {
                     ctx,
                     Object.keys(data.overduePatientsReturnedRate).length,
                     monthsDashed,
+                    lastMonthYearStringInLabels
                   ),
               },
             },
@@ -475,6 +482,7 @@ DashboardReports = () => {
                     ctx,
                     Object.keys(data.patientsReturnedAgreedToVisitRates).length,
                     monthsDashed,
+                    lastMonthYearStringInLabels
                   ),
               },
             },
@@ -492,6 +500,7 @@ DashboardReports = () => {
                     ctx,
                     Object.keys(data.patientsReturnedRemindToCallLaterRates).length,
                     monthsDashed,
+                    lastMonthYearStringInLabels
                   ),
               },
             },
@@ -509,6 +518,7 @@ DashboardReports = () => {
                     ctx,
                     Object.keys(data.patientsReturnedRemovedFromOverdueListRates).length,
                     monthsDashed,
+                    lastMonthYearStringInLabels
                   ),
               },
             },
@@ -676,7 +686,9 @@ Reports = function ({
 
     const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
     const isLastDateKeysArrayMonthDec =
-      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
+      monthIndexFromChartLabelDateString(
+        dateKeysArray[dateKeysArray.length - 1]
+      ) === 11;
     if (isLastDateKeysArrayMonthDec) {
       decemberKeys.splice(-1);
     }
@@ -696,31 +708,12 @@ Reports = function ({
     const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
     const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
 
-    const monthThreeIndexOfYear = monthIndexFromDateString(monthThreeDateKey);
+    const monthThreeIndexOfYear =
+      monthIndexFromChartLabelDateString(monthThreeDateKey);
     return {
       threeMonthAverage,
       monthThreeIndexOfYear,
     };
-  }
-
-  function monthIndexFromDateString(dateString) {
-    const [month, year] = dateString.split("-");
-    const months = [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec",
-    ];
-
-    return months.indexOf(month.toLowerCase());
   }
 
   function calculateGoalUpwards(monthValue, improvementRatio) {
@@ -1693,9 +1686,8 @@ function baseBarChartConfig() {
   };
 }
 
-
 // [Segment] Functions
-// 
+//
 /**
  * Create a dashed line for the last X segments of dynamic charts starting from the end, default is 1 segment
  * @param {*} ctx - ChartJS object 
@@ -1707,16 +1699,43 @@ function baseBarChartConfig() {
 const dynamicChartSegementDashed = (
   ctx,
   numberOfXAxisTicks,
-  numberOfDashedSegments = 1
+  monthsDashedBase,
+  latestMonthYearDataString = ""
 ) => {
-  const dashStyle = [4, 3]
-  const segmentStartIndex = ctx.p0DataIndex
-  return isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, numberOfDashedSegments) ? dashStyle : undefined;
+  let numberOfDashedSegments = monthsDashedBase;
+
+  if (latestMonthYearDataString) {
+    const currentDate = new Date();
+    const currentMonthOfTheYear = currentDate.getMonth();
+    const lastMonthOfYearInDataRange = monthIndexFromChartLabelDateString(
+      latestMonthYearDataString
+    );
+    const numberOfMonthsLookingBack =
+      currentMonthOfTheYear - lastMonthOfYearInDataRange;
+    numberOfDashedSegments = Math.max(
+      0,
+      monthsDashedBase - numberOfMonthsLookingBack
+    );
+  }
+
+  const dashStyle = [4, 3];
+  const segmentStartIndex = ctx.p0DataIndex;
+  return isSegmentDashed(
+    segmentStartIndex,
+    numberOfXAxisTicks,
+    numberOfDashedSegments
+  )
+    ? dashStyle
+    : undefined;
 };
 
-function isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, segmentsToDashFromEnd) {
-  return segmentStartIndex >= numberOfXAxisTicks - (segmentsToDashFromEnd + 1)
-};
+function isSegmentDashed(
+  segmentStartIndex,
+  numberOfXAxisTicks,
+  segmentsToDashFromEnd
+) {
+  return segmentStartIndex >= numberOfXAxisTicks - (segmentsToDashFromEnd + 1);
+}
 
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
@@ -1781,4 +1800,24 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
+}
+
+function monthIndexFromChartLabelDateString(dateString) {
+  const [month, year] = dateString.split("-");
+  const months = [
+    "jan",
+    "feb",
+    "mar",
+    "apr",
+    "may",
+    "jun",
+    "jul",
+    "aug",
+    "sep",
+    "oct",
+    "nov",
+    "dec",
+  ];
+
+  return months.indexOf(month.toLowerCase());
 }
