@@ -175,7 +175,7 @@ RSpec.shared_examples "v4 API sync requests" do
     it "defaults to english when it cannot find both primary language and region" do
       expect(I18n).to receive(:with_locale).with(:en)
 
-      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "garbage-string"})
+      get sync_route, params: {}, headers: headers.merge({"Accept-Language" => "#$%"})
     end
 
     it "ensures I18n.available_locales only contains locales whose translations are present" do
