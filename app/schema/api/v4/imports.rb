@@ -440,8 +440,8 @@ class Api::V4::Imports
          resourceType: resource_type("MedicationRequest"),
          meta: meta,
          identifier: identifier(description: "ID of medication request"),
-         subject: identifier(description: "Patient ID"),
-         performer: identifier(description: "Facility ID"),
+         subject: reference(description: "Patient ID"),
+         performer: reference(description: "Facility ID"),
          medicationReference: {
            type: :object,
            properties: {
@@ -464,32 +464,39 @@ class Api::V4::Imports
            }
          },
          dosageInstruction: {
-           type: :object,
-           properties: {
-             timing: {type: :object,
-                      properties: {
-                        code: {type: :string,
-                               enum: %w[QD BID TID QID],
-                               nullable: false,
-                               description: "Mapping to Simple representation\n" \
-                                 "QD: OD (Once a day)\n" \
-                                 "BID: BD (Twice a day)\n" \
-                                 "TID: TDS (Thrice a day)\n" \
-                                 "QID: QDS (Four times a day)"}
-                      }},
-             doseAndRate: {type: "array",
-                           items: {type: :object,
-                                   properties: {
-                                     doseQuantity: value_quantity(
-                                       system: "http://unitsofmeasure.org",
-                                       unit: "mg",
-                                       code: "mg"
-                                     )
-                                   }},
-                           description: "Dosage in milligrams"},
-             text: {type: :string,
-                    description: "Use only if dosage cannot be expressed in terms of the other fields."}
-           }
+           type: :array,
+           items: {
+             type: :object,
+             properties: {
+               timing: {type: :object,
+                        properties: {
+                          code: {type: :string,
+                                 enum: %w[QD BID TID QID],
+                                 nullable: false,
+                                 description: "Mapping to Simple representation\n" \
+                                   "QD: OD (Once a day)\n" \
+                                   "BID: BD (Twice a day)\n" \
+                                   "TID: TDS (Thrice a day)\n" \
+                                   "QID: QDS (Four times a day)"}
+                        }},
+               doseAndRate: {type: :array,
+                             items: {type: :object,
+                                     properties: {
+                                       doseQuantity: value_quantity(
+                                         system: "http://unitsofmeasure.org",
+                                         unit: "mg",
+                                         code: "mg"
+                                       )
+                                     }},
+                             maxItems: 1,
+                             minItems: 0,
+                             description: "Dosage in milligrams"},
+               text: {type: :string,
+                      description: "Use only if dosage cannot be expressed in terms of the other fields."}
+             }
+           },
+           maxItems: 1,
+           minItems: 0
          }
        },
        required: %w[resourceType meta identifier contained medicationReference subject performer]}
