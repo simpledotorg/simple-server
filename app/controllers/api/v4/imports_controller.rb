@@ -29,6 +29,8 @@ class Api::V4::ImportsController < ApplicationController
         permit_patient_resource(import_resource)
       when "Appointment"
         permit_appointment_resource(import_resource)
+      when "Observation"
+        permit_observation_resource(import_resource)
       else
         next
       end
@@ -63,6 +65,22 @@ class Api::V4::ImportsController < ApplicationController
       participant: [
         actor: [:identifier]
       ]
+    )
+  end
+
+  def permit_observation_resource(resource)
+    resource.permit(
+      :resourceType,
+      :effectiveDateTime,
+      meta: [:lastUpdated, :createdAt],
+      identifier: [:value],
+      subject: [:identifier],
+      performer: [:identifier],
+      code: {coding: [:system, :code]},
+      component: [{
+        code: {coding: [:system, :code]},
+        valueQuantity: [:value, :unit, :system, :code]
+      }]
     )
   end
 
