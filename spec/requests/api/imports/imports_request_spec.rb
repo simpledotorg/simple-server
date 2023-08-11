@@ -21,11 +21,16 @@ RSpec.describe "Import API", type: :request do
   let(:headers) do
     {"ACCEPT" => "application/json", "CONTENT_TYPE" => "application/json"}.merge(auth_headers)
   end
-  let(:payload) { build_patient_import_resource }
   let(:invalid_payload) { {} }
 
   it "imports patient resources" do
-    put route, params: {resources: [payload]}.to_json, headers: headers
+    put route, params: {resources: [build_patient_import_resource]}.to_json, headers: headers
+
+    expect(response.status).to eq(202)
+  end
+
+  it "imports appointment resources" do
+    put route, params: {resources: [build_appointment_import_resource]}.to_json, headers: headers
 
     expect(response.status).to eq(202)
   end

@@ -24,35 +24,46 @@ class Api::V4::ImportsController < ApplicationController
   def import_params
     import_resources = params.require(:resources)
     import_resources.map do |import_resource|
-      import_resource.permit(
-        :resourceType,
-        :gender,
-        :birthDate,
-        :deceasedBoolean,
-        :telecom,
-        :name,
-        :active,
-        meta: [
-          :lastUpdated,
-          :createdAt
-        ],
-        identifier: [
-          :value
-        ],
-        managingOrganization: [
-          :value
-        ],
-        registrationOrganization: [
-          :value
-        ],
-        address: [
-          :line,
-          :district,
-          :city,
-          :postalCode
-        ]
-      )
+      case import_resource[:resourceType]
+      when "Patient"
+        permit_patient_resource(import_resource)
+      when "Appointment"
+        permit_appointment_resource(import_resource)
+      else
+        next
+      end
     end
+  end
+
+  def permit_patient_resource(resource)
+    resource.permit(
+      :resourceType,
+      :gender,
+      :birthDate,
+      :deceasedBoolean,
+      :telecom,
+      :name,
+      :active,
+      meta: [:lastUpdated, :createdAt],
+      identifier: [:value],
+      managingOrganization: [:value],
+      registrationOrganization: [:value],
+      address: [:line, :district, :city, :postalCode]
+    )
+  end
+
+  def permit_appointment_resource(resource)
+    resource.permit(
+      :resourceType,
+      :status,
+      :start,
+      meta: [:lastUpdated, :createdAt],
+      identifier: [:value],
+      appointmentOrganization: [:identifier],
+      participant: [
+        actor: [:identifier]
+      ]
+    )
   end
 
   def validate_token_organization
