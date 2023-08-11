@@ -17,15 +17,16 @@ RSpec.describe BulkApiImport::Importer do
         .to change(Patient, :count).by(2)
     end
 
-    it "does not actually import non-patient resources" do
-      resources = 2.times.map {
-        build_appointment_import_resource
-          .merge(appointmentOrganization: {identifier: facility_identifiers.identifier},
-            appointmentCreationOrganization: nil)
-      }
+    it "imports appointment resources" do
+      resources = 2.times.map do
+        build_appointment_import_resource.merge(
+          appointmentOrganization: {identifier: facility_identifiers.identifier},
+          appointmentCreationOrganization: nil
+        )
+      end
 
       expect { described_class.new(resource_list: resources).import }
-        .not_to change(Appointment, :count)
+        .to change(Appointment, :count).by(2)
     end
   end
 
@@ -34,8 +35,8 @@ RSpec.describe BulkApiImport::Importer do
       importer = described_class.new(resource_list: [])
 
       [
-        {input: {resourceType: "Patient"}, expected_importer: BulkApiImport::FhirPatientImporter}
-        # {input: {resourceType: "Appointment"}, expected_importer: BulkApiImport::FhirAppointmentImporter},
+        {input: {resourceType: "Patient"}, expected_importer: BulkApiImport::FhirPatientImporter},
+        {input: {resourceType: "Appointment"}, expected_importer: BulkApiImport::FhirAppointmentImporter}
         # {input: {resourceType: "Observation"}, expected_importer: BulkApiImport::FhirObservationImporter}
       ].each do |input:, expected_importer:|
         expect(importer.resource_importer(input)).to be_an_instance_of(expected_importer)
