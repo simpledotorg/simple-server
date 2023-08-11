@@ -35,6 +35,16 @@ RSpec.describe "Import API", type: :request do
     expect(response.status).to eq(202)
   end
 
+  it "imports observation resources" do
+    put route,
+      params: {
+        resources: [:blood_pressure, :blood_sugar].map { build_observation_import_resource(_1) }
+      }.to_json,
+      headers: headers
+
+    expect(response.status).to eq(202)
+  end
+
   it "fails to import invalid resources" do
     put route, params: {resources: [invalid_payload]}.to_json, headers: headers
 
