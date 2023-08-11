@@ -3,7 +3,10 @@ class BulkApiImport::Importer
     @resources = resource_list
   end
 
-  IMPORTERS = {"Patient" => BulkApiImport::FhirPatientImporter}
+  IMPORTERS = {
+    "Patient" => BulkApiImport::FhirPatientImporter,
+    "Appointment" => BulkApiImport::FhirAppointmentImporter
+  }
 
   def import
     @resources.each do |resource|
