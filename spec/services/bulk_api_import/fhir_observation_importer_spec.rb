@@ -7,11 +7,13 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
-  let(:patient) { create(:patient) }
+  let(:identifier) { "test" }
+  let(:patient) { create(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
   let(:patient_identifier) do
-    create(:patient_business_identifier, patient: patient, identifier_type: :external_import_id)
+    create(:patient_business_identifier, patient: patient,
+           identifier: identifier,
+           identifier_type: :external_import_id)
   end
-
   describe "#import" do
     it "imports a blood pressure observation" do
       expect {

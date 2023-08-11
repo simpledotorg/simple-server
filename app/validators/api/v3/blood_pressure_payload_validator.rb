@@ -14,6 +14,7 @@ class Api::V3::BloodPressurePayloadValidator < Api::V3::PayloadValidator
 
   validate :validate_schema
   validate :facility_exists
+  # TODO: validate existence of patients?
 
   def schema
     Api::V3::Models.blood_pressure

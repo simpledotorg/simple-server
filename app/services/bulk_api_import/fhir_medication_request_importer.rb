@@ -19,7 +19,7 @@ class BulkApiImport::FhirObservationImporter
     {
       id: translate_id(@resource.dig(:identifier, 0, :value)),
       patient_id: @resource[:subject][:identifier],
-      facility_id: translate_facility_id(@resource[:performer][0][:identifier]),
+      facility_id: translate_facility_id(@resource[:performer][:identifier]),
       user_id: import_user.id,
       recorded_at: @resource[:effectiveDateTime],
       **timestamps
