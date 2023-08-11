@@ -5,7 +5,8 @@ class BulkApiImport::Importer
 
   IMPORTERS = {
     "Patient" => BulkApiImport::FhirPatientImporter,
-    "Appointment" => BulkApiImport::FhirAppointmentImporter
+    "Appointment" => BulkApiImport::FhirAppointmentImporter,
+    "Observation" => BulkApiImport::FhirObservationImporter
   }
 
   def import
