@@ -1767,11 +1767,6 @@ const intersectDataVerticalLine = {
   },
 };
 
-function capOverduePatientsCallRate(data) {
-  return Object.keys(data)
-		.reduce((o, key) => Object.assign(o, {[key]: Math.min(data[key], 100)}), {})
-}
-
 function withBaseLineConfig(config) {
   return _.mergeWith(
     baseLineGraphConfig(),
