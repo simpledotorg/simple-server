@@ -49,6 +49,18 @@ RSpec.describe BulkApiImport::Importer do
         .and change(Encounter, :count).by(2)
         .and change(Observation, :count).by(2)
     end
+
+    it "imports medication request resources" do
+      resources = 2.times.map do
+        build_medication_request_import_resource.merge(
+          performer: {identifier: facility_identifier.identifier},
+          subject: {identifier: patient_identifier.identifier}
+        )
+      end
+
+      expect { described_class.new(resource_list: resources).import }
+        .to change(PrescriptionDrug, :count).by(2)
+    end
   end
 
   describe "#resource_importer" do
@@ -58,7 +70,8 @@ RSpec.describe BulkApiImport::Importer do
       [
         {input: {resourceType: "Patient"}, expected_importer: BulkApiImport::FhirPatientImporter},
         {input: {resourceType: "Appointment"}, expected_importer: BulkApiImport::FhirAppointmentImporter},
-        {input: {resourceType: "Observation"}, expected_importer: BulkApiImport::FhirObservationImporter}
+        {input: {resourceType: "Observation"}, expected_importer: BulkApiImport::FhirObservationImporter},
+        {input: {resourceType: "MedicationRequest"}, expected_importer: BulkApiImport::FhirMedicationRequestImporter}
       ].each do |input:, expected_importer:|
         expect(importer.resource_importer(input)).to be_an_instance_of(expected_importer)
       end

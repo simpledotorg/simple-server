@@ -365,7 +365,7 @@ class Api::V4::Imports
        properties: {
          resourceType: resource_type("Condition"),
          meta: meta,
-         subject: identifier(description: "Patient ID"),
+         subject: reference(description: "Patient ID"),
          code: {
            type: :object,
            properties: {
@@ -414,8 +414,9 @@ class Api::V4::Imports
                           system: {type: :string,
                                    enum: ["http://www.nlm.nih.gov/research/umls/rxnorm"]},
                           code: {type: :string},
-                          display: {type: :string, description: "Name of medicine"}
-                        }},
+                          display: {type: :string, description: "Name of medicine", nullable: false}
+                        },
+                        required: ["display"]},
                 nullable: false,
                 minItems: 1,
                 maxItems: 1
@@ -464,11 +465,11 @@ class Api::V4::Imports
            }
          },
          dosageInstruction: {
-           type: :array,
+           type: [:array, :null],
            items: {
-             type: :object,
+             type: [:object, :null],
              properties: {
-               timing: {type: :object,
+               timing: {type: [:object, :null],
                         properties: {
                           code: {type: :string,
                                  enum: %w[QD BID TID QID],
@@ -479,8 +480,8 @@ class Api::V4::Imports
                                    "TID: TDS (Thrice a day)\n" \
                                    "QID: QDS (Four times a day)"}
                         }},
-               doseAndRate: {type: :array,
-                             items: {type: :object,
+               doseAndRate: {type: [:array, :null],
+                             items: {type: [:object, :null],
                                      properties: {
                                        doseQuantity: value_quantity(
                                          system: "http://unitsofmeasure.org",
@@ -491,7 +492,7 @@ class Api::V4::Imports
                              maxItems: 1,
                              minItems: 0,
                              description: "Dosage in milligrams"},
-               text: {type: :string,
+               text: {type: [:string, :null],
                       description: "Use only if dosage cannot be expressed in terms of the other fields."}
              }
            },

@@ -7,7 +7,7 @@ def build_medication_request_import_resource
     code: {
       coding: [{system: "http://www.nlm.nih.gov/research/umls/rxnorm",
                 code: Faker::Alphanumeric.alphanumeric,
-                name: Faker::Dessert.topping}]
+                display: Faker::Dessert.topping}]
     }
   }
 
@@ -18,7 +18,7 @@ def build_medication_request_import_resource
     identifier: [{value: Faker::Alphanumeric.alphanumeric}],
     subject: {identifier: Faker::Alphanumeric.alphanumeric},
     performer: {identifier: Faker::Alphanumeric.alphanumeric},
-    medicationReference: "##{contained_medication[:id]}",
+    medicationReference: {reference: "##{contained_medication[:id]}"},
     dispenseRequest: {
       expectedSupplyDuration: {
         value: Faker::Number.between(from: 1, to: 50),
@@ -28,7 +28,7 @@ def build_medication_request_import_resource
       }
     },
     dosageInstruction: [{
-      timing: {code: %w[QD BID TID QID]},
+      timing: {code: %w[QD BID TID QID].sample},
       doseAndRate: [{doseQuantity: {value: Faker::Number.between(from: 1, to: 10),
                                     unit: "mg",
                                     system: "http://unitsofmeasure.org",

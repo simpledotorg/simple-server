@@ -45,6 +45,12 @@ RSpec.describe "Import API", type: :request do
     expect(response.status).to eq(202)
   end
 
+  it "imports medication request resources" do
+    put route, params: {resources: [build_medication_request_import_resource]}.to_json, headers: headers
+
+    expect(response.status).to eq(202)
+  end
+
   it "fails to import invalid resources" do
     put route, params: {resources: [invalid_payload]}.to_json, headers: headers
 

@@ -31,6 +31,10 @@ class Api::V4::ImportsController < ApplicationController
         permit_appointment_resource(import_resource)
       when "Observation"
         permit_observation_resource(import_resource)
+      when "MedicationRequest"
+        permit_medication_request_resource(import_resource)
+      when "Condition"
+        permit_condition_resource(import_resource)
       else
         next
       end
@@ -81,6 +85,46 @@ class Api::V4::ImportsController < ApplicationController
         code: {coding: [:system, :code]},
         valueQuantity: [:value, :unit, :system, :code]
       }]
+    )
+  end
+
+  def permit_medication_request_resource(resource)
+    resource.permit(
+      :resourceType,
+      medicationReference: [:reference],
+      meta: [:lastUpdated, :createdAt],
+      identifier: [:value],
+      subject: [:identifier],
+      performer: [:identifier],
+      dispenseRequest: {expectedSupplyDuration: [:value, :unit, :system, :code]},
+      dosageInstruction: [
+        [
+          {
+            timing: {code: []},
+            doseAndRate: [{
+              doseQuantity: [:value, :unit, :system, :code]
+            }]
+          },
+          :text
+        ]
+      ],
+      contained: [
+        [
+          :resourceType,
+          :id,
+          {code: {coding: [:system, :code, :display]}}
+        ]
+      ]
+    )
+  end
+
+  def permit_condition_resource(resource)
+    resource.permit(
+      :resourceType,
+      meta: [:lastUpdated, :createdAt],
+      identifier: [:value],
+      subject: [:identifier],
+      code: {coding: [:system, :code]}
     )
   end
 

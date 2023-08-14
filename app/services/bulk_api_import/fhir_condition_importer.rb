@@ -1,15 +1,13 @@
-class BulkApiImport::FhirMedicationRequestImporter
+class BulkApiImport::FhirConditionImporter
   include BulkApiImport::FhirImportable
 
-  FREQUENCY_TRANSLATION = {
-    QD: :OD,
-    BID: :BD,
-    TID: :TDS,
-    QID: :QDS
+  CONDITION_TRANSLATION = {
+    "38341003" => :hypertension,
+    "73211009 " => :diabetes
   }.with_indifferent_access
 
-  def initialize(med_request_resource)
-    @resource = med_request_resource
+  def initialize(condition_resource)
+    @resource = condition_resource
   end
 
   def import

@@ -1006,23 +1006,18 @@
           ]
         },
         "subject": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Patient ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Patient ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "code": {
           "type": "object",
@@ -1110,9 +1105,13 @@
                         },
                         "display": {
                           "type": "string",
-                          "description": "Name of medicine"
+                          "description": "Name of medicine",
+                          "nullable": false
                         }
-                      }
+                      },
+                      "required": [
+                        "display"
+                      ]
                     },
                     "nullable": false,
                     "minItems": 1,
@@ -1275,12 +1274,21 @@
           }
         },
         "dosageInstruction": {
-          "type": "array",
+          "type": [
+            "array",
+            "null"
+          ],
           "items": {
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
               "timing": {
-                "type": "object",
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
                   "code": {
                     "type": "string",
@@ -1296,9 +1304,15 @@
                 }
               },
               "doseAndRate": {
-                "type": "array",
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "items": {
-                  "type": "object",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
                   "properties": {
                     "doseQuantity": {
                       "type": "object",
@@ -1345,7 +1359,10 @@
                 "description": "Dosage in milligrams"
               },
               "text": {
-                "type": "string",
+                "type": [
+                  "string",
+                  "null"
+                ],
                 "description": "Use only if dosage cannot be expressed in terms of the other fields."
               }
             }

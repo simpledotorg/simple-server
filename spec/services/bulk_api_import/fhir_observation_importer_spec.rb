@@ -7,13 +7,14 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
-  let(:identifier) { "test" }
+  let(:identifier) { SecureRandom.uuid }
   let(:patient) { create(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
   let(:patient_identifier) do
     create(:patient_business_identifier, patient: patient,
            identifier: identifier,
            identifier_type: :external_import_id)
   end
+
   describe "#import" do
     it "imports a blood pressure observation" do
       expect {
@@ -50,6 +51,7 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
         attributes = described_class.new(bp_resource).build_blood_pressure_attributes
 
         expect(Api::V3::BloodPressurePayloadValidator.new(attributes)).to be_valid
+        expect(attributes[:patient_id]).to eq(patient.id)
       end
     end
   end
@@ -64,6 +66,7 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
         attributes = described_class.new(bs_resource).build_blood_sugar_attributes
 
         expect(Api::V4::BloodSugarPayloadValidator.new(attributes)).to be_valid
+        expect(attributes[:patient_id]).to eq(patient.id)
       end
     end
   end
