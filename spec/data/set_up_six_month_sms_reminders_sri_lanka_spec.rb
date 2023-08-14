@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'rails_helper'
+require "rails_helper"
 require Rails.root.join("db", "data", "20230808085832_set_up_six_month_sms_reminders_sri_lanka.rb")
 
 describe SetUpSixMonthSmsRemindersSriLanka do
