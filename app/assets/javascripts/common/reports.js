@@ -1796,21 +1796,23 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
 }
 
 function monthIndexFromChartLabelDateString(dateString) {
-  const [month, year] = dateString.split("-");
-  const months = [
-    "jan",
-    "feb",
-    "mar",
-    "apr",
-    "may",
-    "jun",
-    "jul",
-    "aug",
-    "sep",
-    "oct",
-    "nov",
-    "dec",
-  ];
+  return new Date(dateString).getMonth()
+  // console.log('text:', text);
+  // const [month, year] = dateString.split("-");
+  // const months = [
+  //   "jan",
+  //   "feb",
+  //   "mar",
+  //   "apr",
+  //   "may",
+  //   "jun",
+  //   "jul",
+  //   "aug",
+  //   "sep",
+  //   "oct",
+  //   "nov",
+  //   "dec",
+  // ];
 
-  return months.indexOf(month.toLowerCase());
+  // return months.indexOf(month.toLowerCase());
 }
