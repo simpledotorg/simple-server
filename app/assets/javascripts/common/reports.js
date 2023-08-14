@@ -442,9 +442,7 @@ DashboardReports = () => {
       const currentDate = new Date();
       const currentDateOfTheMonth = currentDate.getDate();
       const monthsDashed = currentDateOfTheMonth > 15 ? 1 : 2;
-      const lastMonthYearStringInLabels = Object.keys(
-        data.overduePatientsCalled
-      )[Object.keys(data.overduePatientsCalled).length - 1];
+      const lastMonthYearStringInLabels = Object.keys(data.overduePatientsCalled).pop();
 
       const config = {
         data: {
