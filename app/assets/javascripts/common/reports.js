@@ -386,7 +386,7 @@ DashboardReports = () => {
                     ctx,
                     Object.keys(data.overduePatientsCalledRate).length,
                     1,
-Object.keys(data.overduePatientsCalled).pop();
+                    Object.keys(data.overduePatientsCalled).pop()
                   ),
               },
             },
