@@ -1,6 +1,14 @@
 require "dhis2"
+
 class Dhis2TrackerDataExporter
-  def self.configure
+  def initialize(facility)
+    @facility = facility
+    @patients = @facility.patients
+
+    configure
+  end
+
+  def configure
     Dhis2.configure do |config|
       config.url = "http://localhost:8080"
       config.user = "admin"
@@ -8,12 +16,12 @@ class Dhis2TrackerDataExporter
     end
   end
 
-  def generate_htn_event(device_created_at:, org_unit:, diastolic:, systolic:)
+  def generate_htn_event(blood_pressure)
     {
       program: "pMIglSEqPGS",
       programStage: "anb2cjLx3WM",
-      occurredAt: device_created_at,
-      orgUnit: org_unit,
+      occurredAt: blood_pressure.device_created_at.iso8601,
+      orgUnit: "DiszpKrYNg8",
       dataValues: [
         {
           # amlodopine
@@ -23,7 +31,7 @@ class Dhis2TrackerDataExporter
         {
           # systolic
           dataElement: "IxEwYiq1FTq",
-          value: systolic
+          value: blood_pressure.systolic
         },
         {
           # Losartan
@@ -33,7 +41,7 @@ class Dhis2TrackerDataExporter
         {
           # Diastolic
           dataElement: "yNhtHKtKkO1",
-          value: diastolic
+          value: blood_pressure.diastolic
         },
         {
           # BMI Measurement
@@ -54,7 +62,7 @@ class Dhis2TrackerDataExporter
     }
   end
 
-  def self.generate_patient_attributes(patient)
+  def generate_patient_attributes(patient)
     [
       {
         attribute: "YJGACwhN0St",
@@ -70,7 +78,11 @@ class Dhis2TrackerDataExporter
       },
       {
         attribute: "NI0QRzJvQ0k",
-        value: patient.date_of_birth
+        value: if not patient.date_of_birth.nil?
+                 patient.date_of_birth
+               else
+                 patient.current_age.years.ago.to_date
+               end
       },
       {
         attribute: "Z1rLc1rVHK8",
@@ -102,75 +114,36 @@ class Dhis2TrackerDataExporter
         value: "234232323"
       },
       {
-        attribute: "l5yxkxHgTw9", value: "no"
+        attribute: "l5yxkxHgTw9",
+        value: "no"
       }
     ]
   end
 
-  def generate_data(patient)
-    patient.blood_pressure.map { |bp| bp.slice(:systolic, :diastolic, :device_created_at) }
+  def generate_enrollment(patient)
+    {
+      program: "pMIglSEqPGS",
+      orgUnit: "DiszpKrYNg8",
+      enrolledAt: patient.device_created_at.iso8601,
+      attributes: generate_patient_attributes(patient),
+      events: patient.blood_pressures.map { |blood_pressure| generate_htn_event(blood_pressure) }
+    }
   end
 
-  def self.execute
-    puts "-----------------------------------"
-    puts configure
-    puts "-----------|configured|------------"
-
-    patient = Patient.first
-
-    puts Dhis2.client.post(path: "tracker", query_params: {async: false, reportMode: "FULL"}, payload: {
-      trackedEntities: [
-        {
-          trackedEntityType: "MCPQUTHX1Ze",
-          orgUnit: "YgcCeCbmTET",
-          enrollments: [
-            {
-              program: "pMIglSEqPGS",
-              orgUnit: "YgcCeCbmTET",
-              enrolledAt: patient.device_created_at,
-              attributes: generate_patient_attributes(patient),
-              events: [
-                {
-                  program: "pMIglSEqPGS",
-                  programStage: "anb2cjLx3WM",
-                  occurredAt: "2023-07-10T00:00:00.000",
-                  orgUnit: "YgcCeCbmTET",
-                  dataValues: [
-                    {
-                      dataElement: "eGY7e5Ttbys",
-                      value: "1"
-                    },
-                    {
-                      dataElement: "IxEwYiq1FTq",
-                      value: "120"
-                    },
-                    {
-                      dataElement: "yUYbcCXo9Mv",
-                      value: "1"
-                    },
-                    {
-                      dataElement: "yNhtHKtKkO1",
-                      value: "90"
-                    },
-                    {
-                      dataElement: "MzmFoPLwmSt",
-                      value: "false"
-                    },
-                    {
-                      dataElement: "D8FWXAtCuL2",
-                      value: "1"
-                    },
-                    {
-                      dataElement: "lWmOLo5hFYQ",
-                      value: "1"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        }
-      ]
-    })
+  def export_tracked_entites
+    puts Dhis2.client.post(
+      path: "tracker",
+      query_params: { async: false, reportMode: "FULL" },
+      payload: {
+        trackedEntities: @patients.map do |patient|
+          {
+            trackedEntityType: "MCPQUTHX1Ze",
+            orgUnit: "DiszpKrYNg8",
+            enrollments: [
+              generate_enrollment(patient)
+            ]
+          }
+        end
+      })
   end
 end
