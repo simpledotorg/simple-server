@@ -1,4 +1,4 @@
-class PatientImport::ImportUser
+class ImportUser
   IMPORT_USER_PHONE_NUMBER = "0000000001"
 
   def self.find_or_create

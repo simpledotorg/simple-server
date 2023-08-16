@@ -384,10 +384,7 @@
           "description": "Status of appointment. Translation to simple statuses:\n- pending: scheduled\n- fulfilled: visited\n- cancelled: cancelled\nThis is a subset of all valid status codes in the FHIR standard.\n"
         },
         "start": {
-          "type": [
-            "string",
-            "null"
-          ],
+          "type": "string",
           "format": "date-time",
           "nullable": false,
           "description": "Start datetime of appointment. Simple will truncate it to a date granularity."
@@ -402,14 +399,14 @@
                 "properties": {
                   "identifier": {
                     "type": "string",
-                    "nullable": false
+                    "nullable": false,
+                    "description": "ID of patient"
                   }
                 },
                 "nullable": false,
                 "required": [
                   "identifier"
-                ],
-                "description": "ID of patient"
+                ]
               }
             },
             "nullable": false,
@@ -426,14 +423,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "The reference to a facility in which the appointment is taking place. Modification to FHIR"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "The reference to a facility in which the appointment is taking place. Modification to FHIR"
+          ]
         },
         "appointmentCreationOrganization": {
           "type": [
@@ -443,20 +440,21 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "The reference to a facility in which the appointment was created. Modification to FHIR"
             }
           },
           "nullable": true,
           "required": [
             "identifier"
-          ],
-          "description": "The reference to a facility in which the appointment was created. Modification to FHIR"
+          ]
         }
       },
       "required": [
         "resourceType",
         "meta",
         "identifier",
+        "start",
         "participant",
         "status",
         "appointmentOrganization"
@@ -516,14 +514,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "Patient ID"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "Patient ID"
+          ]
         },
         "performer": {
           "type": "array",
@@ -532,14 +530,14 @@
             "properties": {
               "identifier": {
                 "type": "string",
-                "nullable": false
+                "nullable": false,
+                "description": "Facility ID"
               }
             },
             "nullable": false,
             "required": [
               "identifier"
-            ],
-            "description": "Facility ID"
+            ]
           },
           "nullable": false,
           "minItems": 1,
@@ -643,7 +641,8 @@
                     "enum": [
                       "mmHg"
                     ],
-                    "nullable": false
+                    "nullable": false,
+                    "description": "Unit for blood pressure measurement"
                   },
                   "system": {
                     "type": "string",
@@ -750,14 +749,14 @@
           "properties": {
             "identifier": {
               "type": "string",
-              "nullable": false
+              "nullable": false,
+              "description": "Patient ID"
             }
           },
           "nullable": false,
           "required": [
             "identifier"
-          ],
-          "description": "Patient ID"
+          ]
         },
         "performer": {
           "type": "array",
@@ -766,14 +765,14 @@
             "properties": {
               "identifier": {
                 "type": "string",
-                "nullable": false
+                "nullable": false,
+                "description": "Facility ID"
               }
             },
             "nullable": false,
             "required": [
               "identifier"
-            ],
-            "description": "Facility ID"
+            ]
           },
           "nullable": false,
           "minItems": 1,
@@ -844,7 +843,8 @@
                           "enum": [
                             "2339-0",
                             "87422-2",
-                            "88365-24548-4"
+                            "88365-2",
+                            "4548-4"
                           ],
                           "nullable": false,
                           "description": "2339-0 for random,                                                   87422-2 for post-prandial,                                                   88365-2 for fasting,                                                   4548-4 for hba1c"
@@ -880,7 +880,8 @@
                         "enum": [
                           "mg/dL"
                         ],
-                        "nullable": false
+                        "nullable": false,
+                        "description": "Unit for random, post-prandial and fasting"
                       },
                       "system": {
                         "type": "string",
@@ -903,8 +904,7 @@
                       "unit",
                       "system",
                       "code"
-                    ],
-                    "description": "Unit for random, post-prandial and fasting"
+                    ]
                   },
                   {
                     "type": "object",
@@ -918,7 +918,8 @@
                         "enum": [
                           "%"
                         ],
-                        "nullable": false
+                        "nullable": false,
+                        "description": "Unit for hba1c"
                       },
                       "system": {
                         "type": "string",
@@ -941,10 +942,10 @@
                       "unit",
                       "system",
                       "code"
-                    ],
-                    "description": "Unit for hba1c"
+                    ]
                   }
-                ]
+                ],
+                "description": "Use mg/dL for random, post-prandial and fasting measurements. Use % for for hba1c."
               }
             },
             "required": [
@@ -1005,23 +1006,18 @@
           ]
         },
         "subject": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Patient ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Patient ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "code": {
           "type": "object",
@@ -1039,24 +1035,13 @@
                     "nullable": false
                   },
                   "code": {
-                    "oneOf": [
-                      {
-                        "type": "string",
-                        "enum": [
-                          "38341003"
-                        ],
-                        "description": "Code for HTN",
-                        "nullable": false
-                      },
-                      {
-                        "type": "string",
-                        "enum": [
-                          "73211009"
-                        ],
-                        "description": "Code for diabetes",
-                        "nullable": false
-                      }
-                    ]
+                    "type": "string",
+                    "enum": [
+                      "38341003",
+                      "73211009"
+                    ],
+                    "description": "38341003: Code for HTN, 73211009: Code for Diabetes",
+                    "nullable": false
                   }
                 },
                 "required": [
@@ -1120,9 +1105,13 @@
                         },
                         "display": {
                           "type": "string",
-                          "description": "Name of medicine"
+                          "description": "Name of medicine",
+                          "nullable": false
                         }
-                      }
+                      },
+                      "required": [
+                        "display"
+                      ]
                     },
                     "nullable": false,
                     "minItems": 1,
@@ -1193,42 +1182,32 @@
           "maxItems": 1
         },
         "subject": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Patient ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Patient ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "performer": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Facility ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Facility ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "medicationReference": {
           "type": "object",
@@ -1236,13 +1215,14 @@
             "reference": {
               "type": "string",
               "pattern": "^#.*$",
-              "nullable": false
+              "nullable": false,
+              "description": "The ID should be '#' followed by the ID of medication in the contained resource."
             }
           },
           "required": [
             "reference"
           ],
-          "description": "This should reference the ID of contained medication resource"
+          "description": "This should reference the ID of contained medication resource."
         },
         "dispenseRequest": {
           "type": [
@@ -1265,7 +1245,8 @@
                   "enum": [
                     "days"
                   ],
-                  "nullable": false
+                  "nullable": false,
+                  "description": null
                 },
                 "system": {
                   "type": "string",
@@ -1293,75 +1274,101 @@
           }
         },
         "dosageInstruction": {
-          "type": "object",
-          "properties": {
-            "timing": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "string",
-                  "enum": [
-                    "QD",
-                    "BID",
-                    "TID",
-                    "QID"
-                  ],
-                  "nullable": false,
-                  "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
-                }
-              }
-            },
-            "doseAndRate": {
-              "type": "array",
-              "items": {
-                "type": "object",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "timing": {
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
-                  "doseQuantity": {
-                    "type": "object",
-                    "properties": {
-                      "value": {
-                        "type": "number",
-                        "nullable": false
-                      },
-                      "unit": {
-                        "type": "string",
-                        "enum": [
-                          "mg"
-                        ],
-                        "nullable": false
-                      },
-                      "system": {
-                        "type": "string",
-                        "enum": [
-                          "http://unitsofmeasure.org"
-                        ],
-                        "nullable": false
-                      },
-                      "code": {
-                        "type": "string",
-                        "enum": [
-                          "mg"
-                        ],
-                        "nullable": false
-                      }
-                    },
+                  "code": {
+                    "type": "string",
+                    "enum": [
+                      "QD",
+                      "BID",
+                      "TID",
+                      "QID"
+                    ],
                     "nullable": false,
-                    "required": [
-                      "value",
-                      "unit",
-                      "system",
-                      "code"
-                    ]
+                    "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
                   }
                 }
               },
-              "description": "Dosage in milligrams"
-            },
-            "text": {
-              "type": "string",
-              "description": "Use only if dosage cannot be expressed in terms of the other fields."
+              "doseAndRate": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "doseQuantity": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number",
+                          "nullable": false
+                        },
+                        "unit": {
+                          "type": "string",
+                          "enum": [
+                            "mg"
+                          ],
+                          "nullable": false,
+                          "description": null
+                        },
+                        "system": {
+                          "type": "string",
+                          "enum": [
+                            "http://unitsofmeasure.org"
+                          ],
+                          "nullable": false
+                        },
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "mg"
+                          ],
+                          "nullable": false
+                        }
+                      },
+                      "nullable": false,
+                      "required": [
+                        "value",
+                        "unit",
+                        "system",
+                        "code"
+                      ]
+                    }
+                  }
+                },
+                "maxItems": 1,
+                "minItems": 0,
+                "description": "Dosage in milligrams"
+              },
+              "text": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Use only if dosage cannot be expressed in terms of the other fields."
+              }
             }
-          }
+          },
+          "maxItems": 1,
+          "minItems": 0
         }
       },
       "required": [
