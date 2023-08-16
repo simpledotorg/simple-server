@@ -7,7 +7,8 @@ class BulkApiImport::Importer
     "Patient" => BulkApiImport::FhirPatientImporter,
     "Appointment" => BulkApiImport::FhirAppointmentImporter,
     "Observation" => BulkApiImport::FhirObservationImporter,
-    "MedicationRequest" => BulkApiImport::FhirMedicationRequestImporter
+    "MedicationRequest" => BulkApiImport::FhirMedicationRequestImporter,
+    "Condition" => BulkApiImport::FhirConditionImporter
   }
 
   def import

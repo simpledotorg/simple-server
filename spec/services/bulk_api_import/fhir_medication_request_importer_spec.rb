@@ -8,9 +8,9 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
   let(:identifier) { SecureRandom.uuid }
-  let(:patient) { create(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
+  let(:patient) { build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
   let(:patient_identifier) do
-    create(:patient_business_identifier, patient: patient,
+    build_stubbed(:patient_business_identifier, patient: patient,
            identifier: identifier,
            identifier_type: :external_import_id)
   end
