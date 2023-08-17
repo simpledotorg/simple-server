@@ -2,9 +2,13 @@ require "swagger_helper"
 
 describe "Import v4 API", swagger_doc: "v4/import.json" do
   before { Flipper.enable(:imports_api) }
+  before { FactoryBot.create(:facility) }
   path "/import" do
-    let(:organization) { FactoryBot.create(:organization) }
-    let(:resource) { build_patient_import_resource }
+    let(:facility) { Facility.first }
+    let(:facility_identifier) do
+      create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
+    end
+    let(:organization) { facility.facility_group.organization }
     let(:machine_user) { FactoryBot.create(:machine_user, organization: organization) }
     let(:application) { FactoryBot.create(:oauth_application, owner: machine_user) }
     let(:token) {
@@ -25,7 +29,7 @@ describe "Import v4 API", swagger_doc: "v4/import.json" do
       response "202", "Accepted" do
         let(:HTTP_X_ORGANIZATION_ID) { organization.id }
         let(:Authorization) { "Bearer #{token.token}" }
-        let(:import_request) { {"resources" => [build_patient_import_resource]} }
+        let(:import_request) { {"resources" => [build_condition_import_resource]} }
         run_test!
       end
 
