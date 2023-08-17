@@ -6,20 +6,15 @@ class BulkApiImport::Importer
   IMPORTERS = {
     "Patient" => BulkApiImport::FhirPatientImporter,
     "Appointment" => BulkApiImport::FhirAppointmentImporter,
-    "Observation" => BulkApiImport::FhirObservationImporter
+    "Observation" => BulkApiImport::FhirObservationImporter,
+    "MedicationRequest" => BulkApiImport::FhirMedicationRequestImporter,
+    "Condition" => BulkApiImport::FhirConditionImporter
   }
 
   def import
     @resources.each do |resource|
-      resource_importer(resource).import if import_enabled?(resource)
+      resource_importer(resource).import
     end
-  end
-
-  # TODO:
-  # This method is a stopgap to ensure that our mock imports and real imports can coexist.
-  # Once we have implemented all resource types, we should remove this method entirely.
-  def import_enabled?(resource)
-    IMPORTERS[resource[:resourceType]].present?
   end
 
   def resource_importer(resource)
