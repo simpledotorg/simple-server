@@ -454,6 +454,7 @@
         "resourceType",
         "meta",
         "identifier",
+        "start",
         "participant",
         "status",
         "appointmentOrganization"
@@ -1005,23 +1006,18 @@
           ]
         },
         "subject": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Patient ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Patient ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "code": {
           "type": "object",
@@ -1109,9 +1105,13 @@
                         },
                         "display": {
                           "type": "string",
-                          "description": "Name of medicine"
+                          "description": "Name of medicine",
+                          "nullable": false
                         }
-                      }
+                      },
+                      "required": [
+                        "display"
+                      ]
                     },
                     "nullable": false,
                     "minItems": 1,
@@ -1182,42 +1182,32 @@
           "maxItems": 1
         },
         "subject": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Patient ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Patient ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "performer": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "value": {
-                "type": "string",
-                "nullable": false,
-                "description": "Facility ID"
-              }
-            },
-            "required": [
-              "value"
-            ]
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "nullable": false,
+              "description": "Facility ID"
+            }
           },
           "nullable": false,
-          "minItems": 1,
-          "maxItems": 1
+          "required": [
+            "identifier"
+          ]
         },
         "medicationReference": {
           "type": "object",
@@ -1284,76 +1274,101 @@
           }
         },
         "dosageInstruction": {
-          "type": "object",
-          "properties": {
-            "timing": {
-              "type": "object",
-              "properties": {
-                "code": {
-                  "type": "string",
-                  "enum": [
-                    "QD",
-                    "BID",
-                    "TID",
-                    "QID"
-                  ],
-                  "nullable": false,
-                  "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
-                }
-              }
-            },
-            "doseAndRate": {
-              "type": "array",
-              "items": {
-                "type": "object",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "timing": {
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
-                  "doseQuantity": {
-                    "type": "object",
-                    "properties": {
-                      "value": {
-                        "type": "number",
-                        "nullable": false
-                      },
-                      "unit": {
-                        "type": "string",
-                        "enum": [
-                          "mg"
-                        ],
-                        "nullable": false,
-                        "description": null
-                      },
-                      "system": {
-                        "type": "string",
-                        "enum": [
-                          "http://unitsofmeasure.org"
-                        ],
-                        "nullable": false
-                      },
-                      "code": {
-                        "type": "string",
-                        "enum": [
-                          "mg"
-                        ],
-                        "nullable": false
-                      }
-                    },
+                  "code": {
+                    "type": "string",
+                    "enum": [
+                      "QD",
+                      "BID",
+                      "TID",
+                      "QID"
+                    ],
                     "nullable": false,
-                    "required": [
-                      "value",
-                      "unit",
-                      "system",
-                      "code"
-                    ]
+                    "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
                   }
                 }
               },
-              "description": "Dosage in milligrams"
-            },
-            "text": {
-              "type": "string",
-              "description": "Use only if dosage cannot be expressed in terms of the other fields."
+              "doseAndRate": {
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "properties": {
+                    "doseQuantity": {
+                      "type": "object",
+                      "properties": {
+                        "value": {
+                          "type": "number",
+                          "nullable": false
+                        },
+                        "unit": {
+                          "type": "string",
+                          "enum": [
+                            "mg"
+                          ],
+                          "nullable": false,
+                          "description": null
+                        },
+                        "system": {
+                          "type": "string",
+                          "enum": [
+                            "http://unitsofmeasure.org"
+                          ],
+                          "nullable": false
+                        },
+                        "code": {
+                          "type": "string",
+                          "enum": [
+                            "mg"
+                          ],
+                          "nullable": false
+                        }
+                      },
+                      "nullable": false,
+                      "required": [
+                        "value",
+                        "unit",
+                        "system",
+                        "code"
+                      ]
+                    }
+                  }
+                },
+                "maxItems": 1,
+                "minItems": 0,
+                "description": "Dosage in milligrams"
+              },
+              "text": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "description": "Use only if dosage cannot be expressed in terms of the other fields."
+              }
             }
-          }
+          },
+          "maxItems": 1,
+          "minItems": 0
         }
       },
       "required": [
