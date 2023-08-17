@@ -6,10 +6,10 @@ Since our partner organizations are trusted machine clients in this case, we cre
 that is used for the client credential flow needed for the import API. We also create a machine user associated with these
 organizations.
 
-To create a machine user and an OAuth application, run the following:
+To create a machine user and an OAuth application, run the following in your environment (for production, this is the [k8s cluster](https://github.com/simpledotorg/container-deployment/blob/master/doc/RUNBOOK.md#how-to-open-rails-application-console)):
 
 ```shell
-bundle exec cap <env> deploy:rake task='setup_oauth_application[<name>,<org_id>,<client_id>,<client_secret (optional)>]'
+bundle exec rake 'setup_oauth_application[<name>,<org_id>,<client_id>,<client_secret (optional)>]'
 ```
 
 Note the client ID and client secret of the OAuth application in the output. This should be shared with the partner organizations.
