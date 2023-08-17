@@ -6,10 +6,7 @@ class Api::V4::ImportsController < ApplicationController
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
 
-    errors = JSON::Validator.fully_validate(
-      Api::V4::Imports.schema_with_definitions,
-      import_params.to_json
-    )
+    errors = BulkApiImport::Validator.new(organization: header_organization_id, resources: import_params).validate
 
     unless Flipper.enabled?(:mock_imports_api)
       BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
@@ -130,8 +127,12 @@ class Api::V4::ImportsController < ApplicationController
 
   def validate_token_organization
     token_organization = MachineUser.find_by(id: doorkeeper_token.application&.owner_id)&.organization_id
-    unless token_organization.present? && token_organization == request.headers["HTTP_X_ORGANIZATION_ID"]
+    unless token_organization.present? && token_organization == header_organization_id
       head :forbidden
     end
+  end
+
+  def header_organization_id
+    request.headers["HTTP_X_ORGANIZATION_ID"]
   end
 end
