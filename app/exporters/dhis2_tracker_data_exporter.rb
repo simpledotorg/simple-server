@@ -17,31 +17,62 @@ class Dhis2TrackerDataExporter
   end
 
   def export_tracked_entites
-    puts Dhis2.client.post(
-      path: "tracker",
-      query_params: { async: false, reportMode: "FULL" },
-      payload: {
-        trackedEntities: @patients.map do |patient|
-          {
-            trackedEntityType: "MCPQUTHX1Ze",
-            orgUnit: "DiszpKrYNg8",
-            enrollments: [
-              generate_enrollment(patient)
-            ]
-          }
-        end
-      })
+    {
+      trackedEntities: @patients.map do |patient|
+        {
+          trackedEntityType: DHIS2_CONFIG.dig(:tracked_entity_types, :person_htn),
+          orgUnit: DHIS2_CONFIG.dig(:org_units, @facility.id),
+          enrollments: [
+            generate_enrollment(patient)
+          ]
+        }
+      end
+    }.to_json
+    # puts Dhis2.client.post(
+    #   path: "tracker",
+    #   query_params: { async: false, reportMode: "FULL" },
+    #   payload: {
+    #     trackedEntities: @patients.map do |patient|
+    #       {
+    #         trackedEntityType: DHIS2_CONFIG.dig(:tracked_entity_types, :htn_visit),
+    #         orgUnit: DHIS2_CONFIG.dig(:org_units, @facility.id),
+    #         enrollments: [
+    #           generate_enrollment(patient)
+    #         ]
+    #       }
+    #     end
+    #   })
   end
 
   DHIS2_CONFIG = {
     org_units: {
-      "Ngelehun CHC" => "DiszpKrYNg8",
+      "1884bcc2-5a74-477f-9def-5d3e78c077bf" => "ueuQlqb8ccl",
+      "619286e9-d3fa-4a0d-b98d-7ecc9ed2e18a" => "Rp268JB6Ne4",
+      "b57b2003-fb6a-4082-b5ea-fa8a8cf67958" => "cDw53Ej8rju",
+      "eb23c39e-f9a2-4bce-ac16-e8c712390ce4" => "GvFqTavdpGE",
+      "40682518-19b9-4a89-a0b4-5bfd07514ec1" => "plnHVbJR6p4",
+      "2d1e5efc-0800-462c-92c2-fa06272d754e" => "BV4IomHvri4",
+      "dd79a6fa-e44c-40dc-9807-acfd4d2a1b8d" => "qjboFI0irVu",
+      "bcd6e0cb-2196-4a37-8bc3-c37d0f24ef50" => "dWOAzMcK2Wt",
+      "c92e00df-b6b4-4987-b7a0-21757233e07f" => "kbGqmM6ZWWV",
+      "c9de906f-4fa6-432e-85d8-f68303e22ed9" => "eoYV2p74eVz",
+      "7715cd89-2b2e-4cd9-b415-0f3341b4a3df" => "nq7F0t1Pz6t",
+      "85e22fc6-f2ed-4feb-b959-353c0d7211c7" => "r5WWF9WDzoa",
+      "0c3d86e7-adbc-423b-bf9e-cf0b0c98658d" => "yMCshbaVExv",
+      "1be8fb26-87bb-44d7-be5e-0d65304c550e" => "tlMeFk8C4CG",
+      "e150046d-5dae-41a5-b321-6e498320fb22" => "BH7rDkWjUqc",
+      "2249b9ce-5b41-48af-8849-e31ddee88ff7" => "Rll4VmTDRiE",
+      "da5215c8-92ae-44b6-9438-dc07ae81cfd6" => "XtuhRhmbrJM",
+      "a5ec1dc8-008e-4d4b-bbbd-6f10f67b8d5b" => "c41XRVOYNJm"
     },
     programs: {
       htn_registry: "pMIglSEqPGS"
     },
     program_stages: {
       htn_visit: "anb2cjLx3WM"
+    },
+    tracked_entity_types: {
+      person_htn: "MCPQUTHX1Ze"
     },
     event_attributes: {
       systolic: "IxEwYiq1FTq",
@@ -73,7 +104,7 @@ class Dhis2TrackerDataExporter
       program: DHIS2_CONFIG.dig(:programs, :htn_registry),
       programStage: DHIS2_CONFIG.dig(:program_stages, :htn_visit),
       occurredAt: blood_pressure.device_created_at.iso8601,
-      orgUnit: DHIS2_CONFIG.dig(:org_units, "Ngelehun CHC"),
+      orgUnit: DHIS2_CONFIG.dig(:org_units, @facility.id),
       dataValues: [
         {
           dataElement: EVENT_ATTRIBUTES[:amlodopine],
@@ -109,6 +140,7 @@ class Dhis2TrackerDataExporter
 
   def generate_patient_attributes(patient)
     date_of_birth, is_estimated = date_of_birth(patient)
+    first_name, last_name = patient.full_name.split(" ")
     [
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :consent_to_record_data),
@@ -132,12 +164,11 @@ class Dhis2TrackerDataExporter
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :last_name),
-        value: patient.full_name
+        value: last_name
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :first_name),
-        # We only have full_name in the patient record;
-        value: ""
+        value: first_name
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :sex),
@@ -145,11 +176,11 @@ class Dhis2TrackerDataExporter
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :ncd_patient_status),
-        value: "ACTIVE"
+        value: patient.status.upcase
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :phone_number),
-        value: "234232323"
+        value: patient.phone_numbers&.first&.number
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :treated_for_htn_in_past),
@@ -161,7 +192,7 @@ class Dhis2TrackerDataExporter
   def generate_enrollment(patient)
     {
       program: DHIS2_CONFIG.dig(:programs, :htn_registry),
-      orgUnit: DHIS2_CONFIG.dig(:org_units, "Ngelehun CHC"),
+      orgUnit: DHIS2_CONFIG.dig(:org_units, @facility.id),
       enrolledAt: patient.device_created_at.iso8601,
       attributes: generate_patient_attributes(patient),
       events: patient.blood_pressures.map { |blood_pressure| generate_htn_event(blood_pressure) }
