@@ -8,10 +8,12 @@ class BulkApiImport::FhirPatientImporter
   end
 
   def import
-    transformed_params = Api::V3::PatientTransformer.from_nested_request(build_attributes)
-    patient = MergePatientService.new(transformed_params, request_metadata: request_metadata).merge
-    AuditLog.merge_log(import_user, patient) if patient.present?
-    patient
+    merge_result = build_attributes
+      .then { Api::V3::PatientTransformer.from_nested_request(_1) }
+      .then { MergePatientService.new(_1, request_metadata: request_metadata).merge }
+
+    AuditLog.merge_log(import_user, merge_result) if merge_result.present?
+    merge_result
   end
 
   def request_metadata
