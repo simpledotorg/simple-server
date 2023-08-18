@@ -423,7 +423,7 @@ om-ET:
         uncontrolled_card:
           subtitle: "Dhukkubsatoota %{diagnosis} kan %{facility_name} tti ji'oota  >3 galmaa'anii %{controlled_threshold}yoo xiqqaate ji'oota 3 darbaniif qabaatan."
           help_tooltip:
-            numerator: "Dhukkubsatoota %{controlled_threshold} daawwannaa isaanii ji'oota 3 wajjiin."
+            numerator: "Dhukkubsatoota %{uncontrolled_threshold} daawwannaa isaanii ji'oota 3 wajjiin."
             denominator: "Dhukkubsatootni %{diagnosis} bakka kanatti qajeelfamu, kan ji'oota 3n darban keessa %{facility_name}tti galmaa'an. Dhukkubsatootni du'anii fi hordoffii hin qabne keessaa baafamanii jiru."
         very_uncontrolled_card:
           subtitle: "Dhukkubsatoota Sukkaaraa kan %{facility_name} tti ji'oota  >3 galmaa'anii %{very_uncontrolled_threshold}yoo xiqqaate ji'oota 3 darbaniif qabaatan."
