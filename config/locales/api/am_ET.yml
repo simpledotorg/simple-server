@@ -418,7 +418,7 @@ am-ET:
         controlled_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ%{controlled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
           help_tooltip:
-            numerator: "ባለፉት 3 ወራት ውስጥ%{uncontrolled_threshold} በመጨረሻ ጉብኝታቸው ላይ ያሉ ታካሚዎች።"
+            numerator: "ባለፉት 3 ወራት ውስጥ%{controlled_threshold} በመጨረሻ ጉብኝታቸው ላይ ያሉ ታካሚዎች።"
             denominator: "ወደ %{facility_name} ተመደቡት የ  %{diagnosis} ታካሚዎች፣ ካለፉት 3 ወራት በፊት የተመዘገቡ። ለክትትል ታካሚዎች የሞቱ እና የጠፉ አይካተቱም"
         uncontrolled_card:
           subtitle: "ከ 3 ወራት በፊት የተመዘገቡ በ%{facility_name}የ %{diagnosis} ታካሚዎች ባለፉት 3 ወራት ውስጥ%{controlled_threshold} ለመጨረሻ ጊዜ ጉብኝታቸው"
