@@ -56,6 +56,7 @@ class SetupJulyExperimentsBangladesh < ActiveRecord::Migration[6.1]
         cascade1 = experiment.treatment_groups.create!(description: "cascade1")
         cascade1.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
         cascade1.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 3)
+        # Stale (5 buckets): control, 0,  0/3, 0/7, and 0/3/7
 
         cascade2 = experiment.treatment_groups.create!(description: "cascade2")
         cascade2.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 0)
