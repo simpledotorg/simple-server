@@ -17,7 +17,7 @@ class Dhis2TrackerDataExporter
   end
 
   def export_tracked_entites
-    {
+    payload = {
       trackedEntities: @patients.map do |patient|
         {
           trackedEntityType: DHIS2_CONFIG.dig(:tracked_entity_types, :person_htn),
@@ -27,21 +27,14 @@ class Dhis2TrackerDataExporter
           ]
         }
       end
-    }.to_json
-    # puts Dhis2.client.post(
-    #   path: "tracker",
-    #   query_params: { async: false, reportMode: "FULL" },
-    #   payload: {
-    #     trackedEntities: @patients.map do |patient|
-    #       {
-    #         trackedEntityType: DHIS2_CONFIG.dig(:tracked_entity_types, :htn_visit),
-    #         orgUnit: DHIS2_CONFIG.dig(:org_units, @facility.id),
-    #         enrollments: [
-    #           generate_enrollment(patient)
-    #         ]
-    #       }
-    #     end
-    #   })
+    }
+
+    puts Dhis2.client.post(
+      path: "tracker",
+      payload: payload)
+
+    # TODO: poll report page from response till status OK to return this:
+    puts "#{@patients.count} patients were moved from #{@facility.name} to org unit #{DHIS2_CONFIG.dig(:org_units, @facility.id)}"
   end
 
   DHIS2_CONFIG = {
@@ -93,6 +86,7 @@ class Dhis2TrackerDataExporter
       first_name: "sB1IHYu2xQT",
       sex: "oindugucx72",
       ncd_patient_status: "fI1P3Mg1zOZ",
+      ncd_update_patient_status: "D917mo9Whvn",
       phone_number: "YRDy9xy9jD0",
       treated_for_htn_in_past: "l5yxkxHgTw9",
     }
@@ -138,23 +132,43 @@ class Dhis2TrackerDataExporter
     }
   end
 
+  # Currently ncd_patient_status expects ACTIVE,TRANSFER,DIED.
+  # On Simple, we also have inactive and unresponsive
+  def status(patient)
+    case patient.status
+    when :active
+      "ACTIVE"
+    when :dead
+      "DIED"
+    else
+      "TRANSFER"
+    end
+  end
+
+  def get_first_and_last_names(name)
+    name.split(" ")
+  end
+
   def generate_patient_attributes(patient)
     date_of_birth, is_estimated = date_of_birth(patient)
-    first_name, last_name = patient.full_name.split(" ")
+    first_name, last_name = get_first_and_last_names(patient.full_name)
+    medical_history = patient.medical_history
     [
       {
+        # We don't have this value on simple
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :consent_to_record_data),
         value: "true"
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :hypertension),
-        value: "YES"
+        value: medical_history.hypertension.upcase
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :current_address),
         value: address(patient)
       },
       {
+        # calculating this as age years from today's date
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :date_of_birth),
         value: date_of_birth
       },
@@ -163,6 +177,7 @@ class Dhis2TrackerDataExporter
         value: is_estimated
       },
       {
+        # splitting these on " ". need a better way to do this
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :last_name),
         value: last_name
       },
@@ -171,20 +186,27 @@ class Dhis2TrackerDataExporter
         value: first_name
       },
       {
+        # this is set to make/female. should add a transgender option
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :sex),
         value: patient.gender
       },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :ncd_patient_status),
-        value: patient.status.upcase
+        value: status(patient)
       },
       {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :ncd_update_patient_status),
+        value: "true"
+      },
+      {
+        # on simple, patients can have multiple phone numbers
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :phone_number),
         value: patient.phone_numbers&.first&.number
       },
       {
+        # These two may not have the same definition
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :treated_for_htn_in_past),
-        value: "no"
+        value: medical_history.receiving_treatment_for_hypertension.upcase
       }
     ]
   end
