@@ -39,6 +39,23 @@ RSpec.describe Csv::FacilitiesValidator do
       end
     end
 
+    context "when there are no duplicate identifiers" do
+      it "does not return an error message about duplicate facilities" do
+        organization = create(:organization, name: "O")
+        create(:facility_group, name: "FG", organization_id: organization.id)
+        facility = FactoryBot.create(:facility, organization_name: "O", facility_group_name: "FG", name: "F")
+        business_identifier_1 = build_stubbed(:facility_business_identifier, identifier: "abc", facility_id: facility.id)
+        business_identifier_2 = build_stubbed(:facility_business_identifier, identifier: "xyz", identifier_type: :external_org_facility_id, facility_id: facility.id)
+        validator = described_class.new([
+          {facility: facility, business_identifiers: [business_identifier_1, business_identifier_2]}
+        ])
+
+        validator.validate
+
+        expect(validator.errors).to be_empty
+      end
+    end
+
     context "per-facility validations" do
       let(:organization) { create(:organization, name: "O") }
       let(:facility_group) { create(:facility_group, name: "FG", organization: organization) }
