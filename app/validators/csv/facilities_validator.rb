@@ -59,7 +59,7 @@ class Csv::FacilitiesValidator
 
   def duplicate_business_identifiers
     business_identifiers = facilities.flat_map { |facility| facility[:business_identifiers] }
-    identifiers = business_identifiers.pluck(:identifiers)
+    identifiers = business_identifiers.pluck(:identifier)
     errors << "Uploaded file has duplicate business identifiers" if identifiers.count != identifiers.uniq.count
   end
 
