@@ -2,8 +2,8 @@
 
 class SetUpSixMonthSmsRemindersSriLanka < ActiveRecord::Migration[6.1]
   first_experiment_start_time = DateTime.parse("1 Sep 2023")
-  experiment_start_times = (0..5).map do |number_of_months|
-    first_experiment_start_time + number_of_months.months
+  experiment_start_times = (0..5).map do |n|
+    first_experiment_start_time + n.months
   end
   EXPERIMENTS_DATA = experiment_start_times.map do |start_time|
     month_name = DateTime::MONTHNAMES[start_time.month]
@@ -26,7 +26,7 @@ class SetUpSixMonthSmsRemindersSriLanka < ActiveRecord::Migration[6.1]
           end_time: experiment_data[:end_time],
           max_patients_per_day: 5000
         ).tap do |experiment|
-          cascade = experiment.treatment_groups.create!(description: "sms_reminders_cascade")
+          cascade = experiment.treatment_groups.create!(description: "sms_reminders_cascade - #{experiment.name}")
           cascade.reminder_templates.create!(message: "notifications.sri_lanka.one_day_before_appointment", remind_on_in_days: -1)
           cascade.reminder_templates.create!(message: "notifications.sri_lanka.three_days_missed_appointment", remind_on_in_days: 3)
         end
