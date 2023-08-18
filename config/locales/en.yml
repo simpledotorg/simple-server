@@ -5,7 +5,7 @@ en:
   time:
     formats:
       default: "%d-%^b-%Y %I:%M %p"
-      rfc3339: "%FT%T%:z"
+      iso8601: "%FT%T%:z"
   errors:
     messages:
       already_confirmed: "was already confirmed, please try signing in"

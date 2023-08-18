@@ -60,6 +60,7 @@ class Dashboard::Hypertension::OverduePatientsCalledTableComponent < Application
 
   def percentage(numerator, denominator)
     return 0 if denominator.blank? || denominator.zero?
+    return 100 if numerator > denominator
     numerator * 100 / denominator
   end
 
