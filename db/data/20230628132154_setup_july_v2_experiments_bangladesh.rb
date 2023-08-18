@@ -82,4 +82,9 @@ class SetupJulyV2ExperimentsBangladesh < ActiveRecord::Migration[6.1]
     Experimentation::Experiment.current_patients.find_by_name(CURRENT_PATIENTS_EXPERIMENT).cancel
     Experimentation::Experiment.stale_patients.find_by_name(STALE_PATIENTS_EXPERIMENT).cancel
   end
+  def down
+    EXPERIMENTS_DATA.map do |experiment_data|
+      Experimentation::Experiment.current_patients.find_by_name(experiment_data[:name])&.cancel
+    end
+  end
 end
