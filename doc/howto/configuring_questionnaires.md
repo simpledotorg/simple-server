@@ -2,7 +2,7 @@
 
 The [Questionnaires ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/020-questionnaires-aka-dynamic-forms.md) talks about the implementation from an end-user's perspective. This is a tutorial on configuring dynamic forms from server-side.
 
-#### 1. Creating a new questionnaire
+### 1. Creating a new questionnaire
 When creating a new questionnaire, follow these steps:
 1. Add a `questionnaire_type` to Questionnaire model, which is the source of truth for supported questionnaire types.
 1. Create a layout based on the syntax specified for a DSL version in [swagger docs](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses/paths/~1questionnaire_responses~1sync/get), the source of truth for syntax.
@@ -10,7 +10,7 @@ When creating a new questionnaire, follow these steps:
 1. Inside a view component, `text` contains a translation reference, not the actual text.
     1. Server replaces data inside `text` with translations based on User's locale at the time of API request.
 
-#### 2. How Questionnaires sync API works?
+### 2. How Questionnaires sync API works?
 Questionnaire sync API has different design & works in following way:
 1. Since dynamic forms are created and stored only on Server-side, there is only Sync-to-user and no Sync-from-user.
 1. Mobile requests questionnaires for the DSL Version it supports
@@ -21,7 +21,7 @@ Questionnaire sync API has different design & works in following way:
     1. Server replaces `text` inside a questionnaire's layout with translations for a user's locale.
     1. Unlike other sync resources, where a region change triggers a `force_resync`, in case of questionnaires, a `locale` or `resync_token` change triggers a `force_resync`
 
-#### 3. Initializing questionnaire responses on server-side
+### 3. Initializing questionnaire responses on server-side
 A dynamic form response can be initialized either on Server or Mobile side. We initialized monthly-forms on Server-side for 3 reasons:
 1. If any data must be pre-populated, Server has access to that data.
 1. Mobile App update isn't required to accommodate any major change in requirements.
@@ -33,7 +33,7 @@ Mobile displays a Questionnaire on home page based on [these 3 conditions](https
 1. A QuestionnaireResponses service script is called to either initialize blank responses or pre-fill known data in the form.
 1. The script initializes responses for the previous `month_date`. For example, on 1st August 2023, `July-2023` response gets created for all facilities.
 
-#### 4. Updating an existing questionnaire
+### 4. Updating an existing questionnaire
 Dynamic forms give us the freedom to add/remove fields without a Mobile App update. Follow these steps to update a form:
 
 1. Unlike mobile database, where only ONE questionnaire can exist per type, server stores multiple questionnaires of same type for audit purposes.
@@ -43,7 +43,7 @@ Dynamic forms give us the freedom to add/remove fields without a Mobile App upda
 1. To update a questionnaire, first mark existing `active` questionnaire as `inactive`.
 1. After marking older questionnaire as `inactive`, create a new one and mark it as `active`.
 
-#### 5. Extending Questionnaire DSL to support more fields
+### 5. Extending Questionnaire DSL to support more fields
 The syntax of a questionnaire layout is defined by a DSL version. To add more input & display types to a questionnaire, the `dsl_version` must be incremented by following these steps:
 
 1. DSL versions are defined in form of `X.Y`, where both X & Y are integers
@@ -55,7 +55,7 @@ The syntax of a questionnaire layout is defined by a DSL version. To add more in
 1. A Mobile app update is required to propagate changes in DSL version. Older version won't be able to support newly added input/display types.
 1. On Server-side, maintain active questionnaires of both versions `1.1` & `1.2` until all users have migrated to newly launched app.
 
-#### 6. Modifying (~~not Extending~~) Questionnaire DSL
+### 6. Modifying (~~not Extending~~) Questionnaire DSL
 When syntax/keys of older view components need to be changed to reflect newer requirements, a backward-incompatible extension must be made by following these steps:
 
 1. X gets incremented by 1 and Y gets reset to 0. For example, `1.5` gets updated to `2.0`.

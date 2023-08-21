@@ -23,7 +23,7 @@ We have designed Questionnaires by reusing underlying offline-first sync archite
 
 Questionnaires are implemented by following below mentioned steps:
 
-#### 1. Mobile _syncs_ questionnaires from server to device
+### 1. Mobile _syncs_ questionnaires from server to device
 Mobile requests questionnaires from server using [the questionnaire sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaires). Server responds with all layouts compatible with the DSL version supported by the mobile app.
 
 On Mobile database, the primary key for Questionnaires sync resource is questionnaire_type, and not id. _That is a key difference between Questionnaire and other sync resources._ Reason being, mobile needs only 1 layout per type of a questionnaire. Whenever a new questionnaire of an existing type is created, server sends the updated ID & layout in the sync response, and mobile updates the row for corresponding type.
@@ -33,7 +33,7 @@ On Mobile database, the primary key for Questionnaires sync resource is question
 | screening_reports       | uuid-1 | {form-1} |
 | supplies_reports        | uuid-2 | {form-2} |
 
-#### 2. Mobile _syncs_ questionnaire_responses from server to device
+### 2. Mobile _syncs_ questionnaire_responses from server to device
 User inputs for a dynamic form are stored in a questionnaire response. Mobile requests them from server using [this sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses).
 
 Other sync resources have explicit keys for recording input (Blood Pressures have "systolic"/"diastolic", Patients have "gender", etc.). Questionnaire response records all user inputs in a single field `content` of JSON data type.
@@ -43,7 +43,7 @@ Other sync resources have explicit keys for recording input (Blood Pressures hav
 | uuid-11 | uuid-1           | screening_reports  | Surat       | 123     | {"name": "john"} |
 | uuid-22 | uuid-2           | drug_stock_reports | Bangalore   | 456     | {"name": "doe"}  |
 
-#### 3. Displaying questionnaires on home page
+### 3. Displaying questionnaires on home page
 ![questionnaires-on-home-page](resources/questionnaires-home-page.png)
 
 The decision to display or hide link to a dynamic form on the home page is based on 3 steps:
@@ -51,7 +51,7 @@ The decision to display or hide link to a dynamic form on the home page is based
 1. Mobile has questionnaire responses for given type.
 1. Config of a questionnaire is enabled for User's facility, which mobile derives from [the facility sync API](https://api.simple.org/api-docs/index.html#tag/facility).
 
-#### 4. Displaying a list of forms
+### 4. Displaying a list of forms
 ![questionnaire-responses-list](resources/questionnaire-responses-list.png)
 
 When user clicks on a form type from home page, Mobile queries its table for responses of given questionnaire type. Mobile has some custom logic on ordering and style of the forms:
@@ -61,12 +61,12 @@ When user clicks on a form type from home page, Mobile queries its table for res
 1. This implies that `month_date` & `submitted` keys are _"mandatory/static"_ in monthly questionnaire responses.
 1. Mobile has display & translation logic for these mandatory fields.
 
-#### 5. User clicks on a form
+### 5. User clicks on a form
 ![questionnaire-view](resources/questionnaire-view.png)
 
 When user clicks on a form, Mobile renders UI of a questionnaire based on the layout. Current version of DSL has provisions for `integer, string, date & radio-button` input types, and `header/sub-header/paragraph/checklist` display types; and can be extended to more types in future.
 
-#### 6. User submits a form
+### 6. User submits a form
 When user submits a form, Mobile updates the `content`, `questionnaire_id`(to record the layout which was displayed to a user), `last_updated_by_user_id` & `facility_id` for a questionnaire response.
 
 A questionnaire's layout contains a `link_id` for input fields. Mobile uses them to display values in UI and record responses in the content key. 
@@ -80,7 +80,7 @@ A specimen content key's value looks like:
 }
 ```
 
-#### 7. Handling concurrent updates
+### 7. Handling concurrent updates
 When server receives different questionnaire_responses for the same ID, it merges the 2 records in the following way:
 1. Latest `device_updated_at` takes precedence for every field, except `content`.
 1. A UNION of existing & new `content` is taken.
@@ -91,29 +91,29 @@ When server receives different questionnaire_responses for the same ID, it merge
     1. Post union, DB will contain keys A, B, C, D, E & F
     1. C, D will be User #2’s data.
 
-#### 8. User changes locale
+### 8. User changes locale
 
 For most screens, mobile stores the translations for all languages. Since a questionnaire's layout is driven by server, translations are also stored on server-side. When user changes a locale, a sync gets triggerd on mobile. We leveraged this behaviour of mobile to communicate layouts with new translations from server to mobile. 
 
 We're storing locale inside Questionnaire sync resource's `process_token` (_another aspect where questionnaires differ from other sync resources_). When a user changes locale, Server **resyncs** all questionnaires to Mobile because of mismatch between user & process token's locale.
 
-#### 9. FAQs
+### 9. FAQs
 
 1. Dynamic forms are backward & forward compatible
-  - When a new questionnaire version is released, the app can continue to work with responses of previous version.
-  - Apps with older version of questionnaire can also parse responses of newer version.
-  - For maintaining this forward/backward compatibility, there are no _mandatory_ fields in a questionnaire response. All fields are optional.
-  - When Mobile receives a response that was recorded against a different version of a questionnaire, it handles `content` key in following manner:
-    - Extra keys are ignored when displaying the form.
-    - Missing keys are added to `content` when recording user input.
+    - When a new questionnaire version is released, the app can continue to work with responses of previous version.
+    - Apps with older version of questionnaire can also parse responses of newer version.
+    - For maintaining this forward/backward compatibility, there are no _mandatory_ fields in a questionnaire response. All fields are optional.
+    - When Mobile receives a response that was recorded against a different version of a questionnaire, it handles `content` key in following manner:
+      - Extra keys are ignored when displaying the form.
+      - Missing keys are added to `content` when recording user input.
 1. For a questionnaire, a response can be initialized either on Server or Mobile side.
-  - Monthly forms that are exclusive per facility are initialized on Server-side (example: Screening, Supplies & Drug-stock reports).
-  - Forms that require enrolling fresh data are inialized on Mobile-side (example: cancer-referral forms)
+    - Monthly forms that are exclusive per facility are initialized on Server-side (example: Screening, Supplies & Drug-stock reports).
+    - Forms that require enrolling fresh data are inialized on Mobile-side (example: cancer-referral forms)
 1. Mobile uses [Jetpack Compose](https://developer.android.com/jetpack/compose) for rendering the layouts dynamically.
 
 For configuring questionnaires from Server-side, refer to [this how-to guide](https://github.com/simpledotorg/simple-server/blob/master/doc/howto/configuring_questionnaires.md).
 
-### Avoided Designs
+## Avoided Designs
 
 - We are not using FHIR questionnaires for following reasons:
   - They're too generic/extensible for our use-case.
