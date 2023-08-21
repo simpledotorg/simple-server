@@ -57,6 +57,9 @@ The decision to display or hide link to a dynamic form on the home page is based
 When user clicks on a form type from home page, Mobile queries its table for responses of given questionnaire type. Mobile has some custom logic on ordering and style of the forms:
 1. Mobile orders forms in descending order of months by checking for `content["month_date"]` key.
 1. Mobile deduces submission status by checking for `content["submitted"]` key.
+1. Mobile localizes month_date before displaying them.
+1. This implies that `month_date` & `submitted` keys are _"mandatory/static"_ in monthly questionnaire responses.
+1. Mobile has display & translation logic for these mandatory fields.
 
 #### 5. User clicks on a form
 ![questionnaire-view](resources/questionnaire-view.png)

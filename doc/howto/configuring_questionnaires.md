@@ -1,39 +1,63 @@
 # Configuring Questionnaires
 
-# Workflow
+The [Questionnaires ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/020-questionnaires-aka-dynamic-forms.md) talks about the implementation from an end-user's perspective. This is a tutorial on configuring dynamic forms from server-side.
 
+#### 1. Creating a new questionnaire
+When creating a new questionnaire, follow these steps:
+1. Add a `questionnaire_type` to Questionnaire model, which is the source of truth for supported questionnaire types.
+1. Create a layout based on the syntax specified for a DSL version in [swagger docs](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses/paths/~1questionnaire_responses~1sync/get), the source of truth for syntax.
+    1. When creating a layout, you can avoid adding an `id` for each view component, as that gets generate by a helper function inside Questionnaire model.
+1. Inside a view component, `text` contains a translation reference, not the actual text.
+    1. Server replaces data inside `text` with translations based on User's locale at the time of API request.
 
-#### 9. Creating a new type of questionnaire
-#### 9. Adding/Removing fields from an existing questionnaire
-- unlike mobile database, where ONLY ONE type of questionnaire exists, server will have multiple version of the same questionnaire.
-- however, only 1 active questionnaire for a given DSL version
+#### 2. How Questionnaires sync API works?
+Questionnaire sync API has different design & works in following way:
+1. Since dynamic forms are created and stored only on Server-side, there is only Sync-to-user and no Sync-from-user.
+1. Mobile requests questionnaires for the DSL Version it supports
+1. Of all the questionnaires in the database, Server sends ONE questionnaire per type in following manner:
+    1. The questionnaire should be active
+    1. It should be lesser than or equal to minor version of DSL supported by mobile
+    1. For example, for DSL version `1.2`, if server finds 2 active questionnaires for type screening reports `1.0` & `1.1`, it'll send `1.1` in response.
+    1. Server replaces `text` inside a questionnaire's layout with translations for a user's locale.
+    1. Unlike other sync resources, where a region change triggers a `force_resync`, in case of questionnaires, a `locale` or `resync_token` change triggers a `force_resync`
 
-#### 10. Extending the questionnaire DSL
-- moving from 1.1 to 1.2 or 2.0
+#### 3. Initializing questionnaire responses on server-side
+A dynamic form response can be initialized either on Server or Mobile side. We initialized monthly-forms on Server-side for 3 reasons:
+1. If any data must be pre-populated, Server has access to that data.
+1. Mobile App update isn't required to accommodate any major change in requirements.
+1. Monthly forms are exclusive per facility, and generating them on Server-side ensures 1 response per form per facility.
 
-1. Adding a new questionnaire with layout
-   
-1. Seeding questionnaire_responses
+Mobile displays a Questionnaire on home page based on [these 3 conditions](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/020-questionnaires-aka-dynamic-forms.md#3.) mentioned in the ADR. Server follows below steps to generate responses for a questionnaire on a monthly basis:
+1. Schedule a cron job to run every month at 6 AM
+1. flipper flag check happens per questionnaire type before initializing responses. This flag helps run same code in multiple countries.
+1. A QuestionnaireResponses service script is called to either initialize blank responses or pre-fill known data in the form.
+1. The script initializes responses for the previous `month_date`. For example, on 1st August 2023, `July-2023` response gets created for all facilities.
 
-1. Screening button will be displayed if three conditions are met:
-  - If screening is enabled for facility/user/country, there should be a Questionnaire record of type monthly_screening_reports in the database
-  - App will receive the enabled_monthly_screening_reports key in the facility API response. This should be true.
-  - QuestionnaireResponses table has atleast 1 record of questionnaireType as `monthly_screening_reports`
+#### 4. Updating an existing questionnaire
+Dynamic forms give us the freedom to add/remove fields without a Mobile App update. Follow these steps to update a form:
 
-1. Display screen
-  - The app will use the month_date key to determine the month and localize it before displaying. The submitted key will be used to display if a month’s response has been submitted. 
-  - This implies that these keys are “required/static” in a screening report questionnaire response.
-  - The app must have display & translation logic for these static fields.
+1. Unlike mobile database, where only ONE questionnaire can exist per type, server stores multiple questionnaires of same type for audit purposes.
+1. For the questionnaire that needs updating, ready the new layout.
+1. For a given DSL version, only ONE questionnaire can be active on server-side. This is enforced using a database constraint.
+1. All questionnaires must be kept mutable for audit purposes.
+1. To update a questionnaire, first mark existing `active` questionnaire as `inactive`.
+1. After marking older questionnaire as `inactive`, create a new one and mark it as `active`.
 
-1. Submitting a form response
+#### 5. Extending Questionnaire DSL to support more fields
+The syntax of a questionnaire layout is defined by a DSL version. To add more input & display types to a questionnaire, the `dsl_version` must be incremented by following these steps:
 
-1. Process to create new questionnaires or seed response data
-- can be done via rails console or data migrations
-- Prefer rails console because of ...
+1. DSL versions are defined in form of `X.Y`, where both X & Y are integers
+1. When adding a new view component, if existing components' syntax aren't modified, that's called a backward-compatible extension.
+1. For backward-compatible extensions, X stays same & Y is incremented by 1. For example, `1.1` gets updated to `1.2`.
+1. Create a swagger specification for the new DSL version. Reuse components from older compatible DSL versions to reduce code churn & duplications. For example, checkout `Api::V4::Models::Questionnaires::DSLVersion1Dot2` swagger definition.
+1. Add the new DSL version to `layout_schema`'s definitions in the Questionnaire model, the source of truth for supported DSL versions.
+1. Add new swagger schema to definitions and update the `questionnaire`'s layout to include the new syntax.
+1. A Mobile app update is required to propagate changes in DSL version. Older version won't be able to support newly added input/display types.
+1. On Server-side, maintain active questionnaires of both versions `1.1` & `1.2` until all users have migrated to newly launched app.
 
-1. server's flipper flag is enabled, otherwise it won't initialize q_responses
+#### 6. Modifying (~~not Extending~~) Questionnaire DSL
+When syntax/keys of older view components need to be changed to reflect newer requirements, a backward-incompatible extension must be made by following these steps:
 
-1. document how to add data migrations
-   
-1. ?? Details/Meanings of a sample layout ??
-
+1. X gets incremented by 1 and Y gets reset to 0. For example, `1.5` gets updated to `2.0`.
+2. Update code, swagger schema & definitions as mentioned in above section.
+3. When creating questionnaire for the new DSL, be mindful of not copy-pasting older syntax.
