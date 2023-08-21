@@ -10,20 +10,18 @@ class Dhis2TrackerDataExporter
 
   def configure
     Dhis2.configure do |config|
-      # TODO get these from ENV
-      config.url = "http://localhost:8080"
-      config.user = "admin"
-      config.password = "district"
+      config.url = ENV.fetch("DHIS2_URL")
+      config.user = ENV.fetch("DHIS2_USERNAME")
+      config.password = ENV.fetch("DHIS2_PASSWORD")
     end
   end
 
   def config
-    YAML.load_file(Rails.root.join("config/data/dhis2/tracker/local.yml")).with_indifferent_access
+    YAML.load_file(ENV.fetch("DHIS2_TRACKER_CONFIG_FILE")).with_indifferent_access
   end
 
-  def export_tracked_entites
+  def export_tracked_entities
     patients = @facility.patients
-
     payload = {
       trackedEntities: patients.map do |patient|
         {
@@ -36,73 +34,27 @@ class Dhis2TrackerDataExporter
       end
     }
 
-    puts Dhis2.client.post(
+    Dhis2.client.post(
       path: "tracker",
       payload: payload)
 
     # TODO: poll report page from response till status OK to return this. also check how many actually succeeded:
-    puts "#{patients.count} patients were moved from #{@facility.name} to org unit #{config.dig(:org_units, @facility.id)}"
+    puts "#{patients.count} patients were moved from #{@facility.name} to org unit #{@org_unit_id}"
   end
 
-  def generate_htn_event(blood_pressure)
+  def generate_enrollment(patient)
     {
       program: config.dig(:programs, :htn_registry),
-      programStage: config.dig(:program_stages, :htn_visit),
-      occurredAt: blood_pressure.device_created_at.iso8601,
       orgUnit: @org_unit_id,
-      dataValues: [
-        {
-          dataElement: config.dig(:event_attributes, :amlodopine),
-          value: "1"
-        },
-        {
-          dataElement: config.dig(:event_attributes, :systolic),
-          value: blood_pressure.systolic
-        },
-        {
-          dataElement: config.dig(:event_attributes, :lorstan),
-          value: "1"
-        },
-        {
-          dataElement: config.dig(:event_attributes, :diastolic),
-          value: blood_pressure.diastolic
-        },
-        {
-          dataElement: config.dig(:event_attributes, :bmi_measurement),
-          value: "false"
-        },
-        {
-          dataElement: config.dig(:event_attributes, :hydrochlorothiazide),
-          value: "1"
-        },
-        {
-          dataElement: config.dig(:event_attributes, :telmisartan),
-          value: "1"
-        }
-      ]
+      enrolledAt: patient.device_created_at.iso8601,
+      attributes: generate_patient_attributes(patient),
+      events: patient.blood_pressures.map { |blood_pressure| generate_htn_event(blood_pressure) }
     }
-  end
-
-  # Currently ncd_patient_status expects ACTIVE,TRANSFER,DIED.
-  # On Simple, we also have inactive and unresponsive
-  def status(patient)
-    case patient.status
-    when :active
-      "ACTIVE"
-    when :dead
-      "DIED"
-    else
-      "TRANSFER"
-    end
-  end
-
-  def get_first_and_last_names(name)
-    name.split(" ")
   end
 
   def generate_patient_attributes(patient)
     date_of_birth, is_estimated = date_of_birth(patient)
-    first_name, last_name = get_first_and_last_names(patient.full_name)
+    first_name, last_name = first_and_last_names(patient.full_name)
     medical_history = patient.medical_history
     [
       {
@@ -119,7 +71,6 @@ class Dhis2TrackerDataExporter
         value: address(patient)
       },
       {
-        # calculating this as age years from today's date
         attribute: config.dig(:patient_attributes, :date_of_birth),
         value: date_of_birth
       },
@@ -128,7 +79,6 @@ class Dhis2TrackerDataExporter
         value: is_estimated
       },
       {
-        # splitting these on " ". need a better way to do this
         attribute: config.dig(:patient_attributes, :last_name),
         value: last_name
       },
@@ -162,16 +112,65 @@ class Dhis2TrackerDataExporter
     ]
   end
 
-  def generate_enrollment(patient)
+  def generate_htn_event(blood_pressure)
     {
       program: config.dig(:programs, :htn_registry),
+      programStage: config.dig(:program_stages, :htn_visit),
+      occurredAt: blood_pressure.device_created_at.iso8601,
       orgUnit: @org_unit_id,
-      enrolledAt: patient.device_created_at.iso8601,
-      attributes: generate_patient_attributes(patient),
-      events: patient.blood_pressures.map { |blood_pressure| generate_htn_event(blood_pressure) }
+      dataValues: [
+        {
+          dataElement: config.dig(:event_attributes, :systolic),
+          value: blood_pressure.systolic
+        },
+        {
+          dataElement: config.dig(:event_attributes, :diastolic),
+          value: blood_pressure.diastolic
+        },
+        {
+          dataElement: config.dig(:event_attributes, :bmi_measurement),
+          value: "false"
+        },
+        {
+          # we dont have these drugs every time. should create these on sandbox, add if non nil
+          dataElement: config.dig(:event_attributes, :amlodopine),
+          value: "1"
+        },
+        {
+          dataElement: config.dig(:event_attributes, :lorstan),
+          value: "1"
+        },
+        {
+          dataElement: config.dig(:event_attributes, :hydrochlorothiazide),
+          value: "1"
+        },
+        {
+          dataElement: config.dig(:event_attributes, :telmisartan),
+          value: "1"
+        }
+      ]
     }
   end
 
+  # Currently ncd_patient_status expects ACTIVE,TRANSFER,DIED.
+  # On Simple, we also have inactive and unresponsive
+  def status(patient)
+    case patient.status
+    when :active
+      "ACTIVE"
+    when :dead
+      "DIED"
+    else
+      "TRANSFER"
+    end
+  end
+
+  # splitting these on " ". need a better way to do this
+  def first_and_last_names(name)
+    name.split(" ")
+  end
+
+  # calculating this as age years from today's date
   def date_of_birth(patient)
     date_of_birth = patient.date_of_birth
     is_estimated = false
