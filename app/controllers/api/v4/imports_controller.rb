@@ -11,6 +11,10 @@ class Api::V4::ImportsController < ApplicationController
       import_params.to_json
     )
 
+    unless Flipper.enabled?(:mock_imports_api)
+      BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
+    end
+
     response = {errors: errors}
     return render json: response, status: :bad_request if errors.present?
 
@@ -18,7 +22,37 @@ class Api::V4::ImportsController < ApplicationController
   end
 
   def import_params
-    params.require(:resources)
+    import_resources = params.require(:resources)
+    import_resources.map do |import_resource|
+      import_resource.permit(
+        :resourceType,
+        :gender,
+        :birthDate,
+        :deceasedBoolean,
+        :telecom,
+        :name,
+        :active,
+        meta: [
+          :lastUpdated,
+          :createdAt
+        ],
+        identifier: [
+          :value
+        ],
+        managingOrganization: [
+          :value
+        ],
+        registrationOrganization: [
+          :value
+        ],
+        address: [
+          :line,
+          :district,
+          :city,
+          :postalCode
+        ]
+      )
+    end
   end
 
   def validate_token_organization
