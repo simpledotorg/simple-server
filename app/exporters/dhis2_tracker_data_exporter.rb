@@ -34,7 +34,8 @@ class Dhis2TrackerDataExporter
 
     puts Dhis2.client.post(
       path: "tracker",
-      payload: payload)
+      payload: payload
+    )
 
     # TODO: poll report page from response till status OK to return this. also check how many actually succeeded.
     puts "#{patients.count} patients were moved from #{@facility.name} to org unit #{@org_unit_id}"
