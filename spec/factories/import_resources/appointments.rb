@@ -16,6 +16,6 @@ def build_appointment_import_resource
     start: Faker::Time.between(from: 5.years.ago, to: 30.days.from_now),
     appointmentOrganization: {identifier: Faker::Alphanumeric.alphanumeric},
     appointmentCreationOrganization: [nil, {identifier: Faker::Alphanumeric.alphanumeric}].sample,
-    participant: [{actor: Faker::Alphanumeric.alphanumeric}]
+    participant: [{actor: {identifier: Faker::Alphanumeric.alphanumeric}}]
   }
 end
