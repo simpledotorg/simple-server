@@ -454,6 +454,7 @@
         "resourceType",
         "meta",
         "identifier",
+        "start",
         "participant",
         "status",
         "appointmentOrganization"
