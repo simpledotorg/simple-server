@@ -704,23 +704,7 @@ Reports = function ({
   }
 
   function monthIndexFromDateString(dateString) {
-    const [month, year] = dateString.split("-");
-    const months = [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec",
-    ];
-
-    return months.indexOf(month.toLowerCase());
+    return new Date(dateString).getMonth()
   }
 
   function calculateGoalUpwards(monthValue, improvementRatio) {
