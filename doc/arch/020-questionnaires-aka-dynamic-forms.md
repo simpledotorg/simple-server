@@ -17,7 +17,7 @@ We have designed Questionnaires by reusing underlying offline-first sync archite
 - **Form:** A document to gather information in a structured manner.
 - **Questionnaire:** A sync resource containing form's layout and input fields, version and form-type.
 - **Questionnaire Response:** A sync resource containing user's inputs for a form/questionnaire, and user/facility the input was recorded at.
-- **Layout:** A custom DSL that helps Mobile rendering a form defined by server.
+- **Layout:** A custom DSL that helps the mobile app render a form defined by server.
 
 ## Design (AKA Implementation Details)
 
