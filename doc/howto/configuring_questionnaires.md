@@ -5,7 +5,7 @@ The [Questionnaires ADR](https://github.com/simpledotorg/simple-server/blob/mast
 ### 1. Creating a new questionnaire
 When creating a new questionnaire, follow these steps:
 1. Add a `questionnaire_type` to Questionnaire model, which is the source of truth for supported questionnaire types.
-1. Create a layout based on the syntax specified for a DSL version in [swagger docs](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses/paths/~1questionnaire_responses~1sync/get), the source of truth for syntax.
+1. Create a layout based on the syntax specified for a DSL version in [swagger docs](https://api.simple.org/api-docs/index.html#tag/Questionnaires), the source of truth for syntax.
     1. When creating a layout, you can avoid adding an `id` for each view component, as that gets generate by a helper function inside Questionnaire model.
 1. Inside a view component, `text` contains a translation reference, not the actual text.
     1. Server replaces data inside `text` with translations based on User's locale at the time of API request.
@@ -27,9 +27,9 @@ A dynamic form response can be initialized either on Server or Mobile side. We i
 1. Mobile App update isn't required to accommodate any major change in requirements.
 1. Monthly forms are exclusive per facility, and generating them on Server-side ensures 1 response per form per month per facility, meaning for `Jul-2023` a facility can only have 1 response of a Screening report type. 
 
-Mobile displays a Questionnaire on home page based on [these 3 conditions](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/020-questionnaires-aka-dynamic-forms.md#3.) mentioned in the ADR. Server follows below steps to generate responses for a questionnaire on a monthly basis:
+Mobile displays a Questionnaire on home page based on [these 3 conditions](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/020-questionnaires-aka-dynamic-forms.md#3-displaying-questionnaires-on-home-page) mentioned in the ADR. Server follows below steps to generate responses for a questionnaire on a monthly basis:
 1. Schedule a cron job to run every month at 6 AM
-1. flipper flag check happens per questionnaire type before initializing responses. This flag helps run same code in multiple countries.
+1. Flipper flag check happens per questionnaire type before initializing responses. This flag helps run same code in multiple countries.
 1. A QuestionnaireResponses service script is called to either initialize blank responses or pre-fill known data in the form.
 1. At the beginning of every month, we want clinic staff to report data of the previous month. For that reason, Server initializes responses for the previous `month_date`.
     1. For instance, on 1st August 2023, `July-2023` response gets initialized for all facilities.

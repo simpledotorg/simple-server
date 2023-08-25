@@ -9,7 +9,7 @@ Historically, a "form" at Simple has been static and designed as a first-class e
 
 Static forms have served us well for infrequently changing forms like Blood Pressure and Blood Sugar. For forms that require frequent changes (like Drug-stock), we used WebView to accommodate the dynamic nature of this form. WebView isn't offline-first, like the rest of Simple app.
 
-Questionnaires (aka Dynamic forms) is an effort at solving 2 challenges in an offline-first manner: reducing time to production & a flexibility to add/remove fields without need to update the Simple app. We also refer to them as Server-driven UI.
+Questionnaires (aka Dynamic forms) is an effort at solving 2 challenges in an offline-first manner: reducing time to production; and flexibility to add/remove fields without need to update the Simple app. We also refer to them as Server-driven UI.
 
 ## Decision
 
@@ -26,7 +26,7 @@ Questionnaires are implemented by following below mentioned steps:
 ### 1. Mobile _syncs_ questionnaires from server to device
 Mobile requests questionnaires from server using [the questionnaire sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaires). Server responds with all layouts compatible with the DSL version supported by the mobile app.
 
-On Mobile database, the primary key for Questionnaires sync resource is questionnaire_type, and not id. _That is a key difference between Questionnaire and other sync resources._ This is because mobile needs only 1 layout per questionnaire type. Whenever a new questionnaire of an existing type is created on Server-side, server sends the updated ID and layout in the sync response, and mobile updates the row for corresponding type.
+On Mobile database, the primary key for Questionnaires sync resource is `questionnaire_type`, and not `id`. _That is a key difference between Questionnaires and other sync resources._ This is because mobile needs only 1 layout per questionnaire type. Whenever a new questionnaire of an existing type is created on Server-side, server sends the updated ID and layout in the sync response, and mobile updates the row for corresponding type.
 
 | questionnaire_type (PK) | id     | layout   |
 |-------------------------|--------|----------|
@@ -36,12 +36,12 @@ On Mobile database, the primary key for Questionnaires sync resource is question
 ### 2. Mobile _syncs_ questionnaire_responses from server to device
 User inputs for a dynamic form are stored in a questionnaire response. Mobile requests questionnaire response sync resources from the server using [this sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses). These responses serve as data for user to create, view or update.
 
-Other sync resources have explicit keys for recording input (Blood Pressures have "systolic"/"diastolic", Patients have "gender", etc.). Questionnaire response records all user inputs in a single field `content` of JSON data type.
+Other sync resources have explicit keys for recording input (Blood Pressures have "systolic"/"diastolic", Patients have "gender", etc.). Questionnaire response records input in a single field `content` of JSON data type.
 
-| id      | questionnaire_id | questionnaire_type | facility_id | user_id | content                     |
-|---------|------------------|--------------------|-------------|---------|-----------------------------|
-| uuid-11 | uuid-1           | screening_reports  | Surat       | 123     | {"name": "john", "age": 30} |
-| uuid-22 | uuid-2           | drug_stock_reports | Bangalore   | 456     | {"name": "doe", "age": 40}  |
+| id      | questionnaire_id | questionnaire_type | facility_id | user_id | content                           |
+|---------|------------------|--------------------|-------------|---------|-----------------------------------|
+| uuid-11 | uuid-1           | screening_reports  | Surat       | 123     | ```{"name": "john", "age": 30}``` |
+| uuid-22 | uuid-2           | drug_stock_reports | Bangalore   | 456     | ```{"name": "doe", "age": 40}```  |
 
 ### 3. Displaying questionnaires on home page
 ![questionnaires-on-home-page](resources/questionnaires-home-page.png)
@@ -49,7 +49,8 @@ Other sync resources have explicit keys for recording input (Blood Pressures hav
 The decision to display or hide link to a dynamic form on the home page is based on 3 criteria, all of which must be met:
 1. Mobile has a questionnaire of given type.
 1. Mobile has questionnaire responses for given type.
-1. Config for a questionnaire type enabled for User's facility, which mobile derives from [the facility sync API](https://api.simple.org/api-docs/index.html#tag/facility). *Note: This config is a field in facilities table, and not a flipper flag.*
+1. Config for a questionnaire type enabled for User's facility, which mobile derives from the facility sync API.
+    1. *Note: This config is a field in facilities table, and not a flipper flag.*
 
 ### 4. Displaying the list of responses for a questionnaire type
 ![questionnaire-responses-list](resources/questionnaire-responses-list.png)
@@ -57,7 +58,7 @@ The decision to display or hide link to a dynamic form on the home page is based
 When user clicks on a form type from home page, Mobile queries its table for responses of given questionnaire type. Mobile has some custom logic on ordering and style of the forms:
 1. Mobile orders forms in descending order of months by checking for `content["month_date"]` key.
 1. Mobile deduces submission status by checking for `content["submitted"]` key.
-1. Mobile localizes month_date before displaying them.
+1. Mobile localizes `month_date` before displaying them.
 1. To maintain backward/forward compatibility of a response when new questionnaire layouts are released (more details in FAQ section below), all keys inside a content are meant to be treated as optional. However, for monthly reports, `month_date` & `submitted` keys are _mandatory_ for mobile app to display them. If Mobile cannot find these keys in a questionnaire response, it will crash.
 1. Mobile has display & translation logic for these mandatory fields.
 
@@ -84,7 +85,7 @@ A specimen `content` key's value looks like:
 When server receives different questionnaire_responses for the same ID, it merges the 2 records in the following way:
 1. Latest `device_updated_at` takes precedence for every field, except `content`.
 1. A UNION of existing & new `content` is taken.
-1. For conflicting keys within content, latest update takes precedence.
+1. For conflicting keys within `content`, latest update takes precedence.
 1. Consider this specimen workflow:
     1. User #1 fills keys A, B, C & D on 6 Dec
     1. User #2 fills keys C, D, E & F on 7 Dec
@@ -110,7 +111,7 @@ In addition to the usual keys, we're storing the user's locale inside Questionna
       - Missing keys are added to `content` when recording user input.
 1. For a questionnaire, a response can be initialized either on Server or Mobile side.
     - Monthly forms that are exclusive per facility are initialized on Server-side (example: Screening, Supplies & Drug-stock reports).
-    - Forms that require enrolling fresh data are inialized on Mobile-side (example: cancer-referral forms)
+    - Forms that require enrolling fresh data are inialized on Mobile-side (example: cancer-referral forms).
 1. Mobile uses [Jetpack Compose](https://developer.android.com/jetpack/compose) for rendering the layouts dynamically.
 
 For configuring questionnaires from Server-side, refer to [this how-to guide](https://github.com/simpledotorg/simple-server/blob/master/doc/howto/configuring_questionnaires.md).
