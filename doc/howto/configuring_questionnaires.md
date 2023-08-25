@@ -31,7 +31,8 @@ Mobile displays a Questionnaire on home page based on [these 3 conditions](https
 1. Schedule a cron job to run every month at 6 AM
 1. flipper flag check happens per questionnaire type before initializing responses. This flag helps run same code in multiple countries.
 1. A QuestionnaireResponses service script is called to either initialize blank responses or pre-fill known data in the form.
-1. The script initializes responses for the previous `month_date`. For example, on 1st August 2023, `July-2023` response gets created for all facilities.
+1. At the beginning of every month, we want clinic staff to report data of the previous month. For that reason, Server initializes responses for the previous `month_date`.
+    1. For instance, on 1st August 2023, `July-2023` response gets initialized for all facilities.
 1. *Note: Server doesn't have any database or application layer constraints to ensure 1 response per form per month per facility. Rather, the service script performs a check for given month-year & facility before creating a response.*
 
 ### 4. Updating an existing questionnaire

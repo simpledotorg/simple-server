@@ -34,7 +34,7 @@ On Mobile database, the primary key for Questionnaires sync resource is question
 | supplies_reports        | uuid-2 | {form-2} |
 
 ### 2. Mobile _syncs_ questionnaire_responses from server to device
-User inputs for a dynamic form are stored in a questionnaire response. Mobile requests them from server using [this sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses).
+User inputs for a dynamic form are stored in a questionnaire response. Mobile requests questionnaire response sync resources from the server using [this sync API](https://api.simple.org/api-docs/index.html#tag/Questionnaire-Responses). These responses serve as data for user to create, view or update.
 
 Other sync resources have explicit keys for recording input (Blood Pressures have "systolic"/"diastolic", Patients have "gender", etc.). Questionnaire response records all user inputs in a single field `content` of JSON data type.
 
@@ -49,7 +49,7 @@ Other sync resources have explicit keys for recording input (Blood Pressures hav
 The decision to display or hide link to a dynamic form on the home page is based on 3 criteria, all of which must be met:
 1. Mobile has a questionnaire of given type.
 1. Mobile has questionnaire responses for given type.
-1. Config for a questionnaire type enabled for User's facility, which mobile derives from [the facility sync API](https://api.simple.org/api-docs/index.html#tag/facility).
+1. Config for a questionnaire type enabled for User's facility, which mobile derives from [the facility sync API](https://api.simple.org/api-docs/index.html#tag/facility). *Note: This config is a field in facilities table, and not a flipper flag.*
 
 ### 4. Displaying the list of responses for a questionnaire type
 ![questionnaire-responses-list](resources/questionnaire-responses-list.png)
@@ -58,7 +58,7 @@ When user clicks on a form type from home page, Mobile queries its table for res
 1. Mobile orders forms in descending order of months by checking for `content["month_date"]` key.
 1. Mobile deduces submission status by checking for `content["submitted"]` key.
 1. Mobile localizes month_date before displaying them.
-1. To maintain backward/forward compatibility of a response when new questionnaire layouts are released (more details in FAQ section below), all keys inside a content are meant to be treated as optional. However, for monthly reports, `month_date` & `submitted` keys are _mandatory_ for mobile app to display them.
+1. To maintain backward/forward compatibility of a response when new questionnaire layouts are released (more details in FAQ section below), all keys inside a content are meant to be treated as optional. However, for monthly reports, `month_date` & `submitted` keys are _mandatory_ for mobile app to display them. If Mobile cannot find these keys in a questionnaire response, it will crash.
 1. Mobile has display & translation logic for these mandatory fields.
 
 ### 5. User clicks on a form
@@ -95,7 +95,9 @@ When server receives different questionnaire_responses for the same ID, it merge
 
 For most screens, mobile stores the translations for all languages. Since a questionnaire's layout is driven by server, translations are also stored on server-side. When user changes a locale, a sync gets triggered on mobile. We leverage this behaviour of mobile to communicate layouts with new translations from server to mobile. 
 
-We're storing locale inside Questionnaire sync resource's `process_token` (_another aspect where questionnaires differ from other sync resources_). When a user changes locale, Server **resyncs** all questionnaires to Mobile because of mismatch between user & process token's locale.
+In addition to the usual keys, we're storing the user's locale inside Questionnaire sync resource's `process_token`. Unlike other sync resources, where a region change triggers a `force_resync`, in case of questionnaires, a locale change triggers a `force_resync`. 
+
+> **Note:** When user changes locale, Mobile does not invalidate the questionnaire table on the device. The app will render questionnaires with older locale until sync is done fetching newer translations.  
 
 ### 9. Other features and points of note
 
