@@ -1,0 +1,125 @@
+---
+facilities_to_migrate:
+- :display_name: Madhabpur SC
+  :org_unit_id: KgOQ3v3Z45w
+- :display_name: PHC Acai
+  :org_unit_id: SDXi1tscdL7
+- :display_name: PHC Acampe Escarpment
+  :org_unit_id: NaUa0F328nK
+- :display_name: PHC Ancho Chilli Town
+  :org_unit_id: zQmXAIF5j0O
+- :display_name: PHC Anise Town
+  :org_unit_id: iZCU3XhFf24
+- :display_name: PHC Aniseed East
+  :org_unit_id: oqz3jKQMkBX
+- :display_name: PHC Annato Lake
+  :org_unit_id: SxbkUVNkuTw
+- :display_name: PHC Basil Heights
+  :org_unit_id: SCDzBeIqae2
+- :display_name: PHC Basil Town
+  :org_unit_id: W1K7ZdkRVEx
+- :display_name: PHC Beetroot Village
+  :org_unit_id: bl73S68HSMd
+- :display_name: PHC Bulgurville
+  :org_unit_id: c7LzJTVgAwy
+- :display_name: PHC Cabbagetown
+  :org_unit_id: tNIqKrTkjXP
+- :display_name: PHC Canolaville
+  :org_unit_id: ApLDvOYhKX9
+- :display_name: PHC Capertown
+  :org_unit_id: wVGFkZjDVEr
+- :display_name: PHC Carrotville
+  :org_unit_id: b9IlH37eUSZ
+- :display_name: PHC Cascabel Town
+  :org_unit_id: YgFsBzVTPyp
+- :display_name: PHC Chamomile Heights
+  :org_unit_id: rZWnsDqwfPC
+- :display_name: PHC Chervil City
+  :org_unit_id: pIB7fq4Z4cM
+- :display_name: PHC Cilantro Village
+  :org_unit_id: edFJO47KHm9
+- :display_name: PHC City of Chives
+  :org_unit_id: FkBDbU2bdHQ
+- :display_name: PHC Crocus Heights
+  :org_unit_id: lCDccnU1CZK
+- :display_name: PHC Daffodil Gardens
+  :org_unit_id: NH7CIXJMz9S
+- :display_name: PHC Daisy Park
+  :org_unit_id: YOCtOjV7Cxs
+- :display_name: PHC Dillseed Bay
+  :org_unit_id: YQj5qpbzQxh
+- :display_name: PHC Fenugreek Village
+  :org_unit_id: tSWGczfNcQR
+- :display_name: PHC Fenugreek Village
+  :org_unit_id: vwMLb6EilsK
+- :display_name: PHC Furikake Falls
+  :org_unit_id: txSXlDvYoRF
+- :display_name: PHC Galangal West
+  :org_unit_id: T1XrTPqO0n8
+- :display_name: PHC Garam Masala Town
+  :org_unit_id: odXa52nlb3T
+- :display_name: PHC Garlic Bay
+  :org_unit_id: fJUNeHWcZR8
+- :display_name: PHC Ginseng Hill
+  :org_unit_id: g2VRYc20653
+- :display_name: PHC Green Cardamomville
+  :org_unit_id: Mwo7trdCyLd
+- :display_name: PHC Hojicha Mountain
+  :org_unit_id: D6GiVCdtPZN
+- :display_name: PHC Iris
+  :org_unit_id: ASIBRe14tVQ
+- :display_name: PHC Jaggery Bay
+  :org_unit_id: rI5ntf2Axbi
+- :display_name: PHC Jasmine Village
+  :org_unit_id: SrCfzOCpYgE
+- :display_name: PHC Kardal Plateau
+  :org_unit_id: oYkHl6RTLVt
+- :display_name: PHC Lake Sesame Village
+  :org_unit_id: jveoPEaT5og
+- :display_name: PHC Lotus Flats
+  :org_unit_id: HJxmt0w7evH
+- :display_name: PHC Mintville
+  :org_unit_id: xiQcfCwjwfY
+- :display_name: PHC Okra Gardens
+  :org_unit_id: QsmIMVlqFt4
+- :display_name: PHC Pandan Flowerville
+  :org_unit_id: uz4cYGB39DM
+- :display_name: PHC Rooibosville
+  :org_unit_id: bobzaClR1Rn
+- :display_name: PHC Rye Town
+  :org_unit_id: FtaQ9o1IOK8
+- :display_name: PHC Saffron Heights
+  :org_unit_id: G9VHQ81A1Ar
+- :display_name: PHC Shallotville
+  :org_unit_id: VUG8QpjJveI
+- :display_name: PHC Shichimi Togarashi
+  :org_unit_id: q59OyUhx0P9
+- :display_name: PHC Snapdragon Heights
+  :org_unit_id: R0GxlWCX4sk
+- :display_name: PHC Sproutville
+  :org_unit_id: ZYFsEjaYOUV
+- :display_name: PHC Star Anise
+  :org_unit_id: XUGkSS5joA4
+programs:
+  htn_registry: pMIglSEqPGS
+program_stages:
+  htn_visit: anb2cjLx3WM
+tracked_entity_types:
+  person_htn: MCPQUTHX1Ze
+event_attributes:
+  systolic: IxEwYiq1FTq
+  diastolic: yNhtHKtKkO1
+  amlodipine: eGY7e5Ttbys
+  losartan: yUYbcCXo9Mv
+  hydrochlorothiazide: D8FWXAtCuL2
+  telmisartan: lWmOLo5hFYQ
+patient_attributes:
+  hypertension: jCRIT4GMMOS
+  current_address: A6Hb0Kvg4vb
+  date_of_birth: NI0QRzJvQ0k
+  last_name: ENRjVGxVL6l
+  first_name: sB1IHYu2xQT
+  sex: oindugucx72
+  ncd_patient_status: fI1P3Mg1zOZ
+  phone_number: YRDy9xy9jD0
+  receiving_htn_treatment: l5yxkxHgTw9
