@@ -56,9 +56,9 @@ module Seed
 
       print_summary
 
-      # ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
-      # RefreshReportingViews.call
-      # puts "Reporting views have been refreshed"
+      ENV["REFRESH_MATVIEWS_CONCURRENTLY"] = "false"
+      RefreshReportingViews.call
+      puts "Reporting views have been refreshed"
       QuestionnaireSeeder.call
 
       [counts, total_counts]
