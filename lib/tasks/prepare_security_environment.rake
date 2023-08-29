@@ -1,6 +1,6 @@
 desc "Prepare security environment with necesssary data setup, and print audit prerequisites"
 task prepare_security_environment: :environment do
-  abort "This task can only be run in development or security environments!" unless Rails.env.development? || Rails.env.security?
+  abort "This task can only be run in development or security environments!" unless Rails.env.development? || ENV.fetch("SIMPLE_SERVER_ENV") == "security"
 
   # Feature flags
   Flipper.disable(:auto_approve_users)
