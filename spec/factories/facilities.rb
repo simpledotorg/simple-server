@@ -30,6 +30,14 @@ FactoryBot.define do
       teleconsultation_medical_officers { [create(:user)] }
     end
 
+    trait :dhis2 do
+      business_identifiers {
+        build_list(:facility_business_identifier,
+          1,
+          identifier_type: "dhis2_org_unit_id")
+      }
+    end
+
     trait :seed do
       name { "#{facility_type} #{village_or_colony}" }
       street_address { Faker::Address.street_address }
