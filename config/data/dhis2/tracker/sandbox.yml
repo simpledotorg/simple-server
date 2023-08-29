@@ -1,0 +1,31 @@
+facilities_to_migrate:
+  - facility_slug: hwc-kudal
+    org_unit_id: SDXi1tscdL7
+
+programs:
+  htn_registry: "pMIglSEqPGS"
+
+program_stages:
+  htn_visit: "anb2cjLx3WM"
+
+tracked_entity_types:
+  person_htn: "MCPQUTHX1Ze"
+
+event_attributes:
+  systolic: "IxEwYiq1FTq"
+  diastolic: "yNhtHKtKkO1"
+  amlodipine: "eGY7e5Ttbys"
+  losartan: "yUYbcCXo9Mv"
+  hydrochlorothiazide: "D8FWXAtCuL2"
+  telmisartan: "lWmOLo5hFYQ"
+
+patient_attributes:
+  hypertension: "jCRIT4GMMOS"
+  current_address: "A6Hb0Kvg4vb"
+  date_of_birth: "NI0QRzJvQ0k"
+  last_name: "ENRjVGxVL6l"
+  first_name: "sB1IHYu2xQT"
+  sex: "oindugucx72"
+  ncd_patient_status: "fI1P3Mg1zOZ"
+  phone_number: "YRDy9xy9jD0"
+  receiving_htn_treatment: "l5yxkxHgTw9"
