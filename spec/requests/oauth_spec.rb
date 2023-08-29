@@ -4,7 +4,7 @@ RSpec.describe "OAuth Credentials", type: :request do
   context "import API" do
     before { Flipper.enable(:imports_api) }
     context "when unauthorized" do
-      let(:resource) { build_patient_import_resource }
+      let(:resource) { build_condition_import_resource }
       it "fails with HTTP 401" do
         put "/api/v4/import",
           headers: {"Content-Type": "application/json",
@@ -17,7 +17,7 @@ RSpec.describe "OAuth Credentials", type: :request do
 
     context "when authorization header present" do
       let(:organization) { FactoryBot.create(:organization) }
-      let(:resource) { build_patient_import_resource }
+      let(:resource) { build_condition_import_resource }
       let(:machine_user) { FactoryBot.create(:machine_user, organization: organization) }
       let(:application) { FactoryBot.create(:oauth_application, owner: machine_user) }
       let(:token_write_scope) {

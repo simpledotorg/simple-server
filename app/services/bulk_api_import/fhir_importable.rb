@@ -19,6 +19,6 @@ module BulkApiImport::FhirImportable
   end
 
   def translate_facility_id(id)
-    FacilityBusinessIdentifier.find_by(identifier_type: :external_org_facility_id, identifier: id).facility.id
+    FacilityBusinessIdentifier.find_by(identifier: id, identifier_type: :external_org_facility_id).facility.id
   end
 end
