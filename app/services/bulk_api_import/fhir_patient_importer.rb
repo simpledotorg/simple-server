@@ -10,7 +10,8 @@ class BulkApiImport::FhirPatientImporter
   def import
     merge_result = build_attributes
       .then { Api::V3::PatientTransformer.from_nested_request(_1) }
-      .then { MergePatientService.new(_1, request_metadata: request_metadata).merge }
+      .then { puts _1
+              MergePatientService.new(_1, request_metadata: request_metadata).merge }
 
     AuditLog.merge_log(import_user, merge_result) if merge_result.present?
     merge_result
@@ -28,8 +29,8 @@ class BulkApiImport::FhirPatientImporter
       gender: gender,
       status: status,
       date_of_birth: @resource[:birthDate],
-      registration_facility_id: @resource.dig(:registrationOrganization, 0, :value),
-      assigned_facility_id: @resource.dig(:managingOrganization, 0, :value),
+      registration_facility_id: registration_facility_id,
+      assigned_facility_id: assigned_facility_id,
       address: address,
       phone_numbers: phone_numbers,
       business_identifiers: business_identifiers,
@@ -39,6 +40,20 @@ class BulkApiImport::FhirPatientImporter
 
   def gender
     GENDER_MAPPING[@resource[:gender]]
+  end
+
+  def registration_facility_id
+    identifier = @resource.dig(:registrationOrganization, 0, :value)
+    if identifier.present?
+      translate_facility_id(identifier)
+    else
+      assigned_facility_id
+    end
+  end
+
+  def assigned_facility_id
+    identifier = @resource.dig(:managingOrganization, 0, :value)
+    translate_facility_id(identifier) if identifier.present?
   end
 
   def status
