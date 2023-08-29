@@ -21,3 +21,6 @@ test:
 
 production:
   <<: *default
+
+security:
+  <<: *default
