@@ -4,10 +4,19 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
   let(:facility) { import_user.facility }
+  let(:facility_identifier) do
+    create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
+  end
 
   describe "#import" do
     it "imports a patient" do
-      expect { described_class.new(build_patient_import_resource).import }.to change(Patient, :count).by(1)
+      expect {
+        described_class.new(
+          build_patient_import_resource
+            .merge(managingOrganization: [{value: facility_identifier.identifier}])
+            .except(:registrationOrganization)
+        ).import
+      }.to change(Patient, :count).by(1)
     end
   end
 
@@ -15,7 +24,7 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
     it "correctly builds valid attributes across different patient resources" do
       10.times.map { build_patient_import_resource }.each do |resource|
         patient_resource = resource
-          .merge(managingOrganization: [{value: facility.id}])
+          .merge(managingOrganization: [{value: facility_identifier.identifier}])
           .except(:registrationOrganization)
 
         attributes = described_class.new(patient_resource).build_attributes
