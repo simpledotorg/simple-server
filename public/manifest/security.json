@@ -20,7 +20,7 @@
     },
     {
       "country_code": "LK",
-      "endpoint": "https://api-security.simple.org/api/",
+      "endpoint": "https://api-simple.health.gov.lk/api/",
       "display_name": "Sri Lanka",
       "isd_code": "94"
     }
