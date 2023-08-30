@@ -20,6 +20,9 @@ class Dhis2TrackerDataExporter
 
   def export_tracked_entities
     patients = @facility.patients
+
+    puts "#{patients.count} patients are being moved from #{@facility.name} to org unit #{@org_unit_id}"
+
     payload = {
       trackedEntities: patients.map do |patient|
         {
@@ -32,13 +35,10 @@ class Dhis2TrackerDataExporter
       end
     }
 
-    puts Dhis2.client.post(
+    Dhis2.client.post(
       path: "tracker",
       payload: payload
     )
-
-    # TODO: poll report page from response till status OK to return this. also check how many actually succeeded.
-    puts "#{patients.count} patients were moved from #{@facility.name} to org unit #{@org_unit_id}"
   end
 
   def generate_enrollment(patient)
