@@ -3,6 +3,10 @@ class Api::V4::ImportsController < ApplicationController
   before_action :doorkeeper_authorize!
   before_action :validate_token_organization
 
+  rescue_from ActionController::ParameterMissing do |error|
+    render json: {error: "Unable to find key in payload: \"#{error.param}\""}, status: :bad_request
+  end
+
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
 
