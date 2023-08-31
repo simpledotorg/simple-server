@@ -534,3 +534,7 @@ so-ET:
     others: "KUWA KALE"
     television_functional: "Miyaa fariimaha waxbarashadda caafimaadka lagu soo bandhigaa xaga Rugta Caafimaadka iyaddoo la isticmaalayo shaashada telefeeshanka?"
     wifi_functional: "Miyaa la heli karaa shabakada Wi-Fi?"
+  drug_stock_report:
+    instruction_1: "Gali tirada kiniinka taala dhamaadka bisha"
+    instruction_2: "Gali tirada kiniinka taala daawo kasta"
+    expiry_date: "Taariikhda Expire ka"

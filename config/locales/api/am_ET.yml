@@ -534,3 +534,10 @@ am-ET:
     others: "ሌሎች"
     television_functional: "በሕክምና ክሊኒክ ውስጥ የጤና ትምህርት መልዕክቶች የቴሌቪዥን ማያ ገፅን በመጠቀም ይታያሉ?"
     wifi_functional: "የዋይ-ፋይ አውታረ መረብ ይገኛል?"
+  drug_stock_report:
+    instruction_1: "በወሩ መገባደጃ ላይ ያለውን አጠቃላይ የመድሃኒት እንክብል (ኪኒን) ብዛት ያስገቡ"
+    instruction_2: "የእያንዳንዱን  መድሃኒት ዓይነት እንክብል (ኪኒን) ብዛት ያስገቡ."
+    batch_1: "ባች 1"
+    batch_2: "ባች 2"
+    batch_3: "ባች 3"
+    expiry_date: "የአገልግሎት ማብቂያ ጊዜ (ቀን)"
