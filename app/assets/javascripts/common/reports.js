@@ -672,26 +672,26 @@ Reports = function ({
   }
 
   function goalPeriodValue(periodValues) {
-    const dateKeysArray = Object.keys(periodValues);
+    const dateKeys = Object.keys(periodValues);
 
-    const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
+    const decemberKeys = dateKeys.filter((item) => item.includes("Dec"));
     const isLastDateKeysArrayMonthDec =
-      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
+      monthIndexFromDateString(dateKeys[dateKeys.length - 1]) === 11;
     if (isLastDateKeysArrayMonthDec) {
       decemberKeys.splice(-1);
     }
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
-    const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
+    const indexOfLatestDecember = dateKeys.indexOf(mostRecentDecemberKey);
 
     const monthThreeDateKey =
       indexOfLatestDecember < defaultMonthsRequired - 1
-        ? dateKeysArray[defaultMonthsRequired - 1] // month 6
+        ? dateKeys[defaultMonthsRequired - 1] // month 6
         : mostRecentDecemberKey; // december
 
     const monthThreeValue = periodValues[monthThreeDateKey];
-    const indexOfMonthThreeInDateKeys = dateKeysArray.indexOf(monthThreeDateKey);
-    const monthTwoValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 1]];
-    const monthOneValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 2]];
+    const indexOfMonthThreeInDateKeys = dateKeys.indexOf(monthThreeDateKey);
+    const monthTwoValue = periodValues[dateKeys[indexOfMonthThreeInDateKeys - 1]];
+    const monthOneValue = periodValues[dateKeys[indexOfMonthThreeInDateKeys - 2]];
 
     const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
     const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
