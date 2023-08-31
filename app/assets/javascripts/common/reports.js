@@ -675,9 +675,9 @@ Reports = function ({
     const dateKeys = Object.keys(periodValues);
 
     const decemberKeys = dateKeys.filter((item) => item.includes("Dec"));
-    const isLastDateKeysArrayMonthDec =
+    const isLastMonthOfYear =
       monthIndexFromDateString(dateKeys[dateKeys.length - 1]) === 11;
-    if (isLastDateKeysArrayMonthDec) {
+    if (isLastMonthOfYear) {
       decemberKeys.splice(-1);
     }
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
