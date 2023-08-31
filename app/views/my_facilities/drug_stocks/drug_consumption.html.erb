@@ -1,7 +1,9 @@
-<div class="p-10px mb-16px br-4px fs-16px" style="background: #fffae3; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.06)">
-  <i class="fa-duotone fa-box-archive ml-4px mr-4px" style="--fa-primary-color: #9f962d; --fa-secondary-color: #a39a3e;"></i>
-  Drug stock reports have been archived.
-</div>
+<% if CountryConfig.current[:name] == "Ethiopia" %>
+  <div class="p-10px mb-16px br-4px fs-16px" style="background: #fffae3; box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.06)">
+    <i class="fa-duotone fa-box-archive ml-4px mr-4px" style="--fa-primary-color: #9f962d; --fa-secondary-color: #a39a3e;"></i>
+    Drug stock reports have been archived.
+  </div>
+<% end %>
 <%= render "drug_stock_nav" %>
 <div class="row">
   <div>
