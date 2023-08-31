@@ -534,3 +534,7 @@ om-ET:
     others: "KANNEEN BIROO"
     television_functional: "Ergaan barnoota fayyaa agarsiistuu televijiizii Kilinika fayyaa irratti ni agarsiifamaa?"
     wifi_functional: "Wi-Fi jirra?"
+  drug_stock_report:
+    instruction_1: "Dhuma ji'aatti qoricha/tablets hafe galchi"
+    instruction_2: "Baayina qorichaa/tables hafe gosa qorichaatin galchi"
+    expiry_date: "Guyyaa itti faydaan ala ta'u"
