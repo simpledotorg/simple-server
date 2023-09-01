@@ -662,7 +662,7 @@ Reports = function ({
   }
   
   function calculateGoal(periodValues, goalDownwards) {
-    const { threeMonthAverage, improvementRatio } = goalPeriodValue(periodValues);
+    const { threeMonthAverage, improvementRatio } = getThreeMonthAverageAndImprovementRatio(periodValues);
 
     if (goalDownwards) {
       return calculateGoalDownwards(threeMonthAverage, improvementRatio);
@@ -670,7 +670,7 @@ Reports = function ({
     return calculateGoalUpwards(threeMonthAverage, improvementRatio);
   }
 
-  function goalPeriodValue(periodValues) {
+  function getThreeMonthAverageAndImprovementRatio(periodValues) {
     const dateKeys = Object.keys(periodValues);
     const decemberKeys = dateKeys.filter((item) => item.includes("Dec"));
 
