@@ -717,13 +717,13 @@ Reports = function ({
     return monthlyRelativeImprovement * monthsRemainingForYear;
   }
 
-  function calculateGoalUpwards(monthValue, improvementRatio) {
-    const goal = monthValue + (100 - monthValue) * improvementRatio;
+  function calculateGoalUpwards(threeMonthAverage, improvementRatio) {
+    const goal = threeMonthAverage + (100 - threeMonthAverage) * improvementRatio;
     return Math.ceil(goal);
   }
 
-  function calculateGoalDownwards(monthValue, improvementRatio) {
-    const goal = monthValue - monthValue * improvementRatio;
+  function calculateGoalDownwards(threeMonthAverage, improvementRatio) {
+    const goal = threeMonthAverage - threeMonthAverage * improvementRatio;
     return Math.floor(goal);
   }
 
