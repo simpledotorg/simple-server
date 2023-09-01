@@ -61,13 +61,13 @@ class AddFacilityBusinessIdentifiersInEthiopia < ActiveRecord::Migration[6.1]
   }
 
   def up
-    unless CountryConfig.current_country?("Ethiopia") && Rails.env.production?
+    unless CountryConfig.current_country?("Ethiopia") && ENV["SIMPLE_SERVER_ENV"] == "production"
       print "This migrations is meant to run only in Ethiopia production"
       return
     end
 
     FACILITY_IDENTIFIERS.each do |simple_id, dhis2_org_id|
-      facility = facility.find_by(id: simple_id)
+      facility = Facility.find_by(id: simple_id)
       unless facility.present?
         print "Facility not found: id #{simple_id}"
         next
@@ -81,13 +81,13 @@ class AddFacilityBusinessIdentifiersInEthiopia < ActiveRecord::Migration[6.1]
   end
 
   def down
-    unless CountryConfig.current_country?("Ethiopia") && Rails.env.production?
+    unless CountryConfig.current_country?("Ethiopia") && ENV["SIMPLE_SERVER_ENV"] == "production"
       print "This migrations is meant to run only in Ethiopia production"
       return
     end
 
     FACILITY_IDENTIFIERS.each do |simple_id, dhis2_org_id|
-      facility = facility.find_by(id: simple_id)
+      facility = Facility.find_by(id: simple_id)
       unless facility.present?
         print "Facility not found: id #{simple_id}"
         next
@@ -98,6 +98,5 @@ class AddFacilityBusinessIdentifiersInEthiopia < ActiveRecord::Migration[6.1]
         identifier: dhis2_org_id
       ).delete
     end
-    raise ActiveRecord::IrreversibleMigration
   end
 end
