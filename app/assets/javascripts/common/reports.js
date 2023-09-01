@@ -662,8 +662,7 @@ Reports = function ({
   }
   
   function calculateGoal(periodValues, goalDownwards) {
-    const { threeMonthAverage, monthThreeIndexOfYear } = goalPeriodValue(periodValues);
-    const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
+    const { threeMonthAverage, improvementRatio } = goalPeriodValue(periodValues);
 
     if (goalDownwards) {
       return calculateGoalDownwards(threeMonthAverage, improvementRatio);
@@ -673,38 +672,49 @@ Reports = function ({
 
   function goalPeriodValue(periodValues) {
     const dateKeys = Object.keys(periodValues);
-
     const decemberKeys = dateKeys.filter((item) => item.includes("Dec"));
-    const isLastMonthOfYear =
-      monthIndexFromDateString(dateKeys[dateKeys.length - 1]) === 11;
-    if (isLastMonthOfYear) {
+
+    const [lastMonthKey] = dateKeys.slice(-1);
+    const isEndMonthOfYear = lastMonthKey.includes('Dec');
+    if (isEndMonthOfYear) {
       decemberKeys.splice(-1);
     }
+
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
-    const indexOfLatestDecember = dateKeys.indexOf(mostRecentDecemberKey);
+    const mostRecentDecemberKeyIndex = dateKeys.indexOf(mostRecentDecemberKey);
 
     const monthThreeDateKey =
-      indexOfLatestDecember < defaultMonthsRequired - 1
+      mostRecentDecemberKeyIndex < defaultMonthsRequired - 1
         ? dateKeys[defaultMonthsRequired - 1] // month 6
         : mostRecentDecemberKey; // december
 
+    const monthThreeIndex = dateKeys.indexOf(monthThreeDateKey);
+
     const monthThreeValue = periodValues[monthThreeDateKey];
-    const indexOfMonthThreeInDateKeys = dateKeys.indexOf(monthThreeDateKey);
-    const monthTwoValue = periodValues[dateKeys[indexOfMonthThreeInDateKeys - 1]];
-    const monthOneValue = periodValues[dateKeys[indexOfMonthThreeInDateKeys - 2]];
+    const monthTwoValue = periodValues[dateKeys[monthThreeIndex - 1]];
+    const monthOneValue = periodValues[dateKeys[monthThreeIndex - 2]];
 
     const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
     const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
+    
+    const monthThreeIndexOfYear = monthIndexFromDateKey(monthThreeDateKey);
+    const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
 
-    const monthThreeIndexOfYear = monthIndexFromDateString(monthThreeDateKey);
     return {
       threeMonthAverage,
-      monthThreeIndexOfYear,
+      improvementRatio,
     };
   }
 
-  function monthIndexFromDateString(dateString) {
-    return new Date(dateString).getMonth()
+  function monthIndexFromDateKey(dateString) {
+    return new Date(dateString).getMonth();
+  }
+
+  function relativeImprovementRatio(monthThreeIndex) {
+    const annualRelativeImprovement = 0.1; // 10%
+    const monthlyRelativeImprovement = annualRelativeImprovement / 12;
+    const monthsRemainingForYear = monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, nov = 1
+    return monthlyRelativeImprovement * monthsRemainingForYear;
   }
 
   function calculateGoalUpwards(monthValue, improvementRatio) {
@@ -715,14 +725,6 @@ Reports = function ({
   function calculateGoalDownwards(monthValue, improvementRatio) {
     const goal = monthValue - monthValue * improvementRatio;
     return Math.floor(goal);
-  }
-
-  function relativeImprovementRatio(goalMonthIndex) {
-    const defaultRelativeImprovementPercentage = 10;
-    const improvementPercentagePerMonth =
-      defaultRelativeImprovementPercentage / 100 / 12;
-    const monthsRemainingInYear = 12 - (goalMonthIndex % 11); // dec is full year (0 index)
-    return improvementPercentagePerMonth * monthsRemainingInYear;
   }
 
   // - canvas drawing
