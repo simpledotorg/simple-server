@@ -713,7 +713,7 @@ Reports = function ({
   function relativeImprovementRatio(monthThreeIndex) {
     const annualRelativeImprovement = 0.1; // 10%
     const monthlyRelativeImprovement = annualRelativeImprovement / 12;
-    const monthsRemainingForYear = monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, nov = 1
+    const monthsRemainingForYear = monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, jan = 11... nov = 1
     return monthlyRelativeImprovement * monthsRemainingForYear;
   }
 
