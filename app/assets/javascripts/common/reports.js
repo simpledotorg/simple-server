@@ -706,10 +706,6 @@ Reports = function ({
     };
   }
 
-  function monthIndexFromDateKey(dateString) {
-    return new Date(dateString).getMonth();
-  }
-
   function relativeImprovementRatio(monthThreeIndex) {
     const annualRelativeImprovement = 0.1; // 10%
     const monthlyRelativeImprovement = annualRelativeImprovement / 12;
@@ -1767,4 +1763,8 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
+}
+
+function monthIndexFromDateKey(dateString) {
+  return new Date(dateString).getMonth();
 }
