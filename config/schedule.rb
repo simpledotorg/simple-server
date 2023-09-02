@@ -37,6 +37,7 @@ FOLLOW_UP_TIMES = [
 ].map { |t| local(t) }
 
 REPORTS_REFRESH_FREQUENCY = CountryConfig.current_country?("India") ? :sunday : :day
+REPORTS_CACHE_REFRESH_TIME = CountryConfig.current_country?("India") ? "12:00 pm" : "04:30 am"
 
 every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_daily_follow_ups_and_registrations"
@@ -98,7 +99,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every REPORTS_REFRESH_FREQUENCY, at: local("04:30 am"), roles: [:cron] do
+every REPORTS_REFRESH_FREQUENCY, at: local(REPORTS_CACHE_REFRESH_TIME), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
