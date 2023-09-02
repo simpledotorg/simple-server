@@ -534,3 +534,10 @@ sid-ET:
     others: "WOLOOTUNO"
     television_functional: "Medikaale kiliinike giddo, Televizhiinete iskriine horoonsi'ne babbaxxinoha keereaanchimmate rosi sokka sayinsoonni?"
     wifi_functional: "Wi-Fi netiworke qinaabbino?"
+  drug_stock_report:
+    instruction_1: "aganu goofimarichira anga noo tabileete wori"
+    instruction_2: "mitto mittonka xagicho kiiroteni wori"
+    batch_1: "Bachee 1"
+    batch_2: "Bachee 2"
+    batch_3: "Bachee 3"
+    expiry_date: "horote yana gofano bara borresi"
