@@ -11,6 +11,6 @@ namespace :dhis2 do
 
   desc "Export data of each facility to Ethiopia DHIS2"
   task ethiopia_export: :environment do
-    EthiopiaDhis2Exporter.export
+    Dhis2::EthiopiaExporter.export
   end
 end
