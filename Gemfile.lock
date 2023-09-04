@@ -77,7 +77,7 @@ GEM
       activerecord (>= 4.0)
     autoprefixer-rails (10.4.7.0)
       execjs (~> 2)
-    bcrypt (3.1.18)
+    bcrypt (3.1.19)
     bcrypt_pbkdf (1.1.0)
     benchmark-ips (2.10.0)
     bindex (0.8.1)
