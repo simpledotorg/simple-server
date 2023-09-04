@@ -15,7 +15,11 @@ RSpec.describe BulkApiImport::Importer do
     end
 
     it "imports patient resources" do
-      resources = 2.times.map { build_patient_import_resource }
+      resources = 2.times.map do
+        build_patient_import_resource
+          .merge(managingOrganization: [{value: facility_identifier.identifier}])
+          .except(:registrationOrganization)
+      end
 
       expect { described_class.new(resource_list: resources).import }
         .to change(Patient, :count).by(2)

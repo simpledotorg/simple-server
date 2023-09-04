@@ -8,4 +8,9 @@ namespace :dhis2 do
   task bangladesh_disaggregated_export: :environment do
     BangladeshDisaggregatedDhis2Exporter.export
   end
+
+  desc "Export data of each facility to Ethiopia DHIS2"
+  task ethiopia_export: :environment do
+    Dhis2::EthiopiaExporter.export
+  end
 end
