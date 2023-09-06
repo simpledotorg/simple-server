@@ -372,7 +372,14 @@ class Api::V4::Models
          questionnaire_type: {type: :string, enum: Questionnaire.questionnaire_types.keys},
          facility_id: {"$ref" => "#/definitions/uuid"},
          last_updated_by_user_id: {"$ref" => "#/definitions/nullable_uuid"},
-         content: {type: :object},
+         content: {
+           type: :object,
+           example: {
+             "month_date" => "2023-08-01",
+             "submitted" => true,
+             "monthly_screening_report.diagnosed_cases_on_follow_up_htn.male" => 180
+           }
+         },
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"}
