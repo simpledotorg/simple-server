@@ -1680,7 +1680,6 @@ function baseBarChartConfig() {
   };
 }
 
-
 // [Segment] Functions
 // 
 /**
