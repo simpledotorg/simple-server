@@ -719,12 +719,12 @@ Reports = function ({
   }
 
   function calculateGoalUpwards(threeMonthAverage, improvementRatio) {
-    const goal = threeMonthAverage + (100 - threeMonthAverage) * improvementRatio;
+    const goal = threeMonthAverage + ((100 - threeMonthAverage) * improvementRatio);
     return Math.ceil(goal);
   }
 
   function calculateGoalDownwards(threeMonthAverage, improvementRatio) {
-    const goal = threeMonthAverage - threeMonthAverage * improvementRatio;
+    const goal = threeMonthAverage - (threeMonthAverage * improvementRatio);
     return Math.floor(goal);
   }
 

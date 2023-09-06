@@ -36,6 +36,9 @@ FOLLOW_UP_TIMES = [
   "07:00 pm"
 ].map { |t| local(t) }
 
+REPORTS_REFRESH_FREQUENCY = CountryConfig.current_country?("India") ? :sunday : :day
+REPORTS_CACHE_REFRESH_TIME = CountryConfig.current_country?("India") ? "12:00 pm" : "04:30 am"
+
 every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_daily_follow_ups_and_registrations"
 end
@@ -70,7 +73,7 @@ every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:whitelist_patient_phone_numbers"
 end
 
-every :day, at: local("12:30 am"), roles: [:cron] do
+every REPORTS_REFRESH_FREQUENCY, at: local("12:30 am"), roles: [:cron] do
   rake "db:refresh_reporting_views"
 end
 
@@ -96,7 +99,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
   runner "RecordCounterJob.perform_async"
 end
 
-every :day, at: local("04:30 am"), roles: [:cron] do
+every REPORTS_REFRESH_FREQUENCY, at: local(REPORTS_CACHE_REFRESH_TIME), roles: [:cron] do
   runner "Reports::RegionCacheWarmer.call"
 end
 
@@ -109,6 +112,12 @@ end
 every 1.month, at: local("04:15 am"), roles: [:cron] do
   if Flipper.enabled?(:bangladesh_disaggregated_dhis2_export)
     rake "dhis2:bangladesh_disaggregated_export"
+  end
+end
+
+every 1.month, at: local("04:15 am"), roles: [:cron] do
+  if Flipper.enabled?(:ethiopia_dhis2_export)
+    rake "dhis2:ethiopia_export"
   end
 end
 
