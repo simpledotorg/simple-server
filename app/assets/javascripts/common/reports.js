@@ -662,8 +662,7 @@ Reports = function ({
   }
   
   function calculateGoal(periodValues, goalDownwards) {
-    const { threeMonthAverage, monthThreeIndexOfYear } = goalPeriodValue(periodValues);
-    const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
+    const { threeMonthAverage, improvementRatio } = getThreeMonthAverageAndImprovementRatio(periodValues);
 
     if (goalDownwards) {
       return calculateGoalDownwards(threeMonthAverage, improvementRatio);
@@ -671,74 +670,61 @@ Reports = function ({
     return calculateGoalUpwards(threeMonthAverage, improvementRatio);
   }
 
-  function goalPeriodValue(periodValues) {
-    const dateKeysArray = Object.keys(periodValues);
+  function getThreeMonthAverageAndImprovementRatio(periodValues) {
+    const dateKeys = Object.keys(periodValues);
+    const decemberKeys = dateKeys.filter((item) => item.includes("Dec"));
 
-    const decemberKeys = dateKeysArray.filter((item) => item.includes("Dec"));
-    const isLastDateKeysArrayMonthDec =
-      monthIndexFromDateString(dateKeysArray[dateKeysArray.length - 1]) === 11;
-    if (isLastDateKeysArrayMonthDec) {
+    const [lastMonthKey] = dateKeys.slice(-1);
+    const isEndMonthOfYear = lastMonthKey.includes('Dec');
+    if (isEndMonthOfYear) {
       decemberKeys.splice(-1);
     }
+
     const mostRecentDecemberKey = decemberKeys[decemberKeys.length - 1];
-    const indexOfLatestDecember = dateKeysArray.indexOf(mostRecentDecemberKey);
+    const mostRecentDecemberKeyIndex = dateKeys.indexOf(mostRecentDecemberKey);
 
     const monthThreeDateKey =
-      indexOfLatestDecember < defaultMonthsRequired - 1
-        ? dateKeysArray[defaultMonthsRequired - 1] // month 6
+      mostRecentDecemberKeyIndex < defaultMonthsRequired - 1
+        ? dateKeys[defaultMonthsRequired - 1] // month 6
         : mostRecentDecemberKey; // december
 
+    const monthThreeIndex = dateKeys.indexOf(monthThreeDateKey);
+
     const monthThreeValue = periodValues[monthThreeDateKey];
-    const indexOfMonthThreeInDateKeys = dateKeysArray.indexOf(monthThreeDateKey);
-    const monthTwoValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 1]];
-    const monthOneValue = periodValues[dateKeysArray[indexOfMonthThreeInDateKeys - 2]];
+    const monthTwoValue = periodValues[dateKeys[monthThreeIndex - 1]];
+    const monthOneValue = periodValues[dateKeys[monthThreeIndex - 2]];
 
     const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
     const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
+    
+    const monthThreeIndexOfYear = monthIndexFromDateKey(monthThreeDateKey);
+    const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
 
-    const monthThreeIndexOfYear = monthIndexFromDateString(monthThreeDateKey);
     return {
       threeMonthAverage,
-      monthThreeIndexOfYear,
+      improvementRatio,
     };
   }
 
-  function monthIndexFromDateString(dateString) {
-    const [month, year] = dateString.split("-");
-    const months = [
-      "jan",
-      "feb",
-      "mar",
-      "apr",
-      "may",
-      "jun",
-      "jul",
-      "aug",
-      "sep",
-      "oct",
-      "nov",
-      "dec",
-    ];
-
-    return months.indexOf(month.toLowerCase());
+  function monthIndexFromDateKey(dateString) {
+    return new Date(dateString).getMonth();
   }
 
-  function calculateGoalUpwards(monthValue, improvementRatio) {
-    const goal = monthValue + (100 - monthValue) * improvementRatio;
+  function relativeImprovementRatio(monthThreeIndex) {
+    const annualRelativeImprovement = 0.1; // 10%
+    const monthlyRelativeImprovement = annualRelativeImprovement / 12;
+    const monthsRemainingForYear = monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, jan = 11... nov = 1
+    return monthlyRelativeImprovement * monthsRemainingForYear;
+  }
+
+  function calculateGoalUpwards(threeMonthAverage, improvementRatio) {
+    const goal = threeMonthAverage + (100 - threeMonthAverage) * improvementRatio;
     return Math.ceil(goal);
   }
 
-  function calculateGoalDownwards(monthValue, improvementRatio) {
-    const goal = monthValue - monthValue * improvementRatio;
+  function calculateGoalDownwards(threeMonthAverage, improvementRatio) {
+    const goal = threeMonthAverage - (threeMonthAverage * improvementRatio);
     return Math.floor(goal);
-  }
-
-  function relativeImprovementRatio(goalMonthIndex) {
-    const defaultRelativeImprovementPercentage = 10;
-    const improvementPercentagePerMonth =
-      defaultRelativeImprovementPercentage / 100 / 12;
-    const monthsRemainingInYear = 12 - (goalMonthIndex % 11); // dec is full year (0 index)
-    return improvementPercentagePerMonth * monthsRemainingInYear;
   }
 
   // - canvas drawing
