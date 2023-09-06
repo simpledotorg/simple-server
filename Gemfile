@@ -71,6 +71,7 @@ gem "rswag-api"
 gem "rswag-ui"
 gem "ruby-progressbar", require: false
 gem "rubyzip"
+gem "zip_tricks"
 gem "sassc-rails"
 gem "scenic"
 gem "scientist"
