@@ -337,6 +337,20 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     MaterializedPatientSummary.refresh
   end
 
+  describe "#csv_enumerator" do
+    it "enumerates the rows of the CSV of patient records" do
+      Timecop.freeze do
+        timestamp = ["Report generated at:", Time.current]
+        enumerator = subject.csv_enumerator(Patient.all)
+
+        expect(enumerator.next).to eq(timestamp)
+        expect(enumerator.next).to eq(measurement_headers)
+        expect(enumerator.next).to eq(headers)
+        expect(enumerator.next).to eq(fields)
+      end
+    end
+  end
+
   describe "#csv" do
     it "generates a CSV of patient records" do
       Timecop.freeze do
