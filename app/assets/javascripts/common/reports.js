@@ -723,7 +723,7 @@ Reports = function ({
   }
 
   function calculateGoalDownwards(threeMonthAverage, improvementRatio) {
-    const goal = threeMonthAverage - threeMonthAverage * improvementRatio;
+    const goal = threeMonthAverage - (threeMonthAverage * improvementRatio);
     return Math.floor(goal);
   }
 
