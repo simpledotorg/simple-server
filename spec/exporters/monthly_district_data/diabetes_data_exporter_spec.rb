@@ -2,15 +2,18 @@ require "rails_helper"
 
 describe MonthlyDistrictData::DiabetesDataExporter do
   around do |example|
-    # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
-    # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
-    # fixed point in time like the spec helper.
-    Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
-      example.run
+    ActiveRecord::Base.transaction do
+      # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
+      # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
+      # fixed point in time like the spec helper.
+      Timecop.freeze("#{Date.today.end_of_month} 23:00 IST") do
+        example.run
+      end
+      raise ActiveRecord::Rollback
     end
   end
 
-  before do
+  before :all do
     @organization = FactoryBot.create(:organization)
     @facility_group = create(:facility_group, organization: @organization)
     @facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: @facility_group, facility_size: :community, enable_diabetes_management: true)
@@ -37,7 +40,17 @@ describe MonthlyDistrictData::DiabetesDataExporter do
 
     @months = @period.downto(5).reverse.map(&:to_s)
 
-    RefreshReportingViews.refresh_v2
+    # RefreshReportingViews.refresh_v2
+    RefreshReportingViews.call(
+      views: %w[
+        Reports::PatientBloodSugar
+        Reports::PatientVisit
+        Reports::PatientFollowUp
+        Reports::PatientState
+        Reports::FacilityAppointmentScheduledDays
+        Reports::FacilityState
+      ]
+    )
   end
 
   context "when medication dispensation is disabled" do
