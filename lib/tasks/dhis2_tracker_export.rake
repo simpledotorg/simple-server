@@ -7,9 +7,22 @@ namespace :dhis2 do
       .fetch(:facilities_to_migrate)
 
     facilities.map do |facility|
-      response = Dhis2TrackerDataExporter.new(facility[:facility_slug], facility[:org_unit_id])
+      response = Dhis2TrackerDataExporter.new(facility.slug, facility[:org_unit_id])
         .export_tracked_entities
       puts response
+      start = Time.new
+      loop do
+        status_check_response = RestClient::Request.new(
+          method: :get,
+          url: response.dig("response", "location"),
+          user: "admin",
+          password: "district"
+        ).execute
+        res = JSON.parse(status_check_response)
+        break if res.size > 0 && res.first["completed"]
+        sleep(5.second)
+      end
+      puts "Completed Job in #{Time.new - start} seconds"
       next unless response["status"] != "OK"
       errors.append(
         {
