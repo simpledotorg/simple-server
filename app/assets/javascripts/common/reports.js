@@ -1701,8 +1701,8 @@ const dynamicChartSegementDashed = (
 
   const endDateKeyIndex = monthIndexFromDateKey(endDateKey);
   const dateNowMonth = new Date().getMonth()
+  const monthsInPast =  (dateNowMonth - endDateKeyIndex + 12) % 12
 
-  const monthsInPast = dateNowMonth - endDateKeyIndex;
   const dashedSegments = Math.max(0, monthsDashedBase - monthsInPast);
 
   const segmentStartNodeIndex = ctx.p0DataIndex
