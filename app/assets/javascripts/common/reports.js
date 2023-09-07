@@ -384,7 +384,8 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsCalledRate).length
+                    Object.keys(data.overduePatientsCalled).length,
+                    Object.keys(data.overduePatientsCalled).slice(-1)[0]
                   ),
               },
             },
@@ -438,10 +439,11 @@ DashboardReports = () => {
       return withBaseLineConfig(config);
     },
     overdueReturnToCareTrend: function (data) {
-      const currentDate = new Date();
-      const currentDateOfTheMonth = currentDate.getDate();
+      const currentDateOfTheMonth = new Date().getDate();
       const monthsDashed = currentDateOfTheMonth > 15 ? 1 : 2;
-
+      const endDateKey = Object.keys(data.overduePatientsCalled).slice(-1)[0];
+      const numberOfXAxisTicks = Object.keys(data.overduePatientsReturnedRate).length
+      
       const config = {
         data: {
           labels: Object.keys(data.overduePatientsCalled),
@@ -456,7 +458,8 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.overduePatientsReturnedRate).length,
+                    numberOfXAxisTicks,
+                    endDateKey,
                     monthsDashed,
                   ),
               },
@@ -471,9 +474,10 @@ DashboardReports = () => {
               fill: "false",
               segment: {
                 borderDash: (ctx) =>
-                  dynamicChartSegementDashed(
+                dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.patientsReturnedAgreedToVisitRates).length,
+                    numberOfXAxisTicks,
+                    endDateKey,
                     monthsDashed,
                   ),
               },
@@ -490,7 +494,8 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.patientsReturnedRemindToCallLaterRates).length,
+                    numberOfXAxisTicks,
+                    endDateKey,
                     monthsDashed,
                   ),
               },
@@ -507,7 +512,8 @@ DashboardReports = () => {
                 borderDash: (ctx) =>
                   dynamicChartSegementDashed(
                     ctx,
-                    Object.keys(data.patientsReturnedRemovedFromOverdueListRates).length,
+                    numberOfXAxisTicks,
+                    endDateKey,
                     monthsDashed,
                   ),
               },
@@ -705,10 +711,6 @@ Reports = function ({
       threeMonthAverage,
       improvementRatio,
     };
-  }
-
-  function monthIndexFromDateKey(dateString) {
-    return new Date(dateString).getMonth();
   }
 
   function relativeImprovementRatio(monthThreeIndex) {
@@ -1693,15 +1695,25 @@ function baseBarChartConfig() {
 const dynamicChartSegementDashed = (
   ctx,
   numberOfXAxisTicks,
-  numberOfDashedSegments = 1
+  endDateKey,
+  monthsDashedBase = 1,
 ) => {
-  const dashStyle = [4, 3]
-  const segmentStartIndex = ctx.p0DataIndex
-  return isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, numberOfDashedSegments) ? dashStyle : undefined;
+
+  const endDateKeyIndex = monthIndexFromDateKey(endDateKey);
+  const dateNowMonth = new Date().getMonth()
+  const monthsInPast =  (dateNowMonth - endDateKeyIndex + 12) % 12
+
+  const dashedSegments = Math.max(0, monthsDashedBase - monthsInPast);
+
+  const segmentStartNodeIndex = ctx.p0DataIndex
+  return isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) 
+    ? [4, 3] // dashStyle
+    : undefined;
 };
 
-function isSegmentDashed(segmentStartIndex, numberOfXAxisTicks, segmentsToDashFromEnd) {
-  return segmentStartIndex >= numberOfXAxisTicks - (segmentsToDashFromEnd + 1)
+function isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) {
+  const dataNodeToStartDashedLine = numberOfXAxisTicks - 1 - dashedSegments
+  return segmentStartNodeIndex >= dataNodeToStartDashedLine
 };
 
 // [plugin] vertical instersect line
@@ -1767,4 +1779,8 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
   if (_.isArray(objValue)) {
     return objValue.concat(srcValue);
   }
+}
+
+function monthIndexFromDateKey(dateString) {
+  return new Date(dateString).getMonth();
 }
