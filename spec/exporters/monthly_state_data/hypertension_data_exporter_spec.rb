@@ -10,7 +10,7 @@ describe MonthlyStateData::HypertensionDataExporter do
     end
   end
 
-  before do
+  before(:all) do
     @organization = FactoryBot.create(:organization)
     @facility_group = create(:facility_group, organization: @organization)
     @facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: @facility_group, facility_size: :community)
@@ -37,7 +37,17 @@ describe MonthlyStateData::HypertensionDataExporter do
 
     @months = @period.downto(5).reverse.map(&:to_s)
 
-    RefreshReportingViews.refresh_v2
+    # RefreshReportingViews.refresh_v2
+    RefreshReportingViews.call(
+      views: %w[
+        Reports::PatientBloodPressure
+        Reports::PatientVisit
+        Reports::PatientFollowUp
+        Reports::PatientState
+        Reports::FacilityAppointmentScheduledDays
+        Reports::FacilityState
+      ]
+    )
   end
 
   describe "#report" do
