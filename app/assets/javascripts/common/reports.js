@@ -1708,7 +1708,7 @@ const dynamicChartSegementDashed = (
   const segmentStartNodeIndex = ctx.p0DataIndex
   return isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) 
     ? [4, 3] // dashStyle
-    : undefined;
+    : undefined; // fallback to default line style (solid)
 };
 
 function isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) {
