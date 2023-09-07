@@ -689,6 +689,7 @@ GEM
     xpath (3.2.0)
       nokogiri (~> 1.8)
     zeitwerk (2.6.0)
+    zip_tricks (5.6.0)
 
 PLATFORMS
   ruby
@@ -822,6 +823,7 @@ DEPENDENCIES
   webpacker (= 6.0.0.rc.6)
   whenever
   wkhtmltoimage-binary
+  zip_tricks
 
 RUBY VERSION
    ruby 2.7.4p191
