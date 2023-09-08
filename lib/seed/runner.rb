@@ -159,25 +159,27 @@ module Seed
       )
     end
 
+    def create_appointments_for_patient(facility, patient_id, user_ids)
+      device_created_at = Faker::Time.between(from: 6.months.ago, to: 1.day.ago)
+      created_at = Faker::Time.between(from: device_created_at, to: 1.day.ago)
+      scheduled_date = Faker::Time.between(from: device_created_at, to: device_created_at.advance(days: 45))
+      user_id = user_ids.sample
+      FactoryBot.attributes_for(:appointment,
+        creation_facility_id: facility.id,
+        facility_id: facility.id,
+        patient_id: patient_id,
+        scheduled_date: scheduled_date,
+        device_created_at: device_created_at,
+        created_at: created_at,
+        updated_at: created_at,
+        user_id: user_id)
+    end
+
     def create_appointments_and_call_results(patient_info, facility:, user_ids:)
       appointment_attributes = patient_info.map do |(patient_id, _recorded_at)|
-        number_of_appointments = config.rand_or_max(0..1) # some patients dont get appointments
-        next if number_of_appointments.zero?
-
-        device_created_at = Faker::Time.between(from: 6.months.ago, to: 1.day.ago)
-        created_at = Faker::Time.between(from: device_created_at, to: 1.day.ago)
-        scheduled_date = Faker::Time.between(from: device_created_at, to: device_created_at.advance(days: 45))
-        user_id = user_ids.sample
-        FactoryBot.attributes_for(:appointment,
-          creation_facility_id: facility.id,
-          facility_id: facility.id,
-          patient_id: patient_id,
-          scheduled_date: scheduled_date,
-          device_created_at: device_created_at,
-          created_at: created_at,
-          updated_at: created_at,
-          user_id: user_id)
-      end.compact
+        number_of_appointments = config.rand_or_max(0..29) # some patients dont get appointments
+        number_of_appointments.times.map { create_appointments_for_patient(facility, patient_id, user_ids) }
+      end.flatten.compact
 
       call_result_attributes = create_call_results_for_appointments(appointment_attributes, user_ids: user_ids)
 
