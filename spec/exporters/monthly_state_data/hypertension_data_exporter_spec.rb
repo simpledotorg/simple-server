@@ -37,22 +37,30 @@ describe MonthlyStateData::HypertensionDataExporter do
 
     @months = @period.downto(5).reverse.map(&:to_s)
 
-    @transaction_opened = ActiveRecord::Base.connection.begin_transaction(joinable: false)
-    # RefreshReportingViews.refresh_v2
-    RefreshReportingViews.call(
-      views: %w[
-        Reports::PatientBloodPressure
-        Reports::PatientVisit
-        Reports::PatientFollowUp
-        Reports::PatientState
-        Reports::FacilityAppointmentScheduledDays
-        Reports::FacilityState
-      ]
-    )
+    logger.debug "starting transaction"
+    @fiber = Fiber.new do
+      ActiveRecord::Base.transaction do
+        # RefreshReportingViews.refresh_v2
+        RefreshReportingViews.call(
+          views: %w[
+            Reports::PatientBloodPressure
+            Reports::PatientVisit
+            Reports::PatientFollowUp
+            Reports::PatientState
+            Reports::FacilityAppointmentScheduledDays
+            Reports::FacilityState
+          ]
+        )
+        Fiber.yield
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    @fiber.resume
   end
 
   after(:all) do
-    ActiveRecord::Base.connection.rollback_transaction if @transaction_opened
+    @fiber.resume
   end
 
   describe "#report" do
