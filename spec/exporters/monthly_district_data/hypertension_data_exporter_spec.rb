@@ -9,7 +9,8 @@ describe MonthlyDistrictData::HypertensionDataExporter do
       example.run
     end
   end
-  before do
+
+  before :all do
     @organization = FactoryBot.create(:organization)
     @facility_group = create(:facility_group, organization: @organization)
     @facility1 = create(:facility, name: "Facility 1", block: "Block 1 - alphabetically first", facility_group: @facility_group, facility_size: :community)
@@ -35,7 +36,30 @@ describe MonthlyDistrictData::HypertensionDataExporter do
 
     @months = @period.downto(5).reverse.map(&:to_s)
 
-    RefreshReportingViews.refresh_v2
+    logger.debug "starting transaction"
+    @fiber = Fiber.new do
+      ActiveRecord::Base.transaction do
+        # RefreshReportingViews.refresh_v2
+        RefreshReportingViews.call(
+          views: %w[
+            Reports::PatientBloodPressure
+            Reports::PatientVisit
+            Reports::PatientFollowUp
+            Reports::PatientState
+            Reports::FacilityAppointmentScheduledDays
+            Reports::FacilityState
+          ]
+        )
+        Fiber.yield
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    @fiber.resume
+  end
+
+  after(:all) do
+    @fiber.resume
   end
 
   context "when medication dispensation is disabled" do
