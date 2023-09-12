@@ -9,6 +9,10 @@ class DisableUsersInMigratedFacilities < ActiveRecord::Migration[6.1]
     {region_type: :district, slug: "pune-municipal-corporation"}
   ]
   def up
+    unless CountryConfig.current_country?("India") && ENV["SIMPLE_SERVER_ENV"] == "production"
+      return print "DisableUsersInMigratedFacilities is only for production India"
+    end
+
     users_with_remaining_access = REGIONS_WITH_ONGOING_ACCESS.flat_map do |region_details|
       region = Region.find_by(region_details)
       next unless region
