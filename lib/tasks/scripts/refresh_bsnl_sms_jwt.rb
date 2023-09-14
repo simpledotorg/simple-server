@@ -24,6 +24,8 @@ class RefreshBsnlSmsJwt
       jwt = response.body.delete_prefix('"').delete_suffix('"')
       config = Configuration.find_or_create_by(name: "bsnl_sms_jwt")
       config.update!(value: jwt)
+    else
+      response.error!
     end
   end
 end

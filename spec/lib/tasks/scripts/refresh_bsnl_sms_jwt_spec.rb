@@ -23,6 +23,14 @@ RSpec.describe RefreshBsnlSmsJwt do
         expect(request).to have_been_made
         expect(Configuration.fetch("bsnl_sms_jwt")).to eq("new_jwt")
       end
+
+      it "raises an error if the HTTP call fails" do
+        stub_request(:post, "https://bulksms.bsnl.in:5010/api/Create_New_API_Token").to_return(status: 401)
+        expect { described_class.new("1", "invalid username", "invalid password", "X").call }.to raise_error
+
+        stub_request(:post, "https://bulksms.bsnl.in:5010/api/Create_New_API_Token").to_return(status: 500)
+        expect { described_class.new("1", "username", "password", "X").call }.to raise_error
+      end
     end
   end
 end
