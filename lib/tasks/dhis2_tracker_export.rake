@@ -38,7 +38,7 @@ namespace :dhis2 do
   desc "Export regions as org units to DHIS2"
   task export_regions: :environment do
     Dhis2::RegionsExporter
-      .new(Region.find_by(source_type: "FacilityGroup"))
+      .new(Region.find_by(slug: "summit-heart-foundation"), true)
       .export
   end
 end

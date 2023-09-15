@@ -1,43 +1,74 @@
 ---
-facilities_to_migrate:
-- facility_slug: hwc-umri-pragane-balapur
-  org_unit_id: ueuQlqb8ccl
-- facility_slug: dh-kundalwadi
-  org_unit_id: Rp268JB6Ne4
-- facility_slug: hwc-vadghar
-  org_unit_id: cDw53Ej8rju
-- facility_slug: hwc-karanje-tarf-satara
-  org_unit_id: GvFqTavdpGE
-- facility_slug: hwc-ghatanji
-  org_unit_id: plnHVbJR6p4
-- facility_slug: uhc-katai
-  org_unit_id: BV4IomHvri4
-- facility_slug: village-poladpur
-  org_unit_id: qjboFI0irVu
-- facility_slug: village-devrukh
-  org_unit_id: dWOAzMcK2Wt
-- facility_slug: chc-pali
-  org_unit_id: kbGqmM6ZWWV
-- facility_slug: village-godoli
-  org_unit_id: eoYV2p74eVz
-- facility_slug: hwc-kudal
-  org_unit_id: nq7F0t1Pz6t
-- facility_slug: hwc-murud-janjira
-  org_unit_id: r5WWF9WDzoa
-- facility_slug: chc-vangani
-  org_unit_id: yMCshbaVExv
-- facility_slug: village-karivali
-  org_unit_id: tlMeFk8C4CG
-- facility_slug: sad-pandharpur
-  org_unit_id: BH7rDkWjUqc
-- facility_slug: uhc-chakan-gaon
-  org_unit_id: Rll4VmTDRiE
-- facility_slug: village-kudal
-  org_unit_id: XtuhRhmbrJM
-- facility_slug: village-matheran
-  org_unit_id: c41XRVOYNJm
-- :facility_slug: summit-heart-foundation
-  :org_unit_id: v3fS4sO1ksl
+regions_to_migrate:
+  facility:
+  - facility_slug: hwc-umri-pragane-balapur
+    org_unit_id: ueuQlqb8ccl
+  - facility_slug: dh-kundalwadi
+    org_unit_id: Rp268JB6Ne4
+  - facility_slug: hwc-vadghar
+    org_unit_id: cDw53Ej8rju
+  - facility_slug: hwc-karanje-tarf-satara
+    org_unit_id: GvFqTavdpGE
+  - facility_slug: hwc-ghatanji
+    org_unit_id: plnHVbJR6p4
+  - facility_slug: uhc-katai
+    org_unit_id: BV4IomHvri4
+  - facility_slug: village-poladpur
+    org_unit_id: qjboFI0irVu
+  - facility_slug: village-devrukh
+    org_unit_id: dWOAzMcK2Wt
+  - facility_slug: chc-pali
+    org_unit_id: kbGqmM6ZWWV
+  - facility_slug: village-godoli
+    org_unit_id: eoYV2p74eVz
+  - facility_slug: hwc-kudal
+    org_unit_id: nq7F0t1Pz6t
+  - facility_slug: hwc-murud-janjira
+    org_unit_id: r5WWF9WDzoa
+  - facility_slug: chc-vangani
+    org_unit_id: yMCshbaVExv
+  - facility_slug: village-karivali
+    org_unit_id: tlMeFk8C4CG
+  - facility_slug: sad-pandharpur
+    org_unit_id: BH7rDkWjUqc
+  - facility_slug: uhc-chakan-gaon
+    org_unit_id: Rll4VmTDRiE
+  - facility_slug: village-kudal
+    org_unit_id: XtuhRhmbrJM
+  - facility_slug: village-matheran
+    org_unit_id: c41XRVOYNJm
+  - facility_slug: summit-heart-foundation
+    org_unit_id: v3fS4sO1ksl
+  - facility_slug: summit-heart-foundation
+    org_unit_id: jwBfmutLfAd
+  - facility_slug: summit-heart-foundation
+    org_unit_id: NBCQRvwFPf4
+  - facility_slug: summit-heart-foundation
+    org_unit_id: Gj7gX46QEOZ
+  - facility_slug: summit-heart-foundation
+    org_unit_id: EHQS8kccdJr
+  - facility_slug: summit-heart-foundation
+    org_unit_id: cCc9KXvKY72
+  - facility_slug: summit-heart-foundation
+    org_unit_id: YerS7BRgjfO
+  - facility_slug: summit-heart-foundation
+    org_unit_id: Jy3pOGHK9G1
+  - facility_slug: chandigarh
+    org_unit_id: xZ5xuVE0yUY
+  - facility_slug: assam
+    org_unit_id: v4tdc3HNRik
+  - facility_slug: meghalaya
+    org_unit_id: EWx8rI2pdsZ
+  state:
+  - :state_slug: chandigarh
+    :org_unit_id: zKoAfCqbj1F
+  - :state_slug: assam
+    :org_unit_id: jy7ukcxlNaX
+  - :state_slug: meghalaya
+    :org_unit_id: jsegQ1pbZhV
+  organization:
+  - organization_slug: summit-heart-foundation
+    org_unit_id: FM2VixrBhLj
 programs:
   htn_registry: pMIglSEqPGS
 program_stages:
