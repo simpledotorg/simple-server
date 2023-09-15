@@ -1,4 +1,6 @@
-facilities_to_migrate:
+---
+regions_to_migrate:
+  facility:
   - facility_slug: hwc-umri-pragane-balapur
     org_unit_id: ueuQlqb8ccl
   - facility_slug: dh-kundalwadi
@@ -35,31 +37,58 @@ facilities_to_migrate:
     org_unit_id: XtuhRhmbrJM
   - facility_slug: village-matheran
     org_unit_id: c41XRVOYNJm
-
+  - facility_slug: summit-heart-foundation
+    org_unit_id: v3fS4sO1ksl
+  - facility_slug: summit-heart-foundation
+    org_unit_id: jwBfmutLfAd
+  - facility_slug: summit-heart-foundation
+    org_unit_id: NBCQRvwFPf4
+  - facility_slug: summit-heart-foundation
+    org_unit_id: Gj7gX46QEOZ
+  - facility_slug: summit-heart-foundation
+    org_unit_id: EHQS8kccdJr
+  - facility_slug: summit-heart-foundation
+    org_unit_id: cCc9KXvKY72
+  - facility_slug: summit-heart-foundation
+    org_unit_id: YerS7BRgjfO
+  - facility_slug: summit-heart-foundation
+    org_unit_id: Jy3pOGHK9G1
+  - facility_slug: chandigarh
+    org_unit_id: xZ5xuVE0yUY
+  - facility_slug: assam
+    org_unit_id: v4tdc3HNRik
+  - facility_slug: meghalaya
+    org_unit_id: EWx8rI2pdsZ
+  state:
+  - :state_slug: chandigarh
+    :org_unit_id: zKoAfCqbj1F
+  - :state_slug: assam
+    :org_unit_id: jy7ukcxlNaX
+  - :state_slug: meghalaya
+    :org_unit_id: jsegQ1pbZhV
+  organization:
+  - organization_slug: summit-heart-foundation
+    org_unit_id: FM2VixrBhLj
 programs:
-  htn_registry: "pMIglSEqPGS"
-
+  htn_registry: pMIglSEqPGS
 program_stages:
-  htn_visit: "anb2cjLx3WM"
-
+  htn_visit: anb2cjLx3WM
 tracked_entity_types:
-  person_htn: "MCPQUTHX1Ze"
-
+  person_htn: MCPQUTHX1Ze
 event_attributes:
-  systolic: "IxEwYiq1FTq"
-  diastolic: "yNhtHKtKkO1"
-  amlodipine: "eGY7e5Ttbys"
-  losartan: "yUYbcCXo9Mv"
-  hydrochlorothiazide: "D8FWXAtCuL2"
-  telmisartan: "lWmOLo5hFYQ"
-
+  systolic: IxEwYiq1FTq
+  diastolic: yNhtHKtKkO1
+  amlodipine: eGY7e5Ttbys
+  losartan: yUYbcCXo9Mv
+  hydrochlorothiazide: D8FWXAtCuL2
+  telmisartan: lWmOLo5hFYQ
 patient_attributes:
-  hypertension: "jCRIT4GMMOS"
-  current_address: "A6Hb0Kvg4vb"
-  date_of_birth: "NI0QRzJvQ0k"
-  last_name: "ENRjVGxVL6l"
-  first_name: "sB1IHYu2xQT"
-  sex: "oindugucx72"
-  ncd_patient_status: "fI1P3Mg1zOZ"
-  phone_number: "YRDy9xy9jD0"
-  receiving_htn_treatment: "l5yxkxHgTw9"
+  hypertension: jCRIT4GMMOS
+  current_address: A6Hb0Kvg4vb
+  date_of_birth: NI0QRzJvQ0k
+  last_name: ENRjVGxVL6l
+  first_name: sB1IHYu2xQT
+  sex: oindugucx72
+  ncd_patient_status: fI1P3Mg1zOZ
+  phone_number: YRDy9xy9jD0
+  receiving_htn_treatment: l5yxkxHgTw9
