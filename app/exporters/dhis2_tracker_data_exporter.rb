@@ -1,7 +1,7 @@
 require "dhis2"
 
 class Dhis2TrackerDataExporter
-  DHIS2_CONFIG = YAML.load_file(ENV.fetch("DHIS2_TRACKER_CONFIG_FILE")).with_indifferent_access
+  DHIS2_CONFIG = YAML.load_file("config/data/dhis2/tracker/sandbox.yml").with_indifferent_access
 
   def initialize(facility_slug, org_unit_id)
     @facility = Facility.find_by(slug: facility_slug)
@@ -12,16 +12,17 @@ class Dhis2TrackerDataExporter
 
   def configure
     Dhis2.configure do |config|
-      config.url = ENV.fetch("DHIS2_URL")
-      config.user = ENV.fetch("DHIS2_USERNAME")
-      config.password = ENV.fetch("DHIS2_PASSWORD")
+      config.url = "https://dhis2-perf.simple.org" # ENV.fetch("DHIS2_URL")
+      config.user = "admin" # ENV.fetch("DHIS2_USERNAME")
+      config.password = "district" # ENV.fetch("DHIS2_PASSWORD")
     end
   end
 
   def export_tracked_entities
-    patients = @facility.patients
+    no_patients = rand(50..2000)
+    patients = @facility.patients.first(no_patients)
 
-    puts "#{patients.count} patients are being moved from #{@facility.name} to org unit #{@org_unit_id}"
+    puts "[#{@facility.slug} -> #{@org_unit_id}]: #{patients.count}"
 
     payload = {
       trackedEntities: patients.map do |patient|
@@ -35,10 +36,12 @@ class Dhis2TrackerDataExporter
       end
     }
 
-    Dhis2.client.post(
+    response = Dhis2.client.post(
       path: "tracker",
-      payload: payload
+      payload: payload,
+      query_params: {skipSideEffects: true}
     )
+    [response, patients.count]
   end
 
   def generate_enrollment(patient)
@@ -94,7 +97,7 @@ class Dhis2TrackerDataExporter
     {
       program: DHIS2_CONFIG.dig(:programs, :htn_registry),
       programStage: DHIS2_CONFIG.dig(:program_stages, :htn_visit),
-      occurredAt: blood_pressure.device_created_at.iso8601,
+      occurredAt: rand(8.years.ago..blood_pressure.device_created_at).iso8601,
       orgUnit: @org_unit_id,
       dataValues: [
         {

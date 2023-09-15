@@ -1,15 +1,28 @@
 namespace :dhis2 do
   desc "Export all patients in all facilities to DHIS2"
   task export_tracker_data: :environment do
-    errors = []
-    facilities = YAML.load_file(ENV.fetch("DHIS2_TRACKER_CONFIG_FILE"))
+    dhis2_facilities = YAML.load_file("config/data/dhis2/tracker/sandbox.yml")
       .with_indifferent_access
       .fetch(:facilities_to_migrate)
 
-    facilities.map do |facility|
-      response = Dhis2TrackerDataExporter.new(facility.slug, facility[:org_unit_id])
+    facilities = Facility.all.filter { |f| f.patients.count > 0 }
+    total_patients_exported = 0
+    export_start_time = Time.new
+
+    loop do
+      retries = 1
+      max_retries = 10
+      facility = facilities.sample
+
+      puts "-----------------------------------------------------"
+
+      response, no_patients = Dhis2TrackerDataExporter.new(facility.slug, dhis2_facilities.sample[:org_unit_id])
         .export_tracked_entities
-      puts response
+
+      total_patients_exported += no_patients
+      puts "[#{response["http_status_code"]}] Job: #{response.dig("response", "location")}"
+
+      # Check if Job is complete
       start = Time.new
       loop do
         status_check_response = RestClient::Request.new(
@@ -21,17 +34,20 @@ namespace :dhis2 do
         res = JSON.parse(status_check_response)
         break if res.size > 0 && res.first["completed"]
         sleep(5.second)
+      rescue RestClient::ExceptionWithResponse => e
+        puts e
+        sleep(50.second * retries)
+        break if retries >= max_retries
       end
-      puts "Completed Job in #{Time.new - start} seconds"
+      puts "Completed Job in #{(Time.new - start).floor(2)}s"
+      time_elapsed = Time.new - export_start_time
+      puts "[#{Time.new}] Total Exported Patients: #{total_patients_exported}. Time elapsed: #{time_elapsed.floor(2)}s. ETA: #{(time_elapsed * 1000000 / total_patients_exported / 60 / 60).floor(2)}h"
       next unless response["status"] != "OK"
-      errors.append(
-        {
-          org_unit_id: facility[:org_unit_id],
-          facility_slug: facility[:facility_slug],
-          error: response
-        }
-      )
+
+      puts response
+    rescue => e
+      puts e
+      sleep(5.seconds)
     end
-    puts "errors: ", errors unless errors.empty?
   end
 end
