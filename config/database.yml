@@ -20,4 +20,13 @@ test:
   database: simple-server_test<%= ENV['TEST_ENV_NUMBER'] %>
 
 production:
-  <<: *default
+  primary:
+    <<: *default
+    database: <%= ENV['SIMPLE_SERVER_DATABASE_NAME'] %>
+  <% if ENV['SIMPLE_SERVER_DATABASE_REPLICA_HOST'] %>
+  primary_replica: 
+    <<: *default
+    host: <%= ENV['SIMPLE_SERVER_DATABASE_REPLICA_HOST'] %>
+    database: <%= ENV['SIMPLE_SERVER_DATABASE_NAME'] %>
+    replica: true
+  <% end %>
