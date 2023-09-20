@@ -10,6 +10,7 @@ class BangladeshDhis2Exporter
 
     exporter.export do |facility_identifier, period|
       repository = Reports::Repository.new(facility_identifier.facility.region, periods: periods)
+      facility = facility_identifier.facility
       slug = facility_identifier.facility.region.slug
       {
         cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
