@@ -18,6 +18,11 @@ RUN rm /etc/nginx/sites-enabled/default
 # Add nginx site for simple-server
 ADD .docker/config/nginx/webapp.conf /etc/nginx/sites-enabled/webapp.conf
 
+# Update the daily, weekly, and monthly logrotate times to midnight IST
+RUN sed -i '/cron.daily/s/25 6/0 20/' /etc/crontab
+RUN sed -i '/cron.weekly/s/47 6/30 20/' /etc/crontab
+RUN sed -i '/cron.monthly/s/52 6/0 21/' /etc/crontab
+
 # Add logrotate config
 ADD .docker/config/logrotate/* /etc/logrotate.d/
 RUN chmod 644 /etc/logrotate.d/*
