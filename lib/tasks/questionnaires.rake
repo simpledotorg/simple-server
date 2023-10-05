@@ -3,11 +3,11 @@ namespace :questionnaires do
   task initialize: :environment do
     # Due to mismatch in Gregorian<>Ethiopian calendars,
     # Dynamic forms initialization had a delay of 20+ days in Ethiopia.
-    # To avoid this delay, we initialize dynamic forms 2 months in advance in Ethiopia.
-    date = CountryConfig.current_country?("Ethiopia") ? 1.month.from_now : -1.month.from_now
+    # To avoid this delay, we initialize dynamic forms 1 month in advance in Ethiopia.
+    date = CountryConfig.current_country?("Ethiopia") ? Date.current : -1.month.from_now
 
     if Flipper.enabled?(:monthly_screening_reports)
-      QuestionnaireResponses::MonthlyScreeningReports.new(date).pre_fill
+      QuestionnaireResponses::MonthlyScreeningReports.new(date).seed
     end
     if Flipper.enabled?(:monthly_supplies_reports)
       QuestionnaireResponses::MonthlySuppliesReports.new(date).seed
