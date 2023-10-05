@@ -7,7 +7,7 @@ namespace :questionnaires do
     date = CountryConfig.current_country?("Ethiopia") ? 1.month.from_now : -1.month.from_now
 
     if Flipper.enabled?(:monthly_screening_reports)
-      QuestionnaireResponses::MonthlyScreeningReports.new(date).pre_fill
+      QuestionnaireResponses::MonthlyScreeningReports.new(date).seed
     end
     if Flipper.enabled?(:monthly_supplies_reports)
       QuestionnaireResponses::MonthlySuppliesReports.new(date).seed
