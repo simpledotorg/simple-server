@@ -243,22 +243,73 @@
     repository: @details_repository,
     current_period: @period)) %>
 <% end %>
-
+<div class="d-flex jc-space-between">
+  <h4 class="mt-5 mb-32px">Overdue</h4>
+  <div class="d-flex" style="margin-top: 43px;">
+    <form method="get" name="overdue_form">
+      <div class="custom-control custom-switch checkbox-outside-card">
+        <input type="checkbox"
+             onChange="this.form.submit()"
+             name="with_non_contactable"
+             for="overdue_form"
+             class="custom-control-input"
+             id="overdue-section"
+             <% if @with_non_contactable %>checked<% end %>>
+        <label class="font-weight-normal custom-control-label <% unless false %>c-grey-dark<% end %>"
+             for="overdue-section">
+          Include non-contactable patients
+        </label>
+      </div>
+    </form>
+    <div class="ml-8px" style="margin-top: 2px;">
+      <%= render "definition_tooltip",
+                    definitions: {"" => t("overdue_toggle_tooltip.additional"),
+                                  "list" => t("overdue_toggle_tooltip.list")} %>
+    </div>
+  </div>
+</div>
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
+      region: @region,
+      data: @data,
+      period: @period,
+      with_non_contactable: @with_non_contactable)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(
+      region: @region,
+      data: @data,
+      period: @period,
+      with_non_contactable: @with_non_contactable)) %>
+  <%= render(Dashboard::Hypertension::OverduePatientsReturnToCareComponent.new(
+        region: @region,
+        data: @data,
+        period: @period,
+        with_non_contactable: @with_non_contactable)) %>
+  <div class="d-lg-flex w-lg-50 pl-lg-2 hidden mb-16px">
+    <div class="no-card-gap-filler">
+      <p>
+        Intentionally blank
+      </p>
+    </div>
+  </div>
+  <%= render(Dashboard::Hypertension::OverduePatientsCalledTableComponent.new(
+      region: @region,
+      data: @data,
+      repository: @details_repository,
+      period: @period,
+      current_admin: @current_admin,
+      with_non_contactable: @with_non_contactable)) %>
+</div>
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
-
 <div class="d-lg-flex">
   <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
 </div>
-
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
   <%= render "shared/recent_bp_log",
               blood_pressures: @recent_blood_pressures,
               display_model: :facility %>
 <% end %>
-
 <%= render "overview_footnotes" %>
-
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
