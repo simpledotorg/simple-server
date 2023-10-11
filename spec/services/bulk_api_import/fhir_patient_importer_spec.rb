@@ -17,6 +17,33 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
             .except(:registrationOrganization)
         ).import
       }.to change(Patient, :count).by(1)
+        .and change(PatientBusinessIdentifier, :count).by(1)
+    end
+
+    context "when a patient is imported twice" do
+      it "does not duplicate the patient or its nested resources" do
+        patient_resource = build_patient_import_resource.merge(address: [{line: ["abc"]}])
+
+        expect {
+          described_class.new(
+            patient_resource
+              .merge(managingOrganization: [{value: facility_identifier.identifier}])
+              .except(:registrationOrganization)
+          ).import
+        }.to change(Patient, :count).by(1)
+          .and change(PatientBusinessIdentifier, :count).by(1)
+          .and change(Address, :count).by(1)
+
+        expect {
+          described_class.new(
+            patient_resource
+              .merge(managingOrganization: [{value: facility_identifier.identifier}])
+              .except(:registrationOrganization)
+          ).import
+        }.to change(Patient, :count).by(0)
+          .and change(PatientBusinessIdentifier, :count).by(0)
+          .and change(Address, :count).by(0)
+      end
     end
   end
 
@@ -51,11 +78,11 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
   describe "#phone_numbers" do
     it "correctly populates phone_type and active attributes" do
       [
-        {input: {telecom: [{use: "mobile"}]}, expected_phone_type: "mobile", expected_active: true},
-        {input: {telecom: [{use: "home"}]}, expected_phone_type: "landline", expected_active: true},
-        {input: {telecom: [{use: "work"}]}, expected_phone_type: "landline", expected_active: true},
-        {input: {telecom: [{use: "temp"}]}, expected_phone_type: "landline", expected_active: true},
-        {input: {telecom: [{use: "old"}]}, expected_phone_type: "mobile", expected_active: false}
+        {input: {identifier: [value: "foo"], telecom: [{use: "mobile"}]}, expected_phone_type: "mobile", expected_active: true},
+        {input: {identifier: [value: "foo"], telecom: [{use: "home"}]}, expected_phone_type: "landline", expected_active: true},
+        {input: {identifier: [value: "foo"], telecom: [{use: "work"}]}, expected_phone_type: "landline", expected_active: true},
+        {input: {identifier: [value: "foo"], telecom: [{use: "temp"}]}, expected_phone_type: "landline", expected_active: true},
+        {input: {identifier: [value: "foo"], telecom: [{use: "old"}]}, expected_phone_type: "mobile", expected_active: false}
       ].each do |input:, expected_phone_type:, expected_active:|
         expect(described_class.new(input).phone_numbers[0])
           .to include(phone_type: expected_phone_type, active: expected_active)
@@ -66,6 +93,7 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
   describe "#address" do
     specify do
       expect(described_class.new({
+        identifier: [value: "foo"],
         address: [{line: %w[a b],
                    district: "xyz",
                    state: "foo",
