@@ -14,8 +14,8 @@ module BulkApiImport::FhirImportable
     }
   end
 
-  def translate_id(id)
-    Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, id)
+  def translate_id(id, ns_prefix: "")
+    Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + ns_prefix, id)
   end
 
   def translate_facility_id(id)
