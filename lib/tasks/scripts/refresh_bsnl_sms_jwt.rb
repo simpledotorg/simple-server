@@ -25,6 +25,7 @@ class RefreshBsnlSmsJwt
       config = Configuration.find_or_create_by(name: "bsnl_sms_jwt")
       config.update!(value: jwt)
     else
+      Rails.logger.error("BSNL JWT token refresh failed with error #{response.message}")
       response.error!
     end
   end
