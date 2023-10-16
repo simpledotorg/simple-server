@@ -1,4 +1,7 @@
 class Api::V4::Imports
+  ALLOWED_BP_CODES = %w[8480-6 8462-4]
+  ALLOWED_BS_CODES = %w[2339-0 87422-2 88365-2 4548-4]
+
   class << self
     def all_definitions
       {
@@ -257,7 +260,7 @@ class Api::V4::Imports
                          coding: {type: "array",
                                   items: codeable_concept(
                                     system: "http://loinc.org",
-                                    codes: %w[8480-6 8462-4],
+                                    codes: ALLOWED_BP_CODES,
                                     description: "8480-6 for Systolic, 8462-4 for Diastolic"
                                   ),
                                   nullable: false, minItems: 1, maxItems: 1}
@@ -319,7 +322,7 @@ class Api::V4::Imports
                          coding: {type: "array",
                                   items: codeable_concept(
                                     system: "http://loinc.org",
-                                    codes: %w[2339-0 87422-2 88365-2 4548-4],
+                                    codes: ALLOWED_BS_CODES,
                                     description: "2339-0 for random, \
                                                   87422-2 for post-prandial, \
                                                   88365-2 for fasting, \
