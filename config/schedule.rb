@@ -36,8 +36,9 @@ FOLLOW_UP_TIMES = [
   "07:00 pm"
 ].map { |t| local(t) }
 
-REPORTS_REFRESH_FREQUENCY = CountryConfig.current_country?("India") ? :sunday : :day
-REPORTS_CACHE_REFRESH_TIME = CountryConfig.current_country?("India") ? "12:00 pm" : "04:30 am"
+REPORTS_REFRESH_FREQUENCY = CountryConfig.current_country?("India") ? :saturday : :day
+REPORTS_REFRESH_TIME = CountryConfig.current_country?("India") ? "05:00 pm" : "12:30 am"
+REPORTS_CACHE_REFRESH_TIME = CountryConfig.current_country?("India") ? "11:55 pm" : "04:30 am"
 
 every :day, at: FOLLOW_UP_TIMES, roles: [:cron] do
   rake "db:refresh_daily_follow_ups_and_registrations"
@@ -73,7 +74,7 @@ every :day, at: local("12:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:whitelist_patient_phone_numbers"
 end
 
-every REPORTS_REFRESH_FREQUENCY, at: local("12:30 am"), roles: [:cron] do
+every REPORTS_REFRESH_FREQUENCY, at: local(REPORTS_REFRESH_TIME), roles: [:cron] do
   rake "db:refresh_reporting_views"
 end
 
@@ -130,15 +131,7 @@ every :day, at: local("05:45 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
-  if Flipper.enabled?(:monthly_screening_reports)
-    runner "QuestionnaireResponses::MonthlyScreeningReports.new.pre_fill"
-  end
-  if Flipper.enabled?(:monthly_supplies_reports)
-    runner "QuestionnaireResponses::MonthlySuppliesReports.new.seed"
-  end
-  if Flipper.enabled?(:drug_stock_questionnaires)
-    runner "QuestionnaireResponses::DrugStockReports.new.seed"
-  end
+  rake "questionnaires:initialize"
 end
 
 every 1.month, at: local("07:00 am"), roles: [:cron] do
