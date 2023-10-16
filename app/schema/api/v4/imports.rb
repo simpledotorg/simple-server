@@ -483,11 +483,19 @@ class Api::V4::Imports
                doseAndRate: {type: [:array, :null],
                              items: {type: [:object, :null],
                                      properties: {
-                                       doseQuantity: value_quantity(
-                                         system: "http://unitsofmeasure.org",
-                                         unit: "mg",
-                                         code: "mg"
-                                       )
+                                       doseQuantity: {
+                                         type: :object,
+                                         properties: {
+                                           value: {type: "number", nullable: false},
+                                           unit: {type: :string, nullable: false,
+                                                  description: "Can be mg, ml or your unit of choice"},
+                                           system: {type: :string, enum: ["http://unitsofmeasure.org"], nullable: false},
+                                           code: {type: :string, nullable: false,
+                                                  description: "Can be mg, ml or your unit of choice"}
+                                         },
+                                         nullable: false,
+                                         required: %w[value unit system code]
+                                       }
                                      }},
                              maxItems: 1,
                              minItems: 0,
