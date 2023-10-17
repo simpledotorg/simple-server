@@ -83,9 +83,7 @@ class CountryConfig
   }.with_indifferent_access.freeze
 
   class << self
-    include Memery
-
-    memoize def dhis2_data_elements
+    def dhis2_data_elements
       YAML.load_file(ENV.fetch("DHIS2_DATA_ELEMENTS_FILE")).with_indifferent_access
     end
   end
