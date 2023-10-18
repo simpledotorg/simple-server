@@ -1323,11 +1323,8 @@
                         },
                         "unit": {
                           "type": "string",
-                          "enum": [
-                            "mg"
-                          ],
                           "nullable": false,
-                          "description": null
+                          "description": "Can be mg, ml or your unit of choice"
                         },
                         "system": {
                           "type": "string",
@@ -1338,10 +1335,8 @@
                         },
                         "code": {
                           "type": "string",
-                          "enum": [
-                            "mg"
-                          ],
-                          "nullable": false
+                          "nullable": false,
+                          "description": "Can be mg, ml or your unit of choice"
                         }
                       },
                       "nullable": false,
