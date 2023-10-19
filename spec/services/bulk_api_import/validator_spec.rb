@@ -44,6 +44,27 @@ RSpec.describe BulkApiImport::Validator do
       end
     end
 
+    context "valid resources and valid facility ID, but invalid HTN observation codes" do
+      it "returns an error for unmapped facility IDs" do
+        bp_with_two_diastolic_codes = build_observation_import_resource(:blood_pressure).merge(
+          performer: [{identifier: facility_identifier.identifier}],
+          component: [
+            {code: {coding: [system: "http://loinc.org", code: "8462-4"]},
+             valueQuantity: blood_pressure_value_quantity(:systolic)},
+            {code: {coding: [system: "http://loinc.org", code: "8462-4"]},
+             valueQuantity: blood_pressure_value_quantity(:systolic)}
+          ]
+        )
+
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [bp_with_two_diastolic_codes]
+          ).validate
+        ).to have_key(:invalid_observation_codes_error)
+      end
+    end
+
     context "invalid resource" do
       it "returns a schema error" do
         expect(
@@ -108,6 +129,70 @@ RSpec.describe BulkApiImport::Validator do
                          .merge(performer: {identifier: facility_identifier.identifier})]
           ).validate_facilities
         ).to have_key(:invalid_facility_error)
+      end
+    end
+  end
+
+  describe "#validate_observation_codes" do
+    context "valid non-observation resources" do
+      it "does not return any error" do
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [build_medication_request_import_resource]
+          ).validate_observation_codes
+        ).to be_nil
+      end
+    end
+
+    context "valid observation resources" do
+      it "does not return any error" do
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [build_observation_import_resource(:blood_sugar)]
+          ).validate_observation_codes
+        ).to be_nil
+      end
+    end
+
+    context "invalid observation resources" do
+      it "returns an error highlighting any unknown codes" do
+        bp_with_unknown_code = build_observation_import_resource(:blood_pressure).merge(
+          performer: [{identifier: facility_identifier.identifier}],
+          component: [
+            {code: {coding: [system: "http://loinc.org", code: "foo"]},
+             valueQuantity: blood_pressure_value_quantity(:systolic)},
+            {code: {coding: [system: "http://loinc.org", code: "8462-4"]},
+             valueQuantity: blood_pressure_value_quantity(:diastolic)}
+          ]
+        )
+
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [bp_with_unknown_code]
+          ).validate_observation_codes[:invalid_observation_codes_error]
+        ).to include(invalid_observations: {bp_with_unknown_code[:identifier][0][:value] => %w[foo 8462-4]})
+      end
+
+      it "returns an error when an HTN code is duplicated" do
+        bp_with_duplicate_code = build_observation_import_resource(:blood_pressure).merge(
+          performer: [{identifier: facility_identifier.identifier}],
+          component: [
+            {code: {coding: [system: "http://loinc.org", code: "8480-6"]},
+             valueQuantity: blood_pressure_value_quantity(:systolic)},
+            {code: {coding: [system: "http://loinc.org", code: "8480-6"]},
+             valueQuantity: blood_pressure_value_quantity(:diastolic)}
+          ]
+        )
+
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [bp_with_duplicate_code]
+          ).validate_observation_codes[:invalid_observation_codes_error]
+        ).to include(invalid_observations: {bp_with_duplicate_code[:identifier][0][:value] => %w[8480-6 8480-6]})
       end
     end
   end
