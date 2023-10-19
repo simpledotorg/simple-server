@@ -2,9 +2,8 @@
 
 class ReEnableSmsIndia < ActiveRecord::Migration[6.1]
   PATIENTS_PER_DAY = 5000
-  # TODO: Replace below states with active states in India.
   FILTERS = {
-    "states" => { "include" => ["Tamil Nadu", "Andhra Pradesh", "West Bengal"] }
+    "states" => {"include" => ["Maharashtra", "Andhra Pradesh", "West Bengal"]}
   }.freeze
   CANCELLED_EXPERIMENTS_MONTHS = (9..12).map do |month_number|
     Date::ABBR_MONTHNAMES[month_number]
