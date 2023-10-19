@@ -50,7 +50,9 @@ describe Dhis2::EthiopiaExporter do
       end
 
       data_value_sets = double
-      allow(Dhis2.client).to receive(:data_value_sets).and_return(data_value_sets)
+      dhis2_client = double
+      allow(Dhis2).to receive(:client).and_return(dhis2_client)
+      allow(dhis2_client).to receive(:data_value_sets).and_return(data_value_sets)
       expect(data_value_sets).to receive(:bulk_create).with(data_values: expected_values[0])
       expect(data_value_sets).to receive(:bulk_create).with(data_values: expected_values[1])
       Dhis2::EthiopiaExporter.export
