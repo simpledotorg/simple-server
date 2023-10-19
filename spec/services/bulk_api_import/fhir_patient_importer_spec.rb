@@ -60,6 +60,36 @@ RSpec.describe BulkApiImport::FhirPatientImporter do
         expect(Api::V3::PatientPayloadValidator.new(attributes)).to be_valid
       end
     end
+
+    it "correctly extracts gender" do
+      [
+        {input: "male", expected: "male"},
+        {input: "female", expected: "female"},
+        {input: "other", expected: "transgender"}
+      ].map do |input:, expected:|
+        patient_resource = build_patient_import_resource
+          .merge(managingOrganization: [{value: facility_identifier.identifier}], gender: input)
+          .except(:registrationOrganization)
+
+        expect(described_class.new(patient_resource).build_attributes[:gender]).to eq(expected)
+      end
+    end
+
+    it "correctly extracts name when present" do
+      patient_resource = build_patient_import_resource
+        .merge(managingOrganization: [{value: facility_identifier.identifier}], name: {text: "naem"})
+        .except(:registrationOrganization)
+
+      expect(described_class.new(patient_resource).build_attributes[:full_name]).to eq("naem")
+    end
+
+    it "generates a name when not present in the resource" do
+      patient_resource = build_patient_import_resource
+        .merge(managingOrganization: [{value: facility_identifier.identifier}])
+        .except(:registrationOrganization, :name)
+
+      expect(described_class.new(patient_resource).build_attributes[:full_name]).to match(/Anonymous \w/)
+    end
   end
 
   describe "#status" do
