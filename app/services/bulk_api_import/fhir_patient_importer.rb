@@ -28,7 +28,7 @@ class BulkApiImport::FhirPatientImporter
   def build_attributes
     {
       id: translate_id(identifier),
-      full_name: @resource.dig(:name, :value) || "Anonymous " + Faker::Name.first_name,
+      full_name: @resource.dig(:name, :text) || "Anonymous " + Faker::Name.first_name,
       gender: gender,
       status: status,
       date_of_birth: @resource[:birthDate],
