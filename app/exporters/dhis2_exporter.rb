@@ -78,7 +78,7 @@ class Dhis2Exporter
     end
   end
 
-  def format_facility_period_data(facility_data, period, facility_identifier, data_elements_map)
+  def format_facility_period_data(facility_identifier, period, facility_data, data_elements_map)
     formatted_facility_data = []
     facility_data.each do |data_element, value|
       formatted_facility_data << {
