@@ -1,11 +1,14 @@
 class Dhis2::EthiopiaExporterJob
   include Sidekiq::Job
+  sidekiq_options retry: 2
 
   def perform(data_elements_map, facility_identifier_id, total_months)
     periods = export_periods(total_months)
     facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
     dhis2_exporter = Dhis2Exporter.new(
-      data_elements_map: data_elements_map
+      facility_identifiers: [],
+      periods: [],
+      data_elements_map: {}
     )
     facility_data = []
 

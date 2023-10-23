@@ -1,9 +1,8 @@
 require "dhis2"
-
 class Dhis2Exporter
   attr_reader :facility_identifiers, :periods, :data_elements_map, :category_option_combo_ids
 
-  def initialize(data_elements_map:, facility_identifiers: [], periods: [], category_option_combo_ids: [])
+  def initialize(facility_identifiers:, periods:, data_elements_map:, category_option_combo_ids: [])
     throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
     @facility_identifiers = facility_identifiers
