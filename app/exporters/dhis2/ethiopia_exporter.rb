@@ -1,5 +1,20 @@
 class Dhis2::EthiopiaExporter
+  attr_reader :data_elements_map, :periods, :facility_identifiers
+
   PREVIOUS_MONTHS = 24
+
+  def initialize
+    current_month_period = Dhis2::Helpers.current_month_period
+    @periods = (current_month_period.advance(months: -PREVIOUS_MONTHS)..current_month_period)
+    @facility_identifiers = FacilityBusinessIdentifier.dhis2_org_unit_id
+    @data_elements_map = CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)
+  end
+
+  def export
+    @facility_identifiers.map do |facility_identifier|
+      EthiopiaDhis2ExporterJob.perform_async(facility_identifier, @periods)
+    end
+  end
 
   def self.export
     current_month_period = Dhis2::Helpers.current_month_period

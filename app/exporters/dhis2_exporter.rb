@@ -1,8 +1,9 @@
 require "dhis2"
+
 class Dhis2Exporter
   attr_reader :facility_identifiers, :periods, :data_elements_map, :category_option_combo_ids
 
-  def initialize(facility_identifiers:, periods:, data_elements_map:, category_option_combo_ids: [])
+  def initialize(data_elements_map:, facility_identifiers: [], periods: [], category_option_combo_ids: [])
     throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
     @facility_identifiers = facility_identifiers
@@ -74,6 +75,18 @@ class Dhis2Exporter
       EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(month_period).to_s(:dhis2)
     else
       month_period.to_s(:dhis2)
+    end
+  end
+
+  def format_facility_period_data(facility_data, period, facility_identifier, data_elements_map)
+    formatted_facility_data = []
+    facility_data.each do |data_element, value|
+      formatted_facility_data << {
+        data_element: data_elements_map[data_element],
+        org_unit: facility_identifier.identifier,
+        period: reporting_period(period),
+        value: value
+      }
     end
   end
 end
