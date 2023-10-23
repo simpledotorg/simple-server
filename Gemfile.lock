@@ -395,7 +395,7 @@ GEM
     ougai (2.0.0)
       oj (~> 3.10)
     parallel (1.22.1)
-    parallel_tests (3.12.0)
+    parallel_tests (4.3.0)
       parallel
     parser (3.1.2.1)
       ast (~> 2.4.1)
