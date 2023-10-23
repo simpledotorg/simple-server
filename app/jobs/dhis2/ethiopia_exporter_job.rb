@@ -1,7 +1,9 @@
 class Dhis2::EthiopiaExporterJob
   include Sidekiq::Job
 
-  def perform(data_elements_map, facility_identifier, periods)
+  def perform(data_elements_map, facility_identifier_id, total_months)
+    periods = export_periods(total_months)
+    facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
     dhis2_exporter = Dhis2Exporter.new(
       data_elements_map: data_elements_map
     )
@@ -34,5 +36,10 @@ class Dhis2::EthiopiaExporterJob
       htn_missed_visits: Dhis2::Helpers.htn_missed_visits(region, period),
       htn_uncontrolled: Dhis2::Helpers.htn_uncontrolled(region, period)
     }
+  end
+
+  def export_periods(total_months)
+    current_month_period = Dhis2::Helpers.current_month_period
+    (current_month_period.advance(months: -total_months)..current_month_period)
   end
 end
