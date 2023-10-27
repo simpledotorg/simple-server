@@ -8,8 +8,9 @@ class BulkApiImport::FhirMedicationRequestImporter
     QID: :QDS
   }.with_indifferent_access
 
-  def initialize(med_request_resource)
-    @resource = med_request_resource
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
   end
 
   def import
@@ -27,9 +28,9 @@ class BulkApiImport::FhirMedicationRequestImporter
 
   def build_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource[:subject][:identifier]),
-      facility_id: translate_facility_id(@resource[:performer][:identifier]),
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
+      facility_id: translate_facility_id(@resource[:performer][:identifier], org_id: @organization_id),
       is_protocol_drug: false,
       name: contained_medication[:code][:coding][0][:display],
       rxnorm_code: contained_medication[:code][:coding][0][:code],
