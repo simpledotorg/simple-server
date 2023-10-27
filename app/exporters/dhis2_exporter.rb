@@ -87,5 +87,6 @@ class Dhis2Exporter
         value: value
       }
     end
+    formatted_facility_data
   end
 end

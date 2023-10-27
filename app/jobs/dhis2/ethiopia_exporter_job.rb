@@ -1,10 +1,12 @@
 class Dhis2::EthiopiaExporterJob
   include Sidekiq::Job
   sidekiq_options retry: 2
+  sidekiq_options queue: :default
 
   def perform(data_elements_map, facility_identifier_id, total_months)
-    periods = export_periods(total_months)
+    data_elements_map = data_elements_map.with_indifferent_access
     facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
+    periods = export_periods(total_months)
     dhis2_exporter = Dhis2Exporter.new(
       facility_identifiers: [],
       periods: [],
@@ -26,6 +28,8 @@ class Dhis2::EthiopiaExporterJob
     Rails.logger.info("Dhis2::EthiopiaExporterJob for facility identifier #{facility_identifier} succeeded.")
   end
 
+  private
+
   def facility_data_for_period(facility_identifier, period)
     region = facility_identifier.facility.region
     {
@@ -42,7 +46,7 @@ class Dhis2::EthiopiaExporterJob
   end
 
   def export_periods(total_months)
-    current_month_period = Dhis2::Helpers.current_month_period
-    (current_month_period.advance(months: -total_months)..current_month_period)
+    previous_month_period = Dhis2::Helpers.current_month_period
+    (previous_month_period.advance(months: -total_months + 1)..previous_month_period)
   end
 end
