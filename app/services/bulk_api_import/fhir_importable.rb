@@ -14,11 +14,17 @@ module BulkApiImport::FhirImportable
     }
   end
 
-  def translate_id(id, ns_prefix: "")
-    Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + ns_prefix, id)
+  def translate_id(id, org_id:, ns_prefix: "")
+    Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + org_id + ns_prefix, id)
   end
 
-  def translate_facility_id(id)
-    FacilityBusinessIdentifier.find_by(identifier: id, identifier_type: :external_org_facility_id).facility.id
+  def translate_facility_id(id, org_id:)
+    # FacilityBusinessIdentifier.find_by(identifier: id, identifier_type: :external_org_facility_id).facility.id
+    FacilityBusinessIdentifier
+      .joins(facility: :facility_group)
+      .where(identifier_type: :external_org_facility_id,
+        facility_business_identifiers: {identifier: id},
+        facility_groups: {organization_id: org_id})
+      .take.facility.id
   end
 end

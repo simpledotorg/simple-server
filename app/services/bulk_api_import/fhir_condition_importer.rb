@@ -6,8 +6,9 @@ class BulkApiImport::FhirConditionImporter
     "73211009" => :diabetes
   }.with_indifferent_access
 
-  def initialize(condition_resource)
-    @resource = condition_resource
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
   end
 
   def import
@@ -25,8 +26,8 @@ class BulkApiImport::FhirConditionImporter
 
   def build_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource[:subject][:identifier]),
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
       prior_heart_attack: "unknown",
       prior_stroke: "unknown",
       chronic_kidney_disease: "unknown",
