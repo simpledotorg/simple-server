@@ -76,4 +76,17 @@ class Dhis2Exporter
       month_period.to_s(:dhis2)
     end
   end
+
+  def format_facility_period_data(facility_identifier, period, facility_data, data_elements_map)
+    formatted_facility_data = []
+    facility_data.each do |data_element, value|
+      formatted_facility_data << {
+        data_element: data_elements_map[data_element],
+        org_unit: facility_identifier.identifier,
+        period: reporting_period(period),
+        value: value
+      }
+    end
+    formatted_facility_data
+  end
 end
