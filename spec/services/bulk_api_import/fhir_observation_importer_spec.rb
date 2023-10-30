@@ -4,11 +4,16 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
   let(:facility) { import_user.facility }
+  let(:org_id) { facility.organization_id }
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
   let(:identifier) { SecureRandom.uuid }
-  let(:patient) { build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
+  let(:patient) do
+    build_stubbed(:patient, id: Digest::UUID.uuid_v5(
+      Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", identifier
+    ))
+  end
   let(:patient_identifier) do
     build_stubbed(:patient_business_identifier, patient: patient,
                   identifier: identifier,
@@ -19,9 +24,10 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
     it "imports a blood pressure observation" do
       expect {
         described_class.new(
-          build_observation_import_resource(:blood_pressure)
+          resource: build_observation_import_resource(:blood_pressure)
             .merge(performer: [{identifier: facility_identifier.identifier}],
-              subject: {identifier: patient_identifier.identifier})
+              subject: {identifier: patient_identifier.identifier}),
+          organization_id: org_id
         ).import
       }.to change(BloodPressure, :count).by(1)
         .and change(Encounter, :count).by(1)
@@ -31,9 +37,10 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
     it "imports a blood sugar observation" do
       expect {
         described_class.new(
-          build_observation_import_resource(:blood_sugar)
+          resource: build_observation_import_resource(:blood_sugar)
             .merge(performer: [{identifier: facility_identifier.identifier}],
-              subject: {identifier: patient_identifier.identifier})
+              subject: {identifier: patient_identifier.identifier}),
+          organization_id: org_id
         ).import
       }.to change(BloodSugar, :count).by(1)
         .and change(Encounter, :count).by(1)
@@ -48,7 +55,8 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
           .merge(performer: [{identifier: facility_identifier.identifier}],
             subject: {identifier: patient_identifier.identifier})
 
-        attributes = described_class.new(bp_resource).build_blood_pressure_attributes
+        attributes = described_class.new(resource: bp_resource, organization_id: org_id)
+          .build_blood_pressure_attributes
 
         expect(Api::V3::BloodPressurePayloadValidator.new(attributes)).to be_valid
         expect(attributes[:patient_id]).to eq(patient.id)
@@ -63,7 +71,8 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
           .merge(performer: [{identifier: facility_identifier.identifier}],
             subject: {identifier: patient_identifier.identifier})
 
-        attributes = described_class.new(bs_resource).build_blood_sugar_attributes
+        attributes = described_class.new(resource: bs_resource, organization_id: org_id)
+          .build_blood_sugar_attributes
 
         expect(Api::V4::BloodSugarPayloadValidator.new(attributes)).to be_valid
         expect(attributes[:patient_id]).to eq(patient.id)
@@ -73,14 +82,15 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
 
   describe "#dig_blood_pressure" do
     it "extracts systolic and diastolic readings" do
-      expect(
-        described_class.new({
+      expect(described_class.new(
+        resource: {
           component: [
             {code: {coding: [system: "http://loinc.org", code: "8480-6"]}, valueQuantity: {value: 120}},
             {code: {coding: [system: "http://loinc.org", code: "8462-4"]}, valueQuantity: {value: 80}}
           ]
-        }).dig_blood_pressure
-      ).to eq({systolic: 120, diastolic: 80})
+        },
+        organization_id: org_id
+      ).dig_blood_pressure).to eq({systolic: 120, diastolic: 80})
     end
   end
 
@@ -93,10 +103,11 @@ RSpec.describe BulkApiImport::FhirObservationImporter do
         {code: "4548-4", value: 4, expected_type: :hba1c, expected_value: 4}
       ].each do |code:, value:, expected_type:, expected_value:|
         expect(described_class.new(
-          {
+          resource: {
             component: [{code: {coding: [system: "http://loinc.org", code: code]},
                          valueQuantity: {value: value}}]
-          }
+          },
+          organization_id: org_id
         ).dig_blood_sugar).to eq({blood_sugar_type: expected_type, blood_sugar_value: expected_value})
       end
     end

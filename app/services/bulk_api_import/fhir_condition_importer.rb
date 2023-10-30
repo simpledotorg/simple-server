@@ -27,7 +27,7 @@ class BulkApiImport::FhirConditionImporter
   def build_attributes
     {
       id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
-      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
+      patient_id: translate_patient_id(@resource[:subject][:identifier], org_id: @organization_id),
       prior_heart_attack: "unknown",
       prior_stroke: "unknown",
       chronic_kidney_disease: "unknown",
