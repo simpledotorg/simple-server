@@ -66,7 +66,8 @@ class BulkApiImport::Validator
 
     found_facilities = FacilityBusinessIdentifier
       .joins(facility: :facility_group)
-      .where(facility_business_identifiers: {identifier: facility_ids},
+      .where(identifier_type: "external_org_facility_id:#{@organization.id}",
+        facility_business_identifiers: {identifier: facility_ids},
         facility_groups: {organization_id: @organization})
       .pluck(:identifier)
 

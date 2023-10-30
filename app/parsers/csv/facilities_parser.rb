@@ -55,11 +55,12 @@ class Csv::FacilitiesParser
       next if attrs.values.all?(&:blank?)
 
       facility = Facility.new(attrs.merge!(id: SecureRandom.uuid).except(:business_identifier))
+      org_id = organization(attrs[:organization_name]).id
       business_identifiers = []
       if attrs[:business_identifier]
         business_identifiers << facility.business_identifiers.build(
           identifier: attrs[:business_identifier],
-          identifier_type: :external_org_facility_id,
+          identifier_type: "external_org_facility_id:#{org_id}",
           facility_id: facility.id
         )
       end

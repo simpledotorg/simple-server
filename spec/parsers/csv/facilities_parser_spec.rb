@@ -5,6 +5,8 @@ RSpec.describe Csv::FacilitiesParser do
     let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
     it "parses the facilities" do
+      org = create(:organization, name: "OrgOne")
+
       first_facility, second_facility, *_facilities = described_class.parse(upload_file)
 
       expect(first_facility[:facility]).to have_attributes(organization_name: "OrgOne",
@@ -20,7 +22,7 @@ RSpec.describe Csv::FacilitiesParser do
 
       expect(first_facility[:business_identifiers].first).to have_attributes(
         identifier: "id1",
-        identifier_type: FacilityBusinessIdentifier.identifier_types[:external_org_facility_id],
+        identifier_type: "external_org_facility_id:#{org.id}",
         facility_id: first_facility[:facility].id
       )
 
@@ -36,6 +38,7 @@ RSpec.describe Csv::FacilitiesParser do
     end
 
     it "defaults enable_diabetes_management to false if blank" do
+      create(:organization, name: "OrgOne")
       _, second_facility, *_facilities = described_class.parse(upload_file)
 
       expect(second_facility[:facility].enable_diabetes_management).to be false
@@ -63,6 +66,8 @@ RSpec.describe Csv::FacilitiesParser do
       let(:upload_file) { file_fixture("upload_facilities_test.csv").read }
 
       it "parses the facilities" do
+        create(:organization, name: "OrgOne")
+
         first_facility, second_facility, *_facilities = described_class.parse(upload_file)
 
         expect(first_facility[:facility].facility_size).to eq("community")
