@@ -4,11 +4,16 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
   let(:facility) { import_user.facility }
+  let(:org_id) { facility.organization_id }
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
   let(:identifier) { SecureRandom.uuid }
-  let(:patient) { build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
+  let(:patient) do
+    build_stubbed(:patient, id: Digest::UUID.uuid_v5(
+      Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", identifier
+    ))
+  end
   let(:patient_identifier) do
     build_stubbed(:patient_business_identifier, patient: patient,
                   identifier: identifier,
@@ -19,9 +24,10 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
     it "imports a medication request" do
       expect {
         described_class.new(
-          build_medication_request_import_resource
+          resource: build_medication_request_import_resource
             .merge(performer: {identifier: facility_identifier.identifier},
-              subject: {identifier: patient_identifier.identifier})
+              subject: {identifier: patient_identifier.identifier}),
+          organization_id: org_id
         ).import
       }.to change(PrescriptionDrug, :count).by(1)
     end
@@ -34,7 +40,7 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
           .merge(performer: {identifier: facility_identifier.identifier},
             subject: {identifier: patient_identifier.identifier})
 
-        attributes = described_class.new(med_request_resource).build_attributes
+        attributes = described_class.new(resource: med_request_resource, organization_id: org_id).build_attributes
 
         expect(Api::V3::PrescriptionDrugPayloadValidator.new(attributes)).to be_valid
         expect(attributes[:patient_id]).to eq(patient.id)
@@ -44,7 +50,7 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
 
   describe "#contained_medication" do
     it "fetches the contained medication" do
-      expect(described_class.new({contained: [{code: {}}]}).contained_medication)
+      expect(described_class.new(resource: {contained: [{code: {}}]}, organization_id: "").contained_medication)
         .to eq({code: {}})
     end
   end
@@ -57,9 +63,12 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
         {input_code: "TID", expected_value: :TDS},
         {input_code: "QID", expected_value: :QDS}
       ].each do |input_code:, expected_value:|
-        expect(described_class.new({
-          dosageInstruction: [{timing: {code: input_code}}]
-        }).frequency).to eq(expected_value)
+        expect(described_class.new(
+          resource: {
+            dosageInstruction: [{timing: {code: input_code}}]
+          },
+          organization_id: ""
+        ).frequency).to eq(expected_value)
       end
     end
   end
@@ -86,10 +95,13 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
          text_value: "10mL OD",
          expected_dosage: "10 mL"}
       ].each do |dose_and_rate_value:, text_value:, expected_dosage:|
-        expect(described_class.new({
-          dosageInstruction: [{doseAndRate: dose_and_rate_value,
-                               text: text_value}]
-        }).dosage).to eq(expected_dosage)
+        expect(described_class.new(
+          resource: {
+            dosageInstruction: [{doseAndRate: dose_and_rate_value,
+                                 text: text_value}]
+          },
+          organization_id: org_id
+        ).dosage).to eq(expected_dosage)
       end
     end
   end

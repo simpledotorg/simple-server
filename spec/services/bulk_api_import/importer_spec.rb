@@ -4,8 +4,8 @@ RSpec.describe BulkApiImport::Importer do
   before { FactoryBot.create(:facility) } # needed for our bot import user
 
   describe "#import" do
-    let(:organization) { FactoryBot.build_stubbed(:organization) }
     let(:facility) { Facility.first }
+    let(:organization_id) { facility.organization_id }
     let(:facility_identifier) do
       create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
     end
@@ -21,7 +21,7 @@ RSpec.describe BulkApiImport::Importer do
           .except(:registrationOrganization)
       end
 
-      expect { described_class.new(resource_list: resources).import }
+      expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
         .to change(Patient, :count).by(2)
     end
 
@@ -33,7 +33,7 @@ RSpec.describe BulkApiImport::Importer do
         )
       end
 
-      expect { described_class.new(resource_list: resources).import }
+      expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
         .to change(Appointment, :count).by(2)
     end
 
@@ -47,7 +47,7 @@ RSpec.describe BulkApiImport::Importer do
             subject: {identifier: patient_identifier.identifier})
       ]
 
-      expect { described_class.new(resource_list: resources).import }
+      expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
         .to change(BloodPressure, :count).by(1)
         .and change(BloodSugar, :count).by(1)
         .and change(Encounter, :count).by(2)
@@ -62,7 +62,7 @@ RSpec.describe BulkApiImport::Importer do
         )
       end
 
-      expect { described_class.new(resource_list: resources).import }
+      expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
         .to change(PrescriptionDrug, :count).by(2)
     end
 
@@ -73,14 +73,14 @@ RSpec.describe BulkApiImport::Importer do
         )
       end
 
-      expect { described_class.new(resource_list: resources).import }
+      expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
         .to change(MedicalHistory, :count).by(2)
     end
   end
 
   describe "#resource_importer" do
     it "fetches the correct importer" do
-      importer = described_class.new(resource_list: [])
+      importer = described_class.new(resource_list: [], organization_id: "org_id")
 
       [
         {input: {resourceType: "Patient"}, expected_importer: BulkApiImport::FhirPatientImporter},
@@ -89,7 +89,8 @@ RSpec.describe BulkApiImport::Importer do
         {input: {resourceType: "MedicationRequest"}, expected_importer: BulkApiImport::FhirMedicationRequestImporter},
         {input: {resourceType: "Condition"}, expected_importer: BulkApiImport::FhirConditionImporter}
       ].each do |input:, expected_importer:|
-        expect(importer.resource_importer(input)).to be_an_instance_of(expected_importer)
+        expect(importer.resource_importer(input, "org_id"))
+          .to be_an_instance_of(expected_importer)
       end
     end
   end
