@@ -7,6 +7,10 @@ RSpec.describe "Import API", type: :request do
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
+  let(:patient) { create(:patient, assigned_facility: facility) }
+  let(:patient_identifier) do
+    create(:patient_business_identifier, patient: patient, identifier_type: :external_import_id)
+  end
   let(:organization) { facility.facility_group.organization }
   let(:machine_user) { FactoryBot.create(:machine_user, organization: organization) }
   let(:application) { FactoryBot.create(:oauth_application, owner: machine_user) }
@@ -45,7 +49,8 @@ RSpec.describe "Import API", type: :request do
       params: {
         resources: [
           build_appointment_import_resource
-            .merge(appointmentOrganization: {identifier: facility_identifier.identifier})
+            .merge(appointmentOrganization: {identifier: facility_identifier.identifier},
+              participant: [{actor: {identifier: patient_identifier.identifier}}])
             .except(:appointmentCreationOrganization)
         ]
       }.to_json,
@@ -59,7 +64,8 @@ RSpec.describe "Import API", type: :request do
       params: {
         resources: [:blood_pressure, :blood_sugar].map do
           build_observation_import_resource(_1)
-            .merge(performer: [{identifier: facility_identifier.identifier}])
+            .merge(performer: [{identifier: facility_identifier.identifier}],
+              subject: {identifier: patient_identifier.identifier})
         end
       }.to_json,
       headers: headers
@@ -72,7 +78,8 @@ RSpec.describe "Import API", type: :request do
       params: {
         resources: [
           build_medication_request_import_resource
-            .merge(performer: {identifier: facility_identifier.identifier})
+            .merge(performer: {identifier: facility_identifier.identifier},
+              subject: {identifier: patient_identifier.identifier})
         ]
       }.to_json,
       headers: headers
@@ -81,7 +88,11 @@ RSpec.describe "Import API", type: :request do
   end
 
   it "imports condition resources" do
-    put route, params: {resources: [build_condition_import_resource]}.to_json, headers: headers
+    put route,
+      params: {
+        resources: [build_condition_import_resource.merge(subject: {identifier: patient_identifier.identifier})]
+      }.to_json,
+      headers: headers
 
     expect(response.status).to eq(202)
   end
