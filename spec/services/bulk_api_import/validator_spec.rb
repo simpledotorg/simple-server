@@ -50,8 +50,21 @@ RSpec.describe BulkApiImport::Validator do
       end
     end
 
+    context "valid resources and facility ID, but invalid patient ID" do
+      it "returns an error for unmapped patient IDs" do
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [build_medication_request_import_resource
+                          .merge(performer: {identifier: facility_identifier.identifier},
+                            subject: {identifier: "unmapped_patient"})]
+          ).validate
+        ).to have_key(:invalid_patient_error)
+      end
+    end
+
     context "valid resources and valid facility ID, but invalid HTN observation codes" do
-      it "returns an error for unmapped facility IDs" do
+      it "returns an error about invalid observation codes" do
         bp_with_two_diastolic_codes = build_observation_import_resource(:blood_pressure).merge(
           performer: [{identifier: facility_identifier.identifier}],
           subject: {identifier: patient_identifier.identifier},
@@ -136,6 +149,44 @@ RSpec.describe BulkApiImport::Validator do
                          .merge(performer: {identifier: facility_identifier.identifier})]
           ).validate_facilities
         ).to have_key(:invalid_facility_error)
+      end
+    end
+  end
+
+  describe "#validate_patients" do
+    context "valid patient IDs" do
+      it "does not return any errors" do
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [build_medication_request_import_resource
+                          .merge(subject: {identifier: patient_identifier.identifier})]
+          ).validate_patients
+        ).to be_nil
+      end
+    end
+
+    context "invalid patient ID" do
+      it "returns an error for unmapped patient IDs" do
+        expect(
+          described_class.new(
+            organization: organization.id,
+            resources: [build_medication_request_import_resource
+                          .merge(subject: {identifier: "unmapped_identifier"})]
+          ).validate_patients
+        ).to have_key(:invalid_patient_error)
+      end
+    end
+
+    context "valid resources and valid patient ID, but incorrect organization" do
+      it "returns an error for unmapped facility IDs" do
+        expect(
+          described_class.new(
+            organization: "some_other_organization",
+            resources: [build_medication_request_import_resource
+                          .merge(subject: {identifier: patient_identifier.identifier})]
+          ).validate_patients
+        ).to have_key(:invalid_patient_error)
       end
     end
   end
@@ -256,6 +307,60 @@ RSpec.describe BulkApiImport::Validator do
             build_medication_request_import_resource.merge(performer: {identifier: "xyz"})
           ]
         ).medication_request_resource_facilities
+      ).to match_array(%w[abc xyz])
+    end
+  end
+
+  describe "resource patient extractors" do
+    it "extracts patients from appointment resources" do
+      expect(
+        described_class.new(
+          organization: "",
+          resources: [
+            build_appointment_import_resource
+              .merge(participant: [{actor: {identifier: "abc"}}]),
+            build_appointment_import_resource
+              .merge(participant: [{actor: {identifier: "xyz"}}])
+          ]
+        ).appointment_resource_patients
+      ).to match_array(%w[abc xyz])
+    end
+
+    it "extracts patients from observation resources" do
+      expect(
+        described_class.new(
+          organization: "",
+          resources: [
+            build_observation_import_resource(:blood_sugar).merge(subject: {identifier: "abc"}),
+            build_observation_import_resource(:blood_pressure).merge(subject: {identifier: "xyz"})
+          ]
+        ).observation_resource_patients
+      ).to match_array(%w[abc xyz])
+    end
+
+    it "extracts patients from medication request resources" do
+      expect(
+        described_class.new(
+          organization: "",
+          resources: [
+            build_medication_request_import_resource.merge(subject: {identifier: "abc"}),
+            build_medication_request_import_resource.merge(subject: {identifier: "xyz"})
+          ]
+        ).medication_request_resource_patients
+      ).to match_array(%w[abc xyz])
+    end
+
+    it "extracts patients from condition resources" do
+      expect(
+        described_class.new(
+          organization: "",
+          resources: [
+            build_condition_import_resource
+              .merge(subject: {identifier: "abc"}),
+            build_condition_import_resource
+              .merge(subject: {identifier: "xyz"})
+          ]
+        ).condition_resource_patients
       ).to match_array(%w[abc xyz])
     end
   end
