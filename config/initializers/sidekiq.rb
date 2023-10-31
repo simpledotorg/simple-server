@@ -48,6 +48,8 @@ Sidekiq.configure_server do |config|
   SidekiqUniqueJobs::Server.configure(config)
 end
 
+Sidekiq.logger.level = Rails.logger.level
+
 Sidekiq::Throttled.setup!
 SidekiqUniqueJobs.configure do |config|
   config.enabled = !Rails.env.test?
