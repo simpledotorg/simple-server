@@ -4,6 +4,7 @@ RSpec.describe BulkApiImport::FhirImportable do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
   let(:facility) { import_user.facility }
+  let(:org_id) { facility.organization_id }
   let(:facility_identifiers) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
@@ -14,8 +15,59 @@ RSpec.describe BulkApiImport::FhirImportable do
 
   describe "#translate_facility_id" do
     it "translates the facility ID correctly" do
-      expect(Object.new.extend(described_class).translate_facility_id(facility_identifiers.identifier))
+      expect(Object.new.extend(described_class).translate_facility_id(facility_identifiers.identifier, org_id: org_id))
         .to eq(facility.id)
+    end
+
+    it "provides a different translation for a different organization having the same facility identifier" do
+      identifier_from_first_org = facility_identifiers.identifier
+      other_org = create(:organization, id: SecureRandom.uuid, name: "Another Org")
+      other_facility_group = create(:facility_group, organization: other_org)
+      other_facility = create(:facility, facility_group: other_facility_group)
+      create(:facility_business_identifier, identifier: identifier_from_first_org,
+             facility: other_facility, identifier_type: :external_org_facility_id)
+
+      expect(Object.new.extend(described_class)
+          .translate_facility_id(identifier_from_first_org, org_id: other_org.id))
+        .to eq(other_facility.id)
+    end
+  end
+
+  describe "#translate_patient_id" do
+    let(:patient_identifier) { SecureRandom.uuid }
+    let(:patient) do
+      build_stubbed(:patient, id: Digest::UUID.uuid_v5(
+        Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", patient_identifier
+      ))
+    end
+    let(:patient_business_identifier) do
+      build_stubbed(:patient_business_identifier, patient: patient,
+                    identifier: patient_identifier,
+                    identifier_type: :external_import_id)
+    end
+
+    it "translates the patient ID correctly" do
+      expect(Object.new.extend(described_class)
+                   .translate_patient_id(patient_business_identifier.identifier, org_id: org_id))
+        .to eq(patient.id)
+    end
+
+    it "provides a different translation for a different organization having the same facility identifier" do
+      identifier_from_first_org = patient_business_identifier.identifier
+      other_org = create(:organization, id: SecureRandom.uuid, name: "Another Org")
+      other_facility_group = create(:facility_group, organization: other_org)
+      other_facility = create(:facility, facility_group: other_facility_group)
+      other_patient = create(:patient,
+        id: Digest::UUID.uuid_v5(
+          Digest::UUID::DNS_NAMESPACE + other_org.id + "patient_business_identifier", identifier_from_first_org
+        ),
+        assigned_facility: other_facility)
+      create(:patient_business_identifier, identifier: identifier_from_first_org,
+             patient: other_patient, identifier_type: :external_import_id)
+
+      expect(Object.new.extend(described_class)
+                   .translate_patient_id(identifier_from_first_org, org_id: other_org.id))
+        .to eq(other_patient.id)
     end
   end
 
