@@ -2,8 +2,12 @@ require "rails_helper"
 
 RSpec.describe BulkApiImport::Validator do
   let(:facility) { create(:facility) }
+  let(:patient) { create(:patient) }
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
+  end
+  let(:patient_identifier) do
+    create(:patient_business_identifier, patient: patient, identifier_type: :external_import_id)
   end
   let(:organization) { facility.facility_group.organization }
 
@@ -14,7 +18,8 @@ RSpec.describe BulkApiImport::Validator do
           described_class.new(
             organization: organization.id,
             resources: [build_medication_request_import_resource
-                         .merge(performer: {identifier: facility_identifier.identifier})]
+                         .merge(performer: {identifier: facility_identifier.identifier},
+                           subject: {identifier: patient_identifier.identifier})]
           ).validate
         ).to be_nil
       end
@@ -26,7 +31,8 @@ RSpec.describe BulkApiImport::Validator do
           described_class.new(
             organization: organization.id,
             resources: [build_medication_request_import_resource
-                         .merge(performer: {identifier: "unmapped_identifier"})]
+                          .merge(performer: {identifier: "unmapped_identifier"},
+                            subject: {identifier: patient_identifier.identifier})]
           ).validate
         ).to have_key(:invalid_facility_error)
       end
@@ -48,6 +54,7 @@ RSpec.describe BulkApiImport::Validator do
       it "returns an error for unmapped facility IDs" do
         bp_with_two_diastolic_codes = build_observation_import_resource(:blood_pressure).merge(
           performer: [{identifier: facility_identifier.identifier}],
+          subject: {identifier: patient_identifier.identifier},
           component: [
             {code: {coding: [system: "http://loinc.org", code: "8462-4"]},
              valueQuantity: blood_pressure_value_quantity(:systolic)},
