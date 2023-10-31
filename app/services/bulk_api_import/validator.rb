@@ -12,6 +12,10 @@ class BulkApiImport::Validator
     end
 
     unless error.present?
+      error = validate_patients
+    end
+
+    unless error.present?
       error = validate_observation_codes
     end
 
@@ -54,6 +58,50 @@ class BulkApiImport::Validator
 
   def valid_blood_sugar_codes?(codes)
     codes.count == 1 && Api::V4::Imports::ALLOWED_BS_CODES.include?(codes.first)
+  end
+
+  def validate_patients
+    patient_ids = [
+      *appointment_resource_patients,
+      *observation_resource_patients,
+      *medication_request_resource_patients,
+      *condition_resource_patients
+    ]
+
+    found_patients = PatientBusinessIdentifier
+      .joins(patient: {assigned_facility: :facility_group})
+      .where(patient_business_identifiers: {identifier: patient_ids},
+        facility_groups: {organization_id: @organization})
+      .pluck(:identifier)
+
+    unknown_patients = patient_ids - found_patients
+    if unknown_patients.present?
+      {invalid_patient_error: "found unknown patient IDs: #{unknown_patients}. Have you imported this patient yet?"}
+    end
+  end
+
+  def appointment_resource_patients
+    resources_by_type[:appointment]&.map do |resource|
+      resource.dig(:participant, 0, :actor, :identifier)
+    end&.compact&.uniq
+  end
+
+  def observation_resource_patients
+    resources_by_type[:observation]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
+  end
+
+  def medication_request_resource_patients
+    resources_by_type[:medication_request]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
+  end
+
+  def condition_resource_patients
+    resources_by_type[:condition]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
   end
 
   def validate_facilities
