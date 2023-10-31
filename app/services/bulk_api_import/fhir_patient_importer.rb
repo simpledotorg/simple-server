@@ -3,8 +3,9 @@ class BulkApiImport::FhirPatientImporter
 
   GENDER_MAPPING = {"male" => "male", "female" => "female", "other" => "transgender"}
 
-  def initialize(patient_resource)
-    @resource = patient_resource
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
   end
 
   def import
@@ -27,7 +28,7 @@ class BulkApiImport::FhirPatientImporter
 
   def build_attributes
     {
-      id: translate_id(identifier),
+      id: translate_id(identifier, org_id: @organization_id),
       full_name: @resource.dig(:name, :text) || "Anonymous " + Faker::Name.first_name,
       gender: gender,
       status: status,
@@ -48,7 +49,7 @@ class BulkApiImport::FhirPatientImporter
   def registration_facility_id
     identifier = @resource.dig(:registrationOrganization, 0, :value)
     if identifier.present?
-      translate_facility_id(identifier)
+      translate_facility_id(identifier, org_id: @organization_id)
     else
       assigned_facility_id
     end
@@ -56,7 +57,7 @@ class BulkApiImport::FhirPatientImporter
 
   def assigned_facility_id
     identifier = @resource.dig(:managingOrganization, 0, :value)
-    translate_facility_id(identifier) if identifier.present?
+    translate_facility_id(identifier, org_id: @organization_id) if identifier.present?
   end
 
   def status
@@ -72,7 +73,7 @@ class BulkApiImport::FhirPatientImporter
   def phone_numbers
     @resource[:telecom]&.map do |telecom|
       {
-        id: translate_id(identifier, ns_prefix: "patient_phone_number"),
+        id: translate_id(identifier, org_id: @organization_id, ns_prefix: "patient_phone_number"),
         number: telecom[:value],
         phone_type: telecom[:use] == "mobile" || telecom[:use] == "old" ? "mobile" : "landline",
         active: !(telecom[:use] == "old"),
@@ -84,7 +85,7 @@ class BulkApiImport::FhirPatientImporter
   def address
     if (address = @resource.dig(:address, 0))
       {
-        id: translate_id(identifier, ns_prefix: "patient_address"),
+        id: translate_id(identifier, org_id: @organization_id, ns_prefix: "patient_address"),
         street_address: address[:line]&.join("\n"),
         district: address[:district],
         state: address[:state],
@@ -101,7 +102,7 @@ class BulkApiImport::FhirPatientImporter
   def business_identifiers
     [
       {
-        id: translate_id(identifier, ns_prefix: "patient_business_identifier"),
+        id: translate_patient_id(identifier, org_id: @organization_id),
         identifier: identifier,
         identifier_type: :external_import_id,
         **timestamps
