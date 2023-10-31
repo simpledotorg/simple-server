@@ -10,4 +10,11 @@ class FacilityBusinessIdentifier < ApplicationRecord
   validates :identifier_type, presence: true
   validates :identifier_type, uniqueness: {scope: :facility_id}
   validates :facility, presence: true
+
+  def self.facility_id_from_identifiers(identifiers, organization_id)
+    joins(facility: :facility_group)
+      .where(identifier_type: :external_org_facility_id,
+        facility_business_identifiers: {identifier: identifiers},
+        facility_groups: {organization_id: organization_id})
+  end
 end

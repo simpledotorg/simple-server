@@ -20,11 +20,14 @@ module BulkApiImport::FhirImportable
 
   def translate_facility_id(id, org_id:)
     # FacilityBusinessIdentifier.find_by(identifier: id, identifier_type: :external_org_facility_id).facility.id
-    FacilityBusinessIdentifier
-      .joins(facility: :facility_group)
-      .where(identifier_type: :external_org_facility_id,
-        facility_business_identifiers: {identifier: id},
-        facility_groups: {organization_id: org_id})
-      .take.facility.id
+    FacilityBusinessIdentifier.facility_id_from_identifiers(id, org_id).take.facility.id
+  end
+
+  def translate_patient_id(id, org_id:)
+    translate_id(
+      id,
+      org_id: org_id,
+      ns_prefix: "patient_business_identifier"
+    )
   end
 end
