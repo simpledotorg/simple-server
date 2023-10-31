@@ -45,6 +45,8 @@ Sidekiq.configure_server do |config|
 
   config.redis = SidekiqConfig.connection_pool
 
+  config.logger.level = ENV.fetch("RAILS_LOG_LEVEL") { "info" }
+
   SidekiqUniqueJobs::Server.configure(config)
 end
 
