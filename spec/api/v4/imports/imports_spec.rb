@@ -8,7 +8,11 @@ describe "Import v4 API", swagger_doc: "v4/import.json" do
     let(:facility_identifier) do
       create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
     end
-    let(:organization) { facility.facility_group.organization }
+    let(:patient) { create(:patient, assigned_facility: facility) }
+    let(:patient_identifier) do
+      create(:patient_business_identifier, patient: patient, identifier_type: :external_import_id)
+    end
+    let(:organization) { facility.organization }
     let(:machine_user) { FactoryBot.create(:machine_user, organization: organization) }
     let(:application) { FactoryBot.create(:oauth_application, owner: machine_user) }
     let(:token) {
@@ -29,7 +33,10 @@ describe "Import v4 API", swagger_doc: "v4/import.json" do
       response "202", "Accepted" do
         let(:HTTP_X_ORGANIZATION_ID) { organization.id }
         let(:Authorization) { "Bearer #{token.token}" }
-        let(:import_request) { {"resources" => [build_condition_import_resource]} }
+        let(:import_request) do
+          {"resources" => [build_condition_import_resource
+            .merge(subject: {identifier: patient_identifier.identifier})]}
+        end
         run_test!
       end
 
