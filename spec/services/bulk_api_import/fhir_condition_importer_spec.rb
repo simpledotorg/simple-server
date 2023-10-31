@@ -3,8 +3,13 @@ require "rails_helper"
 RSpec.describe BulkApiImport::FhirConditionImporter do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
+  let(:org_id) { import_user.organization_id }
   let(:identifier) { SecureRandom.uuid }
-  let(:patient) { build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, identifier)) }
+  let(:patient) do
+    build_stubbed(:patient, id: Digest::UUID.uuid_v5(
+      Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", identifier
+    ))
+  end
   let(:patient_identifier) do
     build_stubbed(:patient_business_identifier, patient: patient,
                   identifier: identifier,
@@ -16,7 +21,8 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
       identifier = patient_identifier.identifier
       expect {
         described_class.new(
-          build_condition_import_resource.merge(subject: {identifier: identifier})
+          resource: build_condition_import_resource.merge(subject: {identifier: identifier}),
+          organization_id: org_id
         ).import
       }.to change(MedicalHistory, :count).by(1)
     end
@@ -27,7 +33,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
       10.times.map { build_condition_import_resource }.each do |resource|
         condition_resource = resource.merge(subject: {identifier: patient_identifier.identifier})
 
-        attributes = described_class.new(condition_resource).build_attributes
+        attributes = described_class.new(resource: condition_resource, organization_id: org_id).build_attributes
 
         expect(Api::V3::MedicalHistoryPayloadValidator.new(attributes)).to be_valid
         expect(attributes[:patient_id]).to eq(patient.id)
@@ -43,7 +49,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
         {coding: [{code: "73211009"}], expected: {hypertension: "no", diabetes: "yes"}},
         {coding: [{code: "38341003"}, {code: "73211009"}], expected: {hypertension: "yes", diabetes: "yes"}}
       ].each do |coding:, expected:|
-        expect(described_class.new({code: {coding: coding}}).diagnoses)
+        expect(described_class.new(resource: {code: {coding: coding}}, organization_id: org_id).diagnoses)
           .to eq(expected)
       end
     end

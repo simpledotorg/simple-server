@@ -3,6 +3,7 @@ require "rails_helper"
 RSpec.describe BulkApiImport::FhirAppointmentImporter do
   before { create(:facility) }
   let(:import_user) { ImportUser.find_or_create }
+  let(:org_id) { import_user.organization_id }
   let(:facility) { import_user.facility }
   let(:facility_identifiers) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
@@ -11,9 +12,12 @@ RSpec.describe BulkApiImport::FhirAppointmentImporter do
   describe "#import" do
     it "imports an appointment" do
       expect {
-        described_class.new(build_appointment_import_resource
+        described_class.new(
+          resource: build_appointment_import_resource
             .merge(appointmentOrganization: {identifier: facility_identifiers.identifier})
-            .except(:appointmentCreationOrganization)).import
+            .except(:appointmentCreationOrganization),
+          organization_id: org_id
+        ).import
       }.to change(Appointment, :count).by(1)
     end
   end
@@ -25,7 +29,7 @@ RSpec.describe BulkApiImport::FhirAppointmentImporter do
           .merge(appointmentOrganization: {identifier: facility_identifiers.identifier})
           .except(:appointmentCreationOrganization)
 
-        attributes = described_class.new(appointment_resource).build_attributes
+        attributes = described_class.new(resource: appointment_resource, organization_id: org_id).build_attributes
 
         expect(Api::V3::AppointmentPayloadValidator.new(attributes)).to be_valid
       end
@@ -33,14 +37,18 @@ RSpec.describe BulkApiImport::FhirAppointmentImporter do
   end
 
   describe "#scheduled_date" do
-    specify { expect(described_class.new({start: "2023-08-07T07:50:38Z"}).scheduled_date).to eq("2023-08-07") }
-    specify { expect(described_class.new({}).scheduled_date).to be_nil }
+    specify {
+      expect(described_class.new(resource: {start: "2023-08-07T07:50:38Z"}, organization_id: org_id).scheduled_date)
+        .to eq("2023-08-07")
+    }
+    specify { expect(described_class.new(resource: {}, organization_id: org_id).scheduled_date).to be_nil }
   end
 
   describe "#facility_id" do
     it "extracts facility ID" do
       expect(described_class.new(
-        {appointmentOrganization: {identifier: facility_identifiers.identifier}}
+        resource: {appointmentOrganization: {identifier: facility_identifiers.identifier}},
+        organization_id: org_id
       ).facility_id).to eq(facility.id)
     end
   end
