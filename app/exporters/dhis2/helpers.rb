@@ -92,5 +92,4 @@ module Dhis2::Helpers
       "#{gender}_#{age_range_start}_#{age_range_end}"
     end
   end
-
 end

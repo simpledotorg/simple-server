@@ -45,7 +45,6 @@ class Dhis2::BangladeshDisaggregatedExporterJob
     }.transform_values { |patient_states| Dhis2::Helpers.disaggregate_by_gender_age(patient_states, BUCKETS) }
   end
 
-
   def config
     {
       data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),

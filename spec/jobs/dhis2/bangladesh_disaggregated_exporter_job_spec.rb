@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 require "sidekiq/testing"
 require "dhis2"
 Sidekiq::Testing.inline!
