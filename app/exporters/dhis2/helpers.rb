@@ -1,6 +1,10 @@
 module Dhis2::Helpers
-  def self.current_month_period
-    @current_month_period ||= Period.current.previous
+  def self.previous_month_period
+    @previous_month_period ||= Period.current.previous
+  end
+
+  def self.last_n_month_periods(n)
+    (previous_month_period.advance(months: -n + 1)..previous_month_period)
   end
 
   def self.htn_controlled(region, period)

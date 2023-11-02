@@ -1,4 +1,5 @@
 require "dhis2"
+
 class Dhis2Exporter
   attr_reader :facility_identifiers, :periods, :data_elements_map, :category_option_combo_ids
 
@@ -77,11 +78,11 @@ class Dhis2Exporter
     end
   end
 
-  def format_facility_period_data(facility_identifier, period, facility_data, data_elements_map)
+  def format_facility_period_data(facility_data, facility_identifier, period)
     formatted_facility_data = []
     facility_data.each do |data_element, value|
       formatted_facility_data << {
-        data_element: data_elements_map[data_element],
+        data_element: @data_elements_map[data_element],
         org_unit: facility_identifier.identifier,
         period: reporting_period(period),
         value: value

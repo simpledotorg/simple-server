@@ -6,14 +6,11 @@ Sidekiq::Testing.inline!
 describe Dhis2::EthiopiaExporterJob do
   before do
     ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/ethiopia-production.yml"
-  end
-
-  before(:each) do
     Flipper.enable(:dhis2_export)
     Flipper.enable(:dhis2_use_ethiopian_calendar)
   end
 
-  describe ".export" do
+  describe ".perform" do
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
     let(:facilities) { create_list(:facility, 2, :dhis2) }
     let(:facility_data) {
@@ -31,16 +28,14 @@ describe Dhis2::EthiopiaExporterJob do
     }
 
     it "exports metrics required by Ethiopia for the given facility for the last given number of months to DHIS2" do
-      facility = create(:facility, :dhis2)
-      facility_identifier = facility.business_identifiers.first
-      region = facility.region
+      facility_identifier = create(:facility_business_identifier)
       total_months = 2
-      periods = Period.current.advance(months: -total_months)..Period.current.previous
+      periods = Dhis2::Helpers.last_n_month_periods(total_months)
       export_data = []
 
       periods.each do |period|
         facility_data.each do |data_element, value|
-          allow(Dhis2::Helpers).to receive(data_element).with(region, period).and_return(value)
+          allow(Dhis2::Helpers).to receive(data_element).with(facility_identifier.facility.region, period).and_return(value)
 
           export_data << {
             data_element: data_elements[data_element],
@@ -59,7 +54,6 @@ describe Dhis2::EthiopiaExporterJob do
 
       Sidekiq::Testing.inline! do
         Dhis2::EthiopiaExporterJob.perform_async(
-          data_elements.stringify_keys,
           facility_identifier.id,
           total_months
         )

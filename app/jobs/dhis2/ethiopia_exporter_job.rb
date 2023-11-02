@@ -3,24 +3,22 @@ class Dhis2::EthiopiaExporterJob
   sidekiq_options retry: 2
   sidekiq_options queue: :default
 
-  def perform(data_elements_map, facility_identifier_id, total_months)
-    data_elements_map = data_elements_map.with_indifferent_access
+  def perform(facility_identifier_id, total_months)
     facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
-    periods = export_periods(total_months)
+    periods = Dhis2::Helpers.last_n_month_periods(total_months)
     dhis2_exporter = Dhis2Exporter.new(
       facility_identifiers: [],
       periods: [],
-      data_elements_map: {}
+      data_elements_map: config.fetch(:data_elements_map)
     )
     facility_data = []
 
     periods.map do |period|
       facility_data_for_period = facility_data_for_period(facility_identifier, period)
       facility_data << dhis2_exporter.format_facility_period_data(
-        facility_identifier,
-        period,
         facility_data_for_period,
-        data_elements_map
+        facility_identifier,
+        period
       )
     end
 
@@ -45,8 +43,7 @@ class Dhis2::EthiopiaExporterJob
     }
   end
 
-  def export_periods(total_months)
-    previous_month_period = Dhis2::Helpers.current_month_period
-    (previous_month_period.advance(months: -total_months + 1)..previous_month_period)
+  def config
+    { data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
   end
 end
