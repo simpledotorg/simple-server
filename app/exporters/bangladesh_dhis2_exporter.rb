@@ -1,6 +1,6 @@
 class BangladeshDhis2Exporter
   def self.export
-    periods = (current_month_period.advance(months: -24)..current_month_period)
+    periods = Dhis2::Helpers.last_n_month_periods(24)
 
     exporter = Dhis2Exporter.new(
       facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
@@ -25,9 +25,5 @@ class BangladeshDhis2Exporter
         monthly_registrations: repository.monthly_registrations[slug][period]
       }
     end
-  end
-
-  def self.current_month_period
-    @current_month_period ||= Period.current.previous
   end
 end
