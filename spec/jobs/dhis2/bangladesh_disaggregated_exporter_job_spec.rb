@@ -1,101 +1,72 @@
 require 'rails_helper'
+require "sidekiq/testing"
+require "dhis2"
+Sidekiq::Testing.inline!
 
 describe Dhis2::BangladeshDisaggregatedExporterJob do
-
-  it "should pass the correct config to the main exporter object" do
-    expected_arguments = {
-      facility_identifiers: FacilityBusinessIdentifier.dhis2_org_unit_id,
-      periods: (Period.current.previous.advance(months: -24)..Period.current.previous),
-      data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
-      category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
-    }
-
-    expect(Dhis2Exporter).to receive(:new).with(expected_arguments).and_call_original
-
-    described_class.export
+  before do
+    ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/bangladesh-production.yml"
+    Flipper.enable(:dhis2_export)
   end
 
-  it "should call export_disaggregated with a block that generates correct facility-period data for each facility-period combination" do
-    facility_identifier = create(:facility_business_identifier)
-    period = Period.current
+  describe ".perform" do
+    it "exports disaggregated HTN metrics for a facility over the last n months to Bangladesh DHIS2" do
+      facility_identifier = create(:facility_business_identifier)
+      total_months = 2
+      periods = Dhis2::Helpers.last_n_month_periods(total_months)
+      export_data = []
+      data_elements = CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements)
+      category_option_combo_ids = CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
+      buckets = [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75]
+      facility_data = {
+        htn_cumulative_assigned_patients: :htn_cumulative_assigned_patients,
+        htn_controlled_patients: :htn_controlled_patients,
+        htn_uncontrolled_patients: :htn_uncontrolled_patients,
+        htn_patients_who_missed_visits: :htn_patients_who_missed_visits,
+        htn_patients_lost_to_follow_up: :htn_patients_lost_to_follow_up,
+        htn_dead_patients: :htn_dead_patients,
+        htn_cumulative_registered_patients: :htn_cumulative_registered_patients,
+        htn_monthly_registered_patients: :htn_monthly_registered_patients,
+        htn_cumulative_assigned_patients_adjusted: :htn_cumulative_assigned_patients_adjusted
+      }
 
-    htn_cumulative_assigned_patients = "htn_cumulative_assigned_patients"
-    htn_controlled_patients = "htn_controlled_patients"
-    htn_uncontrolled_patients = "htn_uncontrolled_patients"
-    htn_patients_who_missed_visits = "htn_patients_who_missed_visits"
-    htn_patients_lost_to_follow_up = "htn_patients_lost_to_follow_up"
-    htn_dead_patients = "htn_dead_patients"
-    htn_cumulative_registered_patients = "htn_cumulative_registered_patients"
-    htn_monthly_registered_patients = "htn_monthly_registered_patients"
-    htn_cumulative_assigned_patients_adjusted = "htn_cumulative_assigned_patients_adjusted"
+      periods.each do |period|
+        allow_any_instance_of(PatientStates::Hypertension::CumulativeAssignedPatientsQuery).to receive(:call).and_return(:htn_cumulative_assigned_patients)
+        allow_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive(:call).and_return(:htn_controlled_patients)
+        allow_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive(:call).and_return(:htn_uncontrolled_patients)
+        allow_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive(:call).and_return(:htn_patients_who_missed_visits)
+        allow_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive(:call).and_return(:htn_patients_lost_to_follow_up)
+        allow_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive(:call).and_return(:htn_dead_patients)
+        allow_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive(:call).and_return(:htn_cumulative_registered_patients)
+        allow_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive(:call).and_return(:htn_monthly_registered_patients)
+        allow_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive(:call).and_return(:htn_cumulative_assigned_patients_adjusted)
 
-    expect_any_instance_of(PatientStates::Hypertension::CumulativeAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients)
-    expect_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive(:call).and_return(htn_controlled_patients)
-    expect_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive(:call).and_return(htn_uncontrolled_patients)
-    expect_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive(:call).and_return(htn_patients_who_missed_visits)
-    expect_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive(:call).and_return(htn_patients_lost_to_follow_up)
-    expect_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive(:call).and_return(htn_dead_patients)
-    expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive(:call).and_return(htn_cumulative_registered_patients)
-    expect_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive(:call).and_return(htn_monthly_registered_patients)
-    expect_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive(:call).and_return(htn_cumulative_assigned_patients_adjusted)
+        facility_data.each do |data_element, value|
+          allow(Dhis2::Helpers).to receive(:disaggregate_by_gender_age).with(data_element, buckets).and_return({data_element: value})
+          category_option_combo_ids.each do |_combo, id|
+            export_data << {
+              data_element: data_elements[data_element],
+              org_unit: facility_identifier.identifier,
+              category_option_combo: id,
+              period: period.to_s(:dhis2),
+              value: 0
+            }
+          end
+        end
+      end
 
-    allow(described_class).to receive(:disaggregate_by_gender_age) do |value|
-      value
+      data_value_sets = double
+      dhis2_client = double
+      allow(Dhis2).to receive(:client).and_return(dhis2_client)
+      allow(dhis2_client).to receive(:data_value_sets).and_return(data_value_sets)
+      expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
+
+      Sidekiq::Testing.inline! do
+        Dhis2::BangladeshDisaggregatedExporterJob.perform_async(
+          facility_identifier.id,
+          total_months
+        )
+      end
     end
-
-    expected_result_from_block = {
-      htn_cumulative_assigned_patients: htn_cumulative_assigned_patients,
-      htn_controlled_patients: htn_controlled_patients,
-      htn_uncontrolled_patients: htn_uncontrolled_patients,
-      htn_patients_who_missed_visits: htn_patients_who_missed_visits,
-      htn_patients_lost_to_follow_up: htn_patients_lost_to_follow_up,
-      htn_dead_patients: htn_dead_patients,
-      htn_cumulative_registered_patients: htn_cumulative_registered_patients,
-      htn_monthly_registered_patients: htn_monthly_registered_patients,
-      htn_cumulative_assigned_patients_adjusted: htn_cumulative_assigned_patients_adjusted
-    }
-
-    expect_any_instance_of(Dhis2Exporter).to receive(:export_disaggregated) do |&block|
-      result = block.call(facility_identifier, period)
-      expect(result).to eq(expected_result_from_block)
-    end
-
-    described_class.export
   end
-end
-
-describe ".disaggregate_by_gender_age" do
-  it "should take patient states and return their counts disaggregated by gender and age" do
-    _patient1 = create(:patient, gender: :male, age: 77)
-    _patient2 = create(:patient, gender: :male, age: 64)
-    _patient3 = create(:patient, gender: :female, age: 50)
-    _patient4 = create(:patient, gender: :transgender, age: 28)
-
-    refresh_views
-
-    patient_states = Reports::PatientState.all
-    expected_disaggregated_counts = {
-      "male_75_plus" => 1,
-      "male_60_64" => 1,
-      "female_50_54" => 1,
-      "transgender_25_29" => 1
-    }
-
-    expect(described_class.disaggregate_by_gender_age(patient_states)).to eq(expected_disaggregated_counts)
-    expect(described_class.disaggregate_by_gender_age(patient_states)).not_to have_key(:female_15_19)
-  end
-end
-
-describe ".gender_age_range_symbol" do
-  it "should take a gender and age bucket index and return a symbol concatenating the gender and age range" do
-    gender = "male"
-    age_bucket_index = BangladeshDisaggregatedDhis2Exporter::BUCKETS.find_index(20) + 1
-    expect(described_class.gender_age_range_key(gender, age_bucket_index)).to eq("male_20_24")
-  end
-  it "should append _plus in for the last age bucket" do
-    gender = "male"
-    expect(described_class.gender_age_range_key(gender, BangladeshDisaggregatedDhis2Exporter::BUCKETS.length)).to eq("male_75_plus")
-  end
-end
-
 end

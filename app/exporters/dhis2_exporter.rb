@@ -90,4 +90,20 @@ class Dhis2Exporter
     end
     formatted_facility_data
   end
+
+  def format_disaggregated_facility_period_data(facility_data, facility_identifier, period)
+    formatted_facility_data = []
+    facility_data.each do |data_element, values|
+      @category_option_combo_ids.each do |combo, id|
+        formatted_facility_data << {
+          data_element: @data_elements_map[data_element],
+          org_unit: facility_identifier.identifier,
+          category_option_combo: id,
+          period: reporting_period(period),
+          value: values.with_indifferent_access[combo] || 0
+        }
+      end
+    end
+    formatted_facility_data
+  end
 end

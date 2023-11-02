@@ -24,7 +24,7 @@ class Dhis2::BangladeshDisaggregatedExporterJob
         period
       )
     end
-    dhis2_exporter.send_data_to_dhis2(export_data)
+    dhis2_exporter.send_data_to_dhis2(export_data.flatten)
     Rails.logger.info("Dhis2::BangladeshDisaggregatedExporterJob for facility identifier #{facility_identifier} succeeded.")
   end
 
@@ -42,31 +42,9 @@ class Dhis2::BangladeshDisaggregatedExporterJob
       htn_cumulative_registered_patients: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
       htn_monthly_registered_patients: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
       htn_cumulative_assigned_patients_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
-    }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states) }
+    }.transform_values { |patient_states| Dhis2::Helpers.disaggregate_by_gender_age(patient_states, BUCKETS) }
   end
 
-  def disaggregate_by_gender_age(patient_states)
-    gender_age_counts(patient_states).transform_keys do |(gender, age_bucket_index)|
-      gender_age_range_key(gender, age_bucket_index)
-    end
-  end
-
-  def gender_age_counts(patient_states)
-    PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
-      BUCKETS,
-      PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_gender(patient_states)
-    ).count
-  end
-
-  def gender_age_range_key(gender, age_bucket_index)
-    age_range_start = BUCKETS[age_bucket_index - 1]
-    if age_range_start == BUCKETS.last
-      "#{gender}_#{age_range_start}_plus"
-    else
-      age_range_end = BUCKETS[age_bucket_index] - 1
-      "#{gender}_#{age_range_start}_#{age_range_end}"
-    end
-  end
 
   def config
     {
