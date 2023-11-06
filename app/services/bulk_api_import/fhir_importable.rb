@@ -26,12 +26,4 @@ module BulkApiImport::FhirImportable
         facility_groups: {organization_id: org_id})
       .facility.id
   end
-
-  def translate_patient_id(id, org_id:)
-    translate_id(
-      id,
-      org_id: org_id,
-      ns_prefix: "patient_business_identifier"
-    )
-  end
 end
