@@ -42,9 +42,7 @@ RSpec.describe BulkApiImport::FhirImportable do
   describe "#translate_patient_id" do
     let(:patient_identifier) { SecureRandom.uuid }
     let(:patient) do
-      build_stubbed(:patient, id: Digest::UUID.uuid_v5(
-        Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", patient_identifier
-      ))
+      build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + org_id, patient_identifier))
     end
     let(:patient_business_identifier) do
       build_stubbed(:patient_business_identifier, patient: patient,
@@ -53,8 +51,7 @@ RSpec.describe BulkApiImport::FhirImportable do
     end
 
     it "translates the patient ID correctly" do
-      expect(Object.new.extend(described_class)
-                   .translate_patient_id(patient_business_identifier.identifier, org_id: org_id))
+      expect(Object.new.extend(described_class).translate_id(patient_business_identifier.identifier, org_id: org_id))
         .to eq(patient.id)
     end
 
@@ -67,19 +64,15 @@ RSpec.describe BulkApiImport::FhirImportable do
       org2 = create(:organization, id: SecureRandom.uuid, name: "Another Org")
       org2_facility = create(:facility, facility_group: create(:facility_group, organization: org2))
       org2_patient = create(:patient,
-        id: Digest::UUID.uuid_v5(
-          Digest::UUID::DNS_NAMESPACE + org2.id + "patient_business_identifier", clashing_identifier
-        ),
+        id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + org2.id, clashing_identifier),
         assigned_facility: org2_facility)
       create(:patient_business_identifier, identifier: clashing_identifier,
              patient: org2_patient, identifier_type: :external_import_id)
 
-      expect(Object.new.extend(described_class)
-                   .translate_patient_id(clashing_identifier, org_id: org1_id))
+      expect(Object.new.extend(described_class).translate_id(clashing_identifier, org_id: org1_id))
         .to eq(org1_patient.id)
 
-      expect(Object.new.extend(described_class)
-                   .translate_patient_id(clashing_identifier, org_id: org2.id))
+      expect(Object.new.extend(described_class).translate_id(clashing_identifier, org_id: org2.id))
         .to eq(org2_patient.id)
     end
   end

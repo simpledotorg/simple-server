@@ -102,7 +102,7 @@ class BulkApiImport::FhirPatientImporter
   def business_identifiers
     [
       {
-        id: translate_patient_id(identifier, org_id: @organization_id),
+        id: translate_id(identifier, org_id: @organization_id, ns_prefix: "patient_business_identifier"),
         identifier: identifier,
         identifier_type: :external_import_id,
         **timestamps

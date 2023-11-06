@@ -6,9 +6,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
   let(:org_id) { import_user.organization_id }
   let(:identifier) { SecureRandom.uuid }
   let(:patient) do
-    build_stubbed(:patient, id: Digest::UUID.uuid_v5(
-      Digest::UUID::DNS_NAMESPACE + org_id + "patient_business_identifier", identifier
-    ))
+    build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + org_id, identifier))
   end
   let(:patient_identifier) do
     build_stubbed(:patient_business_identifier, patient: patient,
