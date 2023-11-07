@@ -1,4 +1,5 @@
 require "dhis2"
+
 class Dhis2Exporter
   attr_reader :facility_identifiers, :periods, :data_elements_map, :category_option_combo_ids
 
@@ -75,5 +76,34 @@ class Dhis2Exporter
     else
       month_period.to_s(:dhis2)
     end
+  end
+
+  def format_facility_period_data(facility_data, facility_identifier, period)
+    formatted_facility_data = []
+    facility_data.each do |data_element, value|
+      formatted_facility_data << {
+        data_element: @data_elements_map[data_element],
+        org_unit: facility_identifier.identifier,
+        period: reporting_period(period),
+        value: value
+      }
+    end
+    formatted_facility_data
+  end
+
+  def format_disaggregated_facility_period_data(facility_data, facility_identifier, period)
+    formatted_facility_data = []
+    facility_data.each do |data_element, values|
+      @category_option_combo_ids.each do |combo, id|
+        formatted_facility_data << {
+          data_element: @data_elements_map[data_element],
+          org_unit: facility_identifier.identifier,
+          category_option_combo: id,
+          period: reporting_period(period),
+          value: values.with_indifferent_access[combo] || 0
+        }
+      end
+    end
+    formatted_facility_data
   end
 end
