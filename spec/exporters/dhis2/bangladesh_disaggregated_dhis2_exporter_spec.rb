@@ -2,7 +2,7 @@ require "rails_helper"
 require "sidekiq/testing"
 Sidekiq::Testing.fake!
 
-describe BangladeshDisaggregatedDhis2Exporter do
+describe Dhis2::BangladeshDisaggregatedDhis2Exporter do
   describe ".export" do
     it "queues a BangladeshDisaggregatedExporterJob for each DHIS2 facility present" do
       total_dhis2_facilities = 2
