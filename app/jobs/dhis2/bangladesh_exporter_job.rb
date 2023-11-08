@@ -44,7 +44,7 @@ module Dhis2
     end
 
     def config
-      { data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
+      {data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)}
     end
   end
 end

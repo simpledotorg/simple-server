@@ -12,7 +12,6 @@ describe Dhis2::EthiopiaExporterJob do
 
   describe ".perform" do
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
-    let(:facilities) { create_list(:facility, 2, :dhis2) }
     let(:facility_data) {
       {
         htn_controlled: :htn_controlled,
@@ -35,7 +34,7 @@ describe Dhis2::EthiopiaExporterJob do
 
       periods.each do |period|
         facility_data.each do |data_element, value|
-          allow(Dhis2::Helpers).to receive(data_element).with(facility_identifier.facility.region, period).and_return(value)
+          expect(Dhis2::Helpers).to receive(data_element).with(facility_identifier.facility.region, period).and_return(value)
 
           export_data << {
             data_element: data_elements[data_element],
