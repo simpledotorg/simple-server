@@ -7,23 +7,19 @@ module Dhis2
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
       periods = Dhis2::Helpers.last_n_month_periods(total_months)
-      dhis2_exporter = Dhis2Exporter.new(
-        facility_identifiers: [],
-        periods: [],
-        data_elements_map: config.fetch(:data_elements_map)
-      )
       facility_data = []
 
       periods.map do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)
-        facility_data << dhis2_exporter.format_facility_period_data(
+        facility_data << Dhis2::Helpers.format_facility_period_data(
           facility_data_for_period,
           facility_identifier,
-          period
+          period,
+          config.fetch(:data_elements_map)
         )
       end
 
-      dhis2_exporter.send_data_to_dhis2(facility_data.flatten)
+      Dhis2::Helpers.send_data_to_dhis2(facility_data.flatten)
       Rails.logger.info("Dhis2::EthiopiaExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
