@@ -18,22 +18,22 @@ describe Dhis2::BangladeshDisaggregatedExporterJob do
     let(:buckets) { [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75] }
     let(:facility_data) {
       {
-        cumulative_assigned: :cumulative_assigned,
-        controlled: :controlled,
-        uncontrolled: :uncontrolled,
-        missed_visits: :missed_visits,
-        ltfu: :ltfu,
-        dead: :dead,
-        cumulative_registrations: :cumulative_registrations,
-        monthly_registrations: :monthly_registrations,
-        cumulative_assigned_adjusted: :cumulative_assigned_adjusted
+        htn_cumulative_assigned: :htn_cumulative_assigned,
+        htn_cumulative_assigned_adjusted: :htn_cumulative_assigned_adjusted,
+        # htn_controlled: :htn_controlled,
+        # htn_uncontrolled: :htn_uncontrolled,
+        # htn_missed_visits: :htn_missed_visits,
+        # htn_ltfu: :htn_ltfu,
+        # htn_dead: :htn_dead,
+        # htn_cumulative_registrations: :htn_cumulative_registrations,
+        # htn_monthly_registrations: :htn_monthly_registrations,
       }
     }
 
     it "exports disaggregated HTN metrics for a facility over the last n months to Bangladesh DHIS2" do
       facility_identifier = create(:facility_business_identifier)
       total_months = 2
-      periods = Dhis2::Helpers.last_n_month_periods(total_months)
+      periods = (Period.current.advance(months: -total_months)..Period.current.previous)
       export_data = []
 
       periods.each do |period|

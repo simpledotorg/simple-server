@@ -10,7 +10,7 @@ module Dhis2
           facility_data_for_period,
           facility_identifier,
           period,
-          @data_elements_map
+          config.fetch(:data_elements_map)
         )
       end
       export(facility_data.flatten)

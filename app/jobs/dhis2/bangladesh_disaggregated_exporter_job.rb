@@ -15,8 +15,8 @@ module Dhis2
           facility_data_for_period,
           facility_identifier,
           period,
-          @data_elements_map,
-          @category_option_combo_ids
+          config.fetch(:disaggregated_data_elements_map),
+          config.fetch(:category_option_combo_ids)
         )
       end
 
@@ -39,6 +39,15 @@ module Dhis2
         htn_monthly_registered_patients: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
         htn_cumulative_assigned_patients_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| Dhis2::Helpers.disaggregate_by_gender_age(patient_states, BUCKETS) }
+    end
+
+    def config
+      super.merge(
+        {
+          disaggregated_data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
+          category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
+        }
+      )
     end
   end
 end

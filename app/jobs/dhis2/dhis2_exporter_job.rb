@@ -16,10 +16,12 @@ module Dhis2
         config.version = ENV.fetch("DHIS2_VERSION")
       end
       @client = Dhis2::Client.new(@configuration.client_params)
-      @data_elements_map = CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)
-      if CountryConfig.dhis2_data_elements.key?(:dhis2_category_option_combo)
-        @category_option_combo_ids = CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
-      end
+    end
+
+    def config
+      {
+        data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements),
+      }
     end
 
     def last_n_month_periods(n)

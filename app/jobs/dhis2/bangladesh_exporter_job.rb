@@ -11,7 +11,7 @@ module Dhis2
           facility_data_for_period,
           facility_identifier,
           period,
-          @data_elements_map
+          config.fetch(:data_elements_map)
         )
       end
 
@@ -22,20 +22,17 @@ module Dhis2
     private
 
     def facility_data_for_period(facility_identifier, period)
-      facility = facility_identifier.facility
-      repository = Reports::Repository.new(facility.region, periods: periods)
-      slug = facility.region.slug
+      region = facility_identifier.facility.region
       {
-        cumulative_assigned: repository.cumulative_assigned_patients[slug][period],
-        cumulative_assigned_adjusted: repository.adjusted_patients_with_ltfu[slug][period],
-        controlled: repository.controlled[slug][period],
-        uncontrolled: repository.uncontrolled[slug][period],
-        missed_visits: repository.missed_visits[slug][period],
-        ltfu: repository.ltfu[slug][period],
-        # NOTE: dead patients are always the current count due to lack of status timestamps
-        dead: facility.assigned_patients.with_hypertension.status_dead.count,
-        cumulative_registrations: repository.cumulative_registrations[slug][period],
-        monthly_registrations: repository.monthly_registrations[slug][period]
+        htn_cumulative_assigned: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call.count,
+        htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call.count,
+        htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call.count,
+        htn_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call.count,
+        htn_ltfu: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call.count,
+        htn_dead: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call.count,
+        htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call.count,
+        htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call.count,
+        htn_cumulative_assigned_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call.count
       }
     end
   end
