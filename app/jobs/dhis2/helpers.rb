@@ -22,42 +22,5 @@ module Dhis2
         "#{gender}_#{age_range_start}_#{age_range_end}"
       end
     end
-
-    def self.reporting_period(month_period)
-      if Flipper.enabled?(:dhis2_use_ethiopian_calendar)
-        EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(month_period).to_s(:dhis2)
-      else
-        month_period.to_s(:dhis2)
-      end
-    end
-
-    def self.format_facility_period_data(facility_data, facility_identifier, period, data_elements_map)
-      formatted_facility_data = []
-      facility_data.each do |data_element, value|
-        formatted_facility_data << {
-          data_element: data_elements_map[data_element],
-          org_unit: facility_identifier.identifier,
-          period: reporting_period(period),
-          value: value
-        }
-      end
-      formatted_facility_data
-    end
-
-    def self.format_disaggregated_facility_period_data(facility_data, facility_identifier, period, data_elements_map, category_option_combo_ids)
-      formatted_facility_data = []
-      facility_data.each do |data_element, values|
-        category_option_combo_ids.each do |combo, id|
-          formatted_facility_data << {
-            data_element: data_elements_map[data_element],
-            org_unit: facility_identifier.identifier,
-            category_option_combo: id,
-            period: reporting_period(period),
-            value: values.with_indifferent_access[combo] || 0
-          }
-        end
-      end
-      formatted_facility_data
-    end
   end
 end

@@ -25,7 +25,7 @@ describe Dhis2::EthiopiaExporterJob do
         htn_ltfu: :htn_ltfu,
         htn_dead: :htn_dead,
         htn_cumulative_registrations: :htn_cumulative_registrations,
-        htn_monthly_registrations: :htn_monthly_registrations,
+        htn_monthly_registrations: :htn_monthly_registrations
       }
     }
 

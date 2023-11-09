@@ -11,12 +11,10 @@ module Dhis2
       export_data = []
       periods.each do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)
-        export_data << Dhis2::Helpers.format_disaggregated_facility_period_data(
+        export_data << format_facility_period_data(
           facility_data_for_period,
           facility_identifier,
-          period,
-          config.fetch(:disaggregated_data_elements_map),
-          config.fetch(:category_option_combo_ids)
+          period
         )
       end
 
@@ -42,12 +40,26 @@ module Dhis2
     end
 
     def config
-      super.merge(
-        {
-          disaggregated_data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
-          category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
-        }
-      )
+      {
+        data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
+        category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
+      }
+    end
+
+    def format_facility_period_data(facility_data, facility_identifier, period)
+      formatted_facility_data = []
+      facility_data.each do |data_element, values|
+        config.fetch(:category_option_combo_ids).each do |combo, id|
+          formatted_facility_data << {
+            data_element: config.fetch(:data_elements_map)[data_element],
+            org_unit: facility_identifier.identifier,
+            category_option_combo: id,
+            period: reporting_period(period),
+            value: values.with_indifferent_access[combo] || 0
+          }
+        end
+      end
+      formatted_facility_data
     end
   end
 end
