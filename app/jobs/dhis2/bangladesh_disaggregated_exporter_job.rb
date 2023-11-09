@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Dhis2
   class BangladeshDisaggregatedExporterJob < Dhis2ExporterJob
     STEP = 5
@@ -5,7 +7,7 @@ module Dhis2
 
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
-      periods = Dhis2::Helpers.last_n_month_periods(total_months)
+      periods = last_n_month_periods(total_months)
       export_data = []
       periods.each do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)

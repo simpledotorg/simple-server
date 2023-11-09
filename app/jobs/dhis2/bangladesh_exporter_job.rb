@@ -2,7 +2,7 @@ module Dhis2
   class BangladeshExporterJob < Dhis2ExporterJob
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
-      periods = Dhis2::Helpers.last_n_month_periods(total_months)
+      periods = last_n_month_periods(total_months)
       facility_data = []
 
       periods.map do |period|
