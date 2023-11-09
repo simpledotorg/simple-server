@@ -10,10 +10,10 @@ class Api::V4::ImportsController < ApplicationController
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
 
-    errors = BulkApiImport::Validator.new(organization: header_organization_id, resources: import_params).validate
+    errors = BulkApiImport::Validator.new(organization: organization_id, resources: import_params).validate
 
     unless Flipper.enabled?(:mock_imports_api)
-      BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
+      BulkApiImportJob.perform_later(resources: import_params, organization_id: organization_id) unless errors.present?
     end
 
     response = {errors: errors}
@@ -49,13 +49,13 @@ class Api::V4::ImportsController < ApplicationController
       :birthDate,
       :deceasedBoolean,
       :telecom,
-      :name,
       :active,
+      name: [:text],
       meta: [:lastUpdated, :createdAt],
       identifier: [:value],
       managingOrganization: [:value],
       registrationOrganization: [:value],
-      address: [:line, :district, :city, :postalCode]
+      address: [:district, :city, :postalCode, line: []]
     )
   end
 
@@ -131,12 +131,12 @@ class Api::V4::ImportsController < ApplicationController
 
   def validate_token_organization
     token_organization = MachineUser.find_by(id: doorkeeper_token.application&.owner_id)&.organization_id
-    unless token_organization.present? && token_organization == header_organization_id
+    unless token_organization.present? && token_organization == organization_id
       head :forbidden
     end
   end
 
-  def header_organization_id
+  def organization_id
     request.headers["HTTP_X_ORGANIZATION_ID"]
   end
 end
