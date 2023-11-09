@@ -101,7 +101,7 @@ class Api::V4::ImportsController < ApplicationController
       dosageInstruction: [
         [
           {
-            timing: {code: []},
+            timing: [:code],
             doseAndRate: [{
               doseQuantity: [:value, :unit, :system, :code]
             }]
