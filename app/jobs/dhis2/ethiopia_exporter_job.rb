@@ -1,25 +1,19 @@
 module Dhis2
-  class EthiopiaExporterJob
-    include Sidekiq::Job
-    sidekiq_options retry: 2
-    sidekiq_options queue: :default
-
+  class EthiopiaExporterJob < Dhis2ExporterJob
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
       periods = Dhis2::Helpers.last_n_month_periods(total_months)
       facility_data = []
-
       periods.map do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)
         facility_data << Dhis2::Helpers.format_facility_period_data(
           facility_data_for_period,
           facility_identifier,
           period,
-          config.fetch(:data_elements_map)
+          @data_elements_map
         )
       end
-
-      Dhis2::Helpers.send_data_to_dhis2(facility_data.flatten)
+      export(facility_data.flatten)
       Rails.logger.info("Dhis2::EthiopiaExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
@@ -28,20 +22,16 @@ module Dhis2
     def facility_data_for_period(facility_identifier, period)
       region = facility_identifier.facility.region
       {
-        htn_controlled: Dhis2::Helpers.htn_controlled(region, period),
-        htn_cumulative_assigned: Dhis2::Helpers.htn_cumulative_assigned(region, period),
-        htn_cumulative_assigned_adjusted: Dhis2::Helpers.htn_cumulative_assigned_adjusted(region, period),
-        htn_cumulative_registrations: Dhis2::Helpers.htn_cumulative_registrations(region, period),
-        htn_dead: Dhis2::Helpers.htn_dead(region, period),
-        htn_monthly_registrations: Dhis2::Helpers.htn_monthly_registrations(region, period),
-        htn_ltfu: Dhis2::Helpers.htn_ltfu(region, period),
-        htn_missed_visits: Dhis2::Helpers.htn_missed_visits(region, period),
-        htn_uncontrolled: Dhis2::Helpers.htn_uncontrolled(region, period)
+        htn_cumulative_assigned: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call.count,
+        htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call.count,
+        htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call.count,
+        htn_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call.count,
+        htn_ltfu: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call.count,
+        htn_dead: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call.count,
+        htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call.count,
+        htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call.count,
+        htn_cumulative_assigned_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call.count
       }
-    end
-
-    def config
-      {data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)}
     end
   end
 end

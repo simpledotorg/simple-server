@@ -1,9 +1,5 @@
 module Dhis2
-  class BangladeshExporterJob
-    include Sidekiq::Job
-    sidekiq_options retry: 2
-    sidekiq_options queue: :default
-
+  class BangladeshExporterJob < Dhis2ExporterJob
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
       periods = Dhis2::Helpers.last_n_month_periods(total_months)
@@ -15,11 +11,11 @@ module Dhis2
           facility_data_for_period,
           facility_identifier,
           period,
-          config.fetch(:data_elements_map)
+          @data_elements_map
         )
       end
 
-      Dhis2::Helpers.send_data_to_dhis2(facility_data.flatten)
+      export(facility_data.flatten)
       Rails.logger.info("Dhis2::BangladeshExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
@@ -41,10 +37,6 @@ module Dhis2
         cumulative_registrations: repository.cumulative_registrations[slug][period],
         monthly_registrations: repository.monthly_registrations[slug][period]
       }
-    end
-
-    def config
-      {data_elements_map: CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements)}
     end
   end
 end

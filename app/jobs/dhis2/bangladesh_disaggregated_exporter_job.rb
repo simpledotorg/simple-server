@@ -1,9 +1,5 @@
 module Dhis2
-  class BangladeshDisaggregatedExporterJob
-    include Sidekiq::Job
-    sidekiq_options retry: 2
-    sidekiq_options queue: :default
-
+  class BangladeshDisaggregatedExporterJob < Dhis2ExporterJob
     STEP = 5
     BUCKETS = (15..75).step(STEP).to_a
 
@@ -17,11 +13,12 @@ module Dhis2
           facility_data_for_period,
           facility_identifier,
           period,
-          config.fetch(:data_elements_map),
-          config.fetch(:category_option_combo_ids)
+          @data_elements_map,
+          @category_option_combo_ids
         )
       end
-      Dhis2::Helpers.send_data_to_dhis2(export_data.flatten)
+
+      export(export_data.flatten)
       Rails.logger.info("Dhis2::BangladeshDisaggregatedExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
@@ -40,13 +37,6 @@ module Dhis2
         htn_monthly_registered_patients: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
         htn_cumulative_assigned_patients_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| Dhis2::Helpers.disaggregate_by_gender_age(patient_states, BUCKETS) }
-    end
-
-    def config
-      {
-        data_elements_map: CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements),
-        category_option_combo_ids: CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo)
-      }
     end
   end
 end
