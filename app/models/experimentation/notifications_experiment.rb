@@ -84,13 +84,13 @@ module Experimentation
       end
     end
 
-    def self.filter_facilities(patients, facilities)
-      return patients unless facilities
+    def self.filter_facilities(patients, facility_slugs)
+      return patients unless facility_slugs
 
-      if facilities["include"]
-        patients.where('"patients"."assigned_facility_id" IN (?)', facilities["include"])
-      elsif facilities["exclude"]
-        patients.where('"patients"."assigned_facility_id" NOT IN (?)', facilities["exclude"])
+      if facility_slugs["include"]
+        patients.where('"facilities"."slug" IN (?)', facility_slugs["include"])
+      elsif facility_slugs["exclude"]
+        patients.where('"facilities"."slug" NOT IN (?)', facility_slugs["exclude"])
       else
         patients
       end
