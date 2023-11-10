@@ -76,41 +76,27 @@ describe MonthlyStateData::HypertensionDataExporter do
       describe "#header_row" do
         it "returns header row" do
           expect(data_service.header_row).to eq(headers)
-        end
-      end
 
-      describe "#section_row" do
-        it "returns section row" do
           expect(data_service.section_row).to eq(sections)
-        end
-      end
 
-      describe "#state_row" do
-        it "provides accurate numbers for the state" do
           expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, nil, nil, nil]
           state_row = data_service.state_row
           expect(state_row.count).to eq(29)
           expect(state_row).to eq(expected_state_row)
-        end
-      end
 
-      describe "#district_rows" do
-        it "provides accurate numbers for individual facilities" do
           expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, nil, nil, nil]]
           district_rows = data_service.district_rows
           expect(district_rows[0].count).to eq(29)
           expect(district_rows).to eq(expected_district_rows)
+
+          old_period = Period.current
+          header_row = described_class.new(region: @state, period: old_period, medications_dispensation_enabled: false).header_row
+          first_month_index = 9
+          last_month_index = 14
+
+          expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
+          expect(header_row[last_month_index]).to eq(Period.current.to_s)
         end
-      end
-
-      it "scopes the report to the provided period" do
-        old_period = Period.current
-        header_row = described_class.new(region: @state, period: old_period, medications_dispensation_enabled: false).header_row
-        first_month_index = 9
-        last_month_index = 14
-
-        expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
-        expect(header_row[last_month_index]).to eq(Period.current.to_s)
       end
     end
 
@@ -166,46 +152,28 @@ describe MonthlyStateData::HypertensionDataExporter do
       describe "#header_row" do
         it "returns header row" do
           expect(data_service.header_row).to eq(headers)
-        end
-      end
 
-      describe "#section_row" do
-        it "returns section row" do
           expect(data_service.section_row).to eq(sections)
-        end
-      end
 
-      describe "#sub_section_row" do
-        it "returns sub-section row" do
           expect(data_service.sub_section_row).to eq(sub_sections)
-        end
-      end
 
-      describe "#state_row" do
-        it "provides accurate numbers for the state" do
           expected_state_row = ["All districts", @state.name, nil, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
           state_row = data_service.state_row
           expect(state_row.count).to eq(41)
           expect(state_row).to eq(expected_state_row)
-        end
-      end
 
-      describe "#district_rows" do
-        it "provides accurate numbers for individual facilities" do
           expected_district_rows = [[1, @state.name.to_s, @district.name.to_s, nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
           district_rows = data_service.district_rows
           expect(district_rows[0].count).to eq(41)
           expect(district_rows).to eq(expected_district_rows)
-        end
-      end
 
-      it "scopes the report to the provided period" do
-        old_period = Period.current
-        header_row = described_class.new(region: @state, period: old_period, medications_dispensation_enabled: true).header_row
-        first_month_index = 9
-        last_month_index = 14
-        expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
-        expect(header_row[last_month_index]).to eq(Period.current.to_s)
+          old_period = Period.current
+          header_row = described_class.new(region: @state, period: old_period, medications_dispensation_enabled: true).header_row
+          first_month_index = 9
+          last_month_index = 14
+          expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
+          expect(header_row[last_month_index]).to eq(Period.current.to_s)
+        end
       end
     end
   end
