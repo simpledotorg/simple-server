@@ -20,7 +20,11 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
     blood_sugar_4 = create(:blood_sugar, patient: patient)
 
-    refresh_views
+    # refresh_views
+    RefreshReportingViews.call(views: %w[
+      Reports::PatientBloodSugar
+    ])
+
     results = Reports::PatientBloodSugar.all.pluck(
       :month_date,
       :blood_sugar_id,
@@ -38,7 +42,11 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     patient = create(:patient, recorded_at: 3.months.ago)
     create(:blood_sugar, patient: patient, recorded_at: 1.month.ago)
 
-    refresh_views
+    # refresh_views
+    RefreshReportingViews.call(views: %w[
+      Reports::PatientBloodSugar
+    ])
+
     results = Reports::PatientBloodSugar.all.pluck(
       :month_date,
       :patient_id
@@ -55,7 +63,11 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 2.months.ago)
     blood_sugar_3 = create(:blood_sugar, patient: patient)
 
-    refresh_views
+    # refresh_views
+    RefreshReportingViews.call(views: %w[
+      Reports::PatientBloodSugar
+    ])
+
     results = Reports::PatientBloodSugar.all.pluck(
       :month_date,
       :blood_sugar_id,
@@ -129,7 +141,11 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     create(:blood_sugar, patient: patient, recorded_at: 5.months.ago)
     create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
     create(:blood_sugar, patient: patient)
-    refresh_views
+
+    # refresh_views
+    RefreshReportingViews.call(views: %w[
+      Reports::PatientBloodSugar
+    ])
 
     results = Reports::PatientBloodSugar.all.pluck(
       :month_date,
@@ -174,7 +190,10 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
     hba1c_bs_200 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 7.0, recorded_at: 2.months.ago)
     hba1c_bs_300 = create(:blood_sugar, patient: patients.fourth, blood_sugar_type: :hba1c, blood_sugar_value: 9.0, recorded_at: 1.months.ago)
 
-    refresh_views
+    # refresh_views
+    RefreshReportingViews.call(views: %w[
+      Reports::PatientBloodSugar
+    ])
 
     results = Reports::PatientBloodSugar.all.pluck(
       :month_date,

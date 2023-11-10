@@ -89,9 +89,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect {
           CSV.parse(result)
         }.not_to raise_error
-      end
 
-      it "includes the section name, headers, district data and facility data" do
         result = exporter.report
         csv = CSV.parse(result)
         expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
@@ -103,42 +101,22 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect(csv[5][4]).to eq("Community")
         expect(csv[7].slice(0, 5)).to eq(["1", "Block 1 - alphabetically first", "Facility 1", "PHC", "Community"])
         expect(csv[8].slice(0, 5)).to eq(["2", "Block 2 - alphabetically second", "Facility 2", "PHC", "Community"])
-      end
-    end
 
-    describe "#header_row" do
-      it "returns header row" do
         expect(exporter.header_row).to eq(headers)
-      end
-    end
 
-    describe "#section_row" do
-      it "returns section row" do
         expect(exporter.section_row).to eq(sections)
-      end
-    end
 
-    describe "#district_row" do
-      it "returns district row" do
         expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]
         district_row = exporter.district_row
         expect(district_row.count).to eq(32)
         expect(district_row).to eq(expected_district_row)
-      end
-    end
 
-    describe "#facility_size_rows" do
-      it "provides accurate numbers for facility sizes" do
         expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, nil, nil, nil]]
         facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(32)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
-      end
-    end
 
-    describe "#facility_rows" do
-      it "provides accurate numbers for individual facilities" do
         expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 0, 1, nil, nil, nil],
           [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, nil, nil, nil]]
         facility_rows = exporter.facility_rows
@@ -146,21 +124,19 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect(facility_rows.first&.count).to eq(32)
         expect(facility_rows.second&.count).to eq(32)
         expect(facility_rows).to eq(expected_facility_rows)
+
+        old_period = Period.current
+        header_row = described_class.new(
+          region: @region,
+          period: old_period,
+          medications_dispensation_enabled: false
+        ).header_row
+
+        first_month_index = 11
+        last_month_index = 16
+        expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
+        expect(header_row[last_month_index]).to eq(Period.current.to_s)
       end
-    end
-
-    it "scopes the report to the provided period" do
-      old_period = Period.current
-      header_row = described_class.new(
-        region: @region,
-        period: old_period,
-        medications_dispensation_enabled: false
-      ).header_row
-
-      first_month_index = 11
-      last_month_index = 16
-      expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
-      expect(header_row[last_month_index]).to eq(Period.current.to_s)
     end
   end
 
@@ -225,9 +201,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect {
           CSV.parse(result)
         }.not_to raise_error
-      end
 
-      it "includes the section name, headers, district data and facility data" do
         result = exporter.report
         csv = CSV.parse(result)
         expect(csv[0]).to eq(["Monthly facility data for #{@region.name} #{@period.to_date.strftime("%B %Y")}"])
@@ -240,48 +214,24 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect(csv[6][4]).to eq("Community")
         expect(csv[8].slice(0, 5)).to eq(["1", "Block 1 - alphabetically first", "Facility 1", "PHC", "Community"])
         expect(csv[9].slice(0, 5)).to eq(["2", "Block 2 - alphabetically second", "Facility 2", "PHC", "Community"])
-      end
-    end
 
-    describe "#header_row" do
-      it "returns header row" do
         expect(exporter.header_row).to eq(headers)
-      end
-    end
 
-    describe "#section_row" do
-      it "returns section row" do
         expect(exporter.section_row).to eq(sections)
-      end
-    end
 
-    describe "#sub-section_row" do
-      it "returns sub-section row" do
         expect(exporter.sub_section_row).to eq(sub_sections)
-      end
-    end
 
-    describe "#district_row" do
-      it "returns district row" do
         expected_district_row = ["All facilities", nil, nil, nil, "All", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]
         district_row = exporter.district_row
         expect(district_row.count).to eq(44)
         expect(district_row).to eq(expected_district_row)
-      end
-    end
 
-    describe "#facility_size_rows" do
-      it "provides accurate numbers for facility sizes" do
         expected_facility_size_rows = [["Community facilities", nil, nil, nil, "Community", nil, 3, 3, 1, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2, 1, 4, 2, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 2, 0, 0, 0, nil, nil, nil]]
         facility_size_rows = exporter.facility_size_rows
         expect(facility_size_rows.count).to eq(1)
         expect(facility_size_rows.first&.count).to eq(44)
         expect(facility_size_rows).to eq(expected_facility_size_rows)
-      end
-    end
 
-    describe "#facility_rows" do
-      it "provides accurate numbers for individual facilities" do
         expected_facility_rows = [[1, "Block 1 - alphabetically first", "Facility 1", "PHC", "Community", nil, 2, 2, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, nil, nil, nil],
           [2, "Block 2 - alphabetically second", "Facility 2", "PHC", "Community", nil, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, nil, nil, nil]]
         facility_rows = exporter.facility_rows
@@ -289,21 +239,19 @@ describe MonthlyDistrictData::DiabetesDataExporter do
         expect(facility_rows.first&.count).to eq(44)
         expect(facility_rows.second&.count).to eq(44)
         expect(facility_rows).to eq(expected_facility_rows)
+
+        old_period = Period.current
+        header_row = described_class.new(
+          region: @region,
+          period: old_period,
+          medications_dispensation_enabled: true
+        ).header_row
+
+        first_month_index = 11
+        last_month_index = 16
+        expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
+        expect(header_row[last_month_index]).to eq(Period.current.to_s)
       end
-    end
-
-    it "scopes the report to the provided period" do
-      old_period = Period.current
-      header_row = described_class.new(
-        region: @region,
-        period: old_period,
-        medications_dispensation_enabled: true
-      ).header_row
-
-      first_month_index = 11
-      last_month_index = 16
-      expect(header_row[first_month_index]).to eq(Period.month(5.month.ago).to_s)
-      expect(header_row[last_month_index]).to eq(Period.current.to_s)
     end
   end
 end
