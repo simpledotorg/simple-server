@@ -6,11 +6,10 @@ module Dhis2
       facility_data = []
       periods.map do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)
-        facility_data << Dhis2::Helpers.format_facility_period_data(
+        facility_data << format_facility_period_data(
           facility_data_for_period,
           facility_identifier,
-          period,
-          config.fetch(:data_elements_map)
+          period
         )
       end
       export(facility_data.flatten)
@@ -20,7 +19,7 @@ module Dhis2
     private
 
     def facility_data_for_period(facility_identifier, period)
-      region = facility_identifier.facility.region
+      region = Region.find_by(source_id: facility_identifier.facility_id)
       {
         htn_cumulative_assigned: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call.count,
         htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call.count,

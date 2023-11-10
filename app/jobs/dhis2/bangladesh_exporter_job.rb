@@ -22,7 +22,7 @@ module Dhis2
     private
 
     def facility_data_for_period(facility_identifier, period)
-      region = facility_identifier.facility.region
+      region = Region.find_by(source_id: facility_identifier.facility_id)
       {
         htn_cumulative_assigned: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call.count,
         htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call.count,
