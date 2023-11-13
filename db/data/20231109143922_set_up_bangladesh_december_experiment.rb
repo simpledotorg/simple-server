@@ -2,7 +2,7 @@
 
 class SetUpBangladeshDecemberExperiment < ActiveRecord::Migration[6.1]
   START_TIME = DateTime.parse("1 Dec 2023").beginning_of_day
-  END_TIME = DateTime.parse("31 Dec 2023").beginning_of_day
+  END_TIME = DateTime.parse("31 Dec 2023").end_of_day
   CURRENT_PATIENTS_EXPERIMENT = "Current Patient December 2023"
   STALE_PATIENTS_EXPERIMENT = "Stale Patient December 2023"
   PATIENTS_PER_DAY = 5000
@@ -20,7 +20,6 @@ class SetUpBangladeshDecemberExperiment < ActiveRecord::Migration[6.1]
     jamalpur_facilities: ["uhc-islampur", "uhc-melandah", "uhc-sarishabari", "uhc-dewanganj", "uhc-bakshiganj", "uhc-madarganj"],
     sherpur_facilities: ["uhc-jhenaigati", "uhc-nalitabari", "uhc-nakhla", "uhc-sribordi"]
   }.values.reduce(:+)
-
   FILTERS = {
     "facilities" => {"include" => facility_slugs}
   }.freeze
