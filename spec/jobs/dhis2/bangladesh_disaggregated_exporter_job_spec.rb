@@ -5,11 +5,8 @@ Sidekiq::Testing.inline!
 
 describe Dhis2::BangladeshDisaggregatedExporterJob do
   before do
-    ENV["DHIS2_PASSWORD"] = "test_password"
-    ENV["DHIS2_URL"] = "http://foo.bar"
-    ENV["DHIS2_USERNAME"] = "test_user"
     ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/bangladesh-production.yml"
-    Flipper.enable(:dhis2_export)
+    enable_flag(:dhis2_export)
   end
 
   describe ".perform" do
@@ -19,14 +16,14 @@ describe Dhis2::BangladeshDisaggregatedExporterJob do
     let(:facility_data) {
       {
         htn_cumulative_assigned: :htn_cumulative_assigned,
-        htn_cumulative_assigned_adjusted: :htn_cumulative_assigned_adjusted,
         htn_controlled: :htn_controlled,
         htn_uncontrolled: :htn_uncontrolled,
         htn_missed_visits: :htn_missed_visits,
         htn_ltfu: :htn_ltfu,
         htn_dead: :htn_dead,
         htn_cumulative_registrations: :htn_cumulative_registrations,
-        htn_monthly_registrations: :htn_monthly_registrations
+        htn_monthly_registrations: :htn_monthly_registrations,
+        htn_cumulative_assigned_adjusted: :htn_cumulative_assigned_adjusted
       }
     }
 
@@ -61,12 +58,16 @@ describe Dhis2::BangladeshDisaggregatedExporterJob do
         end
       end
 
+      allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return({})
+
+      client = double
       data_value_sets = double
-      allow_any_instance_of(Dhis2::Client).to receive(:data_value_sets).and_return(data_value_sets)
+      allow(Dhis2::Client).to receive(:new).with({}).and_return(client)
+      allow(client).to receive(:data_value_sets).and_return(data_value_sets)
       expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
 
       Sidekiq::Testing.inline! do
-        Dhis2::BangladeshDisaggregatedExporterJob.perform_async(
+        described_class.perform_async(
           facility_identifier.id,
           total_months
         )

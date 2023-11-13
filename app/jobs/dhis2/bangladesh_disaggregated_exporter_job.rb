@@ -27,15 +27,15 @@ module Dhis2
     def facility_data_for_period(facility_identifier, period)
       region = Region.find_by(source_id: facility_identifier.facility_id)
       {
-        htn_cumulative_assigned_patients: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call,
-        htn_controlled_patients: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call,
-        htn_uncontrolled_patients: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
-        htn_patients_who_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call,
-        htn_patients_lost_to_follow_up: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call,
-        htn_dead_patients: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call,
-        htn_cumulative_registered_patients: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
-        htn_monthly_registered_patients: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
-        htn_cumulative_assigned_patients_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
+        htn_cumulative_assigned: PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period).call,
+        htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call,
+        htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
+        htn_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call,
+        htn_ltfu: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call,
+        htn_dead: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call,
+        htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
+        htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
+        htn_cumulative_assigned_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| Dhis2::Helpers.disaggregate_by_gender_age(patient_states, BUCKETS) }
     end
 

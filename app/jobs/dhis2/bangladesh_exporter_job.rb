@@ -7,11 +7,10 @@ module Dhis2
 
       periods.map do |period|
         facility_data_for_period = facility_data_for_period(facility_identifier, period)
-        facility_data << Dhis2::Helpers.format_facility_period_data(
+        facility_data << format_facility_period_data(
           facility_data_for_period,
           facility_identifier,
-          period,
-          config.fetch(:data_elements_map)
+          period
         )
       end
 

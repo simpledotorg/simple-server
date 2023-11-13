@@ -3,11 +3,10 @@ require "sidekiq/testing"
 require "dhis2"
 Sidekiq::Testing.inline!
 
-describe Dhis2::EthiopiaExporterJob do
+describe Dhis2::BangladeshExporterJob do
   before do
-    ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/ethiopia-production.yml"
-    allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
-    allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
+    ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/bangladesh-production.yml"
+    enable_flag(:dhis2_export)
   end
 
   describe ".perform" do
@@ -26,7 +25,7 @@ describe Dhis2::EthiopiaExporterJob do
       }
     }
 
-    it "exports metrics required by Ethiopia for the given facility for the last given number of months to DHIS2" do
+    it "exports metrics required by Bangladesh for the given facility for the last given number of months to DHIS2" do
       facility_identifier = create(:facility_business_identifier)
       total_months = 2
       periods = (Period.current.advance(months: -total_months)..Period.current.previous)
@@ -46,7 +45,7 @@ describe Dhis2::EthiopiaExporterJob do
           export_data << {
             data_element: data_elements[data_element],
             org_unit: facility_identifier.identifier,
-            period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
+            period: period.to_s(:dhis2),
             value: value
           }
         end
