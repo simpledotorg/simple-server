@@ -6,23 +6,23 @@ class SetUpBangladeshDecemberExperiment < ActiveRecord::Migration[6.1]
   CURRENT_PATIENTS_EXPERIMENT = "Current Patient December 2023"
   STALE_PATIENTS_EXPERIMENT = "Stale Patient December 2023"
   PATIENTS_PER_DAY = 5000
-  facilities = {
+  facility_slugs = {
     basrishal_facilities: ["uhc-agailjhara", "uhc-babuganj-facility", "uhc-bakerganj", "uhc-hijla", "uhc-mehendiganj", "uhc-muladi", "uhc-wazirpur"],
-    jhalokathi_facilities: ["uhc-kathalia-facility", "uhc-nalchity-facility", "uhc-rajapur-facility"],
+    jhalokathi_facilities: ["uhc-kathalia-86845c14-b23d-4578-820a-63eb9628422a", "uhc-nalchity-97cb9397-8ca7-4edb-81ae-2ac8fb1ea93a", "uhc-rajapur-40d0e15a-37c4-4833-8f55-446bb210c457"],
     dhaka_facilities: ["thc-tejgaon-sadar", "uhc-dhamrai", "uhc-dohar", "uhc-nawabganj"],
     shariatpur_facilities: ["uhc-damuddya", "uhc-goshairhat"],
     munshiganj_facilities: ["uhc-sreenagar", "uhc-tongibari", "uhc-sirajdikhan"],
-    chattogram_facilities: ["uhc-anwara", "uhc-banshkhali", "uhc-boalkhali", "uhc-satkania", "uhc-chandanaish", "uhc-karnaphuli", "uhc-lohagara", "uhc-mirsharai", "uhc-patiya", "uhc-rangunia", "uhc-raozan", "uhc-sandwip", "uhc-sitakunda"],
-    feni_facilities: ["uhc-fulgazi", "uhc-sonagazi", "uhc-parsuram", "uhc-chhagalniya", "uhc-daganbhuiya"],
-    netrakona_facilities: ["uhc-kalmakanda", "uhc-madan", "uhc-barhatta", "uhc-durgapur-facility", "uhc-khaliajuri", "uhc-mohanganj", "uhc-purbadhala", "uhc-kendua", "uhc-atpara", "netrokona-sadar"],
-    sirajganj_facilities: ["uhc-belkuchi", "uhc-kazipur", "uhc-shahzadpur", "uhc-ullapara", "uhc-chowhali", "uhc-raiganj", "uhc-kamarkhanda", "uhc-tarash"],
-    pabna_facilities: ["uhc-faridpur", "uhc-bera", "uhc-bhangura", "uhc-santhia", "uhc-iswardi", "uhc-chatmohar", "atgharia-upazila-health-complex", "uhc-sujanagar-facility"],
+    chattogram_facilities: ["uhc-hathazari", "uhc-fatikchori", "uhc-anwara", "uhc-satkania", "uhc-lohagara", "uhc-patiya", "uhc-rangunia", "uhc-sitakunda", "uhc-chandanaish", "uhc-raozan", "uhc-banshkhali", "uhc-boalkhali", "uhc-karnaphuli", "uhc-mirsharai", "uhc-sandwip"],
+    feni_facilities: ["uhc-fulgazi", "uhc-parsuram", "uhc-daganbhuiya", "uhc-sonagazi", "uhc-chhagalniya"],
+    netrokona_facilities: ["uhc-atpara", "uhc-barhatta", "uhc-kalmakanda", "uhc-kendua", "uhc-khaliajuri", "uhc-madan", "uhc-mohanganj", "uhc-purbadhala", "uhc-durgapur-dbd6efea-8950-410e-abc3-ed9a329fb9d3"],
+    sirajganj_facilities: ["uhc-belkuchi", "uhc-chowhali", "uhc-kamarkhanda", "uhc-kazipur", "uhc-shahzadpur", "uhc-tarash", "uhc-ullapara"],
+    pabna_facilities: ["uhc-bera", "uhc-bhangura", "uhc-faridpur", "uhc-iswardi", "uhc-santhia", "uhc-chatmohar", "uhc-sujanagar-4b973cb1-d584-4100-91ca-778f218b502e", "atgharia-upazila-health-complex"],
     jamalpur_facilities: ["uhc-islampur", "uhc-melandah", "uhc-sarishabari", "uhc-dewanganj", "uhc-bakshiganj", "uhc-madarganj"],
     sherpur_facilities: ["uhc-jhenaigati", "uhc-nalitabari", "uhc-nakhla", "uhc-sribordi"]
   }.values.reduce(:+)
 
   FILTERS = {
-    "facilities" => {"include" => facilities}
+    "facilities" => {"include" => facility_slugs}
   }.freeze
 
   def up
