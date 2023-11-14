@@ -5,23 +5,6 @@ module Dhis2
     STEP = 5
     BUCKETS = (15..75).step(STEP).to_a
 
-    def perform(facility_identifier_id, total_months)
-      facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
-      periods = last_n_month_periods(total_months)
-      export_data = []
-      periods.each do |period|
-        facility_data_for_period = facility_data_for_period(facility_identifier, period)
-        export_data << format_facility_period_data(
-          facility_data_for_period,
-          facility_identifier,
-          period
-        )
-      end
-
-      export(export_data.flatten)
-      Rails.logger.info("Dhis2::BangladeshDisaggregatedExporterJob for facility identifier #{facility_identifier} succeeded.")
-    end
-
     private
 
     def facility_data_for_period(facility_identifier, period)
