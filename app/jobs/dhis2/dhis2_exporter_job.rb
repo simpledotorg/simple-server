@@ -3,7 +3,6 @@ require "dhis2"
 module Dhis2
   class Dhis2ExporterJob
     include Sidekiq::Job
-    sidekiq_options retry: 2
     sidekiq_options queue: :default
 
     attr_reader :configuration, :client
