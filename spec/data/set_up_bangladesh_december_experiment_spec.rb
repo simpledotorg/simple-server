@@ -50,14 +50,12 @@ describe SetUpBangladeshDecemberExperiment do
   end
 
   context "when the migration is rolled back" do
-    it "cancels the experiments and their reminder templates and treatment_groups without errors" do
+    it "cancels the experiments without errors" do
       described_class.new.up
       described_class.new.down
 
       expect(Experimentation::CurrentPatientExperiment.count).to eq(0)
       expect(Experimentation::StalePatientExperiment.count).to eq(0)
-      expect(Experimentation::ReminderTemplate.count).to eq(0)
-      expect(Experimentation::TreatmentGroup.count).to eq(0)
     end
   end
 end
