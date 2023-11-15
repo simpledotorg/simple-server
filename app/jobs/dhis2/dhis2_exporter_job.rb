@@ -36,6 +36,10 @@ module Dhis2
       Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
+    def facility_data_for_period(_region, _period)
+      {}
+    end
+
     def export(data_values)
       # TODO error handling and logging
       response = @client.data_value_sets.bulk_create(data_values: data_values)

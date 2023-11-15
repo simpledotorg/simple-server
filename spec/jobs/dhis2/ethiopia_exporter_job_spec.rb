@@ -4,7 +4,8 @@ require "dhis2"
 
 describe Dhis2::EthiopiaExporterJob do
   before do
-    ENV["DHIS2_DATA_ELEMENTS_FILE"] = "config/data/dhis2/ethiopia-production.yml"
+    allow(ENV).to receive(:fetch).and_call_original
+    allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
     allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
     allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
   end
@@ -30,17 +31,7 @@ describe Dhis2::EthiopiaExporterJob do
       total_months = 2
       periods = (Period.current.advance(months: -total_months)..Period.current.previous)
       export_data = []
-
       periods.each do |period|
-        allow_any_instance_of(PatientStates::Hypertension::CumulativeAssignedPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_assigned)
-        allow_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_controlled)
-        allow_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_uncontrolled)
-        allow_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_missed_visits)
-        allow_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_ltfu)
-        allow_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_dead)
-        allow_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_registrations)
-        allow_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_monthly_registrations)
-        allow_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_assigned_adjusted)
         facility_data.each do |data_element, value|
           export_data << {
             data_element: data_elements[data_element],
@@ -51,6 +42,15 @@ describe Dhis2::EthiopiaExporterJob do
         end
       end
 
+      expect_any_instance_of(PatientStates::Hypertension::CumulativeAssignedPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_assigned)
+      expect_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_controlled)
+      expect_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_uncontrolled)
+      expect_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_missed_visits)
+      expect_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_ltfu)
+      expect_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_dead)
+      expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_registrations)
+      expect_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_monthly_registrations)
+      expect_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_assigned_adjusted)
       client = double
       data_value_sets = double
       configuration = {}
