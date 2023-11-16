@@ -49,6 +49,10 @@ module Dhis2
 
     private
 
+    def facility_data_for_period(region, period)
+      raise NotImplementedError
+    end
+
     def format_facility_period_data(facility_data, facility_identifier, period)
       formatted_facility_data = []
       facility_data.each do |data_element, value|
@@ -60,6 +64,10 @@ module Dhis2
         }
       end
       formatted_facility_data
+    end
+
+    def data_elements_map
+      raise NotImplementedError
     end
 
     def last_n_month_periods(n)

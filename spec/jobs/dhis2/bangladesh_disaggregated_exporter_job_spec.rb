@@ -64,12 +64,7 @@ describe Dhis2::BangladeshDisaggregatedExporterJob do
       allow(client).to receive(:data_value_sets).and_return(data_value_sets)
       allow(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
 
-      Sidekiq::Testing.inline! do
-        described_class.perform_async(
-          facility_identifier.id,
-          total_months
-        )
-      end
+      described_class.perform_async(facility_identifier.id, total_months)
     end
   end
 end
