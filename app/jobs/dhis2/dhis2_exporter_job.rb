@@ -5,18 +5,18 @@ module Dhis2
     include Sidekiq::Job
     sidekiq_options queue: :default
 
-    attr_reader :configuration, :client
+    attr_reader :client
 
     def initialize
       throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
-      @configuration = Dhis2::Configuration.new.tap do |config|
+      configuration = Dhis2::Configuration.new.tap do |config|
         config.url = ENV.fetch("DHIS2_URL")
         config.user = ENV.fetch("DHIS2_USERNAME")
         config.password = ENV.fetch("DHIS2_PASSWORD")
         config.version = ENV.fetch("DHIS2_VERSION")
       end
-      @client = Dhis2::Client.new(@configuration.client_params)
+      @client = Dhis2::Client.new(configuration.client_params)
     end
 
     def perform(facility_identifier_id, total_months)
@@ -48,10 +48,6 @@ module Dhis2
     end
 
     private
-
-    def facility_data_for_period(_region, _period)
-      {}
-    end
 
     def format_facility_period_data(facility_data, facility_identifier, period)
       formatted_facility_data = []
