@@ -36,14 +36,9 @@ module Dhis2
       Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
-    def facility_data_for_period(_region, _period)
-      {}
-    end
-
     def export(data_values)
-      # TODO error handling and logging
       response = @client.data_value_sets.bulk_create(data_values: data_values)
-      Rails.logger.info("Exported to Dhis2 successfully", response)
+      Rails.logger.info("Exported to Dhis2 with response: ", response)
     end
 
     def disaggregate_by_gender_age(patient_states, buckets)
@@ -53,6 +48,10 @@ module Dhis2
     end
 
     private
+
+    def facility_data_for_period(_region, _period)
+      {}
+    end
 
     def format_facility_period_data(facility_data, facility_identifier, period)
       formatted_facility_data = []
