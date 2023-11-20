@@ -1,17 +1,14 @@
 require "rails_helper"
-require "sidekiq/testing"
 require "dhis2"
-Sidekiq::Testing.inline!
 
 describe Dhis2::BangladeshDisaggregatedExporterJob do
-  before do
-    allow(ENV).to receive(:fetch).and_call_original
-    allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/bangladesh-production.yml")
-    allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
-    allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(false)
-  end
-
   describe "#perform" do
+    before do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/bangladesh-production.yml")
+      allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(false)
+    end
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements) }
     let(:category_option_combo_ids) { CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo) }
     let(:facility_data) {
@@ -62,9 +59,11 @@ describe Dhis2::BangladeshDisaggregatedExporterJob do
       allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return({})
       allow(Dhis2::Client).to receive(:new).with({}).and_return(client)
       allow(client).to receive(:data_value_sets).and_return(data_value_sets)
-      allow(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
+      expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
 
-      described_class.perform_async(facility_identifier.id, total_months)
+      Sidekiq::Testing.inline! do
+        described_class.perform_async(facility_identifier.id, total_months)
+      end
     end
   end
 end
