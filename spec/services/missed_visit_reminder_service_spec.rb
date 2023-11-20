@@ -1,12 +1,10 @@
 require "rails_helper"
+require "sidekiq/testing"
+Sidekiq::Testing.fake!
 
 RSpec.describe MissedVisitReminderService do
   describe "#send_after_missed_visit" do
     let(:overdue_appointment) { create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current) }
-
-    before do
-      allow_any_instance_of(AppointmentNotification::Worker).to receive(:perform)
-    end
 
     it "spawns a reminder job for each appointment that is overdue by at least 3 days" do
       create(:appointment, scheduled_date: 3.days.ago, remind_on: Date.current)
