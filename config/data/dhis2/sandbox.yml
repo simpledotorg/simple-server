@@ -1,14 +1,14 @@
 disaggregated_dhis2_data_elements:
-  htn_controlled_patients: "HjtYhPqccW1"
-  htn_uncontrolled_patients: "BrSik6uiybJ"
-  htn_cumulative_assigned_patients: "tJKupDifWrk"
-  htn_cumulative_assigned_patients_adjusted: "zxUkgo0WoG3"
-  htn_cumulative_registered_patients: "D2LQDgOKrY5"
-  htn_dead_patients: "w5wLncrFOa3"
-  htn_monthly_registered_patients: "LpfOZRIPSkH"
-  htn_patients_lost_to_follow_up: "JbbqrwFlrBn"
-  htn_patients_who_missed_visits: "pgC3wKFmKvm"
-      
+  htn_controlled: "HjtYhPqccW1"
+  htn_uncontrolled: "BrSik6uiybJ"
+  htn_cumulative_assigned: "tJKupDifWrk"
+  htn_cumulative_assigned_adjusted: "zxUkgo0WoG3"
+  htn_cumulative_registrations: "D2LQDgOKrY5"
+  htn_dead: "w5wLncrFOa3"
+  htn_monthly_registrations: "LpfOZRIPSkH"
+  htn_ltfu: "JbbqrwFlrBn"
+  htn_missed_visits: "pgC3wKFmKvm"
+
 dhis2_category_option_combo:
   female_15_19: "rFFfisB1oI2"
   male_15_19: "a14qYZzDU6W"
