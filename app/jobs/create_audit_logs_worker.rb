@@ -4,6 +4,7 @@ class CreateAuditLogsWorker
   sidekiq_options queue: :low
 
   def perform(log_json)
+    raise StandardError, "Performing CreateAuditLogsWorker job"
     log_hash = JSON.parse(log_json)
     log_hash["record_ids"].map { |record_id|
       audit_log = {user: log_hash["user_id"],
