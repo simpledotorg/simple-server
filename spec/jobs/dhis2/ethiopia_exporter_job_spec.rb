@@ -1,17 +1,16 @@
 require "rails_helper"
 require "sidekiq/testing"
 require "dhis2"
-Sidekiq::Testing.inline!
 
 describe Dhis2::EthiopiaExporterJob do
-  before do
-    allow(ENV).to receive(:fetch).and_call_original
-    allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
-    allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
-    allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
-  end
-
   describe "#perform" do
+    before(:example) do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
+      allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
+    end
+
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
     let(:facility_data) {
       {
@@ -60,7 +59,9 @@ describe Dhis2::EthiopiaExporterJob do
       allow(client).to receive(:data_value_sets).and_return(data_value_sets)
       expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
 
-      described_class.perform_async(facility_identifier.id, total_months)
+      Sidekiq::Testing.inline! do
+        described_class.perform_async(facility_identifier.id, total_months)
+      end
     end
   end
 end
