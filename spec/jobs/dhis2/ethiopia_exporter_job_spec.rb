@@ -1,7 +1,6 @@
 require "rails_helper"
 require "sidekiq/testing"
 require "dhis2"
-Sidekiq::Testing.inline!
 
 describe Dhis2::EthiopiaExporterJob do
   describe "#perform" do
@@ -60,7 +59,9 @@ describe Dhis2::EthiopiaExporterJob do
       allow(client).to receive(:data_value_sets).and_return(data_value_sets)
       expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
 
-      described_class.perform_async(facility_identifier.id, total_months)
+      Sidekiq::Testing.inline! do
+        described_class.perform_async(facility_identifier.id, total_months)
+      end
     end
   end
 end
