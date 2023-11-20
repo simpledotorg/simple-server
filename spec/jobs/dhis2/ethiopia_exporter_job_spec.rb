@@ -4,14 +4,14 @@ require "dhis2"
 Sidekiq::Testing.inline!
 
 describe Dhis2::EthiopiaExporterJob do
-  before do
-    allow(ENV).to receive(:fetch).and_call_original
-    allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
-    allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
-    allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
-  end
-
   describe "#perform" do
+    before(:example) do
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
+      allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
+      allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
+    end
+
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
     let(:facility_data) {
       {
