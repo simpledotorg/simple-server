@@ -2,8 +2,9 @@
 
 module Dhis2
   class BangladeshDisaggregatedExporterJob < Dhis2ExporterJob
-    STEP = 5
-    BUCKETS = (15..75).step(STEP).to_a
+    MIN_AGE = 15
+    MAX_AGE = 75
+    AGE_BUCKET_SIZE = 5
 
     private
 
@@ -18,7 +19,7 @@ module Dhis2
         htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
         htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
         htn_cumulative_assigned_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
-      }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states, BUCKETS) }
+      }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states, data_buckets(MIN_AGE, MAX_AGE, AGE_BUCKET_SIZE)) }
     end
 
     def data_elements_map

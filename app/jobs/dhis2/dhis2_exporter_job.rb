@@ -81,6 +81,10 @@ module Dhis2
       end
     end
 
+    def data_buckets(min, max, bucket_size)
+      (min..max).step(bucket_size).to_a
+    end
+
     def gender_age_counts(patient_states, buckets)
       PatientStates::DisaggregatedPatientCountQuery.disaggregate_by_age(
         buckets,
