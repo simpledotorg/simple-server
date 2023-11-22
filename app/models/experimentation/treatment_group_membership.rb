@@ -63,7 +63,7 @@ module Experimentation
         **visit_status_fields
       )
     rescue NoMethodError
-      Rails.logger.error("Error recording visit: Membership id: #{self.id} Blood pressure: #{blood_pressure&.id} Blood sugar: #{blood_sugar&.id} Prescription drug: #{prescription_drug&.id}")
+      Rails.logger.error("Error recording visit: Membership id: #{id} Blood pressure: #{blood_pressure&.id} Blood sugar: #{blood_sugar&.id} Prescription drug: #{prescription_drug&.id}")
     end
 
     private
