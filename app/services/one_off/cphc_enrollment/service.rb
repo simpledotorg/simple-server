@@ -191,6 +191,7 @@ class OneOff::CphcEnrollment::Service
 
   def add_blood_sugar(blood_sugar)
     log = CphcMigrationAuditLog.find_by(cphc_migratable: blood_sugar)
+
     if log.present?
       logger.error "Blood pressure already migrated to CPHC", blood_sugar
       return
@@ -205,6 +206,22 @@ class OneOff::CphcEnrollment::Service
 
     measurement_id = JSON.parse(response.body.to_s)["encounterId"]
 
+    prescription_drugs =
+      patient
+        .prescription_drugs
+        .left_outer_joins(:cphc_migration_audit_log)
+        .where(cphc_migration_audit_log: {id: nil})
+        .where(device_created_at: range)
+
+    appointment =
+      patient
+        .appointments
+        .left_outer_joins(:cphc_migration_audit_log)
+        .where(cphc_migration_audit_log: {id: nil})
+        .where(device_created_at: range)
+        .order(device_created_at: :desc)
+        .first
+
     CphcMigrationAuditLog.create(
       cphc_migratable: blood_sugar,
       facility_id: facility.id,
@@ -215,10 +232,44 @@ class OneOff::CphcEnrollment::Service
         cphc_location: cphc_location
       }
     )
+    unless log.present?
+      make_post_request(
+        blood_sugar,
+        diagnosis_path(:diabetes, @diabetes_examination_id),
+        OneOff::CphcEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
+      )
+    end
+
     make_post_request(
       blood_sugar,
-      diagnosis_path(:diabetes, @diabetes_examination_id),
-      OneOff::CphcEnrollment::DiabetesDiagnosisPayload.new(blood_sugar, measurement_id)
+      treatment_path(:diabetes, diabetes_examination_id),
+      OneOff::CphcEnrollment::DiabetesTreatmentPayload.new(
+        blood_pressure,
+        prescription_drugs,
+        appointment,
+        measurement_id
+      )
+    )
+    prescription_drugs.each do |prescription_drug|
+      CphcMigrationAuditLog.create(
+        cphc_migratable: prescription_drug,
+        facility_id: facility.id,
+        metadata: {
+          patient_id: patient.id,
+          individual_id: @individual_id,
+          cphc_location: cphc_location
+        }
+      )
+    end
+
+    CphcMigrationAuditLog.create(
+      cphc_migratable: appointment,
+      facility_id: facility.id,
+      metadata: {
+        patient_id: patient.id,
+        individual_id: @individual_id,
+        cphc_location: cphc_location
+      }
     )
   end
 
@@ -287,7 +338,12 @@ class OneOff::CphcEnrollment::Service
 
   def treatment_path(diagnosis, screening_id)
     diagnosis_id = CONFIG[diagnosis][:diagnosis_id]
-    "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/examination/#{screening_id}/treatment"
+    case diagnosis
+    when :hypertension
+      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/program/1/examination/#{screening_id}/treatment"
+    when :diabetes
+      "#{CPHC_BASE_PATH}/condition/#{diagnosis_id}/individual/#{individual_id}/examination/#{screening_id}/facility/#{user[:facility_type_id]}/treatment"
+    end
   end
 
   def logger
@@ -307,10 +363,10 @@ class OneOff::CphcEnrollment::Service
 
     query =
       case cphc_facility.cphc_facility_type
-            when "SUBCENTER"
-              {cphc_subcenter_id: cphc_facility.cphc_facility_id}
-            when "PHC"
-              {cphc_phc_id: cphc_facility.cphc_facility_id}
+      when "SUBCENTER"
+        {cphc_subcenter_id: cphc_facility.cphc_facility_id}
+      when "PHC"
+        {cphc_phc_id: cphc_facility.cphc_facility_id}
       end
 
     potential_match = CphcFacilityMapping
