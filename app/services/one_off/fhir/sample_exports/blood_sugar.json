@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "lastUpdated": "2023-04-10 21:03:09 UTC"
+  },
+  "identifier": [
+    {
+      "value": "010441ec-05c2-413f-8f4e-e501e3ae9981"
+    }
+  ],
+  "code": [
+    {
+      "coding": [
+        {
+          "system": "http://lonic.com/",
+          "code": "2339-0",
+          "display": "random"
+        }
+      ]
+    }
+  ],
+  "subject": {
+    "reference": {
+      "identifier": [
+        {
+          "value": "a97d2792-4170-468d-8293-a043949439b6"
+        }
+      ],
+      "resourceType": "Patient"
+    }
+  },
+  "performer": [
+    {
+      "reference": {
+        "identifier": [
+          {
+            "value": "f899a4d7-00ac-4d7f-9af7-b544b43ebd9c"
+          }
+        ],
+        "resourceType": "Organization"
+      }
+    }
+  ],
+  "valueQuantity": {
+    "value": "290.38",
+    "unit": "mg/dL",
+    "system": "http://unitsofmeasure.org",
+    "code": "mg/dL"
+  },
+  "resourceType": "Observation"
+}
