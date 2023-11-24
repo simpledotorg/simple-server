@@ -33,6 +33,7 @@ gem "dogstatsd-ruby", "~> 5.2"
 gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
+gem "fhir_models", require: false
 gem "flipper-active_record"
 gem "flipper-ui"
 gem "flipper"
