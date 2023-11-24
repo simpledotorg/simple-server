@@ -16,49 +16,50 @@ module OneOff
               value: blood_sugar.id.to_s
             )
           ],
-          component: [
-            observation_component(bs_type_loinc_code, blood_sugar.blood_sugar_value)
+          code: [
+            FHIR::CodeableConcept.new(
+              coding: FHIR::Coding.new(
+                system: "http://lonic.com/",
+                code: bs_type_loinc_code,
+                display: blood_sugar.blood_sugar_type
+              )
+            )
           ],
+          valueQuantity: FHIR::Quantity.new(
+            value: blood_sugar.blood_sugar_value,
+            unit: "mg/dL",
+            system: "http://unitsofmeasure.org",
+            code: "mg/dL"
+          ),
           subject: FHIR::Reference.new(
             reference: FHIR::Patient.new(
-              id: blood_pressure.patient_id
+              identifier: FHIR::Identifier.new(
+                value: blood_sugar.patient_id
+              )
+            )
+          ),
+          performer: FHIR::Reference.new(
+            reference: FHIR::Organization.new(
+              identifier: FHIR::Identifier.new(
+                value: blood_sugar.facility_id
+              )
             )
           ),
           meta: FHIR::Meta.new(
-            lastUpdated: patient.updated_at,
-            createdAt: patient.recorded_at
+            lastUpdated: blood_sugar.device_updated_at,
+            createdAt: blood_sugar.recorded_at
           )
-        # TODO: Add facility id
         )
       end
 
       def bs_type_loinc_code
         case blood_sugar.blood_sugar_type
         when "random" then "2339-0"
-        when "post_prandial" then ""
-        when "fasting" then ""
-        when "hba1c" then ""
-        else ""
+        when "post_prandial" then "123"
+        when "fasting" then "123"
+        when "hba1c" then "123"
+        else "123"
         end
-      end
-
-      def observation_component(code, value)
-        FHIR::ObservationComponent.new(
-          code: FHIR::CodeableConcept.new(
-            coding: [
-              FHIR::Coding.new(
-                system: "http://loinc.org",
-                code: code
-              )
-            ],
-            value_quantity: FHIR::Quantity.new(
-              value: value,
-              unit: "mg/dL",
-              system: "http://unitsofmeasure.org",
-              code: "mg/dL"
-            )
-          )
-        )
       end
     end
   end
