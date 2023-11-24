@@ -16,19 +16,29 @@ class OneOff::Fhir::BloodPressureExporter
       ],
       component: [
         observation_component("8460-6", blood_pressure.systolic),
-        observation_component("8460-8", blood_pressure.diastolic),
-        FHIR::ObservationComponent.new
+        observation_component("8460-8", blood_pressure.diastolic)
       ],
       subject: FHIR::Reference.new(
         reference: FHIR::Patient.new(
           id: blood_pressure.patient_id
+        )
+      ),
+      meta: FHIR::Meta.new(
+        lastUpdated: blood_pressure.device_updated_at,
+        createdAt: blood_pressure.recorded_at
+      ),
+      performer: FHIR::Reference.new(
+        reference: FHIR::Organization.new(
+          identifier: FHIR::Identifier.new(
+            value: blood_pressure.facility_id
+          )
         )
       )
     )
   end
 
   def observation_component(code, value)
-    FHIR::ObservationComponent.new(
+    FHIR::Observation::Component.new(
       code: FHIR::CodeableConcept.new(
         coding: [
           FHIR::Coding.new(
