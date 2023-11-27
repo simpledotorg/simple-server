@@ -98,8 +98,18 @@ RSpec.describe "Import API", type: :request do
   end
 
   it "fails to import invalid resources" do
+    allow(Rails.logger).to receive(:info)
+
     put route, params: {resources: [invalid_payload]}.to_json, headers: headers
 
+    expect(Rails.logger).to have_received(:info).with(
+      hash_including(
+        msg: "import_api_error",
+        controller: "Api::V4::ImportsController",
+        action: "import",
+        organization_id: organization.id
+      )
+    )
     expect(response.status).to eq(400)
   end
 end

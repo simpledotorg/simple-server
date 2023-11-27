@@ -46,6 +46,13 @@ describe "Import v4 API", swagger_doc: "v4/import.json" do
         let(:import_request) { {"resources" => [{"invalid" => "invalid"}]} }
         run_test!
       end
+
+      response "403", "Forbidden" do
+        let(:HTTP_X_ORGANIZATION_ID) { "wrong_org" }
+        let(:Authorization) { "Bearer #{token.token}" }
+        let(:import_request) { {"resources" => [{"doesn't" => "matter"}]} }
+        run_test!
+      end
     end
   end
 end
