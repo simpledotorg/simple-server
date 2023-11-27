@@ -4,6 +4,7 @@ class Api::V4::ImportsController < ApplicationController
   before_action :validate_token_organization
 
   rescue_from ActionController::ParameterMissing do |error|
+    log_failure(error)
     render json: {error: "Unable to find key in payload: \"#{error.param}\""}, status: :bad_request
   end
 
@@ -17,7 +18,10 @@ class Api::V4::ImportsController < ApplicationController
     end
 
     response = {errors: errors}
-    return render json: response, status: :bad_request if errors.present?
+    if errors.present?
+      log_failure(errors)
+      return render json: response, status: :bad_request
+    end
 
     render json: response, status: :accepted
   end
@@ -132,11 +136,22 @@ class Api::V4::ImportsController < ApplicationController
   def validate_token_organization
     token_organization = MachineUser.find_by(id: doorkeeper_token.application&.owner_id)&.organization_id
     unless token_organization.present? && token_organization == organization_id
+      log_failure(error: "invalid organization in token")
       head :forbidden
     end
   end
 
   def organization_id
     request.headers["HTTP_X_ORGANIZATION_ID"]
+  end
+
+  def log_failure(errors)
+    Rails.logger.info(
+      msg: "import_api_error",
+      controller: self.class.name,
+      action: action_name,
+      organization_id: organization_id,
+      errors: errors
+    )
   end
 end
