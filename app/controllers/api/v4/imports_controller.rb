@@ -71,6 +71,7 @@ class Api::V4::ImportsController < ApplicationController
       meta: [:lastUpdated, :createdAt],
       identifier: [:value],
       appointmentOrganization: [:identifier],
+      appointmentCreationOrganization: [:identifier],
       participant: [
         actor: [:identifier]
       ]
