@@ -8,28 +8,42 @@ class OneOff::Fhir::PatientExporter
   end
 
   def export
+    fhir_resource.to_json
+  end
+
+  def patient_identifiers
+    identifiers = []
+    patient.business_identifiers.each do |identifier|
+      identifiers << FHIR::Identifier.new(
+        value: identifier.identifier.to_s
+      )
+    end
+    identifiers.append(
+      FHIR::Identifier.new(
+        value: patient.id.to_s
+      )
+    )
+  end
+
+  def fhir_resource
     FHIR::Patient.new(
-      identifier: [
-        FHIR::Identifier.new(
-          value: patient.id.to_s
-        )
-        # TODO: Add patient business identifiers
-      ],
+      identifier: patient_identifiers,
       name: [
         FHIR::HumanName.new(
           text: patient.full_name
         )
       ],
       active: patient.status == "active",
-      gender: gender,
+      gender: ["male", "female"].include?(gender) ? gender : "other",
       birthDate: patient.date_of_birth,
       deceasedBoolean: patient.status == "dead",
       managingOrganization: FHIR::Reference.new(
         reference: FHIR::Organization.new(
-          type: "prov",
-          identifier: [{
-            value: patient.assigned_facility_id
-          }]
+          identifier: [
+            FHIR::Identifier.new(
+              value: patient.assigned_facility_id
+            )
+          ]
         )
       ),
       meta: FHIR::Meta.new(

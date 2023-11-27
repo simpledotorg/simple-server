@@ -10,6 +10,10 @@ module OneOff
       end
 
       def export
+        fhir_resource.to_json.to_s
+      end
+
+      def fhir_resource
         FHIR::MedicationRequest.new(
           contained: [
             FHIR::Medication.new(
