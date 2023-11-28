@@ -2,10 +2,10 @@ require "faker"
 
 namespace :fhir do
   desc "Export simple patient-related data as fhir resources"
-  task export: :environment do
+  task :export, [:file_path] => :environment do |_task, args|
     patients = Patient.order(:created_at).last(10)
     patients = remove_pii(patients)
-    file_path = "sample_fhir_export.json"
+    file_path = args[:file_path]
     resources = []
 
     patients.each do |patient|
