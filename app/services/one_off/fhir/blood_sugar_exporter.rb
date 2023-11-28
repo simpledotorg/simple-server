@@ -64,7 +64,7 @@ module OneOff
         when "post_prandial" then "87422-2"
         when "fasting" then "88365-2"
         when "hba1c" then "4548-4"
-        else raise "Invalid blood sugar type"
+        else raise "Invalid blood sugar type: #{blood_sugar.blood_sugar_type}"
         end
       end
     end

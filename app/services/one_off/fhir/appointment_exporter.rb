@@ -49,7 +49,7 @@ module OneOff
         when :scheduled then "booked"
         when :visited then "fulfilled"
         when :cancelled then "cancelled"
-        else raise "Invalid appointment status"
+        else raise "Invalid appointment status: #{appointment.status}"
         end
       end
     end
