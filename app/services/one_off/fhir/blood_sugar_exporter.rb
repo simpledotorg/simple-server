@@ -16,49 +16,55 @@ module OneOff
               value: blood_sugar.id.to_s
             )
           ],
-          code: [
-            FHIR::CodeableConcept.new(
-              coding: FHIR::Coding.new(
-                system: "http://lonic.com/",
-                code: bs_type_loinc_code,
-                display: blood_sugar.blood_sugar_type
+          code: FHIR::CodeableConcept.new(
+            coding: FHIR::Coding.new(
+              system: "http://lonic.com/",
+              code: "2339-0"
+            )
+          ),
+          component: [
+            FHIR::Observation::Component.new(
+              code: FHIR::CodeableConcept.new(
+                coding: [
+                  FHIR::Coding.new(
+                    system: "http://loinc.org",
+                    code: blood_sugar_type_code
+                  )
+                ],
+                value_quantity: FHIR::Quantity.new(
+                  value: blood_sugar.blood_sugar_value,
+                  unit: "mg/dL",
+                  system: "http://unitsofmeasure.org",
+                  code: "mg/dL"
+                )
               )
             )
           ],
-          valueQuantity: FHIR::Quantity.new(
-            value: blood_sugar.blood_sugar_value,
-            unit: "mg/dL",
-            system: "http://unitsofmeasure.org",
-            code: "mg/dL"
-          ),
+          status: "final",
           subject: FHIR::Reference.new(
-            reference: FHIR::Patient.new(
-              identifier: FHIR::Identifier.new(
-                value: blood_sugar.patient_id
-              )
+            id: FHIR::Patient.new(
+              id: blood_sugar.patient_id
             )
           ),
           performer: FHIR::Reference.new(
-            reference: FHIR::Organization.new(
-              identifier: FHIR::Identifier.new(
-                value: blood_sugar.facility_id
-              )
+            id: FHIR::Organization.new(
+              id: blood_sugar.facility_id
             )
           ),
           meta: FHIR::Meta.new(
-            lastUpdated: blood_sugar.device_updated_at,
-            createdAt: blood_sugar.recorded_at
+            lastUpdated: blood_sugar.device_updated_at.iso8601,
+            createdAt: blood_sugar.recorded_at.iso8601
           )
         )
       end
 
-      def bs_type_loinc_code
+      def blood_sugar_type_code
         case blood_sugar.blood_sugar_type
         when "random" then "2339-0"
-        when "post_prandial" then "123"
-        when "fasting" then "123"
-        when "hba1c" then "123"
-        else "123"
+        when "post_prandial" then "87422-2"
+        when "fasting" then "88365-2"
+        when "hba1c" then "4548-4"
+        else raise "Invalid blood sugar type"
         end
       end
     end
