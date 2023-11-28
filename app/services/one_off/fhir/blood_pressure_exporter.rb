@@ -14,26 +14,33 @@ class OneOff::Fhir::BloodPressureExporter
           value: blood_pressure.id.to_s
         )
       ],
+      code: FHIR::CodeableConcept.new(
+        coding: FHIR::Coding.new(
+          system: "http://lonic.com/",
+          code: "85354-9"
+        )
+      ),
       component: [
         observation_component("8460-6", blood_pressure.systolic),
         observation_component("8460-8", blood_pressure.diastolic)
       ],
       subject: FHIR::Reference.new(
-        reference: FHIR::Patient.new(
+        id: FHIR::Patient.new(
           id: blood_pressure.patient_id
         )
       ),
       meta: FHIR::Meta.new(
-        lastUpdated: blood_pressure.device_updated_at,
-        createdAt: blood_pressure.recorded_at
+        lastUpdated: blood_pressure.device_updated_at.iso8601,
+        createdAt: blood_pressure.recorded_at.iso8601
       ),
       performer: FHIR::Reference.new(
-        reference: FHIR::Organization.new(
+        id: FHIR::Organization.new(
           identifier: FHIR::Identifier.new(
             value: blood_pressure.facility_id
           )
         )
-      )
+      ),
+      status: "final"
     )
   end
 
