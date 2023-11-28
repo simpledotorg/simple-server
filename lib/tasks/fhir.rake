@@ -5,7 +5,7 @@ namespace :fhir do
   task export: :environment do
     patients = Patient.last(3)
     patients = remove_pii(patients)
-    file_path = "app/services/one_off/fhir/sample_exports/sample_fhir_export.json"
+    file_path = "sample_fhir_export.json"
     resources = []
 
     patients.each do |patient|
@@ -25,9 +25,10 @@ namespace :fhir do
       }
     end
 
-    resources = resources.flatten.map(&:as_json.to_json)
-    File.open(file_path, "w") do |f|
-      f.puts(resources)
+    File.open(file_path, "w+") do |f|
+      resources.flatten.each do |resource|
+        f.puts(resource.as_json.to_json)
+      end
     end
   end
 
