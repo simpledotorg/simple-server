@@ -11,34 +11,45 @@ module OneOff
 
       def export
         FHIR::Appointment.new(
-          status: appointment.status,
-          start: appointment.scheduled_date,
-          cancellationReason: get_cancellation_code,
-          participant: [FHIR::Appointment::Participant.new(
-            actor: FHIR::Reference.new(
-              reference: FHIR::Patient.new(
-                identifier: FHIR::Identifier.new(
-                  value: appointment.patient_id
+          status: appointment_status_code,
+          start: appointment.scheduled_date.iso8601,
+          cancellationReason: cancellation_code,
+          participant: [
+            FHIR::Appointment::Participant.new(
+              actor: FHIR::Reference.new(
+                id: FHIR::Patient.new(
+                  identifier: FHIR::Identifier.new(
+                    value: appointment.patient_id
+                  )
                 )
               )
             )
-          )],
+          ],
           identifier: [
             FHIR::Identifier.new(
               value: appointment.id.to_s
             )
           ],
           meta: FHIR::Meta.new(
-            lastUpdated: appointment.device_updated_at,
-            createdAt: appointment.device_created_at
+            lastUpdated: appointment.device_updated_at.iso8601,
+            createdAt: appointment.device_created_at.iso8601
           )
         )
       end
 
-      def get_cancellation_code
+      def cancellation_code
         case appointment.cancel_reason
         when "dead" then "pat-dec"
         else "pat"
+        end
+      end
+
+      def appointment_status_code
+        case appointment.status
+        when :scheduled then "booked"
+        when :visited then "fulfilled"
+        when :cancelled then "cancelled"
+        else raise "Invalid appointment status"
         end
       end
     end
