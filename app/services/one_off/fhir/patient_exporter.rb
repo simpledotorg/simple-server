@@ -8,17 +8,19 @@ class OneOff::Fhir::PatientExporter
   end
 
   def patient_identifiers
-    identifiers = []
-    patient.business_identifiers.each do |identifier|
+    identifiers = [
+      FHIR::Identifier.new(
+        value: patient.id.to_s,
+        use: "official"
+      )
+    ]
+    patient.business_identifiers.simple_bp_passport.each do |identifier|
       identifiers << FHIR::Identifier.new(
-        value: identifier.identifier.to_s
+        value: identifier.identifier.to_s,
+        use: "secondary"
       )
     end
-    identifiers.append(
-      FHIR::Identifier.new(
-        value: patient.id.to_s
-      )
-    )
+    identifiers
   end
 
   def export
