@@ -7,10 +7,6 @@ class OneOff::Fhir::PatientExporter
     @patient = patient
   end
 
-  def export
-    fhir_resource.to_json
-  end
-
   def patient_identifiers
     identifiers = []
     patient.business_identifiers.each do |identifier|
@@ -25,7 +21,7 @@ class OneOff::Fhir::PatientExporter
     )
   end
 
-  def fhir_resource
+  def export
     FHIR::Patient.new(
       identifier: patient_identifiers,
       name: [

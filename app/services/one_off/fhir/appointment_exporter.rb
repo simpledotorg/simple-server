@@ -10,10 +10,6 @@ module OneOff
       end
 
       def export
-        fhir_resource.to_json
-      end
-
-      def fhir_resource
         FHIR::Appointment.new(
           status: appointment.status,
           start: appointment.scheduled_date,

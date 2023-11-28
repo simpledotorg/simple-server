@@ -12,10 +12,6 @@ module OneOff
       end
 
       def export
-        fhir_resource.map(&:to_json)
-      end
-
-      def fhir_resource
         conditions = []
         if medical_history.diabetes == "yes"
           conditions << generate_condition(DM_CONDITION_CODE)
