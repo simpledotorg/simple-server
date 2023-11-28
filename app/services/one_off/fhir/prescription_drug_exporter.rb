@@ -110,10 +110,10 @@ module OneOff
 
       def medication_frequency_code
         case prescription_drug.frequency
-        when :OD then "QD"
-        when :BD then "BID"
-        when :TDS then "TID"
-        when :QDS then "QID"
+        when "OD" then "QD"
+        when "BD" then "BID"
+        when "TDS" then "TID"
+        when "QDS" then "QID"
         else raise "Invalid prescription drug frequency: #{prescription_drug.frequency}"
         end
       end
