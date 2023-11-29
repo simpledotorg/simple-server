@@ -31,7 +31,7 @@ module OneOff
                     code: blood_sugar_type_code
                   )
                 ],
-                value_quantity: FHIR::Quantity.new(
+                valueQuantity: FHIR::Quantity.new(
                   value: blood_sugar.blood_sugar_value,
                   unit: "mg/dL",
                   system: "http://unitsofmeasure.org",

@@ -54,7 +54,7 @@ class OneOff::Fhir::BloodPressureExporter
           )
         ]
       ),
-      value_quantity: FHIR::Quantity.new(
+      valueQuantity: FHIR::Quantity.new(
         value: value,
         unit: "mmHg",
         system: "http://unitsofmeasure.org",
