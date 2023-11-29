@@ -1,18 +1,16 @@
-# frozen_string_literal: true
-
 class UpdateFacilityListForBdDecemberExperiment < ActiveRecord::Migration[6.1]
   def up
     return unless CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
 
     facilities = {
-      sylhet: %w[uhc-osmaninagar uhc-taherpur],
-      rajshahi: %w[atgharia-upazila-health-complex uhc-bera uhc-faridpur uhc-sujanagar-4b973cb1-d584-4100-91ca-778f218b502],
-      netrokona: %w[uhc-barhatta uhc-durgapur-dbd6efea-8950-410e-abc3-ed9a329fb9d3 uhc-kalmakanda uhc-kendua uhc-khaliajuri uhc-madan uhc-purbadhala],
-      sherpur: %w[uhc-jhenaigati uhc-nakhla uhc-nalitabari uhc-sribordi],
-      jamalpur: %w[uhc-bakshiganj uhc-dewanganj uhc-islampur uhc-madarganj uhc-melandah],
-      feni: %w[uhc-chhagalniya uhc-daganbhuiya uhc-fulgazi uhc-parsuram uhc-sonagazi],
-      chattogram: %w[uhc-anwara uhc-banshkhali uhc-boalkhali uhc-chandanaish uhc-fatikchori uhc-hathazari uhc-karnaphuli uhc-lohagara uhc-mirsharai uhc-patiya uhc-rangunia uhc-raozan uhc-sandwip uhc-satkania uhc-sitakunda],
-      bandarban: ["uhc-lama"],
+      sylhet: %w[uhc-osmaninagar uhc-taherpur habiganj-sadar],
+      rajshahi: %w[atgharia-upazila-health-complex uhc-bera uhc-faridpur uhc-sujanagar-4b973cb1-d584-4100-91ca-778f218b502e],
+      mymensingh_netrokona_district: %w[uhc-barhatta uhc-durgapur-dbd6efea-8950-410e-abc3-ed9a329fb9d3 uhc-kalmakanda uhc-kendua uhc-khaliajuri uhc-madan uhc-purbadhala],
+      mymensingh_sherpur_district: %w[uhc-jhenaigati uhc-nakhla uhc-nalitabari uhc-sribordi],
+      mymensingh_jamalpur_district: %w[uhc-bakshiganj uhc-dewanganj uhc-islampur uhc-melandah],
+      chattogram_feni_distirct: %w[uhc-chhagalniya uhc-daganbhuiya uhc-fulgazi uhc-parsuram uhc-sonagazi],
+      chattogram_chattogram_district: %w[uhc-anwara uhc-banshkhali uhc-boalkhali uhc-chandanaish uhc-fatikchori uhc-hathazari uhc-karnaphuli uhc-lohagara uhc-mirsharai uhc-patiya uhc-rangunia uhc-raozan uhc-sandwip uhc-satkania uhc-sitakunda],
+      chattogram_bandarban_district: ["uhc-lama"],
       barishal: %w[uhc-kathalia-86845c14-b23d-4578-820a-63eb9628422a uhc-nalchity-97cb9397-8ca7-4edb-81ae-2ac8fb1ea93a uhc-rajapur-40d0e15a-37c4-4833-8f55-446bb210c457 uhc-agailjhara uhc-bakerganj uhc-gaurnadi uhc-hijla uhc-mehendiganj uhc-muladi uhc-wazirpur uhc-babuganj]
     }.values.reduce(:+)
     updated_region_filters = {"facilities" => {"include" => facilities}}
