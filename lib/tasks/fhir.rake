@@ -40,6 +40,7 @@ namespace :fhir do
       address.district = Faker::Address.district
       address.state = Faker::Address.state
       address.pin = Faker::Address.zip
+      address.country = "Sri Lanka"
       patient.phone_numbers.each do |phone_number|
         phone_number.number = Faker::PhoneNumber.phone_number
       end

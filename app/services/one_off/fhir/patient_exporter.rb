@@ -33,7 +33,7 @@ class OneOff::Fhir::PatientExporter
       ],
       active: patient.status == "active",
       gender: gender,
-      birthDate: patient.date_of_birth,
+      birthDate: birth_date.iso8601,
       deceasedBoolean: patient.status == "dead",
       managingOrganization: FHIR::Reference.new(
         id: FHIR::Organization.new(
@@ -74,7 +74,7 @@ class OneOff::Fhir::PatientExporter
 
   def birth_date
     unless patient.date_of_birth
-      patient.age_updated_at - patient.age.years
+      return patient.age_updated_at - patient.age.years
     end
 
     patient.date_of_birth
