@@ -32,11 +32,11 @@ class OneOff::Fhir::PatientExporter
         )
       ],
       active: patient.status == "active",
-      gender: ["male", "female"].include?(gender) ? gender : "other",
+      gender: gender,
       birthDate: patient.date_of_birth,
       deceasedBoolean: patient.status == "dead",
       managingOrganization: FHIR::Reference.new(
-        reference: FHIR::Organization.new(
+        id: FHIR::Organization.new(
           identifier: [
             FHIR::Identifier.new(
               value: patient.assigned_facility_id
@@ -45,8 +45,8 @@ class OneOff::Fhir::PatientExporter
         )
       ),
       meta: FHIR::Meta.new(
-        lastUpdated: patient.updated_at,
-        createdAt: patient.recorded_at
+        lastUpdated: patient.updated_at.iso8601,
+        createdAt: patient.recorded_at.iso8601
       ),
       telecom: patient.phone_numbers.map do |phone_number|
         FHIR::ContactPoint.new(
@@ -66,7 +66,7 @@ class OneOff::Fhir::PatientExporter
   end
 
   def gender
-    unless [:male, :female].include?(patient.gender)
+    unless ["male", "female"].include?(patient.gender)
       return "other"
     end
     patient.gender.to_s
