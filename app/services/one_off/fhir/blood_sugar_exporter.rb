@@ -30,13 +30,13 @@ module OneOff
                     system: "http://loinc.org",
                     code: blood_sugar_type_code
                   )
-                ],
-                valueQuantity: FHIR::Quantity.new(
-                  value: blood_sugar.blood_sugar_value,
-                  unit: "mg/dL",
-                  system: "http://unitsofmeasure.org",
-                  code: "mg/dL"
-                )
+                ]
+              ),
+              valueQuantity: FHIR::Quantity.new(
+                value: blood_sugar.blood_sugar_value,
+                unit: "mg/dL",
+                system: "http://unitsofmeasure.org",
+                code: "mg/dL"
               )
             )
           ],

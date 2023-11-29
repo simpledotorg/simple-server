@@ -12,7 +12,7 @@ module OneOff
       def export
         FHIR::Appointment.new(
           status: appointment_status_code,
-          start: appointment.scheduled_date.iso8601,
+          start: appointment.scheduled_date.beginning_of_day.iso8601,
           cancellationReason: cancellation_code,
           participant: [
             FHIR::Appointment::Participant.new(
