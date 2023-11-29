@@ -41,7 +41,7 @@ namespace :fhir do
       address.state = Faker::Address.state
       address.pin = Faker::Address.zip
       patient.phone_numbers.each do |phone_number|
-        phone_number.number = Faker::PhoneNumber
+        phone_number.number = Faker::PhoneNumber.phone_number
       end
     end
   end
