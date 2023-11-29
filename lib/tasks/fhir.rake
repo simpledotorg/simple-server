@@ -5,6 +5,7 @@ namespace :fhir do
   task :export, [:file_path] => :environment do |_task, args|
     patients = Patient.order(:created_at).last(10)
     patients = remove_pii(patients)
+    patients = clean_up_drug_names(patients)
     file_path = args[:file_path]
     resources = []
 
@@ -40,8 +41,19 @@ namespace :fhir do
       address.district = Faker::Address.district
       address.state = Faker::Address.state
       address.pin = Faker::Address.zip
+      address.country = "Sri Lanka"
       patient.phone_numbers.each do |phone_number|
         phone_number.number = Faker::PhoneNumber.phone_number
+      end
+    end
+  end
+
+  def clean_up_drug_names(patients)
+    clean_drug_names = %w[Amlodipine Atenolol Captopril Chlorthalidone Enalapril Hydrochlorothiazide Losartan Metoprolol Spironolactone Telmisartan Lisinopril]
+    patients.each do |patient|
+      patient.prescription_drugs.each do |drug|
+        drug.name = clean_drug_names.sample
+        print "drug name is #{drug.name}"
       end
     end
   end
