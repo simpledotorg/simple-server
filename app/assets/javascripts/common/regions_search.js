@@ -17,7 +17,7 @@ RegionsSearch = function () {
   this.noResultsFound = (searchQuery) => {
     let html = $("template.no-results-found").html();
     let $html = $(html);
-    $html.find(".search-query").html(searchQuery);
+    $html.find(".search-query").text(searchQuery);
 
     return $html;
   }
