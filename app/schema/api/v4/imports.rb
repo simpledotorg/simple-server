@@ -417,7 +417,14 @@ class Api::V4::Imports
                           system: {type: :string,
                                    enum: ["http://www.nlm.nih.gov/research/umls/rxnorm"]},
                           code: {type: :string},
-                          display: {type: :string, description: "Name of medicine", nullable: false}
+                          display: {type: :string, description: "Name of medicine", nullable: false},
+                          status: {type: :string,
+                                   enum: %w[active inactive entered-in-error],
+                                   description: <<~DESCRIPTION,
+                                     If a prescribed medication has been replaced or removed for a patient 
+                                     (eg, during titration), ensure that it is marked as inactive.
+                                   DESCRIPTION
+                                   nullable: false}
                         },
                         required: ["display"]},
                 nullable: false,
