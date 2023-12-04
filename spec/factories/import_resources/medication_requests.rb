@@ -4,6 +4,7 @@ def build_medication_request_import_resource
   contained_medication = {
     resourceType: "Medication",
     id: Faker::Alphanumeric.alphanumeric,
+    status: %w[active inactive entered-in-error].sample,
     code: {
       coding: [{system: "http://www.nlm.nih.gov/research/umls/rxnorm",
                 code: Faker::Alphanumeric.alphanumeric,
