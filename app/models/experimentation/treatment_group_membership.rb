@@ -46,6 +46,12 @@ module Experimentation
       earliest_visit = visits.min_by(&:recorded_at)
       visited_at = earliest_visit.recorded_at
       visit_facility = earliest_visit.facility
+
+      if visit_facility.nil?
+        Experimentation::TreatmentGroupMembership.where(id: id).evict(reason: "visit facility soft deleted")
+        return
+      end
+
       days_to_visit = (visited_at.to_date - expected_return_date.to_date).to_i if expected_return_date.present?
 
       update!(
@@ -62,8 +68,6 @@ module Experimentation
         days_to_visit: days_to_visit,
         **visit_status_fields
       )
-    rescue NoMethodError
-      Rails.logger.error("Error recording visit: Membership id: #{id} Blood pressure: #{blood_pressure&.id} Blood sugar: #{blood_sugar&.id} Prescription drug: #{prescription_drug&.id}")
     end
 
     private
