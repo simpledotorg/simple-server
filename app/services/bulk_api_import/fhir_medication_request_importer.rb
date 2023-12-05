@@ -8,6 +8,12 @@ class BulkApiImport::FhirMedicationRequestImporter
     QID: :QDS
   }.with_indifferent_access
 
+  MEDICATION_STATUS_MAPPING = {
+    "active" => :active,
+    "inactive" => :inactive,
+    "entered-in-error" => :inactive
+  }
+
   def initialize(resource:, organization_id:)
     @resource = resource
     @organization_id = organization_id
@@ -37,7 +43,7 @@ class BulkApiImport::FhirMedicationRequestImporter
       frequency: frequency,
       duration_in_days: @resource.dig(:dispenseRequest, :expectedSupplyDuration, :value),
       dosage: dosage,
-      is_deleted: false,
+      is_deleted: drug_deleted?,
       **timestamps
     }.compact.with_indifferent_access
   end
@@ -57,5 +63,9 @@ class BulkApiImport::FhirMedicationRequestImporter
     else
       @resource.dig(:dosageInstruction, 0, :text)
     end
+  end
+
+  def drug_deleted?
+    MEDICATION_STATUS_MAPPING[contained_medication[:status]] == :inactive
   end
 end
