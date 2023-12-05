@@ -48,7 +48,7 @@ module Experimentation
       visit_facility = earliest_visit.facility
 
       if visit_facility.nil?
-        self.class.where(id: id).evict(reason: "visit facility soft deleted")
+        Experimentation::TreatmentGroupMembership.where(id: id).evict(reason: "visit facility soft deleted")
         return
       end
 
