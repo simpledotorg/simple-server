@@ -1,16 +1,15 @@
 require "rails_helper"
 
 RSpec.describe BulkApiImport::FhirImportable do
-  before { create(:facility) }
-  let(:import_user) { ImportUser.find_or_create }
-  let(:facility) { import_user.facility }
+  let(:facility) { create(:facility) }
   let(:org_id) { facility.organization_id }
+  let(:import_user) { ImportUser.find_or_create(org_id: org_id) }
   let(:facility_identifiers) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
 
-  describe "#import_user" do
-    specify { expect(Object.new.extend(described_class).import_user).to eq(import_user) }
+  describe "#find_or_create_import_user" do
+    specify { expect(Object.new.extend(described_class).find_or_create_import_user(org_id)).to eq(import_user) }
   end
 
   describe "#translate_facility_id" do

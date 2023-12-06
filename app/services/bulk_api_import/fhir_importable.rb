@@ -1,6 +1,6 @@
 module BulkApiImport::FhirImportable
-  def import_user
-    ImportUser.find_or_create
+  def find_or_create_import_user(org_id)
+    ImportUser.find_or_create(org_id: org_id)
   end
 
   def import
