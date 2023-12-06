@@ -91,6 +91,9 @@
           },
           "400": {
             "description": "Bad Request"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       }
@@ -1106,6 +1109,16 @@
                         "display": {
                           "type": "string",
                           "description": "Name of medicine",
+                          "nullable": false
+                        },
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "active",
+                            "inactive",
+                            "entered-in-error"
+                          ],
+                          "description": "If a prescribed medication has been replaced or removed for a patient \n(eg, during titration), ensure that it is marked as inactive.\n",
                           "nullable": false
                         }
                       },
