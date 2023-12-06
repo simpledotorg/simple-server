@@ -6,6 +6,7 @@ class BulkApiImport::FhirPatientImporter
   def initialize(resource:, organization_id:)
     @resource = resource
     @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -13,12 +14,12 @@ class BulkApiImport::FhirPatientImporter
       .then { Api::V3::PatientTransformer.from_nested_request(_1) }
       .then { MergePatientService.new(_1, request_metadata: request_metadata).merge }
 
-    AuditLog.merge_log(import_user, merge_result) if merge_result.present?
+    AuditLog.merge_log(@import_user, merge_result) if merge_result.present?
     merge_result
   end
 
   def request_metadata
-    {request_user_id: import_user.id,
+    {request_user_id: @import_user.id,
      request_facility_id: @resource.dig(:managingOrganization, 0, :value)}
   end
 
