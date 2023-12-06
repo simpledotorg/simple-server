@@ -1,10 +1,9 @@
 require "rails_helper"
 
 RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
-  before { create(:facility) }
-  let(:import_user) { ImportUser.find_or_create }
-  let(:facility) { import_user.facility }
+  let(:facility) { create(:facility) }
   let(:org_id) { facility.organization_id }
+  let(:import_user) { ImportUser.find_or_create(org_id: org_id) }
   let(:facility_identifier) do
     create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
   end
@@ -48,7 +47,7 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
 
   describe "#contained_medication" do
     it "fetches the contained medication" do
-      expect(described_class.new(resource: {contained: [{code: {}}]}, organization_id: "").contained_medication)
+      expect(described_class.new(resource: {contained: [{code: {}}]}, organization_id: org_id).contained_medication)
         .to eq({code: {}})
     end
   end
@@ -65,7 +64,7 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
           resource: {
             dosageInstruction: [{timing: {code: input_code}}]
           },
-          organization_id: ""
+          organization_id: org_id
         ).frequency).to eq(expected_value)
       end
     end
@@ -111,7 +110,7 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
         {status: "inactive", deletion_status: true},
         {status: "inactive", deletion_status: true}
       ].each do |status:, deletion_status:|
-        expect(described_class.new(resource: {contained: [{status: status}]}, organization_id: "").drug_deleted?)
+        expect(described_class.new(resource: {contained: [{status: status}]}, organization_id: org_id).drug_deleted?)
           .to eq(deletion_status)
       end
     end

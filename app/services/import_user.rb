@@ -1,16 +1,20 @@
 class ImportUser
   IMPORT_USER_PHONE_NUMBER = "0000000001"
 
-  def self.find_or_create
-    find || create
+  def self.find_or_create(org_id:)
+    find(org_id) || create(org_id)
   end
 
-  def self.find
-    PhoneNumberAuthentication.find_by(phone_number: IMPORT_USER_PHONE_NUMBER)&.user
+  def self.find(org_id)
+    PhoneNumberAuthentication.joins(:user)
+      .find_by(phone_number: IMPORT_USER_PHONE_NUMBER, user: {organization_id: org_id})&.user
   end
 
-  def self.create
-    facility = Facility.first
+  def self.create(org_id)
+    facility = Organization.find_by(id: org_id).facilities.first
+    unless facility.present?
+      raise ArgumentError, "given organization: #{org_id} does not exist or has no facilities"
+    end
 
     user = User.new(
       full_name: "import-user",
