@@ -118,6 +118,7 @@ class Api::V4::ImportsController < ApplicationController
         [
           :resourceType,
           :id,
+          :status,
           {code: {coding: [:system, :code, :display]}}
         ]
       ]
