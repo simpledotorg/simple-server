@@ -18,7 +18,7 @@ UserTeleconsultSearch = function () {
   this.noUsersFound = (searchQuery) => {
     let html = $("template#user-search-no-results-found").html();
     let $html = $(html);
-    $html.find(".search-query").html(searchQuery);
+    $html.find(".search-query").text(searchQuery);
 
     return $html;
   }
