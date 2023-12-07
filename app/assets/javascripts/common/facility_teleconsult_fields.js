@@ -12,9 +12,9 @@ FacilityTeleconsultFields = function () {
     let userID = user["userId"];
 
     $card.find(".medical-officer-id").val(userID);
-    $card.find(".medical-officer-name").html(user["userFullName"]);
-    $card.find(".medical-officer-registration-facility").html(user["userRegistrationFacility"]);
-    $card.find(".medical-officer-phone-number").html(user["userTeleconsultationPhoneNumber"]);
+    $card.find(".medical-officer-name").text(user["userFullName"]);
+    $card.find(".medical-officer-registration-facility").text(user["userRegistrationFacility"]);
+    $card.find(".medical-officer-phone-number").text(user["userTeleconsultationPhoneNumber"]);
     $card.find("[data-user-id]").attr("data-user-id", userID);
     $card.attr("data-user-id", userID);
     $card.find("a").attr("href", `/admin/users/${userID}/edit`);
