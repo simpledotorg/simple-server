@@ -9,6 +9,8 @@ module AdminPage
       SUCCESSFUL_MESSAGE = {css: "div.alert-primary"}.freeze
       MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
       UPDATE_FACILITY_GROUP_BUTTON = {css: "input[value='Save district']"}.freeze
+      BLOCK_INPUT_FIELD = {id: "new_block_name"}.freeze
+      ADD_BLOCK_BUTTON = {css: ".input-group-append>a.add-block"}
 
       def select_organisation_name_dropdown(value)
         find(:xpath, "//select[@name='facility_group[organization_id]']").find(:option, value).select_option
@@ -54,6 +56,11 @@ module AdminPage
 
       def click_on_update_facility_group_button
         click(UPDATE_FACILITY_GROUP_BUTTON)
+      end
+
+      def add_new_block(block_name)
+        fill_in("Add new block", with: block_name)
+        click(ADD_BLOCK_BUTTON)
       end
     end
   end
