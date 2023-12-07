@@ -2,7 +2,7 @@ FacilityGroupBlockFields = function() {
   this.newBlockRow = (name) => {
     let template = $("template#block-row").html()
     let $template = $(template);
-    $template.find(".block-name").html(name);
+    $template.find(".block-name").text(name);
     $template.attr("data-block-identifier", name);
     $template.find(".remove-block").attr("data-block-identifier", name);
     $template.find(".remove-block").attr(
