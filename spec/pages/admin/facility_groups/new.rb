@@ -9,7 +9,7 @@ module AdminPage
       SUCCESSFUL_MESSAGE = {css: "div.alert-primary"}.freeze
       MESSAGE_CROSS_BUTTON = {css: "button.close"}.freeze
       UPDATE_FACILITY_GROUP_BUTTON = {css: "input[value='Save district']"}.freeze
-      BLOCK_INPUT_FIELD = {id: "new_block_name"}.freeze
+      BLOCK_INPUT_FIELD = {id: "new-block-name"}.freeze
       ADD_BLOCK_BUTTON = {css: ".input-group-append>a.add-block"}
 
       def select_organisation_name_dropdown(value)
@@ -59,7 +59,7 @@ module AdminPage
       end
 
       def add_new_block(block_name)
-        fill_in("Add new block", with: block_name)
+        type(BLOCK_INPUT_FIELD, block_name)
         click(ADD_BLOCK_BUTTON)
       end
     end
