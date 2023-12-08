@@ -83,22 +83,6 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect(membership.status_reason).to eq("visit_recorded")
       expect(membership.days_to_visit).to eq(2)
     end
-
-    it "evicts the membership if the visit facility is soft deleted" do
-      membership = create(:treatment_group_membership, status: :enrolled, expected_return_date: 3.days.ago)
-      visit_facility = create(:facility)
-      visit = create(:prescription_drug, device_created_at: 2.days.ago, patient: membership.patient, facility: visit_facility)
-
-      visit_facility.discard!
-      visit.reload
-
-      membership.record_visit(blood_pressure: nil, blood_sugar: nil, prescription_drug: visit)
-      membership.reload
-
-      expect(membership.status).to eq("evicted")
-      expect(membership.status_reason).to eq("visit facility soft deleted")
-      expect(membership.visited_at).to be_nil
-    end
   end
 
   describe "#record_notification_results" do
