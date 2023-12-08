@@ -83,6 +83,26 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect(membership.status_reason).to eq("visit_recorded")
       expect(membership.days_to_visit).to eq(2)
     end
+
+    it "records visit without errors if the visit facility is deleted" do
+      membership = create(:treatment_group_membership, status: :enrolled, expected_return_date: 3.days.ago)
+      visit_facility = create(:facility)
+      visit = create(:prescription_drug, device_created_at: 2.days.ago, patient: membership.patient, facility: visit_facility)
+
+      visit_facility.discard!
+      visit.reload
+
+      expect {
+        membership.record_visit(blood_pressure: nil, blood_sugar: nil, prescription_drug: visit)
+      }.not_to raise_error
+      membership.reload
+
+      expect(membership.status).to eq("visited")
+      expect(membership.visited_at).to eq(visit.recorded_at)
+      expect(membership.visit_facility_id).to be_nil
+      expect(membership.visit_facility_name).to be_nil
+      expect(membership.days_to_visit).to eq(1)
+    end
   end
 
   describe "#record_notification_results" do
