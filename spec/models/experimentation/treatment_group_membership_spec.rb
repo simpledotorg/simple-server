@@ -57,7 +57,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
     end
   end
 
-  describe "#record_visit_details" do
+  describe "#record_visit" do
     it "considers the earliest record out of BP, BS and drug for visit details" do
       membership = create(:treatment_group_membership, status: :enrolled, expected_return_date: 10.days.ago)
       patient = membership.patient
