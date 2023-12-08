@@ -52,7 +52,7 @@ class PatientImport::Importer
   def import_patient(params)
     MergePatientService.new(params, request_metadata: {
       request_facility_id: facility.id,
-      request_user_id: ImportUser.find_or_create.id
+      request_user_id: ImportUser.find_or_create(org_id: facility.organization_id).id
     }).merge
   end
 
@@ -79,6 +79,6 @@ class PatientImport::Importer
 
   # SyncEncounterObservation compability
   def current_user
-    ImportUser.find_or_create
+    ImportUser.find_or_create(org_id: facility.organization_id)
   end
 end
