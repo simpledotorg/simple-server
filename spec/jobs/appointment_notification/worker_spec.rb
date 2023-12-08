@@ -4,7 +4,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
   describe "#perform" do
     before do
       Flipper.enable(:notifications)
+      Flipper.enable(:experiment)
       allow(Statsd.instance).to receive(:increment).with(anything)
+      messaging_channel = Messaging::Twilio::ReminderSms
+      allow(CountryConfig.current).to receive(:[]).and_call_original
+      allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
     end
 
     def mock_successful_twilio_delivery
@@ -50,6 +54,22 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.perform_async("does-not-exist")
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "only sends notifications if the patient's assigned facility is not deleted" do
+      mock_successful_twilio_delivery
+
+      notification1 = create(:notification, status: :scheduled)
+      notification1.patient.assigned_facility.discard!
+      notification1.patient.reload
+      notification2 = create(:notification, status: :scheduled)
+
+      described_class.perform_async(notification1.id)
+      described_class.perform_async(notification2.id)
+      described_class.drain
+
+      expect(notification1.reload.status).to eq("scheduled")
+      expect(notification2.reload.status).to eq("sent")
     end
   end
 end
