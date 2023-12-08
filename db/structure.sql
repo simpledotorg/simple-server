@@ -7141,6 +7141,20 @@ CREATE INDEX patient_states_care_state ON public.reporting_patient_states USING 
 
 
 --
+-- Name: patient_states_month_date_assigned_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_assigned_facility ON public.reporting_patient_states USING btree (month_date, assigned_facility_id);
+
+
+--
+-- Name: patient_states_month_date_assigned_facility_region; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_assigned_facility_region ON public.reporting_patient_states USING btree (month_date, assigned_facility_region_id);
+
+
+--
 -- Name: patient_states_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7644,6 +7658,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230614171507'),
 ('20230713065237'),
 ('20230713065420'),
-('20230713135154');
+('20230713135154'),
+('20231208091419');
 
 
