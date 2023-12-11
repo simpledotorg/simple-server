@@ -3,6 +3,7 @@ require "dhis2"
 module Dhis2
   class Dhis2ExporterJob
     include Sidekiq::Job
+    sidekiq_options retry: 2
 
     attr_reader :client
 
@@ -36,8 +37,9 @@ module Dhis2
     end
 
     def export(data_values)
-      response = @client.data_value_sets.bulk_create(data_values: data_values)
-      Rails.logger.info("Exported to Dhis2 with response: ", response)
+      Rails.logger.info("data_values to export to dhis2: #{data_values}")
+      # response = @client.data_value_sets.bulk_create(data_values: data_values)
+      # Rails.logger.info("Exported to Dhis2 with response: ", response)
     end
 
     def disaggregate_by_gender_age(patient_states, buckets)
