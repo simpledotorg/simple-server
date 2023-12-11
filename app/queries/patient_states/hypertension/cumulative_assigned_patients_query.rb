@@ -1,15 +1,15 @@
 class PatientStates::Hypertension::CumulativeAssignedPatientsQuery
-  attr_reader :region, :period
+  attr_reader :facility_id, :period
 
-  def initialize(region, period)
-    @region = region
+  def initialize(facility_id, period)
+    @facility_id = facility_id
     @period = period
   end
 
   def call
     Reports::PatientState
       .where(
-        assigned_facility_id: region.facility_ids,
+        assigned_facility_id: facility_id,
         month_date: period
       )
       .where(hypertension: "yes")
