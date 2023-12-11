@@ -103,4 +103,17 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
       end
     end
   end
+
+  describe "#drug_deleted?" do
+    it "infers drug deletion status" do
+      [
+        {status: "active", deletion_status: false},
+        {status: "inactive", deletion_status: true},
+        {status: "inactive", deletion_status: true}
+      ].each do |status:, deletion_status:|
+        expect(described_class.new(resource: {contained: [{status: status}]}, organization_id: "").drug_deleted?)
+          .to eq(deletion_status)
+      end
+    end
+  end
 end
