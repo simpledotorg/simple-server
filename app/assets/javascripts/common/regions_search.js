@@ -16,7 +16,7 @@ RegionsSearch = function () {
   }
 
   this.sanitizeInput = (input) => {
-    return $("<div/>").html(input).text()
+    return $("<div/>").text(input).html()
   }
 
   this.noResultsFound = (searchQuery) => {
