@@ -5,14 +5,18 @@ UserTeleconsultSearch = function () {
 
     $html.attr({
       "data-user-id": user["id"],
-      "data-user-full-name": user["full_name"],
-      "data-user-registration-facility": user["registration_facility"],
-      "data-user-teleconsultation-phone-number": user["teleconsultation_phone_number"]
+      "data-user-full-name": this.sanitizeString(user["full_name"]),
+      "data-user-registration-facility": this.sanitizeString(user["registration_facility"]),
+      "data-user-teleconsultation-phone-number": this.sanitizeString(user["teleconsultation_phone_number"])
     })
     $html.find(".user-full-name").text(user["full_name"])
     $html.find(".user-registration-facility").text(user["registration_facility"])
 
     return $html;
+  }
+
+  this.sanitizeString = (string) => {
+    return $("<div/>").text(string).html();
   }
 
   this.noUsersFound = (searchQuery) => {

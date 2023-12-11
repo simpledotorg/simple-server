@@ -13,9 +13,14 @@ FacilityGroupBlockFields = function() {
     return $template;
   }
 
+  this.sanitizeInput = (input) => {
+    return $("<div/>").text(input).html();
+  }
+
   this.submitAddBlock = () => {
     let $blockInput = $("#new-block-name")
-    this.addBlock($blockInput.val());
+    let $blockName = this.sanitizeInput($blockInput.val());
+    this.addBlock($blockName);
     $blockInput.val("");
     this.scrollBlockListToBottom();
   }
