@@ -8,7 +8,7 @@ module Dhis2
     attr_reader :client
 
     def initialize
-      throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
+      # throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
       configuration = Dhis2::Configuration.new.tap do |config|
         config.url = ENV.fetch("DHIS2_URL")
@@ -33,11 +33,12 @@ module Dhis2
         )
       end
       export(export_data.flatten)
-      Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier} succeeded.")
+      Rails.logger.info("exported. facility_identifier_id: #{facility_identifier_id}")
+      # Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier} succeeded.")
     end
 
     def export(data_values)
-      Rails.logger.info("data_values to export to dhis2: #{data_values}")
+      # Rails.logger.info("data_values to export to dhis2: #{data_values}")
       # response = @client.data_value_sets.bulk_create(data_values: data_values)
       # Rails.logger.info("Exported to Dhis2 with response: ", response)
     end
