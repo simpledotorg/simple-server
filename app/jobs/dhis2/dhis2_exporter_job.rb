@@ -56,11 +56,12 @@ module Dhis2
 
     def format_facility_period_data(facility_data, facility_identifier, period)
       formatted_facility_data = []
+      period = reporting_period(period)
       facility_data.each do |data_element, value|
         formatted_facility_data << {
           data_element: data_elements_map[data_element],
           org_unit: facility_identifier.identifier,
-          period: reporting_period(period),
+          period: period,
           value: value
         }
       end
