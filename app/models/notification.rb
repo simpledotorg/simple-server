@@ -40,8 +40,11 @@ class Notification < ApplicationRecord
   end
 
   def message_data
-    return {} unless patient
-    facility = subject&.facility || patient.assigned_facility
+    raise Messaging::MissingReferenceError("Patient missing/deleted") unless patient
+
+    unless subject&.facility || patient.assigned_facility
+      raise Messaging::MissingReferenceError("Facility missing/deleted")
+    end
 
     {
       variable_content: {facility_name: facility.short_name,

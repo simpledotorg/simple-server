@@ -56,6 +56,8 @@ class NotificationDispatchService
 
   def handle_messaging_errors(&block)
     block.call
+  rescue Messaging::MissingReferenceError => error
+    cancel_no_reference_notification(error.message)
   rescue Messaging::Error => error
     if error.reason == :invalid_phone_number
       cancel_invalid_number_notification
@@ -74,5 +76,11 @@ class NotificationDispatchService
     notification.status_cancelled!
     Rails.logger.warn("notification #{notification.id} cancelled because of an invalid phone number")
     Statsd.instance.increment("notifications.skipped.invalid_phone_number")
+  end
+
+  def cancel_no_reference_notification(reason)
+    notification.status_cancelled!
+    Rails.logger.warn("notification #{notification.id} cancelled. #{reason}")
+    Statsd.instance.increment("notifications.skipped.no_reference")
   end
 end
