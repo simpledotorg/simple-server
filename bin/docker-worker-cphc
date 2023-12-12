@@ -6,15 +6,15 @@
 # Create config
 echo $CPHC_VPN_CONFIG > linux_phat_client/linux_phat_client/naclient.cfg
 
-# Install
-cd linux_phat_client
-./install_linux_phat_client.sh
-cd ../
-
 # Setup tun device
 mkdir -p /dev/net 
 mknod /dev/net/tun c 10 200 
 chmod 600 /dev/net/tun
+
+# Install
+cd linux_phat_client
+./install_linux_phat_client.sh
+cd ../
 
 # VPN login
 vpn_login
@@ -53,7 +53,7 @@ monitor () {
         CONSECUTIVE_FAILURES=0
         LAST_ALERT_TIME=0
       elif [ $CONSECUTIVE_FAILURES -gt $ALERT_MIN_FAILURES ] && [ $(($(date +%s) - $LAST_ALERT_TIME)) -ge $((ALERT_FREQUENCY_SECONDS)) ]; then
-        echo_with_time $ALERT_MESSAGE && slack_alert $ALERT_MESSAGE
+        echo_with_time "$ALERT_MESSAGE" && slack_alert "$ALERT_MESSAGE"
         LAST_ALERT_TIME=$(date +%s)
       fi
     fi
