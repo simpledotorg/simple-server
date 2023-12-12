@@ -62,4 +62,4 @@ monitor () {
 monitor &
 
 # Start sikdekiq
-bundle exec sidekiq  -C config/sidekiq.yml -e production -q $CPHC_SIDEKIQ_QUEUE
+su -l app -c "bundle exec sidekiq  -C config/sidekiq.yml -e production -q $CPHC_SIDEKIQ_QUEUE"
