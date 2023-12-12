@@ -7,7 +7,9 @@
 echo $CPHC_VPN_CONFIG > linux_phat_client/linux_phat_client/naclient.cfg
 
 # Install
-linux_phat_client/install_linux_phat_client.sh
+cd linux_phat_client
+./install_linux_phat_client.sh
+cd ../
 
 # Setup tun device
 mkdir -p /dev/net 
