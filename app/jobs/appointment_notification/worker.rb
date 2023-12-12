@@ -18,9 +18,9 @@ class AppointmentNotification::Worker
   private
 
   def facility_present?(notification)
-    return true if notification.patient.assigned_facility.present?
+    return true if notification.patient.assigned_facility.present? || notification.subject&.facility.present?
 
-    Rails.logger.error "skipping notification #{notification.id}, patient's assigned facility deleted"
+    Rails.logger.error "skipping notification #{notification.id}, facility deleted"
     false
   end
 
