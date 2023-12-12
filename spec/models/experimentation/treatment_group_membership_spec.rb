@@ -99,8 +99,9 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
 
       expect(membership.status).to eq("visited")
       expect(membership.visited_at).to eq(visit.recorded_at)
-      expect(membership.visit_facility_id).to be_nil
+      expect(membership.visit_facility_id).to eq(visit.facility_id)
       expect(membership.visit_facility_name).to be_nil
+      expect(membership.visit_facility_district).to be_nil
       expect(membership.days_to_visit).to eq(1)
     end
   end

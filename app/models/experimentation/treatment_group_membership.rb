@@ -54,7 +54,7 @@ module Experimentation
         visit_blood_sugar_id: blood_sugar&.id,
         visit_prescription_drug_created: prescription_drug.present?,
         visited_at: visited_at,
-        visit_facility_id: visit_facility&.id,
+        visit_facility_id: earliest_visit.facility_id,
         visit_facility_name: visit_facility&.name,
         visit_facility_type: visit_facility&.facility_type,
         visit_facility_block: visit_facility&.block,
