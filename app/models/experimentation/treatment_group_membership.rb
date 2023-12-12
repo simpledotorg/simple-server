@@ -32,6 +32,8 @@ module Experimentation
         created_at: notification.created_at.to_s
       }
       save!
+    rescue Messaging::MissingReferenceError => error
+      Rails.logger.error("Failed fetching localised message on notification #{notification.id}, reason: #{error.message}")
     end
 
     def record_notification_result(reminder_template_id, delivery_result)
