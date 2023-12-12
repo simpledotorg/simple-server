@@ -22,18 +22,24 @@ module Experimentation
     def record_notification(reminder_template_id, notification)
       reload # this is to reload the `messages` field to avoid staleness while updating.
       self.messages ||= {}
+      localized_message = notifiaction_localized_message(notification)
       self.messages[reminder_template_id] = {
         message_name: notification.message,
         remind_on: notification.remind_on,
         notification_status: notification.status,
         notification_id: notification.id,
-        localized_message: notification.localized_message,
+        localized_message: localized_message,
         notification_status_updated_at: notification.updated_at.to_s,
         created_at: notification.created_at.to_s
       }
       save!
+    end
+
+    def notifiaction_localized_message(notification)
+      notification.localized_message
     rescue Messaging::MissingReferenceError => error
       Rails.logger.error("Failed fetching localised message on notification #{notification.id}, reason: #{error.message}")
+      ""
     end
 
     def record_notification_result(reminder_template_id, delivery_result)

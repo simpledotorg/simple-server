@@ -114,6 +114,10 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect {
         membership.record_notification("messages_report_key", notification)
       }.not_to raise_error
+      notification_fields = membership.messages["messages_report_key"].with_indifferent_access
+      expect(notification_fields[:message_name]).to eq(notification.message)
+      expect(notification_fields[:notification_status]).to eq(notification.status)
+      expect(notification_fields[:localized_message]).to eq("")
     end
   end
 
