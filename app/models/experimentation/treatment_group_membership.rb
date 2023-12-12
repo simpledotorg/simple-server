@@ -22,16 +22,24 @@ module Experimentation
     def record_notification(reminder_template_id, notification)
       reload # this is to reload the `messages` field to avoid staleness while updating.
       self.messages ||= {}
+      localized_message = notifiaction_localized_message(notification)
       self.messages[reminder_template_id] = {
         message_name: notification.message,
         remind_on: notification.remind_on,
         notification_status: notification.status,
         notification_id: notification.id,
-        localized_message: notification.localized_message,
+        localized_message: localized_message,
         notification_status_updated_at: notification.updated_at.to_s,
         created_at: notification.created_at.to_s
       }
       save!
+    end
+
+    def notifiaction_localized_message(notification)
+      notification.localized_message
+    rescue Messaging::MissingReferenceError => error
+      Rails.logger.error("Failed fetching localised message on notification #{notification.id}, reason: #{error.message}")
+      ""
     end
 
     def record_notification_result(reminder_template_id, delivery_result)
@@ -46,6 +54,7 @@ module Experimentation
       earliest_visit = visits.min_by(&:recorded_at)
       visited_at = earliest_visit.recorded_at
       visit_facility = earliest_visit.facility
+
       days_to_visit = (visited_at.to_date - expected_return_date.to_date).to_i if expected_return_date.present?
 
       update!(
@@ -53,17 +62,15 @@ module Experimentation
         visit_blood_sugar_id: blood_sugar&.id,
         visit_prescription_drug_created: prescription_drug.present?,
         visited_at: visited_at,
-        visit_facility_id: visit_facility.id,
-        visit_facility_name: visit_facility.name,
-        visit_facility_type: visit_facility.facility_type,
-        visit_facility_block: visit_facility.block,
-        visit_facility_district: visit_facility.district,
-        visit_facility_state: visit_facility.state,
+        visit_facility_id: earliest_visit.facility_id,
+        visit_facility_name: visit_facility&.name,
+        visit_facility_type: visit_facility&.facility_type,
+        visit_facility_block: visit_facility&.block,
+        visit_facility_district: visit_facility&.district,
+        visit_facility_state: visit_facility&.state,
         days_to_visit: days_to_visit,
         **visit_status_fields
       )
-    rescue NoMethodError
-      Rails.logger.error("Error recording visit: Membership id: #{id} Blood pressure: #{blood_pressure&.id} Blood sugar: #{blood_sugar&.id} Prescription drug: #{prescription_drug&.id}")
     end
 
     private
