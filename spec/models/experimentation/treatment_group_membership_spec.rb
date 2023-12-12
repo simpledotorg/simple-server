@@ -106,7 +106,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
     end
   end
 
-  describe "#record_notifiaction" do
+  describe "#record_notification" do
     it "silently handles any error in fetching the notification's localised message" do
       membership = create(:treatment_group_membership, messages: {"messages_report_key" => {}})
       notification = create(:notification)
@@ -114,7 +114,6 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect {
         membership.record_notification("messages_report_key", notification)
       }.not_to raise_error
-      print(membership.messages["messages_report_key"].inspect)
     end
   end
 
