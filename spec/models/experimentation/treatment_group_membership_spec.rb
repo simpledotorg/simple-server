@@ -57,7 +57,7 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
     end
   end
 
-  describe "#record_visit_details" do
+  describe "#record_visit" do
     it "considers the earliest record out of BP, BS and drug for visit details" do
       membership = create(:treatment_group_membership, status: :enrolled, expected_return_date: 10.days.ago)
       patient = membership.patient
@@ -82,6 +82,39 @@ RSpec.describe Experimentation::TreatmentGroupMembership, type: :model do
       expect(membership.status_updated_at).to be_present
       expect(membership.status_reason).to eq("visit_recorded")
       expect(membership.days_to_visit).to eq(2)
+    end
+
+    it "records visit without errors if the visit facility is deleted" do
+      membership = create(:treatment_group_membership, status: :enrolled, expected_return_date: 3.days.ago)
+      visit_facility = create(:facility)
+      visit = create(:prescription_drug, device_created_at: 2.days.ago, patient: membership.patient, facility: visit_facility)
+
+      visit_facility.discard!
+      visit.reload
+
+      expect {
+        membership.record_visit(blood_pressure: nil, blood_sugar: nil, prescription_drug: visit)
+      }.not_to raise_error
+      membership.reload
+
+      expect(membership.status).to eq("visited")
+      expect(membership.visited_at).to eq(visit.recorded_at)
+      expect(membership.visit_facility_id).to eq(visit.facility_id)
+      expect(membership.visit_facility_name).to be_nil
+      expect(membership.visit_facility_district).to be_nil
+      expect(membership.days_to_visit).to eq(1)
+    end
+  end
+
+  describe "#record_notifiaction" do
+    it "silently handles any error in fetching the notification's localised message" do
+      membership = create(:treatment_group_membership, messages: {"messages_report_key" => {}})
+      notification = create(:notification)
+      allow(notification).to receive(:localized_message).and_raise(Messaging::MissingReferenceError.new("Patient missing/deleted"))
+      expect {
+        membership.record_notification("messages_report_key", notification)
+      }.not_to raise_error
+      print(membership.messages["messages_report_key"].inspect)
     end
   end
 
