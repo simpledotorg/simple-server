@@ -61,4 +61,7 @@ monitor () {
 monitor &
 
 # Start sikdekiq
-bundle exec sidekiq  -C config/sidekiq.yml -e production -q $CPHC_SIDEKIQ_QUEUE
+# bundle exec sidekiq  -C config/sidekiq.yml -e production -q $CPHC_SIDEKIQ_QUEUE
+
+# Test only vpn
+sleep 99999999999999
