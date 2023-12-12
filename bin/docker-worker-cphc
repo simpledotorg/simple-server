@@ -17,6 +17,9 @@ cd linux_phat_client
 cd ../
 
 # VPN login
+vpn_login () {
+  yes | naclient login -profile $CPHC_VPN_PROFILE  -user $CPHC_VPN_USER  -password $CPHC_VPN_PASSWORD
+}
 vpn_login
 
 # Monitor VPN connection
@@ -30,10 +33,6 @@ STATUS_LOG_PATH="/home/app/log/vpn_client_status.log"
 
 slack_alert () {
   curl -X POST -H 'Content-type: application/json' --data "{\"text\":\"$1\"}" $CPHC_VPN_ALERTS_WEBHOOK_URL
-}
-
-vpn_login () {
-  yes | naclient login -profile $CPHC_VPN_PROFILE  -user $CPHC_VPN_USER  -password $CPHC_VPN_PASSWORD
 }
 
 echo_with_time () {
