@@ -1,10 +1,8 @@
 require "rails_helper"
 
 RSpec.describe BulkApiImport::Importer do
-  before { FactoryBot.create(:facility) } # needed for our bot import user
-
   describe "#import" do
-    let(:facility) { Facility.first }
+    let(:facility) { create(:facility) }
     let(:organization_id) { facility.organization_id }
     let(:facility_identifier) do
       create(:facility_business_identifier, facility: facility, identifier_type: :external_org_facility_id)
@@ -80,7 +78,8 @@ RSpec.describe BulkApiImport::Importer do
 
   describe "#resource_importer" do
     it "fetches the correct importer" do
-      importer = described_class.new(resource_list: [], organization_id: "org_id")
+      org_id = create(:facility).organization_id
+      importer = described_class.new(resource_list: [], organization_id: org_id)
 
       [
         {input: {resourceType: "Patient"}, expected_importer: BulkApiImport::FhirPatientImporter},
@@ -89,7 +88,7 @@ RSpec.describe BulkApiImport::Importer do
         {input: {resourceType: "MedicationRequest"}, expected_importer: BulkApiImport::FhirMedicationRequestImporter},
         {input: {resourceType: "Condition"}, expected_importer: BulkApiImport::FhirConditionImporter}
       ].each do |input:, expected_importer:|
-        expect(importer.resource_importer(input, "org_id"))
+        expect(importer.resource_importer(input, org_id))
           .to be_an_instance_of(expected_importer)
       end
     end

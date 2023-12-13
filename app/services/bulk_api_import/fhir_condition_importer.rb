@@ -9,6 +9,7 @@ class BulkApiImport::FhirConditionImporter
   def initialize(resource:, organization_id:)
     @resource = resource
     @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -16,12 +17,12 @@ class BulkApiImport::FhirConditionImporter
       .then { Api::V3::MedicalHistoryTransformer.from_request(_1).merge(metadata) }
       .then { MedicalHistory.merge(_1) }
 
-    AuditLog.merge_log(import_user, merge_result) if merge_result.present?
+    AuditLog.merge_log(@import_user, merge_result) if merge_result.present?
     merge_result
   end
 
   def metadata
-    {user_id: import_user.id}
+    {user_id: @import_user.id}
   end
 
   def build_attributes
