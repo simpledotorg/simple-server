@@ -12,17 +12,10 @@ class AppointmentNotification::Worker
 
     notification = Notification.find(notification_id)
 
-    NotificationDispatchService.call(notification) if scheduled?(notification) && facility_present?(notification)
+    NotificationDispatchService.call(notification) if scheduled?(notification)
   end
 
   private
-
-  def facility_present?(notification)
-    return true if notification.patient.assigned_facility.present? || notification.subject&.facility.present?
-
-    Rails.logger.error "skipping notification #{notification.id}, facility deleted"
-    false
-  end
 
   def scheduled?(notification)
     return true if notification.status_scheduled?
