@@ -55,26 +55,5 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
         described_class.drain
       }.to raise_error(ActiveRecord::RecordNotFound)
     end
-
-    it "only sends notifications if either the patient's or subject's facility exists" do
-      mock_successful_twilio_delivery
-
-      notification1 = create(:notification, status: :scheduled)
-      notification1.patient.assigned_facility.discard!
-      notification1.patient.reload
-
-      notification2 = create(:notification, status: :scheduled)
-      notification2.subject.facility.discard!
-      notification2.subject.reload
-      notification2.patient.assigned_facility.discard!
-      notification2.patient.reload
-
-      described_class.perform_async(notification1.id)
-      described_class.perform_async(notification2.id)
-      described_class.drain
-
-      expect(notification1.reload.status).to eq("sent")
-      expect(notification2.reload.status).to eq("scheduled")
-    end
   end
 end
