@@ -21,10 +21,11 @@ module Dhis2
 
     def perform(facility_identifier_id, total_months)
       facility_identifier = FacilityBusinessIdentifier.find(facility_identifier_id)
+      region = Region.find_by!(source_id: facility_identifier.facility_id)
       periods = last_n_month_periods(total_months)
       export_data = []
       periods.each do |period|
-        facility_data_for_period = facility_data_for_period(facility_identifier.facility_id, period)
+        facility_data_for_period = facility_data_for_period(region, period)
         export_data << format_facility_period_data(
           facility_data_for_period,
           facility_identifier,

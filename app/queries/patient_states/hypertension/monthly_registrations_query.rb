@@ -1,14 +1,14 @@
 class PatientStates::Hypertension::MonthlyRegistrationsQuery
-  attr_reader :facility_id, :period
+  attr_reader :region, :period
 
-  def initialize(facility_id, period)
-    @facility_id = facility_id
+  def initialize(region, period)
+    @region = region
     @period = period
   end
 
   def call
     PatientStates::Hypertension::CumulativeRegistrationsQuery
-      .new(facility_id, period)
+      .new(region, period)
       .call
       .where(months_since_registration: 0)
   end

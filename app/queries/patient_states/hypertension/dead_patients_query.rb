@@ -1,15 +1,15 @@
 class PatientStates::Hypertension::DeadPatientsQuery
-  attr_reader :facility_id, :period
+  attr_reader :region, :period
 
-  def initialize(facility_id, period)
-    @facility_id = facility_id
+  def initialize(region, period)
+    @region = region
     @period = period
   end
 
   def call
     Reports::PatientState
       .where(
-        assigned_facility_id: facility_id,
+        assigned_facility_id: region.facility_ids,
         month_date: period
       )
       .where(htn_care_state: "dead")
