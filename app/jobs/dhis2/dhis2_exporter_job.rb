@@ -3,11 +3,12 @@ require "dhis2"
 module Dhis2
   class Dhis2ExporterJob
     include Sidekiq::Job
+    sidekiq_options retry: 2
 
     attr_reader :client
 
     def initialize
-      throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
+      # throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
       configuration = Dhis2::Configuration.new.tap do |config|
         config.url = ENV.fetch("DHIS2_URL")
@@ -32,7 +33,7 @@ module Dhis2
         )
       end
       export(export_data.flatten)
-      Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier} succeeded.")
+      Rails.logger.info("Dhis2::Dhis2ExporterJob for facility identifier #{facility_identifier_id} succeeded.")
     end
 
     def export(data_values)
@@ -54,11 +55,12 @@ module Dhis2
 
     def format_facility_period_data(facility_data, facility_identifier, period)
       formatted_facility_data = []
+      period = reporting_period(period)
       facility_data.each do |data_element, value|
         formatted_facility_data << {
           data_element: data_elements_map[data_element],
           org_unit: facility_identifier.identifier,
-          period: reporting_period(period),
+          period: period,
           value: value
         }
       end
