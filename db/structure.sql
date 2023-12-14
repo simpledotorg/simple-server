@@ -7162,6 +7162,20 @@ CREATE UNIQUE INDEX patient_states_month_date_patient_id ON public.reporting_pat
 
 
 --
+-- Name: patient_states_month_date_reg_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_reg_facility ON public.reporting_patient_states USING btree (month_date, registration_facility_id);
+
+
+--
+-- Name: patient_states_month_date_reg_facility_region; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_reg_facility_region ON public.reporting_patient_states USING btree (month_date, registration_facility_region_id);
+
+
+--
 -- Name: patient_visits_patient_id_month_date; Type: INDEX; Schema: public; Owner: -
 --
 
