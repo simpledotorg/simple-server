@@ -1,13 +1,13 @@
 class PatientStates::Hypertension::LostToFollowUpPatientsQuery
-  attr_reader :region, :period
+  attr_reader :facility_id, :period
 
-  def initialize(region, period)
-    @region = region
+  def initialize(facility_id, period)
+    @facility_id = facility_id
     @period = period
   end
 
   def call
-    PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(region, period)
+    PatientStates::Hypertension::CumulativeAssignedPatientsQuery.new(facility_id, period)
       .call
       .where(htn_care_state: "lost_to_follow_up")
   end
