@@ -19,6 +19,7 @@ yarn install
 bundle config set deployment 'true'
 bundle config set path 'vendor/bundle'
 bundle install
+envsubst < .semaphore/database.yml > config/database.yml
 bundle exec rake db:setup
 bundle exec rake db:test:prepare
 RAILS_ENV="test" bundle exec rails db:refresh_matviews
