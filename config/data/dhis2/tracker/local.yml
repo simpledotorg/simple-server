@@ -71,3 +71,4 @@ patient_attributes:
 district_options: ['Bagalkote','Bengaluru Urban','Bengaluru Rural','Belagavi','Ballary','Bidar','Vijayapura','Chamarajanagara','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','DAVANAGERE','DHARWAD','GADAG','KALABURAGI','HASSAN','HAVERI','KODAGU','KOLARA']
 
 state_options: ['ANDHRA_PRADESH','ARUNACHAL_PRADESH','ASSAM','BIHAR','CHATTISGARH','GOA','GUJARAT','HARYANA','HIMACHAL_PRADESH','JHARKHAND','KARNATAKA','KERALA','MADHYA_PRADESH','MAHARASHTRA','MANIPUR','MEGHALAYA','MIZORAM','NAGALAND','ODISHA','PUNJAB','RAJASTHAN']
+
