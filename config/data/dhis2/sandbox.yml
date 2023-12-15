@@ -1,3 +1,14 @@
+dhis2_data_elements:
+  htn_controlled: "HjtYhPqccW1"
+  htn_uncontrolled: "BrSik6uiybJ"
+  htn_cumulative_assigned: "tJKupDifWrk"
+  htn_cumulative_assigned_adjusted: "zxUkgo0WoG3"
+  htn_cumulative_registrations: "D2LQDgOKrY5"
+  htn_dead: "w5wLncrFOa3"
+  htn_monthly_registrations: "LpfOZRIPSkH"
+  htn_ltfu: "JbbqrwFlrBn"
+  htn_missed_visits: "pgC3wKFmKvm"
+
 disaggregated_dhis2_data_elements:
   htn_controlled: "HjtYhPqccW1"
   htn_uncontrolled: "BrSik6uiybJ"
