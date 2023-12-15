@@ -1,0 +1,7 @@
+default:
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  username: postgres
+  password: ~
+  database: simple-server_test_$SEMAPHORE_JOB_INDEX
