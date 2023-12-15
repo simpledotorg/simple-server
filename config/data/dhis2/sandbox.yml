@@ -1,13 +1,13 @@
 dhis2_data_elements:
-  htn_controlled: "HjtYhPqccW1"
-  htn_uncontrolled: "BrSik6uiybJ"
-  htn_cumulative_assigned: "tJKupDifWrk"
-  htn_cumulative_assigned_adjusted: "zxUkgo0WoG3"
-  htn_cumulative_registrations: "D2LQDgOKrY5"
-  htn_dead: "w5wLncrFOa3"
-  htn_monthly_registrations: "LpfOZRIPSkH"
-  htn_ltfu: "JbbqrwFlrBn"
-  htn_missed_visits: "pgC3wKFmKvm"
+  htn_controlled: "elWGoiZbYCa"
+  htn_uncontrolled: "Di8ckAcPyUT"
+  htn_cumulative_assigned: "Mx9MWScfIto"
+  htn_cumulative_assigned_adjusted: "njezGZZhAHE"
+  htn_cumulative_registrations: "oR5QO3WZ7CV"
+  htn_dead: "O4nEQtNS325"
+  htn_monthly_registrations: "sURvoNwsSnT"
+  htn_ltfu: "EPF0BKHxFm3"
+  htn_missed_visits: "krLrdM8K91W"
 
 disaggregated_dhis2_data_elements:
   htn_controlled: "HjtYhPqccW1"
