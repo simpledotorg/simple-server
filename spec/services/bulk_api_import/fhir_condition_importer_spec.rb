@@ -1,9 +1,9 @@
 require "rails_helper"
 
 RSpec.describe BulkApiImport::FhirConditionImporter do
-  before { create(:facility) }
-  let(:import_user) { ImportUser.find_or_create }
-  let(:org_id) { import_user.organization_id }
+  let(:facility) { create(:facility) }
+  let(:org_id) { facility.organization_id }
+  let(:import_user) { ImportUser.find_or_create(org_id: org_id) }
   let(:identifier) { SecureRandom.uuid }
   let(:patient) do
     build_stubbed(:patient, id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE + org_id, identifier))
