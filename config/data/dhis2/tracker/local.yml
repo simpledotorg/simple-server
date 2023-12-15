@@ -63,3 +63,11 @@ patient_attributes:
   ncd_patient_status: "fI1P3Mg1zOZ"
   phone_number: "YRDy9xy9jD0"
   receiving_htn_treatment: "l5yxkxHgTw9"
+  district: "Ot616hCy9j7"
+  state: "y52SN2FJ0p5"
+  record_data_consent: "YJGACwhN0St"
+  sms_consent: "D40A8CAZBqz"
+
+district_options: ['Bagalkote','Bengaluru Urban','Bengaluru Rural','Belagavi','Ballary','Bidar','Vijayapura','Chamarajanagara','Chikkaballapura','Chikkamagaluru','Chitradurga','Dakshina Kannada','DAVANAGERE','DHARWAD','GADAG','KALABURAGI','HASSAN','HAVERI','KODAGU','KOLARA']
+
+state_options: ['ANDHRA_PRADESH','ARUNACHAL_PRADESH','ASSAM','BIHAR','CHATTISGARH','GOA','GUJARAT','HARYANA','HIMACHAL_PRADESH','JHARKHAND','KARNATAKA','KERALA','MADHYA_PRADESH','MAHARASHTRA','MANIPUR','MEGHALAYA','MIZORAM','NAGALAND','ODISHA','PUNJAB','RAJASTHAN']

@@ -46,6 +46,7 @@ class Dhis2TrackerDataExporter
 
   def generate_enrollment(patient)
     {
+      trackedEntityType: DHIS2_CONFIG.dig(:tracked_entity_types, :person_htn),
       program: DHIS2_CONFIG.dig(:programs, :htn_registry),
       orgUnit: @org_unit_id,
       enrolledAt: patient.device_created_at.iso8601,
@@ -58,6 +59,10 @@ class Dhis2TrackerDataExporter
     first_name, last_name = first_and_last_names(patient.full_name)
     medical_history = patient.medical_history
     [
+      {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :hypertension),
+        value: medical_history.hypertension.upcase
+      },
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :current_address),
         value: address(patient)
@@ -89,6 +94,22 @@ class Dhis2TrackerDataExporter
       {
         attribute: DHIS2_CONFIG.dig(:patient_attributes, :receiving_htn_treatment),
         value: medical_history.receiving_treatment_for_hypertension
+      },
+      {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :district),
+        value: DHIS2_CONFIG[:district_options].sample
+      },
+      {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :state),
+        value: DHIS2_CONFIG[:state_options].sample
+      },
+      {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :record_data_consent),
+        value: true
+      },
+      {
+        attribute: DHIS2_CONFIG.dig(:patient_attributes, :sms_consent),
+        value: true
       }
     ]
   end
