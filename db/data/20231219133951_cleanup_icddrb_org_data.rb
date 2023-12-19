@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CleanupIcddrbFacilityData < ActiveRecord::Migration[6.1]
+class CleanupIcddrbOrgData < ActiveRecord::Migration[6.1]
   FACILITY_ID = "f472c5db-188f-4563-9bc7-9f86a6ed6403"
 
   def up
