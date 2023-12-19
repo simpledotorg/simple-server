@@ -3,7 +3,7 @@ require "faker"
 namespace :fhir do
   desc "Export simple patient-related data as fhir resources"
   task :export, [:file_path] => :environment do |_task, args|
-    patients = Patient.order(:created_at).last(10)
+    patients = Patient.order(:created_at)
     patients = remove_pii(patients)
     file_path = args[:file_path]
     resources = []
@@ -33,6 +33,7 @@ namespace :fhir do
   end
 
   def remove_pii(patients)
+    country = Faker::Address.country
     patients.each do |patient|
       patient.full_name = Faker::Name.name
       address = patient.address
@@ -40,7 +41,7 @@ namespace :fhir do
       address.district = Faker::Address.district
       address.state = Faker::Address.state
       address.pin = Faker::Address.zip
-      address.country = "Sri Lanka"
+      address.country = country
       patient.phone_numbers.each do |phone_number|
         phone_number.number = Faker::PhoneNumber.phone_number
       end
