@@ -2,7 +2,7 @@ FacilityGroupBlockFields = function() {
   this.newBlockRow = (name) => {
     let template = $("template#block-row").html()
     let $template = $(template);
-    $template.find(".block-name").html(name);
+    $template.find(".block-name").text(name);
     $template.attr("data-block-identifier", name);
     $template.find(".remove-block").attr("data-block-identifier", name);
     $template.find(".remove-block").attr(
@@ -13,9 +13,14 @@ FacilityGroupBlockFields = function() {
     return $template;
   }
 
+  this.sanitizeInput = (input) => {
+    return $("<div/>").text(input).html();
+  }
+
   this.submitAddBlock = () => {
     let $blockInput = $("#new-block-name")
-    this.addBlock($blockInput.val());
+    let $blockName = this.sanitizeInput($blockInput.val());
+    this.addBlock($blockName);
     $blockInput.val("");
     this.scrollBlockListToBottom();
   }

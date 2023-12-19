@@ -6,6 +6,7 @@ class BulkApiImport::FhirAppointmentImporter
   def initialize(resource:, organization_id:)
     @resource = resource
     @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -16,12 +17,12 @@ class BulkApiImport::FhirAppointmentImporter
     appointment = Appointment.merge(transformed_params)
     appointment.update_patient_status
 
-    AuditLog.merge_log(import_user, appointment) if appointment.present?
+    AuditLog.merge_log(@import_user, appointment) if appointment.present?
     appointment
   end
 
   def request_metadata
-    {user_id: import_user.id}
+    {user_id: @import_user.id}
   end
 
   def build_attributes
