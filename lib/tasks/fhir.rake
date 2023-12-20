@@ -10,19 +10,19 @@ namespace :fhir do
 
     patients.each do |patient|
       resources << OneOff::Fhir::PatientExporter.new(patient).export
-      resources << patient.blood_pressures.map { |bp|
+      resources << patient.blood_pressures.map do |bp|
         OneOff::Fhir::BloodPressureExporter.new(bp).export
-      }
-      resources << patient.blood_sugars.map { |bs|
+      end
+      resources << patient.blood_sugars.map do |bs|
         OneOff::Fhir::BloodSugarExporter.new(bs).export
-      }
-      resources << patient.prescription_drugs.map { |drug|
+      end
+      resources << patient.prescription_drugs.map do |drug|
         OneOff::Fhir::PrescriptionDrugExporter.new(drug).export
-      }
+      end
       resources << OneOff::Fhir::MedicalHistoryExporter.new(patient.medical_history).export
-      resources << patient.appointments.map { |appointment|
+      resources << patient.appointments.map do |appointment|
         OneOff::Fhir::AppointmentExporter.new(appointment).export
-      }
+      end
     end
 
     File.open(file_path, "w+") do |f|

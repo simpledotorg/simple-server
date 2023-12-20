@@ -10,13 +10,13 @@ class OneOff::Fhir::PatientExporter
   def patient_identifiers
     identifiers = [
       FHIR::Identifier.new(
-        value: patient.id.to_s,
+        value: patient.id,
         use: "official"
       )
     ]
     patient.business_identifiers.simple_bp_passport.each do |identifier|
       identifiers << FHIR::Identifier.new(
-        value: identifier.identifier.to_s,
+        value: identifier.identifier,
         use: "secondary"
       )
     end
@@ -66,16 +66,13 @@ class OneOff::Fhir::PatientExporter
   end
 
   def gender
-    unless ["male", "female"].include?(patient.gender)
-      return "other"
-    end
-    patient.gender.to_s
+    return "other" unless ["male", "female"].include?(patient.gender)
+
+    patient.gender
   end
 
   def birth_date
-    unless patient.date_of_birth
-      return patient.age_updated_at - patient.age.years
-    end
+    return patient.age_updated_at - patient.age.years unless patient.date_of_birth
 
     patient.date_of_birth
   end

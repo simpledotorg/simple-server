@@ -11,7 +11,7 @@ class OneOff::Fhir::BloodPressureExporter
     FHIR::Observation.new(
       identifier: [
         FHIR::Identifier.new(
-          value: blood_pressure.id.to_s
+          value: blood_pressure.id
         )
       ],
       code: FHIR::CodeableConcept.new(

@@ -13,7 +13,7 @@ module OneOff
         FHIR::Observation.new(
           identifier: [
             FHIR::Identifier.new(
-              value: blood_sugar.id.to_s
+              value: blood_sugar.id
             )
           ],
           code: FHIR::CodeableConcept.new(
