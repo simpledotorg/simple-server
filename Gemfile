@@ -141,6 +141,6 @@ group :test do
   gem "puma"
   gem "rspec-sidekiq"
   gem "simplecov", require: false
-  gem "webdrivers", ">= 5.2.0"
+  gem "webdrivers", ">= 5.3.0"
   gem "webmock"
 end
