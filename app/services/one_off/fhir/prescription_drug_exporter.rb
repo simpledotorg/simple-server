@@ -28,33 +28,20 @@ module OneOff
           status: prescription_drug.is_deleted ? "ended" : "active",
           intent: "proposal",
           medicationReference: FHIR::Reference.new(
-            id: FHIR::Medication.new(
-              identifier: FHIR::Identifier.new(
-                value: prescription_drug.id
-              ),
-              code: FHIR::CodeableConcept.new(
-                coding: FHIR::Coding.new(
-                  system: "http://www.nlm.nih.gov/research/umls/rxnorm",
-                  code: prescription_drug.rxnorm_code,
-                  display: prescription_drug.name
-                )
-              )
+            identifier: FHIR::Identifier.new(
+              value: prescription_drug.id
             )
           ),
           dosageInstruction: dosage_instruction,
           dispenseRequest: dispense_request,
           performer: FHIR::Reference.new(
-            id: FHIR::Organization.new(
-              identifier: FHIR::Identifier.new(
-                value: prescription_drug.facility_id
-              )
+            identifier: FHIR::Identifier.new(
+              value: prescription_drug.facility_id
             )
           ),
           subject: FHIR::Reference.new(
-            id: FHIR::Patient.new(
-              identifier: FHIR::Identifier.new(
-                value: prescription_drug.patient_id
-              )
+            identifier: FHIR::Identifier.new(
+              value: prescription_drug.patient_id
             )
           ),
           meta: FHIR::Meta.new(

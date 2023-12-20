@@ -25,10 +25,8 @@ module OneOff
       def generate_condition(condition_code)
         FHIR::Condition.new(
           subject: FHIR::Reference.new(
-            id: FHIR::Patient.new(
-              identifier: FHIR::Identifier.new(
-                value: medical_history.patient_id
-              )
+            identifier: FHIR::Identifier.new(
+              value: medical_history.patient_id
             )
           ),
           code: [

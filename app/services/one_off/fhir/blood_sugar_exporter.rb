@@ -42,13 +42,13 @@ module OneOff
           ],
           status: "final",
           subject: FHIR::Reference.new(
-            id: FHIR::Patient.new(
-              id: blood_sugar.patient_id
+            identifier: FHIR::Identifier.new(
+              value: blood_sugar.patient_id
             )
           ),
           performer: FHIR::Reference.new(
-            id: FHIR::Organization.new(
-              id: blood_sugar.facility_id
+            identifier: FHIR::Identifier.new(
+              value: blood_sugar.facility_id
             )
           ),
           meta: FHIR::Meta.new(

@@ -36,12 +36,8 @@ class OneOff::Fhir::PatientExporter
       birthDate: birth_date.iso8601,
       deceasedBoolean: patient.status == "dead",
       managingOrganization: FHIR::Reference.new(
-        id: FHIR::Organization.new(
-          identifier: [
-            FHIR::Identifier.new(
-              value: patient.assigned_facility_id
-            )
-          ]
+        identifier: FHIR::Identifier.new(
+          value: patient.assigned_facility_id
         )
       ),
       meta: FHIR::Meta.new(

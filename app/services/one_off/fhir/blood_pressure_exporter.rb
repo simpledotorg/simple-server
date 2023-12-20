@@ -25,8 +25,8 @@ class OneOff::Fhir::BloodPressureExporter
         observation_component("8460-8", blood_pressure.diastolic)
       ],
       subject: FHIR::Reference.new(
-        id: FHIR::Patient.new(
-          id: blood_pressure.patient_id
+        identifier: FHIR::Identifier.new(
+          value: blood_pressure.patient_id
         )
       ),
       meta: FHIR::Meta.new(
@@ -34,10 +34,8 @@ class OneOff::Fhir::BloodPressureExporter
         createdAt: blood_pressure.recorded_at.iso8601
       ),
       performer: FHIR::Reference.new(
-        id: FHIR::Organization.new(
-          identifier: FHIR::Identifier.new(
-            value: blood_pressure.facility_id
-          )
+        identifier: FHIR::Identifier.new(
+          value: blood_pressure.facility_id
         )
       ),
       status: "final"

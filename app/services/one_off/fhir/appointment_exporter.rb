@@ -16,10 +16,8 @@ module OneOff
           participant: [
             FHIR::Appointment::Participant.new(
               actor: FHIR::Reference.new(
-                id: FHIR::Patient.new(
-                  identifier: FHIR::Identifier.new(
-                    value: appointment.patient_id
-                  )
+                identifier: FHIR::Identifier.new(
+                  value: appointment.patient_id
                 )
               ),
               status: participant_status
