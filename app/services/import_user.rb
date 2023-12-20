@@ -1,13 +1,11 @@
 class ImportUser
-  IMPORT_USER_PHONE_NUMBER = "0000000001"
-
   def self.find_or_create(org_id:)
     find(org_id) || create(org_id)
   end
 
   def self.find(org_id)
     PhoneNumberAuthentication.joins(:user)
-      .find_by(phone_number: IMPORT_USER_PHONE_NUMBER, user: {organization_id: org_id})&.user
+      .find_by(phone_number: bot_phone_number(org_id), user: {organization_id: org_id})&.user
   end
 
   def self.create(org_id)
@@ -24,7 +22,7 @@ class ImportUser
     )
 
     phone_number_authentication = PhoneNumberAuthentication.new(
-      phone_number: IMPORT_USER_PHONE_NUMBER,
+      phone_number: bot_phone_number(org_id),
       password: generate_pin,
       registration_facility_id: facility.id
     ).tap do |pna|
@@ -42,5 +40,13 @@ class ImportUser
 
   def self.generate_pin
     "#{rand(10)}#{rand(10)}#{rand(10)}#{rand(10)}"
+  end
+
+  def self.bot_phone_number(org_id)
+    # Losslessly compresses an organisation UUID value into a url-safe base64 representation.
+    # This is a bit more compact than stuffing a UUID string as a phone number directly. Other
+    # forms of hashing may lead to information loss, doing it this way keeps the collision
+    # probability the same as the organization UUID itself.
+    [[org_id.remove("-")].pack("H*")].pack("m0").tr("+/", "-_")[..21]
   end
 end
