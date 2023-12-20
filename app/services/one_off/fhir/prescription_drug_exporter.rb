@@ -52,35 +52,36 @@ module OneOff
       end
 
       def dosage_instruction
-        if prescription_drug.frequency.nil?
-          return nil
+        timing = nil
+        if prescription_drug.frequency.present?
+          timing = FHIR::Timing.new(
+            code: FHIR::CodeableConcept.new(
+              coding: FHIR::Coding.new(
+                code: medication_frequency_code
+              )
+            )
+          )
         end
+
         [
           FHIR::Dosage.new(
             doseAndRate: [
               FHIR::Dosage::DoseAndRate.new(
                 doseQuantity: FHIR::Quantity.new(
-                  value: prescription_drug.dosage.split("MG").first,
+                  value: prescription_drug.dosage.delete_suffix("MG"),
                   unit: "mg",
                   system: "http://unitsofmeasure.org"
                 )
               )
             ],
-            timing: FHIR::Timing.new(
-              code: FHIR::CodeableConcept.new(
-                coding: FHIR::Coding.new(
-                  code: medication_frequency_code
-                )
-              )
-            )
+            timing: timing
           )
         ]
       end
 
       def dispense_request
-        if prescription_drug.duration_in_days.nil?
-          return nil
-        end
+        return if prescription_drug.duration_in_days.nil?
+
         FHIR::MedicationRequest::DispenseRequest.new(
           expectedSupplyDuration: FHIR::Duration.new(
             value: prescription_drug.duration_in_days,

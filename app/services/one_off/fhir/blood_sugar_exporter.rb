@@ -10,6 +10,9 @@ module OneOff
       end
 
       def export
+        unit = "mg/dL"
+        unit = "%{HemoglobinA1C}" if blood_sugar.blood_sugar_type_hba1c?
+
         FHIR::Observation.new(
           identifier: [
             FHIR::Identifier.new(
@@ -18,7 +21,7 @@ module OneOff
           ],
           code: FHIR::CodeableConcept.new(
             coding: FHIR::Coding.new(
-              system: "http://lonic.com/",
+              system: "http://loinc.org/",
               code: "2339-0"
             )
           ),
@@ -34,9 +37,9 @@ module OneOff
               ),
               valueQuantity: FHIR::Quantity.new(
                 value: blood_sugar.blood_sugar_value,
-                unit: "mg/dL",
+                unit: unit,
                 system: "http://unitsofmeasure.org",
-                code: "mg/dL"
+                code: unit
               )
             )
           ],

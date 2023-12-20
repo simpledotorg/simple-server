@@ -16,13 +16,13 @@ class OneOff::Fhir::BloodPressureExporter
       ],
       code: FHIR::CodeableConcept.new(
         coding: FHIR::Coding.new(
-          system: "http://lonic.com/",
+          system: "http://loinc.org/",
           code: "85354-9"
         )
       ),
       component: [
-        observation_component("8460-6", blood_pressure.systolic),
-        observation_component("8460-8", blood_pressure.diastolic)
+        observation_component("8480-6", blood_pressure.systolic),
+        observation_component("8462-4", blood_pressure.diastolic)
       ],
       subject: FHIR::Reference.new(
         identifier: FHIR::Identifier.new(

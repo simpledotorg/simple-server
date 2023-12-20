@@ -13,12 +13,8 @@ module OneOff
 
       def export
         conditions = []
-        if medical_history.diabetes == "yes"
-          conditions << generate_condition(DM_CONDITION_CODE)
-        end
-        if medical_history.hypertension == "yes"
-          conditions << generate_condition(HTN_CONDITION_CODE)
-        end
+        conditions << generate_condition(DM_CONDITION_CODE) if medical_history.diabetes_yes?
+        conditions << generate_condition(HTN_CONDITION_CODE) if medical_history.hypertension_yes?
         conditions
       end
 

@@ -7,22 +7,6 @@ class OneOff::Fhir::PatientExporter
     @patient = patient
   end
 
-  def patient_identifiers
-    identifiers = [
-      FHIR::Identifier.new(
-        value: patient.id,
-        use: "official"
-      )
-    ]
-    patient.business_identifiers.simple_bp_passport.each do |identifier|
-      identifiers << FHIR::Identifier.new(
-        value: identifier.identifier,
-        use: "secondary"
-      )
-    end
-    identifiers
-  end
-
   def export
     FHIR::Patient.new(
       identifier: patient_identifiers,
@@ -31,17 +15,17 @@ class OneOff::Fhir::PatientExporter
           text: patient.full_name
         )
       ],
-      active: patient.status == "active",
+      active: patient.status_active?,
       gender: gender,
       birthDate: birth_date.iso8601,
-      deceasedBoolean: patient.status == "dead",
+      deceasedBoolean: patient.status_dead?,
       managingOrganization: FHIR::Reference.new(
         identifier: FHIR::Identifier.new(
           value: patient.assigned_facility_id
         )
       ),
       meta: FHIR::Meta.new(
-        lastUpdated: patient.updated_at.iso8601,
+        lastUpdated: patient.device_updated_at.iso8601,
         createdAt: patient.recorded_at.iso8601
       ),
       telecom: patient.phone_numbers.map do |phone_number|
@@ -59,6 +43,22 @@ class OneOff::Fhir::PatientExporter
         postalCode: patient.address.pin
       )
     )
+  end
+
+  def patient_identifiers
+    identifiers = [
+      FHIR::Identifier.new(
+        value: patient.id,
+        use: "official"
+      )
+    ]
+    patient.business_identifiers.simple_bp_passport.each do |identifier|
+      identifiers << FHIR::Identifier.new(
+        value: identifier.identifier,
+        use: "secondary"
+      )
+    end
+    identifiers
   end
 
   def gender
