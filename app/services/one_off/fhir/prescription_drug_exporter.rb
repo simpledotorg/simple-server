@@ -52,6 +52,11 @@ module OneOff
       end
 
       def dosage_instruction
+        unless dosage_value.present?
+          Rails.logger.warn("Dosage #{prescription_drug.dosage} does not match expected regex. Not exporting dosageInstruction")
+          return
+        end
+
         timing = nil
         if prescription_drug.frequency.present?
           timing = FHIR::Timing.new(
@@ -68,7 +73,7 @@ module OneOff
             doseAndRate: [
               FHIR::Dosage::DoseAndRate.new(
                 doseQuantity: FHIR::Quantity.new(
-                  value: prescription_drug.dosage.delete_suffix("MG"),
+                  value: dosage_value,
                   unit: "mg",
                   system: "http://unitsofmeasure.org"
                 )
@@ -90,6 +95,16 @@ module OneOff
             code: "d"
           )
         )
+      end
+
+      # There are a number of ways dosage can be entered without
+      # conforming to the below regex. We're only parsing values
+      # in mg without frequency added in the dosage string. This
+      # can be updated in the future as required.
+      def dosage_value
+        dosage = prescription_drug.dosage.delete(" ").downcase
+        regex = /\A[0-9]*.?[0-9]*?mg\z/
+        dosage.match(regex)&.to_s&.delete_suffix("mg")
       end
 
       def medication_frequency_code
