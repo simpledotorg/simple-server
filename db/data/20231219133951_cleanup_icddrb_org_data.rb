@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-class CleanupIcddrbFacilityData < ActiveRecord::Migration[6.1]
+class CleanupIcddrbOrgData < ActiveRecord::Migration[6.1]
   FACILITY_ID = "f472c5db-188f-4563-9bc7-9f86a6ed6403"
 
   def up
     unless CountryConfig.current_country?("Bangladesh") && ENV["SIMPLE_SERVER_ENV"] == "production"
-      return print "CleanupIcddrbFacilityData is only for production Bangladesh"
+      return print "CleanupIcddrbOrgData is only for production Bangladesh"
     end
 
     ActiveRecord::Base.transaction do
