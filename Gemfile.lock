@@ -83,7 +83,7 @@ GEM
     bcrypt_pbkdf (1.1.0)
     benchmark-ips (2.10.0)
     bindex (0.8.1)
-    bootsnap (1.13.0)
+    bootsnap (1.17.0)
       msgpack (~> 1.2)
     bootstrap (4.5.3)
       autoprefixer-rails (>= 9.1.0)
@@ -381,7 +381,7 @@ GEM
     minitest (5.16.3)
     mock_redis (0.33.0)
       ruby2_keywords
-    msgpack (1.5.6)
+    msgpack (1.7.2)
     nenv (0.3.0)
     net-scp (4.0.0.rc1)
       net-ssh (>= 2.6.5, < 8.0.0)
