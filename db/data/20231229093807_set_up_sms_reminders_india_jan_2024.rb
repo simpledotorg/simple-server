@@ -47,6 +47,6 @@ class SetUpSmsRemindersIndiaJan2024 < ActiveRecord::Migration[6.1]
     return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
 
     Experimentation::Experiment.current_patients.find_by_name(CURRENT_PATIENT_EXPERIMENT_NAME)&.cancel
-    Experimentation::Experiment.current_patients.find_by_name(STALE_PATIENT_EXPERIMENT_NAME)&.cancel
+    Experimentation::Experiment.stale_patients.find_by_name(STALE_PATIENT_EXPERIMENT_NAME)&.cancel
   end
 end
