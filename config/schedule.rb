@@ -50,6 +50,12 @@ every :day, at: local("02:00 pm"), roles: [:cron] do
   end
 end
 
+every :day, at: local("02:00 pm"), roles: [:cron] do
+  if CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
+    rake "alpha_sms:check_balance"
+  end
+end
+
 every :day, at: local("05:30 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
