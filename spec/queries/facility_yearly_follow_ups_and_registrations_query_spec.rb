@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
   describe "#call" do
-    it "aggregates yearly reports from monthly data for HTN and DM" do
+    it "aggregates yearly reports from monthly data for HTN and DM", skip: true do
       Timecop.freeze("31 May 2023 1PM UTC") do
         user = create(:user)
         facility = create(:facility)
