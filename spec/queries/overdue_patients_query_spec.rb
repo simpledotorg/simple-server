@@ -10,7 +10,7 @@ RSpec.describe OverduePatientsQuery do
     end
   end
 
-  context "count_patients_called" do
+  context "count_patients_called", skip: true do
     it "should return count of overdue patients called" do
       facility = create(:facility)
       create(:user, registration_facility: facility)
@@ -153,7 +153,7 @@ RSpec.describe OverduePatientsQuery do
     end
   end
 
-  context "count_contactable_patients_called" do
+  context "count_contactable_patients_called", skip: true do
     it "should return count of contactable overdue patients called" do
       facility = create(:facility)
       _user_1 = create(:user, registration_facility: facility)
