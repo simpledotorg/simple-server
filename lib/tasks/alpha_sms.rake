@@ -11,9 +11,9 @@ namespace :alpha_sms do
     balance_amount = response.dig(:data, :balance)&.to_f
 
     if expiry_date < alert_in_days.days.from_now
-      Rails.logger.error("Account balance expires in less than #{alert_in_days}. Please recharge before #{expiry_date}.")
+      Rails.logger.error("AlphaSms account balance expires in less than #{alert_in_days}. Please recharge before #{expiry_date}.")
     elsif balance_amount < (alert_in_days * max_cost_per_day)
-      Rails.logger.error("Remaining account balance is #{balance_amount} BDT. May expire in less than #{alert_in_days} days.")
+      Rails.logger.error("Alphasms account balance remaining is #{balance_amount} BDT. May expire in less than #{alert_in_days} days.")
     end
     print("Balance: #{balance_amount} BDT\nExpiry: #{expiry_date}")
   end
