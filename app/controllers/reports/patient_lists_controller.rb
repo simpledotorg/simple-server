@@ -1,4 +1,6 @@
 class Reports::PatientListsController < AdminController
+  include ZipTricks::RailsStreaming
+
   attr_reader :scope, :region, :download_params
 
   before_action :set_scope, only: [:show, :diabetes]
@@ -6,6 +8,34 @@ class Reports::PatientListsController < AdminController
   before_action :set_download_params, only: [:show, :diabetes]
 
   def show
+    if Flipper.enabled?(:patient_list_direct_download)
+      Datadog::Tracing.trace("Direct patient line list download") do
+        patients = @region.assigned_patients.excluding_dead
+        enumerator = PatientsWithHistoryExporter.csv_enumerator(patients)
+
+        file_name = "patient-list_#{@region.region_type}_#{@region.name}_#{I18n.l(Date.current)}"
+        csv_file_name = "#{file_name}.csv"
+        zip_archive_name = "#{file_name}.zip"
+        response.headers["Content-Disposition"] = ActionDispatch::Http::ContentDisposition.format(
+          disposition: "attachment",
+          filename: zip_archive_name
+        )
+
+        first_row = enumerator.peek
+        response.headers["Last-Modified"] = first_row.second
+
+        return zip_tricks_stream do |zip|
+          zip.write_deflated_file(csv_file_name) do |sink|
+            CSV(sink) do |csv_write|
+              enumerator.each do |row|
+                csv_write << row
+              end
+            end
+          end
+        end
+      end
+    end
+
     PatientListDownloadJob.perform_async(recipient_email, region_class, download_params)
 
     redirect_back(
