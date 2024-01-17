@@ -15,7 +15,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
   end
 
   describe "#import" do
-    it "imports a medication request" do
+    it "imports a condition" do
       identifier = patient_identifier.identifier
       expect {
         described_class.new(
@@ -23,6 +23,31 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
           organization_id: org_id
         ).import
       }.to change(MedicalHistory, :count).by(1)
+    end
+
+    it "it ensures no conditions are duplicated" do
+      identifier = patient_identifier.identifier
+      expect {
+        2.times do
+          described_class.new(
+            resource: build_condition_import_resource.merge(subject: {identifier: identifier}),
+            organization_id: org_id
+          ).import
+        end
+      }.to change(MedicalHistory, :count).by(1)
+    end
+
+    it "accumulates diagnoses" do
+      identifier = patient_identifier.identifier
+      expect {
+        described_class.new(
+          resource: build_condition_import_resource.merge(
+            subject: {identifier: identifier},
+            code: {coding: [{code: "38341003"}]}
+          ),
+          organization_id: org_id
+        ).import
+      }.to change { MedicalHistory.order(created_at: :desc).first&.hypertension }.from(nil).to("yes")
     end
   end
 
@@ -41,14 +66,18 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
 
   describe "#diagnoses" do
     it "extracts diagnoses for diabetes and hypertension" do
+      identifier = patient_identifier.identifier
       [
         {coding: [], expected: {hypertension: "no", diabetes: "no"}},
         {coding: [{code: "38341003"}], expected: {hypertension: "yes", diabetes: "no"}},
         {coding: [{code: "73211009"}], expected: {hypertension: "no", diabetes: "yes"}},
         {coding: [{code: "38341003"}, {code: "73211009"}], expected: {hypertension: "yes", diabetes: "yes"}}
       ].each do |coding:, expected:|
-        expect(described_class.new(resource: {code: {coding: coding}}, organization_id: org_id).diagnoses)
-          .to eq(expected)
+        expect(
+          described_class.new(
+            resource: {subject: {identifier: identifier}, code: {coding: coding}}, organization_id: org_id
+          ).diagnoses
+        ).to eq(expected)
       end
     end
   end
