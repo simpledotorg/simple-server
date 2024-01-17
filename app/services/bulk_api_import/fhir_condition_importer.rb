@@ -27,7 +27,7 @@ class BulkApiImport::FhirConditionImporter
 
   def build_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      id: condition_id,
       patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
       prior_heart_attack: "unknown",
       prior_stroke: "unknown",
@@ -41,10 +41,19 @@ class BulkApiImport::FhirConditionImporter
     }.compact.with_indifferent_access
   end
 
+  def condition_id
+    @condition_id ||= translate_id(@resource[:subject][:identifier], org_id: @organization_id, ns_prefix: "condition")
+  end
+
   def diagnoses
-    @resource[:code][:coding].each_with_object({hypertension: "no", diabetes: "no"}) do |coding, diagnoses|
-      condition = CONDITION_TRANSLATION[coding[:code]]
-      diagnoses[condition] = "yes"
+    @diagnoses ||= begin
+      prev_htn, prev_dm = MedicalHistory.where(id: condition_id).pluck(:hypertension, :diabetes).first
+      prior_diagnosis = {hypertension: prev_htn || "no", diabetes: prev_dm || "no"}
+
+      @resource[:code][:coding].each_with_object(prior_diagnosis) do |coding, diagnoses|
+        condition = CONDITION_TRANSLATION[coding[:code]]
+        diagnoses[condition] = "yes"
+      end
     end
   end
 end
