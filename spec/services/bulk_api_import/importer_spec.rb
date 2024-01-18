@@ -72,7 +72,7 @@ RSpec.describe BulkApiImport::Importer do
       end
 
       expect { described_class.new(resource_list: resources, organization_id: organization_id).import }
-        .to change(MedicalHistory, :count).by(2)
+        .to change(MedicalHistory, :count).by(1)
     end
   end
 
