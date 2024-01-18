@@ -39,9 +39,12 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
 
     it "accumulates diagnoses" do
       identifier = patient_identifier.identifier
+      first_update_time = Time.current
+      second_update_time = (first_update_time + 1.hour)
 
       first_medical_history_state = described_class.new(
         resource: build_condition_import_resource.merge(
+          meta: {lastUpdated: first_update_time.iso8601, createdAt: first_update_time.iso8601},
           subject: {identifier: identifier},
           code: {coding: [{code: "38341003"}]}
         ),
@@ -50,6 +53,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
 
       second_medical_history_state = described_class.new(
         resource: build_condition_import_resource.merge(
+          meta: {lastUpdated: second_update_time.iso8601, createdAt: second_update_time.iso8601},
           subject: {identifier: identifier},
           code: {coding: [{code: "73211009"}]}
         ),
