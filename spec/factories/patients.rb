@@ -146,8 +146,10 @@ FactoryBot.define do
       end
       recorded_at { 2.years.ago }
       with_overdue_appointments
-      call_results { build_list(:call_result, 1, user_id: user.id, appointment_id: appointments.first.id, result_type: :removed_from_overdue_list,
-                                                 remove_reason: CallResult.remove_reasons.keys.sample, device_created_at: call_date) }
+      call_results {
+        build_list(:call_result, 1, user_id: user.id, appointment_id: appointments.first.id, result_type: :removed_from_overdue_list,
+                                                 remove_reason: CallResult.remove_reasons.keys.sample, device_created_at: call_date)
+      }
     end
   end
 end
