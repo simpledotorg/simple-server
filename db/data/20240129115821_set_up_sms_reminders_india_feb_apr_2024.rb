@@ -20,7 +20,7 @@ class SetUpSmsRemindersIndiaFebApr2024 < ActiveRecord::Migration[6.1]
   end
 
   def up
-    # return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
+    return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
 
     EXPERIMENTS_DATA.each do |experiment_data|
       ActiveRecord::Base.transaction do
