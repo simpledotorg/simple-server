@@ -92,7 +92,9 @@ When an experiment starts, you should
   - See: [important links](#important-links)
 - Currently we get a daily summary of running experiments on the #ab-testing-stats Slack channel
   - See note on [what to watch out for](#things-to-keep-an-eye-on-in-ab-testing-stats) in these stats
-- We have daily cron jobs running to check the account balance for sms providers that don't allow recurring recharge. Alerts are in the process of being configured
+- Sms account balance
+  - We have daily cron jobs running to check the account balance for sms providers that don't allow recurring recharge. Alerts are in the process of being configured to automate this. Use Slack reminders as a stopgap.
+  - See [this doc](https://docs.google.com/document/d/1zvKya0xtSXjnvC9RlUDEbFXO6xQGRTZ8J1xElcgpTlo/edit#heading=h.sqmvjkylmtqy) on how to make recharges for each country
 - See note on why notifications sometimes [continue to go out after an experiment has "ended"](#notifications-go-out-after-experiment-has-ended)
 
 ## Cancelling an experiment
