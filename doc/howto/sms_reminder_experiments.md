@@ -1,48 +1,80 @@
-# Running SMS reminder experiments
+# Guide to SMS reminder experiments
 
-## Prerequisites
-To start an SMS experiment you'll need to gather information about the following:
+This document is a guide on how to set up and manage experiments based on sms reminders. For simply sending sms reminders, see the [sms reminders how-to guide](doc/howto/sms_reminders.md) first.
 
+## Setting up an experiment
+
+To set up an experiment, you have to create an experiment object, its treatment groups and its reminder templates. Generally, both current and stale patient experiments are set up together (see: experiment_type below). But you can set up either one based on your requirement.
+
+### Steps
+- Ensure that the `experiment` and `notifications` Flipper flags are enabled in your experiment's environment
+- Create the [experiment](#experiment), its [treatment groups](#treatment-groups) and its [reminder templates](#reminder-templates)
+  - See [appendix](#appendix) for an example
+  - Ideally, create these via a data migration in order to keep track of changes made and to be able to rollback changes in case of errors
+    - See example [data migration](TODO)
+- See note on [setting up consecutive experiments](#consecutive-experiments)
+- Also see note on [adding a notification dashboard](#notification-dashboard-in-a-new-environment) when setting up experiments in a new environment
+
+### Components
 #### Experiment
 
-- `name` - A name for the experiment.
-- `experiment_type` - There are two kinds of experiments depending on the type of the patients that will be enrolled.
-  - `current_patients` - Patients who have an upcoming appointment.
-  - `stale_patients` - Patients who have not visited in the last year and do not have a scheduled appointment in the future.
-- `max_patients_per_day` - The maximum number of patients to be enrolled per day.
-- `start_time` - Enrollments will begin at this point in time.
-- `end_time` - Enrollments will stop at this point in time.
-- `filters` - A hash of mutually exclusive `include/exclude` filters for `states`, `blocks` & `facilities`.
+See note on [experiment duration](#experiment-duration)
+
+- **name**: _A name for the experiment_
+  - Convention is `<experiment type> <month> <year>`. eg: "Current patients Feb 2024"
+  - This is so we have a uniquely and easily identifiable name for each experiment
+- **experiment_type**: _Depending on the type of patients that will be enrolled_
+  - current_patients: Patients who have an upcoming appointment
+  - stale_patients: Patients who have not visited for a while (usually 35 to 365 days since their last visit) and do not have a scheduled appointment in the future.
+- **max_patients_per_day**: _The maximum number of patients to be enrolled per day_
+  - For current patient experiments, this value should be well above the average number of daily appointments in that environment so that all eligible patients get reminders
+  - For stale patient experiments:
+    - The entire stale patient pool should be rotated through within the experiment duration, so if you have 1000 stale patients in the system, max_patients_per_day = total_stale_patients/experiment_duration = 1000/30 = ~ 33 patients
+    - A nice side effect is that since the pool of eligible patients is usually way larger, this field helps limit the daily enrollments to a manageable number. This way we can consistently manage our messaging costs
+  - Usually, you can set the higher of the two for both experiment types
+- **start_time**: _Enrollments will begin at this point in time_
+  - A note on experiment timelines can be found [here](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/019-ab-testing-enhancements.md#experiment-timeline)
+- **end_time**: _Enrollments will stop at this point in time_
+- **filters**: _Regions to send notifications in_
+  - This field is a hash of mutually exclusive `include/exclude` region filters for `states`, `blocks` & `facilities`.
+  - For an example requirement to send smses to patients in all facilities in block `block-A` except `facility-B`
+    and `facility-C`, filters would look like:
+    ```ruby
+    filters = {
+    "blocks" => {"include" => ["block-A"]},
+    "facilities" => {"exclude" => ["facility-B", "facility-C"]}
+    } 
+    ```
+  - Note that `states` expects an array of state names, `blocks` expects an array of block IDs, and `facilities` expects an array of facility slugs. This should change in the future. 
 
 #### Treatment Groups
 
-- The different buckets which patients will be assigned to in the experiment.
-  Each treatment group will have a different content or frequency of messages sent to it.
-- You will probably also need a `control` group that doesn't receive any messages as a baseline.
+- Treatment groups are the different buckets to which patients will be assigned in an experiment. Each treatment group will have a different message content or frequency of messages sent to it.
+- You will probably also need a `control` group that doesn't receive any messages to have a baseline for your experiment.
+- Note: For [non-experimental sms reminders](doc/howto/sms_reminders.md), there are no treatment groups as such since we send the same messages to all patients. But since we define our requirements in terms of treatment groups, we set up a single treatment group and add all the reminder templates to it.
 
 #### Reminder templates
 
-- The content and frequency of messages in each `treatment_group` is determined by it's `reminder_templates`.
-  Each reminder template has
-  - a `message` - The locale key of the message (for ex. `notifications.set01.basic`).
-  - a `remind_on` -  The day on which this message will be sent out relative to the expected date of return.
-  - The `message` texts must be added to `config/locales/notifications/`.
-- Reminder templates are classified in 3 sets defined as follows:
-  - `set01` is for upcoming appointments.
-  - `set02` is for patients having appointment on the same day of the notification.
-  - `set03` is for patients(current or stale) who have missed appointments.
+The content and frequency of messages in each `treatment_group` is defined by its `reminder_templates`. Each reminder template has the following fields:
+- **message**: The locale key of the message template
+  - Format is `notifications.<set-number>.<message-type>`. Example: "notifications.set01.basic"
+  - Message templates for reminder templates are classified into the following 3 sets:
+    - `set01` for when the appointment is coming up
+    - `set02` for when the appointment is on the same day as the notification
+    - `set03` for when the appointment has passed
+  - The message template texts can be found in `config/locales/notifications/`
+  - See note on [adding new message templates](#adding-new-message-templates)
+- **remind_on**: The day on which this message will be sent relative to the expected date of return
+  - This is an integer value: -1 to send a notification 1 day before the appointment, 0 to send it on the appointment date, 3 to send it 3 days after the appointment
+  - Be sure to use the correct message set number based on your remind_on value so that the patient sees a meaningful message when they receive the notification. 
+  - The expected date of return is different for current and stale patient experiments. See: [here](https://github.com/simpledotorg/simple-server/blob/master/app/models/experimentation/stale_patient_experiment.rb#L11) 
 
-For India:
-- If the experiment has new messages and translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
-  [config](../config/data/bsnl_templates.yml). See [bsnl/sms_reminders.md](bsnl/sms_reminders.md)
-
-As an example, if you want to run this 3-message cascade for current patients
+**Example code**: If you want to run this 3-message cascade for current patients:
 - A reminder is sent 1 day before an upcoming appointment
 - A reminder is sent on the day of the appointment
 - A reminder is sent 1 day after the appointment
 
 these reminder templates need to be setup:
-
 ```ruby
 treatment_group = experiment.treatment_groups.create!(description: "basic_cascade")
 treatment_group.reminder_templates.create!(message: "notifications.set01.basic", remind_on_in_days: -1)
@@ -50,88 +82,111 @@ treatment_group.reminder_templates.create!(message: "notifications.set02.basic",
 treatment_group.reminder_templates.create!(message: "notifications.set03.basic", remind_on_in_days: 1)
 ```
 
-For current patients, the `remind_on` is set relative to the date they are expected to return.
-For stale patients, it's relative to the date of enrollment in the experiment.
+## Running the experiment
 
-## Setup
-- Enable the `experiment` and `notifications` flipper flags.
-- You'll need to create the `experiment`, its `treatment_groups` and `reminder_templates`. See [appendix](#appendix) for sample commands.
-- You can also put these commands in a data migration in the style of [this data migration](db/data/20220412130957_create_apr2022_ihci_experiment.rb) 
-instead of running them from rails console.
+A cron in `schedule.rb` orchestrates the experiment. Every day, it enrolls, monitors and schedules notifications for eligible patients
+- See note on [experiment monitoring](#experiment-monitoring)
 
-**Note about consecutive experiments**
+When an experiment starts, you should
+- Check in on the metabase dashboards ([IHCI](https://metabase.simple.org/dashboard/54-notifications-experiment-generic-dashboard), [Bangladesh](https://metabase.bd.simple.org/dashboard/10-notifications-experiment-generic-dashboard)) every once in a while
+  - See: [important links](#important-links)
+- Currently we get a daily summary of running experiments on the #ab-testing-stats Slack channel
+  - See note on [what to watch out for](#things-to-keep-an-eye-on-in-ab-testing-stats) in these stats
+- We have daily cron jobs running to check the account balance for sms providers that don't allow recurring recharge. Alerts are in the process of being configured
+- See note on why notifications sometimes [continue to go out after an experiment has "ended"](#notifications-go-out-after-experiment-has-ended)
 
-Make sure there's always a gap of at least these many days between two experiments (if this value is positive)
+## Cancelling an experiment
+You might want to cancel an experiment because of
+- issues with the setup/data consistency
+- issues with sending notifications
+
+You can do the following:
+- To soft-delete the experiment, meaning it will not enroll, notify and monitor anymore, run:
+  ```ruby
+  Experimentation::NotificationsExperiment.find("<experiment-id>").cancel
+  ``` 
+- If you want to only stop enrolling but continue to notify and monitor the remaining patients, change the `end_time` of the experiment.
+- If you want to quickly pause the experiment without any deployment and without cancelling the experiment, disable the `experiments` Flipper flag
+
+## In the long run
+TODO: Put this in a story card
+
+- The `treatment_group_memberships` and `notifications` tables are fast growing. We will have to think about [archiving them frequently](https://app.shortcut.com/simpledotorg/story/7931/data-archival-strategy-for-notification-communication-and-delivery-detail-records) once we start doing regular notifications.
+
+## Footnotes
+Addendums the rest of this document points to.
+
+### Setting up consecutive experiments
+
+Ensure there's always a gap of at least these many days between two experiments (if this value is positive)
 ```ruby
 experiment_1.earliest_remind_on - experiment_2.earliest_remind_on
 ```
 
-An experiment that sends notifications before an appointment enrolls patients who have appointments in the future.
-For an experiments that starts immediately after such an experiment, this can mean that patients in the first few days might've already been enrolled in the first one.
-This causes low enrollments in the second experiment.
+An experiment that sends notifications before an appointment enrolls patients who have appointments in the future. For an experiments that starts immediately after such an experiment, this can mean that patients in the first few days might've already been enrolled in the first one. This causes low enrollments in the second experiment.
 
-## Running the experiment
+### Adding new message templates
+- If your experiment requires a new template, check with your team to get the appropriate translations done
+- Add the new message template and its translations to `config/locales/notifications/`
+- For India specifically: If the experiment has new messages and translations you'll need to get them [approved by DLT](doc/howto/bsnl/sms_reminders.md) and make sure they're present in
+  [config](../config/data/bsnl_templates.yml). See [bsnl/sms_reminders.md](bsnl/sms_reminders.md)
 
-A cron in `schedule.rb` orchestrates the experiment. It runs a set of tasks everyday.
-When an experiment starts, you should
-- Check in on the metabase dashboards ([IHCI](https://metabase.simple.org/dashboard/54-notifications-experiment-generic-dashboard),
-  [Bangladesh](https://metabase.bd.simple.org/dashboard/10-notifications-experiment-generic-dashboard))
-  every once in a while.
-- We get a daily summary on slack on #ab-testing-stats. Check on the "Pending notifications" report everyday. 
-  This number should always be 0. If not, some reminder messages are not being sent to patients and this problem requires investigation.
-  Inspect error reports in [Sentry](https://sentry.io/organizations/resolve-to-save-lives/issues/?project=1217715) to find and fix the problem.
-- Run `deploy:rake task="bsnl:get_account_balance"` every once in a while, check the balance and recharge if needed.
+### Notification dashboard in a new environment
+We want to monitor experiments during and after their run to ensure they are running as expected. When you're starting experiments in a new country/environment, import the existing [IHCI metabase dashboard](https://metabase.simple.org/dashboard/54-notifications-experiment-generic-dashboard) to its Metabase instance. Ensure that everything is working correctly.
 
-**Notes**
+If you're adding any new reports to the IHCI dashboard save them in [this collection](https://metabase.simple.org/collection/43-a-b-testing-ihci-shared) so it's viewable by other people.
 
-- Depending on the cadence, notifications may go out for a few days after the experiment has "ended".
-- Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date.
-- Monitoring includes:
-  - Recording the statuses of notifications
-  - Marking visits for patients who returned to care
-  - Evicting patients who have invalid data
-- Reasons for eviction:
-  - appointment_moved - the appointment was rescheduled or patient agreed to visit on a later date. This makes the
+### Experiment duration
+- A patient can be enrolled in an experiment only once. A single long running experiment will hence not work for patients who need to follow up every month. A new experiment will need to be started every month.
+- This is especially true for non-experimental sms reminders, since we want to send the same messages to people every day
+- 30 days is the default follow up frequency
+
+### Things to keep an eye on in #ab-testing-stats
+Ideally, we want to move all of this to automated alerts
+- The "Pending notifications" report
+  - This number should be zero or close to zero everyday
+  - This is usually a good place to catch a majority of issues with our experiments, because if messages are not being sent then the sms provider has an issue or the code does or something in between is broken 
+  - Inspect error reports in [Sentry](https://sentry.io/organizations/resolve-to-save-lives/issues/?project=1217715) to find and fix the problem.
+- Notifications are going out for all active experiments
+  - Some times, you'll see that current patients notifications are going out but stale patients notifications haven't been for a while
+- Message delivery failure rates
+  - If the ratio of failed to delivered notifications is abnormally high, you should check with the sms provider.
+
+### Notifications go out after experiment has "ended"
+Depending on the cadence of the experiment, notifications may go out for a few days after the experiment's end_time. Like we saw earlier under [experiments](#experiment), end_time is simply the date on which enrollment ends. When messages are configured to go out in a cascade, each patient is enrolled on the earliest remind_on day. When this happens, future notifications will go out at most maximum remind_on days after enrollment. So while enrollment ends on the end_time date, notifications will go out for the next maximum remind_on days.
+
+eg: An experiment's start_time is Feb 1, end_time is Feb 28 and the reminder templates are configured to send notifications on -1 and 3 (remind_on) days from the appointment. On Feb 28, a patient with an appointment on Mar 1 is enrolled so they can be notified on Feb 28, ie -1 days from appointment. They don't visit their appointment on Mar 1. We send them another notification on Mar 4, 3 days after the appointment, reminding them to come for their appointment. So even though the experiment "ended" on Feb 28, it continued to send notifications until Mar 4.
+
+Also see: the [experiment timeline](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/019-ab-testing-enhancements.md#experiment-timeline) diagram.
+
+Also see: [monitoring buffer](#monitoring-buffer) of an experiment
+
+### Monitoring buffer
+Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date. This is because we consider notifications to have an influence on the patient for upto 15 days from when the notification was sent.
+
+### Experiment monitoring
+The daily experiment runner cron job also monitors an experiment. What does this mean? 
+
+Monitoring includes:
+- Recording the statuses of notifications
+- Marking visits for patients who returned to care
+- Evicting patients who have invalid data 
+
+Reasons for eviction:
+- appointment_moved - the appointment was rescheduled or patient agreed to visit on a later date. This makes the
   `days_to_visit` calculation dubious so we just evict the patient.
-  - new_appointment_created_after_enrollment
-  - notification_failed
-  - patient_soft_deleted
+- new_appointment_created_after_enrollment
+- notification_failed
+- patient_soft_deleted
 
 ### Important links
-
 - [IHCI metabase dashboard](https://metabase.simple.org/dashboard/54-notifications-experiment-generic-dashboard)
 - [Bangladesh metabase dashboard](https://metabase.bd.simple.org/dashboard/10-notifications-experiment-generic-dashboard)
 - [IHCI CSV export](https://metabase.simple.org/question/496-a-b-experiments-statistical-analysis-report)
 - [Bangladesh CSV export](https://metabase.bd.simple.org/question/132-a-b-experiments-nhf-statistical-analysis-report)
 
-If you're adding any new reports to the IHCI dashboard save them in this [collection](https://metabase.simple.org/collection/43-a-b-testing-ihci-shared)
-so it's viewable by other people.
-
-### Cancelling an experiment
-You might want to cancel an experiment because of
-- issues with the setup/data consistency
-- issues with sending notifications
-
-In that case you can run
-```ruby
-Experimentation::NotificationsExperiment.find("experiment id").cancel
-```
-
-This will soft-delete the experiment, which means it will not enroll, notify and monitor anymore.
-If you want to only stop enrolling but notify and monitor the remaining patients,
-change the `end_time` of the experiment.
-
-## In the long run
-
-- When we decide on a message format and start sending a single message eventually, the current plan
-  is to run an "experiment" with a single bucket. Although, a patient can be enrolled in an experiment only once.
-  A single long running experiment will hence not work for patients who need to follow up every month.
-  A new experiment will need to be started every month.
-- The `treatment_group_memberships` and `notifications` tables are fast growing. 
-  We will have to think about [archiving them frequently](https://app.shortcut.com/simpledotorg/story/7931/data-archival-strategy-for-notification-communication-and-delivery-detail-records)
-  once we start doing regular notifications.
-
-## Appendix
+## Appendix 
+TODO: Update
 
 Creating a sample experiment
 ```ruby
