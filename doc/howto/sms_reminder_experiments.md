@@ -43,9 +43,9 @@ See note on [experiment duration](#experiment-duration)
     filters = {
     "blocks" => {"include" => ["block-A"]},
     "facilities" => {"exclude" => ["facility-B", "facility-C"]}
-    } 
+    }
     ```
-  - Note that `states` expects an array of state names, `blocks` expects an array of block IDs, and `facilities` expects an array of facility slugs. This should change in the future. 
+  - Note that `states` expects an array of state names, `blocks` expects an array of block IDs, and `facilities` expects an array of facility slugs. This should change in the future.
 
 #### Treatment Groups
 
@@ -66,8 +66,8 @@ The content and frequency of messages in each `treatment_group` is defined by it
   - See note on [adding new message templates](#adding-new-message-templates)
 - **remind_on**: The day on which this message will be sent relative to the expected date of return
   - This is an integer value: -1 to send a notification 1 day before the appointment, 0 to send it on the appointment date, 3 to send it 3 days after the appointment
-  - Be sure to use the correct message set number based on your remind_on value so that the patient sees a meaningful message when they receive the notification. 
-  - The expected date of return is different for current and stale patient experiments. See: [here](https://github.com/simpledotorg/simple-server/blob/master/app/models/experimentation/stale_patient_experiment.rb#L11) 
+  - Be sure to use the correct message set number based on your remind_on value so that the patient sees a meaningful message when they receive the notification.
+  - The expected date of return is different for current and stale patient experiments. See: [here](https://github.com/simpledotorg/simple-server/blob/master/app/models/experimentation/stale_patient_experiment.rb#L11)
 
 **Example code**: If you want to run this 3-message cascade for current patients:
 - A reminder is sent 1 day before an upcoming appointment
@@ -185,7 +185,7 @@ Reasons for eviction:
 - [IHCI CSV export](https://metabase.simple.org/question/496-a-b-experiments-statistical-analysis-report)
 - [Bangladesh CSV export](https://metabase.bd.simple.org/question/132-a-b-experiments-nhf-statistical-analysis-report)
 
-## Appendix 
+## Appendix
 TODO: Update
 
 Creating a sample experiment
