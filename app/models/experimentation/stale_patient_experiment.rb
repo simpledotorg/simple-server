@@ -11,8 +11,8 @@ module Experimentation
     # it is not useful to schedule reminders around a date different than the experiment_inclusion_date.
     def eligible_patients(date, filters = {})
       current_month = date.beginning_of_month
-      last_visit_since = (date - ENV.fetch("STALE_EXPERIMENT_VISITED_SINCE_DAYS", 365).to_i).beginning_of_day
-      last_visit_until = (date - ENV.fetch("STALE_EXPERIMENT_VISITED_UNTIL_DAYS", 35).to_i).end_of_day
+      last_visit_since = (date - ENV.fetch("STALE_EXPERIMENT_MAX_DAYS_SINCE_LAST_VISIT", 365).to_i).beginning_of_day
+      last_visit_until = (date - ENV.fetch("STALE_EXPERIMENT_MIN_DAYS_SINCE_LAST_VISIT", 35).to_i).end_of_day
       no_appointments_after = date.end_of_day
 
       self.class.superclass
