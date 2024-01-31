@@ -6,14 +6,17 @@ This document is a guide on how to set up and manage experiments based on sms re
 
 To set up an experiment, you have to create an experiment object, its treatment groups and its reminder templates. Generally, both current and stale patient experiments are set up together (see: experiment_type below). But you can set up either one based on your requirement.
 
+See note on [setting up consecutive experiments](#consecutive-experiments)
+
+Also see note on [adding a notification dashboard](#notification-dashboard-in-a-new-environment) when setting up experiments in a new environment
+
 ### Steps
 - Ensure that the `experiment` and `notifications` Flipper flags are enabled in your experiment's environment
 - Create the [experiment](#experiment), its [treatment groups](#treatment-groups) and its [reminder templates](#reminder-templates)
   - See [appendix](#appendix) for an example
-  - Ideally, create these via a data migration in order to keep track of changes made and to be able to rollback changes in case of errors
-    - See example [data migration](TODO)
-- See note on [setting up consecutive experiments](#consecutive-experiments)
-- Also see note on [adding a notification dashboard](#notification-dashboard-in-a-new-environment) when setting up experiments in a new environment
+  - Ideally, create these via a data migration to keep track of changes made and to be able to rollback changes in case of errors
+    - See [example data migration](TODO)
+    - Ensure that the data migration only runs in the correct country/ies and environment/s using appropriate checks.
 
 ### Components
 #### Experiment
@@ -29,11 +32,13 @@ See note on [experiment duration](#experiment-duration)
 - **max_patients_per_day**: _The maximum number of patients to be enrolled per day_
   - For current patient experiments, this value should be well above the average number of daily appointments in that environment so that all eligible patients get reminders
   - For stale patient experiments:
-    - The entire stale patient pool should be rotated through within the experiment duration, so if you have 1000 stale patients in the system, max_patients_per_day = total_stale_patients/experiment_duration = 1000/30 = ~ 33 patients
-    - A nice side effect is that since the pool of eligible patients is usually way larger, this field helps limit the daily enrollments to a manageable number. This way we can consistently manage our messaging costs
+    - This is to stagger the messages over the course of the experiment so as to not overwhelm clinics with many patients coming to a clinic on the same day
+    - The entire stale patient pool should be rotated through within the experiment duration, so if you there are 1000 stale patients in the system, max_patients_per_day = total_stale_patients/experiment_duration = 1000/30 = ~ 33 patients
+    - A nice side effect of this is that since the pool of eligible patients is usually way larger, this cap enables up to consistently manage our messaging costs
   - Usually, you can set the higher of the two for both experiment types
 - **start_time**: _Enrollments will begin at this point in time_
   - A note on experiment timelines can be found [here](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/019-ab-testing-enhancements.md#experiment-timeline)
+  - As far as possible, set up experiments to start at the beginning of the month. It will be easier to keep track of and manage experiments this way.
 - **end_time**: _Enrollments will stop at this point in time_
 - **filters**: _Regions to send notifications in_
   - This field is a hash of mutually exclusive `include/exclude` region filters for `states`, `blocks` & `facilities`.
@@ -138,10 +143,17 @@ We want to monitor experiments during and after their run to ensure they are run
 
 If you're adding any new reports to the IHCI dashboard save them in [this collection](https://metabase.simple.org/collection/43-a-b-testing-ihci-shared) so it's viewable by other people.
 
-### Experiment duration
-- A patient can be enrolled in an experiment only once. A single long running experiment will hence not work for patients who need to follow up every month. A new experiment will need to be started every month.
-- This is especially true for non-experimental sms reminders, since we want to send the same messages to people every day
-- 30 days is the default follow up frequency
+### Why experiments are set up to run for a month
+
+After a patient visits, they are marked as visited. Their visit information is captured and they aren’t notified again for the remainder of the experiment. However, patients generally have follow up appointments repeating every 30 days. Currently experiments are designed to send reminders for one appointment, so to continuously send appointment reminders to patients, experiments are set up to run for upto 1 month.
+
+This is not enforced in the code anywhere but is good practice.
+
+#### Experiment duration for non-experimental notification reminders
+
+See: [non-experimental sms reminders](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminders.md)
+
+We usually want to send the same messages to patients every appointment, but since these can only be set up through experiments, we are constrained to set up sms reminders by month. This is why we usually set them up for multiple months at a time.
 
 ### Things to keep an eye on in #ab-testing-stats
 Ideally, we want to move all of this to automated alerts
