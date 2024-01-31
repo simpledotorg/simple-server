@@ -27,7 +27,7 @@ Each day enrollment, monitoring, notification scheduling
 
 A how-to guide to set up an experiment can be found [here](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminder_experiments.md).
 
-To simply set up sms reminders without experimenting, see [here](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminders.md). 
+To simply set up sms reminders without experimenting, see [here](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminders.md).
 
 ## FAQs
 
@@ -35,11 +35,9 @@ This section deals with theoretical/generic FAQs about experiments. More operati
 
 ### Where is the reporting information stored
 
-Reporting information on each enrollment is marked under their treatment group membership row. 
+Reporting information on a patient is stored on their corresponding treatment group membership object.
 
-### Why evicted patients continue to be part of the experiment
-
-If a patient visits after they have been evicted from the experiment, their visit is still recorded. This means that even though a patient has been evicted, they continue to be part of the experiment flow. Why do we do this?  
+### Why do we mark visits of evicted patients
 
 We want to capture the maximum data about an experiment. If we record both eviction and visit data, we can choose to include/exclude patients when making the final report.
 
@@ -47,16 +45,25 @@ In the past, we have used this data in experiment reports, for example to make a
 - as intended – We sent an SMS and they visited
 - as received – They actually got an SMS and they visited
 
-### Why we don't infer visits from appointment creation
+### Why don't we infer visits from appointment creation
 
 See [tracking visits and the rationale](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/019-ab-testing-enhancements.md#tracking-visits)
 
 ### Enrollment of patients in consecutive experiments
 
+Patients enrolled on the 30th day are available to be enrolled in a new experiment 15 days after. They become available cyclically, so if two experiments run end to end, the full patient pool is eventually available by the 15th day of the second experiment.
+
+### Can experiments overlap
+
+No, only one experiment of a certain type can be active at a time.
+
 ## Known gotchas
 
-### Why stale patient notifications don’t go out for the first week
+### Stale patient notifications don’t go out for the first week
 
-Stale patient eligiblity is calculated on the 
+To find eligible patients for stale patient experiments, we do a join on the `reporting_patient_visits` materialised view and filter visits by current month. In India, routine matview refreshes occur weekly, so from the beginning of the month until the first matview refresh of the month(upto a week), there are no eligible patients for stale patient experiments. So no notifications go out during that time.  
 
+### Evicted patients continue to be part of the experiment flow
+
+Even after patients are evicted from an experiment, we continue to check if they have visited for the rest of the experiment and mark their visit. An explanation for this can be found [here](#why-we-mark-visits-of-evicted-patients).
 
