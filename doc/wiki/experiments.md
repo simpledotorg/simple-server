@@ -2,6 +2,25 @@
 
 Entrypoint to getting to know experiments in Simple.
 
+## Index
+* [Overview](#overview)
+* [Experiments](#experiments)
+    + [Current and stale patients](#current-and-stale-patients)
+    + [Working of an experiment](#working-of-an-experiment)
+* [Notifications](#notifications)
+    + [Object model](#object-model)
+    + [Message lifecycle](#message-lifecycle)
+* [Setting up and running an experiment](#setting-up-and-running-an-experiment)
+* [FAQs](#faqs)
+    + [Where is the reporting information stored](#where-is-the-reporting-information-stored)
+    + [Why do we mark visits of evicted patients](#why-do-we-mark-visits-of-evicted-patients)
+    + [Why don't we infer visits from appointment creation](#why-dont-we-infer-visits-from-appointment-creation)
+    + [Enrollment of patients in consecutive experiments](#enrollment-of-patients-in-consecutive-experiments)
+    + [Can experiments overlap](#can-experiments-overlap)
+* [Known gotchas](#known-gotchas)
+    + [Stale patient notifications don’t go out for the first week](#stale-patient-notifications-dont-go-out-for-the-first-week)
+    + [Evicted patients continue to be part of the experiment flow](#evicted-patients-continue-to-be-part-of-the-experiment-flow)
+
 ## Overview
 
 We conduct A/B testing through the experiments model. Since the reason to set this up was specifically to run A/B experiments on different notification strategies (see [context for setting up A/B testing](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/017-ab-testing.md#context)), currently experiments are somewhat coupled to notification experiments. We have also phased out communication channels that are not sms. These are both important to know going forward.

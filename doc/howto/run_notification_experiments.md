@@ -2,6 +2,26 @@
 
 This document is a guide on how to set up and manage experiments based on sms reminders. For simply sending sms reminders, see the [sms reminders how-to guide](doc/howto/sms_reminders.md) first.
 
+## Index
+* [Setting up an experiment](#setting-up-an-experiment)
+  + [Steps](#steps)
+  + [Components](#components)
+* [Running the experiment](#running-the-experiment)
+* [Cancelling an experiment](#cancelling-an-experiment)
+* [In the long run](#in-the-long-run)
+* [Footnotes/FAQ](#footnotes)
+  + [Setting up consecutive experiments](#setting-up-consecutive-experiments)
+  + [Adding new message templates](#adding-new-message-templates)
+  + [Notification dashboard in a new environment](#notification-dashboard-in-a-new-environment)
+  + [Why experiments are set up to run for a month](#why-experiments-are-set-up-to-run-for-a-month)
+  + [Things to keep an eye on in #ab-testing-stats](#things-to-keep-an-eye-on-in-ab-testing-stats)
+  + [Notifications go out after experiment has "ended"](#notifications-go-out-after-experiment-has-ended)
+  + [Monitoring buffer](#monitoring-buffer)
+  + [Experiment monitoring and eviction](#experiment-monitoring-and-eviction)
+  + [Important links](#important-links)
+* [Appendix](#appendix)
+
+
 ## Setting up an experiment
 
 To set up an experiment, you have to create an experiment object, its treatment groups and its reminder templates. Generally, both current and stale patient experiments are set up together (see: experiment_type below). But you can set up either one based on your requirement.
@@ -120,7 +140,7 @@ TODO: Put this in a story card
 
 - The `treatment_group_memberships` and `notifications` tables are fast growing. We will have to think about [archiving them frequently](https://app.shortcut.com/simpledotorg/story/7931/data-archival-strategy-for-notification-communication-and-delivery-detail-records) once we start doing regular notifications.
 
-## Footnotes
+## Footnotes/FAQ
 Addendums the rest of this document points to.
 
 ### Setting up consecutive experiments
