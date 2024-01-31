@@ -178,7 +178,7 @@ Also see: [monitoring buffer](#monitoring-buffer) of an experiment
 ### Monitoring buffer
 Visits are monitored and patients are evicted until 15 days (`MONITORING_BUFFER`) from the last enrollment date. This is because we consider notifications to have an influence on the patient for upto 15 days from when the notification was sent.
 
-### Experiment monitoring
+### Experiment monitoring and eviction
 The daily experiment runner cron job also monitors an experiment. What does this mean? 
 
 Monitoring includes:

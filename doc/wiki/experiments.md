@@ -1,17 +1,23 @@
 # Experiments Wiki
 
-Entrypoint to knowing everything about experiments in Simple.
+Entrypoint to getting to know experiments in Simple.
 
 ## Overview
 
-We conduct A/B testing through the experiments model. Since the reason to set this up was specifically to run A/B experiments on different notification strategies (see [context for setting up A/B testing](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/017-ab-testing.md#context)), currently experiments are somewhat coupled to notification experiments. This is useful to know going into the code.
+We conduct A/B testing through the experiments model. Since the reason to set this up was specifically to run A/B experiments on different notification strategies (see [context for setting up A/B testing](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/017-ab-testing.md#context)), currently experiments are somewhat coupled to notification experiments. We have also phased out communication channels that are not sms. These are both important to know going forward.
+
+To see all the moving parts of an experiment, one can look at what the experiment runner does to run through each experiment daily. When we see this, it immediately becomes clear that sending out notifications is as significant and involved as enrolling and monitoring patients everyday.
+
+![experiment-runner](https://github.com/simpledotorg/simple-server/raw/bd6efd9acb697bd90a67137f8abf38aac32aea07/doc/wiki/resources/experiment-runner.png)
+
+## Experiments
 
 - Information about the data modeling can be found [here](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/017-ab-testing.md#data-modelling)
 - Information about the object design can be found [here](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/019-ab-testing-enhancements.md#object-design-and-separation-of-concerns)
 
-To see all the moving parts of an experiment, one can look at what the experiment runner does to run through an experiment. When we see this, it immediately becomes clear that sending out notifications is as significant and involved as enrolling and monitoring patients everyday.
+Visual representation of the experiments object model:
 
-![experiment-runner](https://github.com/simpledotorg/simple-server/raw/bd6efd9acb697bd90a67137f8abf38aac32aea07/doc/wiki/resources/experiment-runner.png)
+![experiments-object-model](https://github.com/simpledotorg/simple-server/raw/82129970db46f7aa4ac2dd475b398274a73d3c9a/doc/wiki/resources/experiments-object-design.png)
 
 ### Current and stale patients
 
@@ -20,6 +26,14 @@ Patients who have appointments scheduled during the experiment date range are "c
 Patients who last visited the clinic 35-365 days ago are refered to as "stale patients". We chose 35 days because most patients are expected to return to clinic monthly so a patient who hasn't been into clinic in over 35 days is probably late, and we chose 365 days as a cutoff because patients who haven't been to clinic in over a year are considered lost to follow up.
 
 Patients who have an appointment scheduled in the future are filtered out from stale patient experiments because some patients have appointments scheduled once in 2 months or even less frequently. This also ensures that our experiment patient pools are mutually exclusive.
+
+### Working of an experiment
+
+Most of the day-to-day functionality of an experiment are self-explanatory from [the overiew diagram](#overview) or can be easily gleaned from following the code. Some detail:
+
+See [patient selection criteria](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/017-ab-testing.md#patient-selection-criteria) for enrollment.
+
+See [recording notification results](#recording-notification-results) and [monitoring and eviction](https://github.com/simpledotorg/simple-server/blob/sms-wiki/doc/howto/run_notification_experiments.md#experiment-monitoring-and-eviction) for monitoring.
 
 ## Notifications
 
@@ -37,15 +51,21 @@ A detailable or delivery detail is used to store the delivery details of a commu
 
 Messaging channel is an abstraction over the vendor's API.
 
-### Timeline
+### Message lifecycle
 
 What happens when a notification is scheduled to be sent? We want two things to happen:
 - The notification should be sent via the appropriate messaging channel
 - The notification's status should be asynchronously updated whenever it is available
 
+#### Sending the message
+
 From the [the image](#overview) in the overview section above, we see that the notification dispatch service sends the message on the appropriate messaging channel, i.e. it calls the vendor's API, and marks the notification status as `sent`.
 
-#### So how does the message status get updated?
+The following updates happen when a message succeeds:
+
+![send-message](https://github.com/simpledotorg/simple-server/raw/82129970db46f7aa4ac2dd475b398274a73d3c9a/doc/wiki/resources/send-message.png)
+
+#### Updating its status
 
 There are two mechanisms that vendors can provide for us to get the status of a message: push and pull.
 
@@ -53,18 +73,31 @@ For a pull-based mechanism, we run a cron job daily to:
 - make API calls to the vendor to receive the the updated status
 - update the delivery detail object
 
-The cron job picks up messages that are in any non-terminal state for 2 days, so even if the status hasn't updated in a day, it is checked again the next day. 
+_Note:_ The cron job picks up messages that are in any non-terminal state for 2 days, so even if the status hasn't updated in a day, it is checked again the next day. 
 
-This is eventually reflected in the notification status like this:
-- communication
+For a push-based mechanism,
+- The vendor sends the status update to our API endpoint
+- We update the corresponding delivery detail
 
 ![sms-status-update](https://github.com/simpledotorg/simple-server/raw/bd6efd9acb697bd90a67137f8abf38aac32aea07/doc/wiki/resources/sms-status-update.png)
+
+##### Recording notification results
+
+This delivery status is eventually reflected in the notification status like this:
+- The daily experiment runner attempts to record notification statuses
+- For each notification, we look for all its communications and checks their statuses
+- Communications delegate this status check to their delivery details
+- Based on their delivery status, the notification's delivery result is updated and marked on the patient's treatment group membership
 
 ## Setting up and running an experiment
 
 A how-to guide to set up an experiment can be found [here](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminder_experiments.md).
 
 To simply set up sms reminders without experimenting, see [here](https://github.com/simpledotorg/simple-server/blob/050ed4c4270768feb3243c7489ef29e81115b756/doc/howto/sms_reminders.md).
+
+## Improvements
+
+See [remaining work and their story cards](https://docs.google.com/document/d/1zvKya0xtSXjnvC9RlUDEbFXO6xQGRTZ8J1xElcgpTlo/edit#heading=h.zb0jadbqgl9z) for refactoring and improvements
 
 ## FAQs
 
