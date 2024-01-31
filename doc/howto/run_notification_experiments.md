@@ -1,4 +1,4 @@
-# Guide to SMS reminder experiments
+# Guide to running notification experiments
 
 This document is a guide on how to set up and manage experiments based on sms reminders. For simply sending sms reminders, see the [sms reminders how-to guide](doc/howto/sms_reminders.md) first.
 
