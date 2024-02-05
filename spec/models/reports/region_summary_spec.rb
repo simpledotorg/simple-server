@@ -1461,12 +1461,12 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       end
     end
 
-    xit "return the count of contactable patients returned to care who were removed from overdue list" do
+    it "return the count of contactable patients returned to care who were removed from overdue list" do
       facility_1_contactable_patients = create_list(:patient, 3, :with_sanitized_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_contactable_patients.each { |patient| create(:appointment, patient: patient, device_created_at: three_months_ago, scheduled_date: three_months_ago + 14.days) }
       facility_1_patients_without_phone = create(:patient, :without_phone_number, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:appointment, patient: facility_1_patients_without_phone, device_created_at: three_months_ago, scheduled_date: three_months_ago + 14.days)
-      facility_1_patients_removed_from_list = create(:patient, :removed_from_overdue_list, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+      facility_1_patients_removed_from_list = create(:patient, :hypertension, :removed_from_overdue_list, call_date: one_month_ago + 20.days, assigned_facility: facility_1, recorded_at: five_months_ago)
       create(:appointment, patient: facility_1_patients_removed_from_list, device_created_at: three_months_ago, scheduled_date: three_months_ago + 14.days)
 
       create(:call_result, patient: facility_1_patients_without_phone, result_type: "removed_from_overdue_list", remove_reason: "other", device_created_at: this_month)
