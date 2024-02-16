@@ -1243,6 +1243,8 @@
             "object",
             "null"
           ],
+          "deprecated": true,
+          "description": "This is a deprecated field. It will be ignored. Do not include this in your payload.",
           "properties": {
             "expectedSupplyDuration": {
               "type": [
@@ -1283,7 +1285,8 @@
                 "unit",
                 "system",
                 "code"
-              ]
+              ],
+              "deprecated": true
             }
           }
         },

@@ -43,6 +43,16 @@ RSpec.describe BulkApiImport::FhirMedicationRequestImporter do
         expect(attributes[:patient_id]).to eq(patient.id)
       end
     end
+
+    it "ignores the deprecated supply duration field" do
+      med_request_resource = build_medication_request_import_resource
+        .merge(performer: {identifier: facility_identifier.identifier},
+          subject: {identifier: patient_identifier.identifier})
+
+      attributes = described_class.new(resource: med_request_resource, organization_id: org_id).build_attributes
+
+      expect(attributes[:duration_in_days]).to be_nil
+    end
   end
 
   describe "#contained_medication" do
