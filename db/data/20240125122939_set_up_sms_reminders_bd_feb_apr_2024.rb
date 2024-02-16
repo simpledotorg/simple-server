@@ -9,7 +9,10 @@ class SetUpSmsRemindersBdFebApr2024 < ActiveRecord::Migration[6.1]
     }
   end
   MAX_PATIENTS_PER_DAY = 5000
-  REGION_FILTERS = {}
+  REGION_FILTERS = {
+    "districts" => {"include" => ["Sylhet", "Moulvibazar", "Habiganj", "Sunamganj", "Barishal", "Jhalokathi", " Feni",
+      "Chattogram", "Bandarban", "Pabna", "Rajshahi", "Sirajganj", "Sherpur", "Jamalpur"]}
+  }.freeze
 
   def up
     return unless CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
