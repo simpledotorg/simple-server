@@ -112,4 +112,36 @@ RSpec.describe "Import API", type: :request do
     )
     expect(response.status).to eq(400)
   end
+
+  it "fails to import payload with no resource key" do
+    allow(Rails.logger).to receive(:info)
+
+    put route, params: [invalid_payload].to_json, headers: headers
+
+    expect(Rails.logger).to have_received(:info).with(
+      hash_including(
+        msg: "import_api_error",
+        controller: "Api::V4::ImportsController",
+        action: "import",
+        organization_id: organization.id
+      )
+    )
+    expect(response.status).to eq(400)
+  end
+
+  it "fails to import payload with non-array resources" do
+    allow(Rails.logger).to receive(:info)
+
+    put route, params: {resources: {invalid: :type}}.to_json, headers: headers
+
+    expect(Rails.logger).to have_received(:info).with(
+      hash_including(
+        msg: "import_api_error",
+        controller: "Api::V4::ImportsController",
+        action: "import",
+        organization_id: organization.id
+      )
+    )
+    expect(response.status).to eq(400)
+  end
 end
