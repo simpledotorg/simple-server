@@ -31,6 +31,14 @@ SIDEKIQ_STATS_KEY = "worker"
 SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviation]}"
 
 Sidekiq.configure_server do |config|
+  config.on :startup do
+    require "prometheus_exporter/instrumentation"
+    PrometheusExporter::Instrumentation::ActiveRecord.start(
+      custom_labels: {type: "sidekiq"},
+      config_labels: [:database, :host]
+    )
+  end
+
   config.on(:shutdown) { Statsd.instance.close }
 
   config.client_middleware do |chain|
