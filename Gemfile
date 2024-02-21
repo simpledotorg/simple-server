@@ -94,6 +94,7 @@ gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "table_print"
 gem "doorkeeper", "~> 5.6"
+gem "prometheus_exporter"
 
 group :development, :test do
   gem "active_record_query_trace", require: false
