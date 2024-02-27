@@ -13,7 +13,7 @@ sem-service start postgres 14
 sem-service start redis 5
 sudo apt-get install libffi-dev libpng16-16 -y
 gem install semaphore_test_boosters
-cache restore
+# cache restore
 yarn install
 bundle config set deployment 'true'
 bundle config set path 'vendor/bundle'
