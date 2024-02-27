@@ -11,9 +11,7 @@ export DD_PROFILING_NO_EXTENSION=true
 sem-version ruby 2.7.4
 sem-service start postgres 14
 sem-service start redis 5
-sudo add-apt-repository ppa:linuxuprising/libpng12 -y
-sudo apt update
-sudo apt install libpng12-0 -y
+sudo apt-get install libffi-dev libpng16-16 -y
 gem install semaphore_test_boosters
 cache restore
 yarn install
