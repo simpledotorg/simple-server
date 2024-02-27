@@ -18,7 +18,7 @@ blocks:
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2204
+    os_image: ubuntu2004
 promotions:
   - name: India Production Deployment
     pipeline_file: india_production_deployment.yml

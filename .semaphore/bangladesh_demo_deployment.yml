@@ -14,7 +14,7 @@ blocks:
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2204
+    os_image: ubuntu2004
 promotions:
   - name: Bangladesh Production Deployment
     pipeline_file: bangladesh_production_deployment.yml

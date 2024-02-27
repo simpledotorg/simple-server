@@ -18,7 +18,7 @@ blocks:
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2204
+    os_image: ubuntu2004
 promotions:
   - name: Sri Lanka Production Deployment
     pipeline_file: sri_lanka_production_deployment.yml
