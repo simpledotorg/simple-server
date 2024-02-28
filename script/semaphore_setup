@@ -12,12 +12,12 @@ sem-version ruby 2.7.4
 sem-service start postgres 14
 sem-service start redis 5
 
-# wkhtmltoimage-binary gem dependencies 
+# wkhtmltoimage-binary gem dependencies
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.1f-1ubuntu2_amd64.deb
+sudo dpkg -i libssl1.0.0_1.0.1f-1ubuntu2_amd64.deb
 sudo add-apt-repository ppa:linuxuprising/libpng12 -y
 sudo apt update
-sudo apt install libpng12-0 libssl-dev -y
-wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2_amd64.deb
-sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2_amd64.deb
+sudo apt install libpng12-0 -y
 
 gem install semaphore_test_boosters
 # cache restore
