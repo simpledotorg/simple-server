@@ -470,3 +470,4 @@ The infrastructure setup including the ansible and terraform scripts are documen
 ## Contributing
 
 If you're working on a project that will affect any of the indicators listed in [this document](https://docs.simple.org/), please contact the product / design team.
+
