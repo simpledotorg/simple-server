@@ -2,11 +2,7 @@ class Api::V4::ImportsController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :doorkeeper_authorize!
   before_action :validate_token_organization
-
-  rescue_from ActionController::ParameterMissing do |error|
-    log_failure(error)
-    render json: {error: "Unable to find key in payload: \"#{error.param}\""}, status: :bad_request
-  end
+  before_action :validate_resources_key, only: %i[import]
 
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
@@ -140,6 +136,21 @@ class Api::V4::ImportsController < ApplicationController
     unless token_organization.present? && token_organization == organization_id
       log_failure(error: "invalid organization in token")
       head :forbidden
+    end
+  end
+
+  def validate_resources_key
+    resources = params[:resources]
+    unless resources.present?
+      error_msg = 'Unable to find key in payload: "resources"'
+      log_failure(error_msg)
+      return render json: {error: error_msg}, status: :bad_request
+    end
+
+    unless resources.is_a?(Array)
+      error_msg = '"resources" must be an array'
+      log_failure(error_msg)
+      render json: {error: error_msg}, status: :bad_request
     end
   end
 
