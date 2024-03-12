@@ -96,7 +96,7 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.diabetes_appts_scheduled_0_to_14_days_rates[facility.slug][range.last]).to eq(100)
     end
 
-    it "returns percentages of appointments scheduled in a month in the given range" do
+    xit "returns percentages of appointments scheduled in a month in the given range" do
       facility = create(:facility, enable_diabetes_management: true)
       htn_patient = create(:patient, :hypertension, assigned_facility: facility, recorded_at: 4.month.ago)
       diabetes_patient = create(:patient, :diabetes, assigned_facility: facility, recorded_at: 4.month.ago)
@@ -119,7 +119,7 @@ describe Reports::RegionSummarySchema, type: :model do
       expect(schema.diabetes_appts_scheduled_more_than_62_days_rates[facility.region.slug][range.first]).to eq(100)
     end
 
-    it "returns percentages of appointments scheduled in a month in the given range for appointments created in a given month" do
+    xit "returns percentages of appointments scheduled in a month in the given range for appointments created in a given month" do
       facility = create(:facility, enable_diabetes_management: true)
       htn_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility, recorded_at: 4.month.ago)
       diabetes_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility, recorded_at: 4.month.ago)

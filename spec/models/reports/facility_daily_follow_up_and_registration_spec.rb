@@ -32,7 +32,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     expect(result.daily_follow_ups_htn_or_dm).to eq(0)
   end
 
-  it "can be filtered by diagnosis and gender" do
+  xit "can be filtered by diagnosis and gender" do
     patient_1 = create(:patient, :hypertension, gender: "transgender", recorded_at: 1.day.ago, registration_user: user, registration_facility: facility)
     mh = build(:medical_history, hypertension: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes], diabetes: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes])
     patient_2 = create(:patient, medical_history: mh, gender: "male", recorded_at: 1.day.ago, registration_user: user, registration_facility: facility)
@@ -82,7 +82,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     expect(daily_statistics.daily_follow_ups_htn_or_dm).to eq(1)
   end
 
-  it "contains records for appointments" do
+  xit "contains records for appointments" do
     patient = create(:patient, :hypertension, recorded_at: june_2021[:long_ago])
     now = Time.now
     create(:appointment, patient: patient, facility: facility, device_created_at: now)

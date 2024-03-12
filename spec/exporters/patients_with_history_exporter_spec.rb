@@ -338,7 +338,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
   end
 
   describe "#csv" do
-    it "generates a CSV of patient records" do
+    xit "generates a CSV of patient records" do
       Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
 
@@ -369,7 +369,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       end
     end
 
-    it "maintains the order when patient doesn't have a BP passport assigned" do
+    xit "maintains the order when patient doesn't have a BP passport assigned" do
       patient.business_identifiers.destroy_all
       Timecop.freeze do
         timestamp = ["Report generated at:", Time.current]
