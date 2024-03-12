@@ -32,50 +32,19 @@
           <%= number_with_delimiter(@inactive_facilities.count) %>
         </td>
       </tr>
-      <tr>
-        <td>
-          <%= Facility.localized_facility_size("large") %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:total]["large"].to_i) %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["large"].to_i) %>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <%= Facility.localized_facility_size("medium") %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:total]["medium"].to_i) %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["medium"].to_i) %>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <%= Facility.localized_facility_size("small") %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:total]["small"].to_i) %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["small"].to_i) %>
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <%= Facility.localized_facility_size("community") %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:total]["community"].to_i) %>
-        </td>
-        <td class="text-right">
-          <%= number_with_delimiter(@facility_counts_by_size[:inactive]["community"].to_i) %>
-        </td>
-      </tr>
+      <% CountryConfig.current[:sorted_facility_sizes].each do |facility_size| %>
+        <tr>
+          <td>
+            <%= Facility.localized_facility_size(facility_size) %>
+          </td>
+          <td class="text-right">
+            <%= number_with_delimiter(@facility_counts_by_size[:total][facility_size].to_i) %>
+          </td>
+          <td class="text-right">
+            <%= number_with_delimiter(@facility_counts_by_size[:inactive][facility_size].to_i) %>
+          </td>
+        </tr>
+      <% end %>
       </tbody>
     </table>
   </section>
