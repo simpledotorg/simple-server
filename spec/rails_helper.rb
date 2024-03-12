@@ -41,15 +41,18 @@ RSpec.configure do |config|
 
   def common_org
     @common_org ||= Organization.find_or_create_by!(name: "Common Test Organization")
+    f
   end
 
   def with_reporting_time_zone(&blk)
     Time.use_zone(Period::REPORTING_TIME_ZONE) do
       original_group_date_time_zone = Groupdate.time_zone
       Groupdate.time_zone = Period::REPORTING_TIME_ZONE
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
       blk.call
     ensure
       Groupdate.time_zone = original_group_date_time_zone
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{original_group_date_time_zone}'")
     end
   end
 
