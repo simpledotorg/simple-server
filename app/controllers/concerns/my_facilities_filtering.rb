@@ -71,7 +71,7 @@ module MyFacilitiesFiltering
     end
 
     def sort_facility_sizes_by_size(facility_sizes)
-      sorted_facility_sizes = %w[large medium small community]
+      sorted_facility_sizes = CountryConfig.current[:sorted_facility_sizes]
       sorted_facility_sizes.select { |size| facility_sizes.include? size }
     end
 
