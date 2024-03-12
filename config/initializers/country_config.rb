@@ -15,6 +15,7 @@ class CountryConfig
       patient_line_list_show_zone: false,
       custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic diabetes],
       appointment_reminders_channel: "Messaging::Bsnl::Sms",
+      sorted_facility_sizes: %w[large medium small community],
       facility_sizes: {
         community: "community",
         small: "small",
@@ -35,6 +36,7 @@ class CountryConfig
       patient_line_list_show_zone: true,
       enabled_diabetes_population_coverage: true,
       appointment_reminders_channel: "Messaging::AlphaSms::Sms",
+      sorted_facility_sizes: %w[large medium small community],
       facility_sizes: {
         community: "community",
         small: "small",
@@ -54,6 +56,7 @@ class CountryConfig
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
       facility_sizes: {
         community: "community",
         small: "small",
@@ -73,6 +76,7 @@ class CountryConfig
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community teaching_hospital national_hospital],
       facility_sizes: {
         community: "community",
         small: "small",
@@ -93,6 +97,7 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
       facility_sizes: {
         community: "community",
         small: "small",
@@ -111,6 +116,7 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
       appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
       facility_sizes: {
         community: "community",
         small: "small",
