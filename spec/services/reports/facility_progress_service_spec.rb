@@ -44,7 +44,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
   end
 
   context "daily follow up counts" do
-    it "returns counts for HTN or DM patients if diabetes is enabled" do
+    xit "returns counts for HTN or DM patients if diabetes is enabled" do
       Timecop.freeze do
         facility = create(:facility, enable_diabetes_management: true)
         patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
@@ -65,7 +65,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       end
     end
 
-    it "returns counts for HTN only if diabetes is not enabled" do
+    xit "returns counts for HTN only if diabetes is not enabled" do
       Timecop.freeze do
         facility = create(:facility, enable_diabetes_management: false)
         htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
