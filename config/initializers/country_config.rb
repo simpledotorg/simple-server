@@ -14,7 +14,14 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
       custom_drug_category_order: %w[hypertension_ccb hypertension_arb hypertension_diuretic diabetes],
-      appointment_reminders_channel: "Messaging::Bsnl::Sms"
+      appointment_reminders_channel: "Messaging::Bsnl::Sms",
+      sorted_facility_sizes: %w[large medium small community],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large"
+      }
     },
     BD: {
       abbreviation: "BD",
@@ -28,7 +35,14 @@ class CountryConfig
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: true,
       enabled_diabetes_population_coverage: true,
-      appointment_reminders_channel: "Messaging::AlphaSms::Sms"
+      appointment_reminders_channel: "Messaging::AlphaSms::Sms",
+      sorted_facility_sizes: %w[large medium small community],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large"
+      }
     },
     ET: {
       abbreviation: "ET",
@@ -41,7 +55,14 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+251",
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large"
+      }
     },
     LK: {
       abbreviation: "LK",
@@ -54,7 +75,16 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community teaching_hospital national_hospital],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large",
+        national_hospital: "national_hospital",
+        teaching_hospital: "teaching_hospital"
+      }
     },
     US: {
       abbreviation: "US",
@@ -66,7 +96,14 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+1",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large"
+      }
     },
     UK: {
       abbreviation: "UK",
@@ -78,7 +115,14 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+44",
       supported_genders: %w[male female transgender],
       patient_line_list_show_zone: false,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms"
+      appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      sorted_facility_sizes: %w[large medium small community],
+      facility_sizes: {
+        community: "community",
+        small: "small",
+        medium: "medium",
+        large: "large"
+      }
     }
   }.with_indifferent_access.freeze
 
