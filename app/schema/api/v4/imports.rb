@@ -466,12 +466,14 @@ class Api::V4::Imports
          },
          dispenseRequest: {
            type: [:object, :null],
+           deprecated: true,
+           description: "This is a deprecated field. It will be ignored. Do not include this in your payload.",
            properties: {
              expectedSupplyDuration: value_quantity(
                system: "http://unitsofmeasure.org",
                unit: "days",
                code: "d"
-             ).merge!(type: [:object, :null], nullable: true)
+             ).merge!(type: [:object, :null], nullable: true, deprecated: true)
            }
          },
          dosageInstruction: {
