@@ -11,8 +11,8 @@ class SetUpSmsRemindersBdMarApr2024 < ActiveRecord::Migration[6.1]
     {
       current_experiment_name: "Current patients #{month} 2024 2",
       stale_experiment_name: "Stale patients #{month} 2024 2",
-      start_time: DateTime.new(2024, month).beginning_of_month,
-      end_time: DateTime.new(2024, month).end_of_month
+      start_time: "#{month} 2024".to_datetime.beginning_of_month,
+      end_time: "#{month} 2024".to_datetime.end_of_month
     }
   end
   MAX_PATIENTS_PER_DAY = 5000
