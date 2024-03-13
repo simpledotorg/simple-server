@@ -82,12 +82,7 @@ class Facility < ApplicationRecord
       .distinct
   }
 
-  enum facility_size: {
-    community: "community",
-    small: "small",
-    medium: "medium",
-    large: "large"
-  }
+  enum facility_size: CountryConfig.current[:facility_sizes]
 
   SHORT_NAME_MAX_LENGTH = 30
 
