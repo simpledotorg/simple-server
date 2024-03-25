@@ -5,8 +5,7 @@
   <p class="c-grey-dark">
     <% if CountryConfig.current[:name] == "Bangladesh" %>
       Last updated 26-Mar-2024. For feedback, email us: help@simple.org
-    <% end %>
-    <% if CountryConfig.current[:name] != "Bangladesh" %>
+    <% else %>
       Last updated 12-Dec-2023. For feedback, email us: help@simple.org
     <% end %>
   </p>
