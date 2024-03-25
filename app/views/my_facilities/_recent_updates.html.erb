@@ -3,8 +3,26 @@
     Recent updates
   </h2>
   <p class="c-grey-dark">
-    Last updated 12-Dec-2023. For feedback, email us: help@simple.org
+    <% if CountryConfig.current[:name] == "Bangladesh" %>
+      Last updated 26-Mar-2024. For feedback, email us: help@simple.org
+    <% end %>
+    <% if CountryConfig.current[:name] != "Bangladesh" %>
+      Last updated 12-Dec-2023. For feedback, email us: help@simple.org
+    <% end %>
   </p>
+  <% if CountryConfig.current[:name] == "Bangladesh" %>
+    <section class="update">
+      <div class="update-date">
+        Mar <b class="d-block">2024</b>
+      </div>
+      <p>
+        <b>External partnerships</b>: Other hypertension programs in Bangladesh are now sending their data into Simple.
+      </p>
+      <p>
+        <b>Data dissaggregation</b>: Simple is now exporting hypertension data dissaggregated by age and gender into DHIS2.
+      </p>
+    </section>
+  <% end %>
   <section class="update">
     <div class="update-date">
       Dec <b class="d-block">2023</b>
@@ -18,11 +36,11 @@
       The Simple app has an increased level of security through encryption, if you experience any issues while using the app please contact us.
     </p>
     <% if CountryConfig.current[:name] == "Ethiopia" || CountryConfig.current[:name] == "Sri Lanka"  %>
-    <p>
-      <b>Improved titration reports:</b>
-      Titration reports have been improved and more accurately capture when anti-hypertensive medications are titrated.
-    </p>
-    <% end %> 
+      <p>
+        <b>Improved titration reports:</b>
+        Titration reports have been improved and more accurately capture when anti-hypertensive medications are titrated.
+      </p>
+    <% end %>
   </section>
   <% if CountryConfig.current[:name] != "India" %>
     <section class="update">
@@ -98,13 +116,15 @@
       </span>
     </a>
   </section>
-  <section class="update">
-    <div class="update-date">
-      Feb <b class="d-block">2023</b>
-    </div>
-    <p>
-      <b>Simple dashboard:</b>
-      Estimated hypertension population coverage has been added to the dashboard. Viewable inside 'Hypertension indicators' table.
-    </p>
-  </section>
+  <% if CountryConfig.current[:name] != "Bangladesh" %>
+    <section class="update">
+      <div class="update-date">
+        Feb <b class="d-block">2023</b>
+      </div>
+      <p>
+        <b>Simple dashboard:</b>
+        Estimated hypertension population coverage has been added to the dashboard. Viewable inside 'Hypertension indicators' table.
+      </p>
+    </section>
+  <% end %>
 </div>
