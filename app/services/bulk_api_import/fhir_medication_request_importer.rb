@@ -42,7 +42,6 @@ class BulkApiImport::FhirMedicationRequestImporter
       name: contained_medication[:code][:coding][0][:display],
       rxnorm_code: contained_medication[:code][:coding][0][:code],
       frequency: frequency,
-      duration_in_days: @resource.dig(:dispenseRequest, :expectedSupplyDuration, :value),
       dosage: dosage,
       is_deleted: drug_deleted?,
       **timestamps
