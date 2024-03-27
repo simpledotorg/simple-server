@@ -6,10 +6,17 @@ namespace :dhis2 do
     end
   end
 
-  desc "Export disaggregated indicator data of each facility to Bangladesh DHIS2"
+  desc "Export disaggregated hypertension indicator data of each facility to Bangladesh DHIS2"
   task bangladesh_disaggregated_export: :environment do
     FacilityBusinessIdentifier.dhis2_org_unit_id.each do |facility_identifier|
       Dhis2::BangladeshDisaggregatedExporterJob.perform_async(facility_identifier.id, 24)
+    end
+  end
+
+  desc "Export disaggregated diabetes indicator data of each facility to Bangladesh DHIS2"
+  task bangladesh_disaggregated_diabetes_export: :environment do
+    FacilityBusinessIdentifier.dhis2_org_unit_id.each do |facility_identifier|
+      Dhis2::BangladeshDisaggregatedDiabetesExporterJob.perform_async(facility_identifier.id, 24)
     end
   end
 
