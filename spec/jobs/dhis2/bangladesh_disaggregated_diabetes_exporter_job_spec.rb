@@ -9,20 +9,20 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
       allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
       allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(false)
     end
-    let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:disaggregated_dhis2_data_elements) }
+    let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:disaggregated_diabetes_dhis2_data_elements) }
     let(:category_option_combo_ids) { CountryConfig.dhis2_data_elements.fetch(:dhis2_category_option_combo) }
     let(:age_buckets) { [15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75] }
     let(:facility_data) {
       {
-        dm_cumulative_assigned: :dm_cumulative_assigned
+        dm_cumulative_assigned: :dm_cumulative_assigned,
         # dm_controlled: :dm_controlled,
         # dm_uncontrolled: :dm_uncontrolled,
-        # dm_missed_visits: :dm_missed_visits,
+        dm_missed_visits: :dm_missed_visits,
         # dm_ltfu: :dm_ltfu,
         # dm_dead: :dm_dead,
         # dm_cumulative_registrations: :dm_cumulative_registrations,
         # dm_monthly_registrations: :dm_monthly_registrations,
-        # dm_cumulative_assigned_adjusted: :dm_cumulative_assigned_adjusted
+        dm_cumulative_assigned_adjusted: :dm_cumulative_assigned_adjusted
       }
     }
 
@@ -49,12 +49,12 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
       allow_any_instance_of(PatientStates::Diabetes::CumulativeAssignedPatientsQuery).to receive(:call).and_return(:dm_cumulative_assigned)
       # allow_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive(:call).and_return(:htn_controlled)
       # allow_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive(:call).and_return(:htn_uncontrolled)
-      # allow_any_instance_of(PatientStates::Hypertension::MissedVisitsPatientsQuery).to receive(:call).and_return(:htn_missed_visits)
+      allow_any_instance_of(PatientStates::Diabetes::MissedVisitsPatientsQuery).to receive(:call).and_return(:dm_missed_visits)
       # allow_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive(:call).and_return(:htn_ltfu)
       # allow_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive(:call).and_return(:htn_dead)
       # allow_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive(:call).and_return(:htn_cumulative_registrations)
       # allow_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive(:call).and_return(:htn_monthly_registrations)
-      # allow_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive(:call).and_return(:htn_cumulative_assigned_adjusted)
+      allow_any_instance_of(PatientStates::Diabetes::AdjustedAssignedPatientsQuery).to receive(:call).and_return(:dm_cumulative_assigned_adjusted)
       client = double
       data_value_sets = double
       allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return({})

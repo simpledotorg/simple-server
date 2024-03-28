@@ -10,15 +10,15 @@ module Dhis2
 
     def facility_data_for_period(region, period)
       {
-        dm_cumulative_assigned: PatientStates::Diabetes::CumulativeAssignedPatientsQuery.new(region, period).call
+        dm_cumulative_assigned: PatientStates::Diabetes::CumulativeAssignedPatientsQuery.new(region, period).call,
         # htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call,
         # htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
-        # htn_missed_visits: PatientStates::Hypertension::MissedVisitsPatientsQuery.new(region, period).call,
+        dm_missed_visits: PatientStates::Diabetes::MissedVisitsPatientsQuery.new(region, period).call,
         # htn_ltfu: PatientStates::Hypertension::LostToFollowUpPatientsQuery.new(region, period).call,
         # htn_dead: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call,
         # htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
         # htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
-        # htn_cumulative_assigned_adjusted: PatientStates::Hypertension::AdjustedAssignedPatientsQuery.new(region, period).call
+        dm_cumulative_assigned_adjusted: PatientStates::Diabetes::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states, data_buckets(MIN_AGE, MAX_AGE, AGE_BUCKET_SIZE)) }
     end
 
