@@ -1,5 +1,3 @@
-require 'benchmark'
-
 class Reports::PatientListsController < AdminController
   attr_reader :scope, :region, :download_params
 
