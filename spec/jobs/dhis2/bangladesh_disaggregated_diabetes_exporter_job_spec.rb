@@ -18,7 +18,7 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
         # dm_controlled: :dm_controlled,
         # dm_uncontrolled: :dm_uncontrolled,
         dm_missed_visits: :dm_missed_visits,
-        # dm_ltfu: :dm_ltfu,
+        dm_ltfu: :dm_ltfu,
         # dm_dead: :dm_dead,
         # dm_cumulative_registrations: :dm_cumulative_registrations,
         # dm_monthly_registrations: :dm_monthly_registrations,
@@ -50,7 +50,7 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
       # allow_any_instance_of(PatientStates::Hypertension::ControlledPatientsQuery).to receive(:call).and_return(:htn_controlled)
       # allow_any_instance_of(PatientStates::Hypertension::UncontrolledPatientsQuery).to receive(:call).and_return(:htn_uncontrolled)
       allow_any_instance_of(PatientStates::Diabetes::MissedVisitsPatientsQuery).to receive(:call).and_return(:dm_missed_visits)
-      # allow_any_instance_of(PatientStates::Hypertension::LostToFollowUpPatientsQuery).to receive(:call).and_return(:htn_ltfu)
+      allow_any_instance_of(PatientStates::Diabetes::LostToFollowUpPatientsQuery).to receive(:call).and_return(:dm_ltfu)
       # allow_any_instance_of(PatientStates::Hypertension::DeadPatientsQuery).to receive(:call).and_return(:htn_dead)
       # allow_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive(:call).and_return(:htn_cumulative_registrations)
       # allow_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive(:call).and_return(:htn_monthly_registrations)
