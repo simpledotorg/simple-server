@@ -50,6 +50,27 @@ class PatientsWithHistoryExporter
     end
   end
 
+  def self.csv_enumerator(*args)
+    new.csv_enumerator(*args)
+  end
+
+  def csv_enumerator(patients, display_blood_sugars: true)
+    @display_blood_sugars = display_blood_sugars
+    summary = MaterializedPatientSummary.where(patient: patients)
+
+    Enumerator.new do |yielder|
+      yielder << timestamp
+      yielder << measurement_headers
+      yielder << csv_headers
+
+      summary.in_batches(of: BATCH_SIZE).each do |batch|
+        batch.each do |patient_summary|
+          yielder << csv_fields(patient_summary)
+        end
+      end
+    end
+  end
+
   def timestamp
     [
       "Report generated at:",
