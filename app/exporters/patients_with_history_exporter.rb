@@ -63,9 +63,6 @@ class PatientsWithHistoryExporter
       yielder << CSV.generate_line(measurement_headers)
       yielder << CSV.generate_line(csv_headers)
 
-      # summary.each do |patient_summary|
-      #   yielder << CSV.generate_line(csv_fields(patient_summary))
-      # end
       summary.in_batches(of: BATCH_SIZE).each do |batch|
         batch.each do |patient_summary|
           yielder << CSV.generate_line(csv_fields(patient_summary))

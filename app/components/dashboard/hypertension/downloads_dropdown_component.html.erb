@@ -43,6 +43,13 @@
       <% end %>
     <% end %>
 
+    <% if show_patient_line_list? %>
+      <%= link_to(reports_patient_list_path(@region, report_scope: report_scope, download_zip: true), class: "dropdown-item") do %>
+        <i class="fa-regular fa-list-ul w-16px ta-center mr-8px c-blue"></i>
+        Patient line list Zip
+      <% end %>
+    <% end %>
+
     <div class="dropdown-divider"></div>
 
     <h6 class="dropdown-header c-grey-dark">
