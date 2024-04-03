@@ -1,4 +1,5 @@
 class Reports::PatientListsController < AdminController
+  include ZipKit::RailsStreaming
   attr_reader :scope, :region, :download_params
 
   before_action :set_scope, only: [:show, :diabetes]
@@ -6,14 +7,42 @@ class Reports::PatientListsController < AdminController
   before_action :set_download_params, only: [:show, :diabetes]
 
   def show
-    PatientListDownloadJob.perform_async(recipient_email, region_class, download_params)
+    case region_class
+    when "facility"
+      model = Facility.find(download_params[:facility_id])
+      model_name = model.name
+    when "facility_group"
+      model = FacilityGroup.find(download_params[:id])
+      model_name = model.name
+    else
+      raise ArgumentError, "unknown model_type #{region_class.inspect}"
+    end
 
-    redirect_back(
-      fallback_location: reports_region_path(region, report_scope: params[:report_scope]),
-      notice: I18n.t("patient_list_email.notice",
-        model_type: filtered_params[:report_scope],
-        model_name: region.name)
-    )
+    patients = model.assigned_patients.excluding_dead
+    exporter = PatientsWithHistoryExporter
+    file_name = "patient-list_#{@region.region_type}_#{@region.name}_#{I18n.l(Date.current)}"
+    if params[:download_zip]
+      response.headers["Last-Modified"] = Time.zone.now.ctime.to_s
+      return zip_kit_stream(filename: "#{file_name}.zip") do |zip|
+        zip.write_deflated_file("#{file_name}.csv") do |sink|
+          exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?).each do |row|
+            sink << row
+          end
+        end
+      end
+    else
+      respond_to do |format|
+        format.csv do
+          headers.delete("Content-Length")
+          headers["X-Accel-Buffering"] = "no"
+          headers["Cache-Control"] = "no-cache"
+          headers["Content-Type"] = "text/csv; charset=utf-8"
+          headers["Content-Disposition"] = "attachment; filename=\"#{file_name}.csv\""
+          headers["Last-Modified"] = Time.zone.now.ctime.to_s
+            self.response_body = exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?)
+        end
+      end
+    end
   end
 
   private
