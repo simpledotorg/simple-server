@@ -1,4 +1,5 @@
 class Reports::PatientListsController < AdminController
+  include ZipKit::RailsStreaming
   attr_reader :scope, :region, :download_params
 
   before_action :set_scope, only: [:show, :diabetes]
@@ -20,15 +21,26 @@ class Reports::PatientListsController < AdminController
     patients = model.assigned_patients.excluding_dead
     exporter = PatientsWithHistoryExporter
     file_name = "patient-list_#{@region.region_type}_#{@region.name}_#{I18n.l(Date.current)}"
-    respond_to do |format|
-      format.csv do
-        headers.delete("Content-Length")
-        headers["X-Accel-Buffering"] = "no"
-        headers["Cache-Control"] = "no-cache"
-        headers["Content-Type"] = "text/csv; charset=utf-8"
-        headers["Content-Disposition"] = "attachment; filename=\"#{file_name}.csv\""
-        headers["Last-Modified"] = Time.zone.now.ctime.to_s
-          self.response_body = exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?)
+    if params[:download_zip]
+      response.headers["Last-Modified"] = Time.zone.now.ctime.to_s
+      return zip_kit_stream(filename: "#{file_name}.zip") do |zip|
+        zip.write_deflated_file("#{file_name}.csv") do |sink|
+          exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?).each do |row|
+            sink << row
+          end
+        end
+      end
+    else
+      respond_to do |format|
+        format.csv do
+          headers.delete("Content-Length")
+          headers["X-Accel-Buffering"] = "no"
+          headers["Cache-Control"] = "no-cache"
+          headers["Content-Type"] = "text/csv; charset=utf-8"
+          headers["Content-Disposition"] = "attachment; filename=\"#{file_name}.csv\""
+          headers["Last-Modified"] = Time.zone.now.ctime.to_s
+            self.response_body = exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?)
+        end
       end
     end
   end
