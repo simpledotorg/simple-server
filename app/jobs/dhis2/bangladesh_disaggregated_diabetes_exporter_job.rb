@@ -16,8 +16,8 @@ module Dhis2
         dm_missed_visits: PatientStates::Diabetes::MissedVisitsPatientsQuery.new(region, period).call,
         dm_ltfu: PatientStates::Diabetes::LostToFollowUpPatientsQuery.new(region, period).call,
         dm_dead: PatientStates::Diabetes::DeadPatientsQuery.new(region, period).call,
-        # htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
-        # htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
+        dm_cumulative_registrations: PatientStates::Diabetes::CumulativeRegistrationsQuery.new(region, period).call,
+        dm_monthly_registrations: PatientStates::Diabetes::MonthlyRegistrationsQuery.new(region, period).call,
         dm_cumulative_assigned_adjusted: PatientStates::Diabetes::AdjustedAssignedPatientsQuery.new(region, period).call
       }.transform_values { |patient_states| disaggregate_by_gender_age(patient_states, data_buckets(MIN_AGE, MAX_AGE, AGE_BUCKET_SIZE)) }
     end
