@@ -15,7 +15,7 @@ module Dhis2
         # htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
         dm_missed_visits: PatientStates::Diabetes::MissedVisitsPatientsQuery.new(region, period).call,
         dm_ltfu: PatientStates::Diabetes::LostToFollowUpPatientsQuery.new(region, period).call,
-        # htn_dead: PatientStates::Hypertension::DeadPatientsQuery.new(region, period).call,
+        dm_dead: PatientStates::Diabetes::DeadPatientsQuery.new(region, period).call,
         # htn_cumulative_registrations: PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call,
         # htn_monthly_registrations: PatientStates::Hypertension::MonthlyRegistrationsQuery.new(region, period).call,
         dm_cumulative_assigned_adjusted: PatientStates::Diabetes::AdjustedAssignedPatientsQuery.new(region, period).call
