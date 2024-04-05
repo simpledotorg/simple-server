@@ -1,55 +1,62 @@
 <% if CountryConfig.current[:name] == "India" %>
   <% if Flipper.enabled?(:big_number, current_admin) %>
-<div class="card mb-4">
-  <h2>
-    Patients protected from heart attack and stroke with world-class treatment
-  </h2>
-  <h3 class="fs-20px fw-bold text-green">142,381 patients protected</h3>
-  <div>
-  </div>
-  <div class="d-flex gap-48px">
-    <div class="w-50">
-      <table class="table table-compact">
-        <thead>
-          <tr>
-            <td scope="col" class="fw-bold" style="border-top: 0px;">Regions</td>
-            <td scope="col" class="ta-right fw-bold" style="border-top: 0px;">Mar-2024</td>
-          </tr>
-        </thead>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-        <tr>
-          <td>Barishal</td>
-          <td class="ta-right">123,456</td>
-        </tr>
-      </table>
+  
+    <div class="card mb-4">
+      <h2>
+        Patients protected from heart attack and stroke with world-class treatment
+      </h2>
+      <h3 class="fs-20px fw-bold text-green">142,381 patients protected</h3>
+      <div>
+        <canvas id="bigNumberHomepageTrend"></canvas>
+      </div>
+      <div class="d-flex gap-48px">
+        <div class="w-50">
+          <table class="table table-compact">
+            <thead>
+              <tr>
+                <td scope="col" class="fw-bold" style="border-top: 0px;">Regions</td>
+                <td scope="col" class="ta-right fw-bold" style="border-top: 0px;">Mar-2024</td>
+              </tr>
+            </thead>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+            <tr>
+              <td>Barishal</td>
+              <td class="ta-right">123,456</td>
+            </tr>
+          </table>
+        </div>
+        <div class="w-50">
+          <p class="mt-4px mb-4px"><b>Definition</b></p>
+          <p class="mt-0">
+            Patients with BP controlled at their latest visit in the last 3 months. In March, this would mean 142,381 patients visited a facility in Jan, Feb, or Mar and had a controlled blood pressure (&lt;140/90) at their latest measure.
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="w-50">
-      <p class="mt-4px mb-4px"><b>Definition</b></p>
-      <p class="mt-0">
-        Patients with BP controlled at their latest visit in the last 3 months. In March, this would mean 142,381 patients visited a facility in Jan, Feb, or Mar and had a controlled blood pressure (&lt;140/90) at their latest measure.
-      </p>
-    </div>
-  </div>
-</div>
-
+    <script>
+      window.addEventListener("DOMContentLoaded", () => {
+        console.log('after load');
+          DashboardReports().ReportsGraph("bigNumberHomepageTrend", 'test data')
+      });
+    </script>
   <% end %>
-  <% end %>
+<% end %>

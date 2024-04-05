@@ -23,7 +23,6 @@
 @import "partials/admin/index";
 @import "partials/admin/show";
 
-
 body {
   font-size: 15px;
   font-family: $font-condensed;
@@ -732,14 +731,20 @@ span.inactive {
 .w-full {
   width: 100%;
 }
-.jc-space-between { justify-content: space-between; }
-
-.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::before {
-  background-color: #ADB2B8;
-  border-color: #ADB2B8;
+.jc-space-between {
+  justify-content: space-between;
 }
 
-.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::after {
+.checkbox-outside-card
+  .custom-control-input:not(:checked)
+  ~ .custom-control-label::before {
+  background-color: #adb2b8;
+  border-color: #adb2b8;
+}
+
+.checkbox-outside-card
+  .custom-control-input:not(:checked)
+  ~ .custom-control-label::after {
   background-color: #fff;
 }
 
@@ -747,7 +752,9 @@ span.inactive {
   color: #2f363d;
 }
 
-.o-65 { opacity: 0.65; }
+.o-65 {
+  opacity: 0.65;
+}
 
 .card-chip-container {
   white-space: nowrap;
@@ -800,7 +807,7 @@ span.inactive {
 }
 
 .no-card-gap-filler p {
-  color: #A0A0A0;
+  color: #a0a0a0;
 }
 
 .gap-48px {
