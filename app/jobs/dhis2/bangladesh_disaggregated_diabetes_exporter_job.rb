@@ -11,7 +11,7 @@ module Dhis2
     def facility_data_for_period(region, period)
       {
         dm_cumulative_assigned: PatientStates::Diabetes::CumulativeAssignedPatientsQuery.new(region, period).call,
-        # htn_controlled: PatientStates::Hypertension::ControlledPatientsQuery.new(region, period).call,
+        dm_controlled: PatientStates::Diabetes::BsBelow200PatientsQuery.new(region, period).call,
         # htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
         dm_missed_visits: PatientStates::Diabetes::MissedVisitsPatientsQuery.new(region, period).call,
         dm_ltfu: PatientStates::Diabetes::LostToFollowUpPatientsQuery.new(region, period).call,

@@ -23,7 +23,7 @@ FactoryBot.define do
     association :registration_user, factory: :user_created_on_device
     business_identifiers do
       [association(:patient_business_identifier, strategy: :build, patient: instance,
-                                                 metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
+        metadata: {assigning_facility_id: registration_facility.id, assigning_user_id: registration_user.id})]
     end
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
@@ -119,6 +119,24 @@ FactoryBot.define do
       blood_pressures { build_list(:blood_pressure, 1, :hypertensive) }
     end
 
+    trait(:bs_below_200) do
+      diabetes
+      under_care
+      blood_sugars { build_list(:blood_sugar, 1, :bs_below_200) }
+    end
+
+    trait(:bs_200_to_300) do
+      diabetes
+      under_care
+      blood_sugars { build_list(:blood_sugar, 1, :bs_200_to_300) }
+    end
+
+    trait(:bs_over_300) do
+      diabetes
+      under_care
+      blood_sugars { build_list(:blood_sugar, 1, :bs_over_300) }
+    end
+
     trait(:with_visit) do
       blood_pressures { build_list(:blood_pressure, 1, :under_control, recorded_at: 1.month.ago) }
     end
@@ -126,7 +144,7 @@ FactoryBot.define do
     trait(:with_call_result) do
       transient do
         result_type { CallResult.result_types.except(:removed_from_overdue_list).keys.sample }
-        remove_reason { result_type == :removed_from_overdue_list ? CallResult.remove_reasons.keys.sample : nil }
+        remove_reason { (result_type == :removed_from_overdue_list) ? CallResult.remove_reasons.keys.sample : nil }
         call_date { 1.month.ago } # call made before the month_date
       end
       call_results { build_list(:call_result, 1, device_created_at: call_date, result_type: result_type, remove_reason: remove_reason) }
@@ -148,7 +166,7 @@ FactoryBot.define do
       with_overdue_appointments
       call_results {
         build_list(:call_result, 1, user_id: user.id, appointment_id: appointments.first.id, result_type: :removed_from_overdue_list,
-                                                 remove_reason: CallResult.remove_reasons.keys.sample, device_created_at: call_date)
+          remove_reason: CallResult.remove_reasons.keys.sample, device_created_at: call_date)
       }
     end
   end
