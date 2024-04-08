@@ -12,7 +12,7 @@ module Dhis2
       {
         dm_cumulative_assigned: PatientStates::Diabetes::CumulativeAssignedPatientsQuery.new(region, period).call,
         dm_controlled: PatientStates::Diabetes::BsBelow200PatientsQuery.new(region, period).call,
-        # htn_uncontrolled: PatientStates::Hypertension::UncontrolledPatientsQuery.new(region, period).call,
+        dm_uncontrolled: PatientStates::Diabetes::BsOver200PatientsQuery.new(region, period).call,
         dm_missed_visits: PatientStates::Diabetes::MissedVisitsPatientsQuery.new(region, period).call,
         dm_ltfu: PatientStates::Diabetes::LostToFollowUpPatientsQuery.new(region, period).call,
         dm_dead: PatientStates::Diabetes::DeadPatientsQuery.new(region, period).call,

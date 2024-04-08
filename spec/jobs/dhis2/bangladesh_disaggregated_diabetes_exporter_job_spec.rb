@@ -16,7 +16,7 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
       {
         dm_cumulative_assigned: :dm_cumulative_assigned,
         dm_controlled: :dm_controlled,
-        # dm_uncontrolled: :dm_uncontrolled,
+        dm_uncontrolled: :dm_uncontrolled,
         dm_missed_visits: :dm_missed_visits,
         dm_ltfu: :dm_ltfu,
         dm_dead: :dm_dead,
@@ -48,7 +48,7 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
 
       allow_any_instance_of(PatientStates::Diabetes::CumulativeAssignedPatientsQuery).to receive(:call).and_return(:dm_cumulative_assigned)
       allow_any_instance_of(PatientStates::Diabetes::BsBelow200PatientsQuery).to receive(:call).and_return(:dm_controlled)
-      # allow_any_instance_of(PatientStates::Diabetes::UncontrolledPatientsQuery).to receive(:call).and_return(:dm_uncontrolled)
+      allow_any_instance_of(PatientStates::Diabetes::BsOver200PatientsQuery).to receive(:call).and_return(:dm_uncontrolled)
       allow_any_instance_of(PatientStates::Diabetes::MissedVisitsPatientsQuery).to receive(:call).and_return(:dm_missed_visits)
       allow_any_instance_of(PatientStates::Diabetes::LostToFollowUpPatientsQuery).to receive(:call).and_return(:dm_ltfu)
       allow_any_instance_of(PatientStates::Diabetes::DeadPatientsQuery).to receive(:call).and_return(:dm_dead)
