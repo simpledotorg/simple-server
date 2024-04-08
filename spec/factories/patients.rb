@@ -144,7 +144,7 @@ FactoryBot.define do
     trait(:with_call_result) do
       transient do
         result_type { CallResult.result_types.except(:removed_from_overdue_list).keys.sample }
-        remove_reason { (result_type == :removed_from_overdue_list) ? CallResult.remove_reasons.keys.sample : nil }
+        remove_reason { result_type == :removed_from_overdue_list ? CallResult.remove_reasons.keys.sample : nil }
         call_date { 1.month.ago } # call made before the month_date
       end
       call_results { build_list(:call_result, 1, device_created_at: call_date, result_type: result_type, remove_reason: remove_reason) }
