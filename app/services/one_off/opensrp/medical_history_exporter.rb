@@ -24,7 +24,7 @@ module OneOff
           subject: FHIR::Reference.new(
             reference: "Patient/#{medical_history.patient_id}"
           ),
-          code: [
+          code: FHIR::Code.new(
             FHIR::CodeableConcept.new(
               coding: [
                 FHIR::Coding.new(
@@ -35,7 +35,7 @@ module OneOff
               ]
             ),
             text: display
-          ],
+          ),
           clinicalStatus: FHIR::CodeableConcept.new(
             coding: [
               FHIR::Coding.new(
@@ -60,55 +60,62 @@ module OneOff
       end
 
       def export_encounter
-        FHIR::Encounter.new(
-          meta: meta,
-          status: "finished",
-          id: encounter_id,
-          identifier: [
-            FHIR::Identifier.new(
-              value: encounter_id
-            )
-          ],
-          class: FHIR::Coding.new(
-            system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            code: "AMB"
-          ),
-          type: [
-            FHIR::CodeableConcept.new(
-              coding: FHIR::Coding.new(
-                system: "http://snomed.info/sct",
-                code: "44054006"
+        {
+          parent_encounter_id: parent_encounter_id,
+          child_encounter: FHIR::Encounter.new(
+            meta: meta,
+            status: "finished",
+            id: encounter_id,
+            identifier: [
+              FHIR::Identifier.new(
+                value: encounter_id
               )
-            )
-          ],
-          serviceType: FHIR::CodeableConcept.new(
-            coding: [
-              FHIR::Coding.new(
-                system: "http://terminology.hl7.org/CodeSystem/service-type",
-                code: "335"
+            ],
+            class: FHIR::Coding.new(
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "AMB"
+            ),
+            type: [
+              FHIR::CodeableConcept.new(
+                coding: FHIR::Coding.new(
+                  system: "http://snomed.info/sct",
+                  code: "44054006"
+                )
               )
-            ]
-          ),
-          subject: FHIR::Reference.new(reference: "Patient/#{medical_history.patient_id}"),
-          period: FHIR::Period.new(start: medical_history.device_updated_at.iso8601), # TODO: we don't store end period
-          reasonCode: [
-            FHIR::CodeableConcept.new(
+            ],
+            serviceType: FHIR::CodeableConcept.new(
               coding: [
                 FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: "1156892006" # TODO
+                  system: "http://terminology.hl7.org/CodeSystem/service-type",
+                  code: "335"
                 )
               ]
-            )
-          ],
-          diagnosis: FHIR::Reference.new(reference: "Condition/#{medical_history.id}"),
-          location: nil,
-          serviceProvider: FHIR::Reference.new(reference: "Organization/#{medical_history.patient.assigned_facility_id}"),
-          partOf: nil
-        )
+            ),
+            subject: FHIR::Reference.new(reference: "Patient/#{medical_history.patient_id}"),
+            period: FHIR::Period.new(start: medical_history.device_updated_at.iso8601), # TODO: we don't store end period
+            reasonCode: [
+              FHIR::CodeableConcept.new(
+                coding: [
+                  FHIR::Coding.new(
+                    system: "http://snomed.info/sct",
+                    code: "1156892006" # TODO
+                  )
+                ]
+              )
+            ],
+            diagnosis: FHIR::Reference.new(reference: "Condition/#{medical_history.id}"),
+            location: nil,
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{medical_history.patient.assigned_facility_id}"),
+            partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
+          )
+        }
       end
 
       def encounter_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, medical_history.id)
+      end
+
+      def parent_encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, medical_history.patient_id + meta.lastUpdated.to_date.iso8601)
       end
 
@@ -135,6 +142,11 @@ module OneOff
               system: "https://smartregister.org/care-team-tag-id",
               code: "TODO", # TODO
               display: "Practitioner CareTeam"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/related-entity-location-tag-id",
+              code: "TODO", # TODO
+              display: "Related Entity Location"
             )
           ]
         )

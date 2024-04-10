@@ -51,53 +51,56 @@ module OneOff
       end
 
       def export_encounter
-        FHIR::Encounter.new(
-          meta: meta,
-          status: encounter_status_code,
-          id: encounter_id,
-          identifier: [
-            FHIR::Identifier.new(
-              value: encounter_id
-            )
-          ],
-          class: FHIR::Coding.new(
-            system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            code: "AMB"
-          ),
-          type: [
-            FHIR::CodeableConcept.new(
-              coding: FHIR::Coding.new(
-                system: "https://terminology.hl7.org/3.1.0/CodeSystem-v2-0276.html",
-                code: "FOLLOWUP"
+        {
+          parent_id: parent_encounter_id,
+          child_encounter: FHIR::Encounter.new(
+            meta: meta,
+            status: encounter_status_code,
+            id: encounter_id,
+            identifier: [
+              FHIR::Identifier.new(
+                value: encounter_id
               )
-            )
-          ],
-          serviceType: FHIR::CodeableConcept.new(
-            coding: [
-              FHIR::Coding.new(
-                system: "http://terminology.hl7.org/CodeSystem/service-type",
-                code: "335"
+            ],
+            class: FHIR::Coding.new(
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "AMB"
+            ),
+            type: [
+              FHIR::CodeableConcept.new(
+                coding: FHIR::Coding.new(
+                  system: "https://terminology.hl7.org/3.1.0/CodeSystem-v2-0276.html",
+                  code: "FOLLOWUP"
+                )
               )
-            ]
-          ),
-          subject: FHIR::Reference.new(reference: "Patient/#{appointment.patient_id}"),
-          appointment: FHIR::Reference.new(reference: "Appointment/#{appointment.id}"),
-          period: FHIR::Period.new(start: appointment.scheduled_date.iso8601), # TODO: we don't store end period
-          reasonCode: [
-            FHIR::CodeableConcept.new(
+            ],
+            serviceType: FHIR::CodeableConcept.new(
               coding: [
                 FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: "1156892006"
+                  system: "http://terminology.hl7.org/CodeSystem/service-type",
+                  code: "335"
                 )
               ]
-            )
-          ],
-          diagnosis: nil,
-          location: nil,
-          serviceProvider: FHIR::Reference.new(reference: "Organization/#{appointment.facility_id}"),
-          partOf: nil
-        )
+            ),
+            subject: FHIR::Reference.new(reference: "Patient/#{appointment.patient_id}"),
+            appointment: FHIR::Reference.new(reference: "Appointment/#{appointment.id}"),
+            period: FHIR::Period.new(start: appointment.scheduled_date.iso8601), # TODO: we don't store end period
+            reasonCode: [
+              FHIR::CodeableConcept.new(
+                coding: [
+                  FHIR::Coding.new(
+                    system: "http://snomed.info/sct",
+                    code: "1156892006"
+                  )
+                ]
+              )
+            ],
+            diagnosis: nil,
+            location: nil,
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{appointment.facility_id}"),
+            partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
+          )
+        }
       end
 
       def meta
@@ -134,6 +137,10 @@ module OneOff
       end
 
       def encounter_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, appointment.id)
+      end
+
+      def parent_encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, appointment.patient_id + meta.lastUpdated.to_date.iso8601)
       end
 

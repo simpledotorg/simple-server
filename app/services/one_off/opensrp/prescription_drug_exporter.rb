@@ -27,18 +27,17 @@ module OneOff
           #     )
           #   ]
           # ),
-          performer: FHIR::Reference.new(
-            reference: prescription_drug.facility_id
-          ),
+          performer: [
+            FHIR::Reference.new(
+              reference: "Organization/#{prescription_drug.facility_id}"
+            )
+          ],
           subject: FHIR::Reference.new(
             reference: "Patient/#{prescription_drug.patient_id}"
           ),
           whenPrepared: nil,
           whenHandedOver: prescription_drug.device_created_at.iso8601,
-          meta: FHIR::Meta.new(
-            lastUpdated: prescription_drug.device_updated_at.iso8601,
-            createdAt: prescription_drug.device_created_at.iso8601
-          )
+          meta: meta
         )
       end
 
@@ -58,55 +57,62 @@ module OneOff
       end
 
       def export_encounter
-        FHIR::Encounter.new(
-          meta: meta,
-          status: "finished",
-          id: encounter_id,
-          identifier: [
-            FHIR::Identifier.new(
-              value: encounter_id
-            )
-          ],
-          class: FHIR::Coding.new(
-            system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            code: "AMB"
-          ),
-          type: [
-            FHIR::CodeableConcept.new(
-              coding: FHIR::Coding.new(
-                system: "http://snomed.info/sct",
-                code: "44054006"
+        {
+          parent_id: parent_encounter_id,
+          child_encounter: FHIR::Encounter.new(
+            meta: meta,
+            status: "finished",
+            id: encounter_id,
+            identifier: [
+              FHIR::Identifier.new(
+                value: encounter_id
               )
-            )
-          ],
-          serviceType: FHIR::CodeableConcept.new(
-            coding: [
-              FHIR::Coding.new(
-                system: "http://terminology.hl7.org/CodeSystem/service-type",
-                code: "335"
+            ],
+            class: FHIR::Coding.new(
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "AMB"
+            ),
+            type: [
+              FHIR::CodeableConcept.new(
+                coding: FHIR::Coding.new(
+                  system: "http://snomed.info/sct",
+                  code: "44054006"
+                )
               )
-            ]
-          ),
-          subject: FHIR::Reference.new(reference: "Patient/#{prescription_drug.patient_id}"),
-          period: FHIR::Period.new(start: prescription_drug.updated_at.iso8601), # TODO: we don't store end period
-          reasonCode: [
-            FHIR::CodeableConcept.new(
+            ],
+            serviceType: FHIR::CodeableConcept.new(
               coding: [
                 FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: "1156892006" # TODO
+                  system: "http://terminology.hl7.org/CodeSystem/service-type",
+                  code: "335"
                 )
               ]
-            )
-          ],
-          diagnosis: nil,
-          location: nil,
-          serviceProvider: FHIR::Reference.new(reference: "Organization/#{prescription_drug.facility_id}"),
-          partOf: nil
-        )
+            ),
+            subject: FHIR::Reference.new(reference: "Patient/#{prescription_drug.patient_id}"),
+            period: FHIR::Period.new(start: prescription_drug.updated_at.iso8601), # TODO: we don't store end period
+            reasonCode: [
+              FHIR::CodeableConcept.new(
+                coding: [
+                  FHIR::Coding.new(
+                    system: "http://snomed.info/sct",
+                    code: "1156892006" # TODO
+                  )
+                ]
+              )
+            ],
+            diagnosis: nil,
+            location: nil,
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{prescription_drug.facility_id}"),
+            partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
+          )
+        }
       end
 
       def encounter_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, prescription_drug.id)
+      end
+
+      def parent_encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, prescription_drug.patient_id + meta.lastUpdated.to_date.iso8601)
       end
 

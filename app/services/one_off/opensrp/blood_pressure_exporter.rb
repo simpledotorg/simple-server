@@ -10,6 +10,10 @@ module OneOff
       end
 
       def encounter_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_pressure.id)
+      end
+
+      def parent_encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_pressure.patient_id + meta.lastUpdated.to_date.iso8601)
       end
 
@@ -76,52 +80,55 @@ module OneOff
       end
 
       def export_encounter
-        FHIR::Encounter.new(
-          meta: meta,
-          status: "finished",
-          id: encounter_id,
-          identifier: [
-            FHIR::Identifier.new(
-              value: encounter_id
-            )
-          ],
-          class: FHIR::Coding.new(
-            system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            code: "AMB"
-          ),
-          type: [
-            FHIR::CodeableConcept.new(
-              coding: FHIR::Coding.new(
-                system: "http://snomed.info/sct",
-                code: "38341003"
+        {
+          parent_id: parent_encounter_id,
+          child_encounter: FHIR::Encounter.new(
+            meta: meta,
+            status: "finished",
+            id: encounter_id,
+            identifier: [
+              FHIR::Identifier.new(
+                value: encounter_id
               )
-            )
-          ],
-          serviceType: FHIR::CodeableConcept.new(
-            coding: [
-              FHIR::Coding.new(
-                system: "http://terminology.hl7.org/CodeSystem/service-type",
-                code: "335"
+            ],
+            class: FHIR::Coding.new(
+              system: "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+              code: "AMB"
+            ),
+            type: [
+              FHIR::CodeableConcept.new(
+                coding: FHIR::Coding.new(
+                  system: "http://snomed.info/sct",
+                  code: "38341003"
+                )
               )
-            ]
-          ),
-          subject: FHIR::Reference.new(reference: "Patient/#{blood_pressure.patient_id}"),
-          period: FHIR::Period.new(start: blood_pressure.recorded_at.iso8601), # TODO: we don't store end period
-          reasonCode: [
-            FHIR::CodeableConcept.new(
+            ],
+            serviceType: FHIR::CodeableConcept.new(
               coding: [
                 FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: "1156892006" # TODO
+                  system: "http://terminology.hl7.org/CodeSystem/service-type",
+                  code: "335"
                 )
               ]
-            )
-          ],
-          diagnosis: nil,
-          location: nil,
-          serviceProvider: FHIR::Reference.new(reference: "Organization/#{blood_pressure.facility_id}"),
-          partOf: nil
-        )
+            ),
+            subject: FHIR::Reference.new(reference: "Patient/#{blood_pressure.patient_id}"),
+            period: FHIR::Period.new(start: blood_pressure.recorded_at.iso8601), # TODO: we don't store end period
+            reasonCode: [
+              FHIR::CodeableConcept.new(
+                coding: [
+                  FHIR::Coding.new(
+                    system: "http://snomed.info/sct",
+                    code: "1156892006" # TODO
+                  )
+                ]
+              )
+            ],
+            diagnosis: nil,
+            location: nil,
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{blood_pressure.facility_id}"),
+            partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
+          )
+        }
       end
 
       def meta
