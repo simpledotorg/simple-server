@@ -1,4 +1,4 @@
-class PatientStates::Hypertension::DeadPatientsQuery
+class PatientStates::Diabetes::CumulativeAssignedPatientsQuery
   attr_reader :region, :period
 
   def initialize(region, period)
@@ -10,9 +10,9 @@ class PatientStates::Hypertension::DeadPatientsQuery
     Reports::PatientState
       .where(
         assigned_facility_id: region.facility_ids,
-        month_date: period,
-        hypertension: "yes"
+        month_date: period
       )
-      .where(htn_care_state: "dead")
+      .where(diabetes: "yes")
+      .where.not(htn_care_state: "dead")
   end
 end
