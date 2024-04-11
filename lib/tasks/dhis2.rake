@@ -7,7 +7,7 @@ namespace :dhis2 do
   end
 
   desc "Export disaggregated hypertension indicator data of each facility to Bangladesh DHIS2"
-  task bangladesh_disaggregated_export: :environment do
+  task bangladesh_disaggregated_hypertension_export: :environment do
     FacilityBusinessIdentifier.dhis2_org_unit_id.each do |facility_identifier|
       Dhis2::BangladeshDisaggregatedHypertensionExporterJob.perform_async(facility_identifier.id, 24)
     end
