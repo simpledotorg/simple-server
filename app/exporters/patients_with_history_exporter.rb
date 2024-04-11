@@ -166,7 +166,7 @@ class PatientsWithHistoryExporter
     blood_sugars = if display_blood_sugars
       (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_fields(patient_summary, i) }.flatten
     else
-      [I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date),
+      [patient_summary.latest_blood_sugar_1_recorded_at ? I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date) : nil,
         patient_summary.latest_blood_sugar_1_blood_sugar_value,
         patient_summary.latest_blood_sugar_1_blood_sugar_type]
     end
