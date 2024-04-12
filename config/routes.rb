@@ -196,7 +196,7 @@ Rails.application.routes.draw do
   get "/reports/districts/", to: redirect("/reports/regions/")
 
   namespace :reports do
-    resources :patient_lists, only: [:show]
+    resources :patient_lists, only: [:show], defaults: { format: :csv }
     resources :progress, only: [:show]
     resources :regions, only: [:index]
     get "regions/fastindex", to: "regions#fastindex"
