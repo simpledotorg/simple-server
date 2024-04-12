@@ -50,6 +50,31 @@ class PatientsWithHistoryExporter
     end
   end
 
+  def self.csv_enumerator(*args)
+    new.csv_enumerator(*args)
+  end
+
+  def csv_enumerator(patients, display_blood_sugars: true, batch_size: BATCH_SIZE)
+    @display_blood_sugars = display_blood_sugars
+    summary = MaterializedPatientSummary.where(patient: patients)
+
+    Enumerator.new do |yielder|
+      headers_batch = []
+      headers_batch << timestamp
+      headers_batch << measurement_headers
+      headers_batch << csv_headers
+      yielder << headers_batch
+
+      summary.in_batches(of: batch_size).each do |batch|
+        csv_batch = []
+        batch.each do |patient_summary|
+          csv_batch << csv_fields(patient_summary)
+        end
+        yielder << csv_batch
+      end
+    end
+  end
+
   def timestamp
     [
       "Report generated at:",
@@ -145,7 +170,7 @@ class PatientsWithHistoryExporter
     blood_sugars = if display_blood_sugars
       (1..BLOOD_SUGARS_TO_DISPLAY).map { |i| blood_sugar_fields(patient_summary, i) }.flatten
     else
-      [I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date),
+      [patient_summary.latest_blood_sugar_1_recorded_at ? I18n.l(patient_summary.latest_blood_sugar_1_recorded_at.to_date) : nil,
         patient_summary.latest_blood_sugar_1_blood_sugar_value,
         patient_summary.latest_blood_sugar_1_blood_sugar_type]
     end
