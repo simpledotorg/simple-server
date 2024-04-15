@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Dhis2
-  class BangladeshDisaggregatedExporterJob < Dhis2ExporterJob
+  class BangladeshDisaggregatedHypertensionExporterJob < Dhis2ExporterJob
     MIN_AGE = 15
     MAX_AGE = 75
     AGE_BUCKET_SIZE = 5

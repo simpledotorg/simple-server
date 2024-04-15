@@ -1,7 +1,7 @@
 require "rails_helper"
 require "dhis2"
 
-describe Dhis2::BangladeshDisaggregatedExporterJob do
+describe Dhis2::BangladeshDisaggregatedHypertensionExporterJob do
   describe "#perform" do
     before do
       allow(ENV).to receive(:fetch).and_call_original
