@@ -392,19 +392,11 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
     end
 
     context "when batch size is provided" do
-      let!(:patient2) {
-        create(:patient,
-          assigned_facility: facility,
-          registration_facility: registration_facility,
-          age: 50,
-          address: create(:address, village_or_colony: Faker::Address.city)) # need a different village and zone
-      }
       let(:batch_size) { 1 }
-      before do
-        MaterializedPatientSummary.refresh
-      end
 
       it "flushes records in batches" do
+        patient2 = create(:patient, assigned_facility: facility, registration_facility: registration_facility, age: 50, address: create(:address, village_or_colony: Faker::Address.city))
+        MaterializedPatientSummary.refresh
         Timecop.freeze do
           timestamp = ["Report generated at:", Time.current]
           enumerator = subject.csv_enumerator(Patient.all, batch_size: batch_size)
