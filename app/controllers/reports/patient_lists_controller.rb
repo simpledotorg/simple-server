@@ -10,10 +10,8 @@ class Reports::PatientListsController < AdminController
     case region_class
     when "facility"
       model = Facility.find(download_params[:facility_id])
-      model_name = model.name
     when "facility_group"
       model = FacilityGroup.find(download_params[:id])
-      model_name = model.name
     else
       raise ArgumentError, "unknown model_type #{region_class.inspect}"
     end
@@ -22,7 +20,7 @@ class Reports::PatientListsController < AdminController
     exporter = PatientsWithHistoryExporter
     file_name = "patient-list_#{@region.region_type}_#{@region.name}_#{I18n.l(Date.current)}"
     response.headers["Last-Modified"] = Time.zone.now.ctime.to_s
-    return zip_kit_stream(filename: "#{file_name}.zip") do |zip|
+    zip_kit_stream(filename: "#{file_name}.zip") do |zip|
       zip.write_deflated_file("#{file_name}.csv") do |sink|
         exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?, batch_size: (ENV.fetch("REPORT_ENUMERATOR_BATCH_SIZE") || 1000).to_i).each do |chunk|
           sink << chunk.map(&:to_csv).join

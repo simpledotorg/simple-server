@@ -395,7 +395,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       let(:batch_size) { 1 }
 
       it "flushes records in batches" do
-        patient2 = create(:patient, assigned_facility: facility, registration_facility: registration_facility, age: 50, address: create(:address, village_or_colony: Faker::Address.city))
+        create(:patient, assigned_facility: facility, registration_facility: registration_facility, age: 50, address: create(:address, village_or_colony: Faker::Address.city))
         MaterializedPatientSummary.refresh
         Timecop.freeze do
           timestamp = ["Report generated at:", Time.current]
