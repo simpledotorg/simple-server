@@ -5,8 +5,9 @@ module OneOff
     class BloodSugarExporter
       attr_reader :blood_sugar
 
-      def initialize(blood_sugar)
+      def initialize(blood_sugar, opensrp_mapping)
         @blood_sugar = blood_sugar
+        @opensrp_ids = opensrp_mapping[@blood_sugar.facility_id]
       end
 
       def export
@@ -36,7 +37,7 @@ module OneOff
             reference: "Patient/#{blood_sugar.patient_id}"
           ),
           performer: FHIR::Reference.new(
-            reference: "Organization/#{blood_sugar.facility_id}"
+            reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"
           ),
           encounter: FHIR::Reference.new(
             reference: "Encounter/#{encounter_id}"
@@ -61,6 +62,7 @@ module OneOff
       def export_encounter
         {
           parent_id: parent_encounter_id,
+          encounter_opensrp_ids: opensrp_ids,
           child_encounter: FHIR::Encounter.new(
             meta: meta,
             status: "finished",
@@ -104,7 +106,7 @@ module OneOff
             ],
             diagnosis: nil,
             location: nil,
-            serviceProvider: FHIR::Reference.new(reference: "Organization/#{blood_sugar.facility_id}"),
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}"),
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
           )
         }
@@ -129,22 +131,31 @@ module OneOff
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/location-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:location_id],
               display: "Practitioner Location"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/organisation-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:organization_id],
               display: "Practitioner Organization"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/care-team-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:care_team_id],
               display: "Practitioner CareTeam"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/care-team-tag-id",
+              code: opensrp_ids[:practitioner_id],
+              display: "Practitioner"
             )
           ]
         )
       end
+
+      private
+
+      attr_reader :opensrp_ids
     end
   end
 end

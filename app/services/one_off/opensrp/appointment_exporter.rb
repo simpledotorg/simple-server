@@ -5,8 +5,9 @@ module OneOff
     class AppointmentExporter
       attr_reader :appointment
 
-      def initialize(appointment)
+      def initialize(appointment, opensrp_mapping)
         @appointment = appointment
+        @opensrp_ids = opensrp_mapping[@appointment.facility_id]
       end
 
       def export
@@ -37,7 +38,7 @@ module OneOff
               status: participant_status
             ),
             FHIR::Appointment::Participant.new(
-              actor: FHIR::Reference.new(reference: "Practitioner/TODO"),
+              actor: FHIR::Reference.new(reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"),
               status: participant_status
             )
           ],
@@ -53,6 +54,7 @@ module OneOff
       def export_encounter
         {
           parent_id: parent_encounter_id,
+          encounter_opensrp_ids: opensrp_ids,
           child_encounter: FHIR::Encounter.new(
             meta: meta,
             status: encounter_status_code,
@@ -103,39 +105,6 @@ module OneOff
         }
       end
 
-      def meta
-        FHIR::Meta.new(
-          lastUpdated: appointment.device_updated_at.iso8601,
-          tag: [
-            FHIR::Coding.new(
-              system: "https://smartregister.org/app-version",
-              code: "Not defined",
-              display: "Application Version"
-            ),
-            FHIR::Coding.new(
-              system: "https://smartregister.org/location-tag-id",
-              code: "TODO", # TODO
-              display: "Practitioner Location"
-            ),
-            FHIR::Coding.new(
-              system: "https://smartregister.org/organisation-tag-id",
-              code: "TODO", # TODO
-              display: "Practitioner Organization"
-            ),
-            FHIR::Coding.new(
-              system: "https://smartregister.org/care-team-tag-id",
-              code: "TODO", # TODO
-              display: "Practitioner CareTeam"
-            ),
-            FHIR::Coding.new(
-              system: "https://smartregister.org/related-entity-location-tag-id",
-              code: "TODO",
-              display: "Related Entity Location"
-            )
-          ]
-        )
-      end
-
       def encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, appointment.id)
       end
@@ -169,6 +138,43 @@ module OneOff
         else raise "Invalid appointment status: #{appointment.status}"
         end
       end
+
+      def meta
+        FHIR::Meta.new(
+          lastUpdated: appointment.device_updated_at.iso8601,
+          tag: [
+            FHIR::Coding.new(
+              system: "https://smartregister.org/app-version",
+              code: "Not defined",
+              display: "Application Version"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/location-tag-id",
+              code: opensrp_ids[:location_id],
+              display: "Practitioner Location"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/organisation-tag-id",
+              code: opensrp_ids[:organization_id],
+              display: "Practitioner Organization"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/care-team-tag-id",
+              code: opensrp_ids[:care_team_id],
+              display: "Practitioner CareTeam"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/care-team-tag-id",
+              code: opensrp_ids[:practitioner_id],
+              display: "Practitioner"
+            )
+          ]
+        )
+      end
+
+      private
+
+      attr_reader :opensrp_ids
     end
   end
 end

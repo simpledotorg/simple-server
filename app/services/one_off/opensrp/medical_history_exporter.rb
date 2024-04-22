@@ -4,11 +4,13 @@ module OneOff
   module Opensrp
     class MedicalHistoryExporter
       attr_reader :medical_history
+
       DM_CONDITION_MAPPING = {code: "44054006", display: "Diabetes mellitus type 2"}
       HTN_CONDITION_MAPPING = {code: "38341003", display: "Hypertension"}
 
-      def initialize(medical_history)
+      def initialize(medical_history, opensrp_mapping)
         @medical_history = medical_history
+        @opensrp_ids = opensrp_mapping[@medical_history.patient.assigned_facility_id]
       end
 
       def export
@@ -24,16 +26,14 @@ module OneOff
           subject: FHIR::Reference.new(
             reference: "Patient/#{medical_history.patient_id}"
           ),
-          code: FHIR::Code.new(
-            FHIR::CodeableConcept.new(
-              coding: [
-                FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: code,
-                  display: display
-                )
-              ]
-            ),
+          code: FHIR::CodeableConcept.new(
+            coding: [
+              FHIR::Coding.new(
+                system: "http://snomed.info/sct",
+                code: code,
+                display: display
+              )
+            ],
             text: display
           ),
           clinicalStatus: FHIR::CodeableConcept.new(
@@ -61,7 +61,8 @@ module OneOff
 
       def export_encounter
         {
-          parent_encounter_id: parent_encounter_id,
+          parent_id: parent_encounter_id,
+          encounter_opensrp_ids: opensrp_ids,
           child_encounter: FHIR::Encounter.new(
             meta: meta,
             status: "finished",
@@ -105,7 +106,7 @@ module OneOff
             ],
             diagnosis: FHIR::Reference.new(reference: "Condition/#{medical_history.id}"),
             location: nil,
-            serviceProvider: FHIR::Reference.new(reference: "Organization/#{medical_history.patient.assigned_facility_id}"),
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}"),
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
           )
         }
@@ -130,27 +131,31 @@ module OneOff
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/location-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:location_id],
               display: "Practitioner Location"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/organisation-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:organization_id],
               display: "Practitioner Organization"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/care-team-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:care_team_id],
               display: "Practitioner CareTeam"
             ),
             FHIR::Coding.new(
-              system: "https://smartregister.org/related-entity-location-tag-id",
-              code: "TODO", # TODO
-              display: "Related Entity Location"
+              system: "https://smartregister.org/care-team-tag-id",
+              code: opensrp_ids[:practitioner_id],
+              display: "Practitioner"
             )
           ]
         )
       end
+
+      private
+
+      attr_reader :opensrp_ids
     end
   end
 end

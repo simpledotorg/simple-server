@@ -5,8 +5,9 @@ module OneOff
     class PatientExporter
       attr_reader :patient
 
-      def initialize(patient)
+      def initialize(patient, opensrp_mapping)
         @patient = patient
+        @opensrp_ids = opensrp_mapping[@patient.assigned_facility_id]
       end
 
       def export
@@ -24,7 +25,7 @@ module OneOff
           birthDate: birth_date.iso8601,
           deceased: patient.status_dead?,
           managingOrganization: FHIR::Reference.new(
-            reference: patient.assigned_facility_id
+            reference: "Organization/#{opensrp_ids[:organization_id]}"
           ),
           meta: meta,
           telecom: patient.phone_numbers.map do |phone_number|
@@ -35,16 +36,19 @@ module OneOff
             )
           end,
           address: FHIR::Address.new(
-            line: patient.address.street_address,
+            line: [patient.address.street_address],
             city: patient.address.village_or_colony,
             district: patient.address.district,
             state: patient.address.state,
             country: patient.address.country,
-            postalCode: patient.address.pin
+            postalCode: patient.address.pin,
+            use: "home",
+            type: "physical",
+            text: "#{patient.address.street_address} (#{patient.address.village_or_colony}), [No GND Registered]"
           ),
-          generalPractitioner: [{
-            reference: FHIR::Reference.new(reference: "Organization/#{patient.assigned_facility_id}")
-          }],
+          generalPractitioner: [
+            FHIR::Reference.new(reference: "Practitioner/#{opensrp_ids[:practitioner_id]}")
+          ],
           # NOTE: these are hardcoded for now, since only Sri Lanka needs this script.
           communication: [{
             language: FHIR::CodeableConcept.new(
@@ -68,6 +72,12 @@ module OneOff
             use: "official"
           )
         ]
+        patient.business_identifiers.sri_lanka_personal_health_number.each do |identifier|
+          identifiers << FHIR::Identifier.new(
+            value: identifier.identifier,
+            use: "secondary"
+          )
+        end
         patient.business_identifiers.simple_bp_passport.each do |identifier|
           identifiers << FHIR::Identifier.new(
             value: identifier.identifier,
@@ -100,27 +110,31 @@ module OneOff
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/location-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:location_id],
               display: "Practitioner Location"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/organisation-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:organization_id],
               display: "Practitioner Organization"
             ),
             FHIR::Coding.new(
               system: "https://smartregister.org/care-team-tag-id",
-              code: "TODO", # TODO
+              code: opensrp_ids[:care_team_id],
               display: "Practitioner CareTeam"
             ),
             FHIR::Coding.new(
-              system: "https://smartregister.org/related-entity-location-tag-id",
-              code: "TODO",
-              display: "Related Entity Location"
+              system: "https://smartregister.org/care-team-tag-id",
+              code: opensrp_ids[:practitioner_id],
+              display: "Practitioner"
             )
           ]
         )
       end
+
+      private
+
+      attr_reader :opensrp_ids
     end
   end
 end

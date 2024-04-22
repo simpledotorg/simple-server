@@ -9,16 +9,23 @@ module OneOff
         @encounters = encounters
       end
 
-      def export_deduplicated
-        encounters.group_by(&:parent_id).map do |parent_id, child_encounters|
-          child_encounters.map(&:child_encounter).append(
+      def generate
+        encounters.group_by { |encounter| encounter[:parent_id] }.tap { |x| p x.keys }.map do |parent_id, child_encounters|
+          p parent_id
+          p opensrp_ids = child_encounters.first[:encounter_opensrp_ids]
+          first_child_encounter = child_encounters.first[:child_encounter]
+          patient_ref = first_child_encounter.subject
+          encounter_period = first_child_encounter.period
+          diagnosis = first_child_encounter.diagnosis
+          service_provider = first_child_encounter.serviceProvider
+          child_encounters.pluck(:child_encounter).append(
             FHIR::Encounter.new(
-              meta: meta,
+              meta: meta(opensrp_ids),
               status: "finished",
-              id: encounter_id,
+              id: parent_id,
               identifier: [
                 FHIR::Identifier.new(
-                  value: encounter_id
+                  value: parent_id
                 )
               ],
               class: FHIR::Coding.new(
@@ -29,7 +36,7 @@ module OneOff
                 FHIR::CodeableConcept.new(
                   coding: FHIR::Coding.new(
                     system: "http://snomed.info/sct",
-                    code: "44054006"
+                    code: "185389009"
                   )
                 )
               ],
@@ -41,25 +48,58 @@ module OneOff
                   )
                 ]
               ),
-              subject: FHIR::Reference.new(reference: "Patient/#{medical_history.patient_id}"),
-              period: FHIR::Period.new(start: medical_history.device_updated_at.iso8601), # TODO: we don't store end period
+              subject: patient_ref,
+              period: encounter_period, # TODO: we don't store end period
               reasonCode: [
                 FHIR::CodeableConcept.new(
                   coding: [
                     FHIR::Coding.new(
                       system: "http://snomed.info/sct",
-                      code: "1156892006" # TODO
+                      code: "TODO" # TODO
                     )
                   ]
                 )
               ],
-              diagnosis: FHIR::Reference.new(reference: "Condition/#{medical_history.id}"),
+              diagnosis: diagnosis,
               location: nil,
-              serviceProvider: FHIR::Reference.new(reference: "Organization/#{medical_history.patient.assigned_facility_id}"),
-              partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
+              serviceProvider: service_provider,
+              partOf: nil
             )
           )
         end
+      end
+
+      def meta(location_id:, organization_id:, care_team_id:, practitioner_id:, **)
+        FHIR::Meta.new(
+          lastUpdated: encounters.first[:child_encounter].meta.lastUpdated,
+          tag: [
+            FHIR::Coding.new(
+              system: "https://smartregister.org/app-version",
+              code: "Not defined",
+              display: "Application Version"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/location-tag-id",
+              code: location_id,
+              display: "Practitioner Location"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/organisation-tag-id",
+              code: organization_id,
+              display: "Practitioner Organization"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/care-team-tag-id",
+              code: care_team_id,
+              display: "Practitioner CareTeam"
+            ),
+            FHIR::Coding.new(
+              system: "https://smartregister.org/care-team-tag-id",
+              code: practitioner_id,
+              display: "Practitioner"
+            )
+          ]
+        )
       end
     end
   end
