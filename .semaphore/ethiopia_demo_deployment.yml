@@ -19,7 +19,7 @@ blocks:
           - ssh-add ~/.ssh/semaphore_id_rsa
 agent:
   machine:
-    type: e1-standard-2
+    type: e2-standard-2
     os_image: ubuntu2204
 promotions:
   - name: Ethiopia Production Deployment

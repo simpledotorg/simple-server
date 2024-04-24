@@ -13,5 +13,5 @@ blocks:
             - script/argocd_deployment.sh $LK_ARGOCD_ENDPOINT $ARGOCD_USERNAME $LK_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 agent:
   machine:
-    type: e1-standard-2
+    type: e2-standard-2
     os_image: ubuntu2204
