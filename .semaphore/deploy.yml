@@ -28,7 +28,7 @@ queue:
 agent:
   machine:
     type: e1-standard-2
-    os_image: ubuntu2004
+    os_image: ubuntu2204
 promotions:
   - name: Bangladesh Demo Deployment
     pipeline_file: bangladesh_demo_deployment.yml
