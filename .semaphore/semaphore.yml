@@ -42,8 +42,6 @@ blocks:
             - bundle config set deployment 'true'
             - bundle config set path 'vendor/bundle'
             - bundle install
-            - bundle exec rails webpacker:compile
-            - bundle exec rails webpacker:install
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8
