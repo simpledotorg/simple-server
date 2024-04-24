@@ -5,16 +5,22 @@ set -e
 source ~/.toolbox/toolbox
 
 # Temporarily turn on cache clear if Semaphore has weird bundling issues
-# cache clear
+cache clear
 
 export DD_PROFILING_NO_EXTENSION=true
 sem-version ruby 2.7.4
 sem-service start postgres 14
 sem-service start redis 5
-wget -O /tmp/libpng12.deb http://mirrors.kernel.org/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1_amd64.deb
-sudo dpkg -i /tmp/libpng12.deb
+
+# wkhtmltoimage-binary gem dependencies
+sudo add-apt-repository ppa:linuxuprising/libpng12 -y
+sudo apt update
+sudo apt install libpng12-0 -y
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.1f-1ubuntu2_amd64.deb
+sudo dpkg -i --force-all libssl1.0.0_1.0.1f-1ubuntu2_amd64.deb
+
 gem install semaphore_test_boosters
-cache restore
+# cache restore
 yarn install
 bundle config set deployment 'true'
 bundle config set path 'vendor/bundle'
@@ -22,4 +28,4 @@ bundle install
 bundle exec rake db:setup
 bundle exec rake db:test:prepare
 RAILS_ENV="test" bundle exec rails db:refresh_matviews
-cache store
+# cache store
