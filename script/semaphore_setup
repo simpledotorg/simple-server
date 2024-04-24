@@ -28,5 +28,5 @@ bundle install
 bundle exec rake db:setup
 bundle exec rake db:test:prepare
 RAILS_ENV="test" bundle exec rails db:refresh_matviews
-RAILS_ENV="test" bundle exec rake assets:precompile
+RAILS_ENV="test" NODE_OPTIONS="--openssl-legacy-provider" bundle exec rake assets:precompile
 # cache store
