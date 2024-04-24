@@ -2,8 +2,8 @@ version: v1.0
 name: Test simple-server
 agent:
   machine:
-    type: e1-standard-8
-    os_image: ubuntu1804
+    type: e2-standard-4
+    os_image: ubuntu2204
 auto_cancel:
   running:
     when: "true"
@@ -42,6 +42,8 @@ blocks:
             - bundle config set deployment 'true'
             - bundle config set path 'vendor/bundle'
             - bundle install
+            - rails webpacker:compile
+            - rails webpacker:install
             - "bundle exec standardrb"
         - name: RSpec
           parallelism: 8
