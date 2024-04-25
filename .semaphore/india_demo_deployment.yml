@@ -17,8 +17,8 @@ blocks:
           - ssh-add ~/.ssh/semaphore_id_rsa
 agent:
   machine:
-    type: e1-standard-2
-    os_image: ubuntu1804
+    type: e2-standard-2
+    os_image: ubuntu2204
 promotions:
   - name: India Production Deployment
     pipeline_file: india_production_deployment.yml
