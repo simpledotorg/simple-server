@@ -5,7 +5,7 @@ set -e
 source ~/.toolbox/toolbox
 
 # Temporarily turn on cache clear if Semaphore has weird bundling issues
-# cache clear
+cache clear
 
 export DD_PROFILING_NO_EXTENSION=true
 sem-version ruby 2.7.4
