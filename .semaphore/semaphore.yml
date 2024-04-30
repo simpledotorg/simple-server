@@ -8,26 +8,11 @@ auto_cancel:
   running:
     when: "true"
 blocks:
-  - name: Cache dependencies
+  - name: Tests
     task:
       env_vars:
         - name: DD_PROFILING_NO_EXTENSION
           value: "true"
-      jobs:
-        - name: Cache everything
-          commands:
-            - sem-version ruby 2.7.4
-            - checkout
-            # - cache clear
-            - cache restore
-            - bundle config set deployment 'true'
-            - bundle config set path 'vendor/bundle'
-            - bundle install
-            - yarn install
-            - cache store
-  - name: Tests
-    task:
-      env_vars:
         - name: DATABASE_URL
           value: "postgresql://postgres:@0.0.0.0:5432"
         - name: RAILS_ENV
@@ -35,16 +20,20 @@ blocks:
         - name: TB_RSPEC_OPTIONS
           value: "--profile --format RspecJunitFormatter --out junit.xml"
       jobs:
-        - name: StandardRB
+        - name: RSpec
           commands:
+            - sem-version ruby 2.7.4
             - checkout
-            - cache restore
+            - cache clear
+            - bundle config set deployment 'true'
+            - bundle config set path 'vendor/bundle'
+            - bundle install
+            - yarn install
+            - checkout
             - bundle config set deployment 'true'
             - bundle config set path 'vendor/bundle'
             - bundle install
             - "bundle exec standardrb"
-        - name: RSpec
-          commands:
             - checkout
             - script/semaphore_setup
             - chmod +x /home/semaphore/.webdrivers/chromedriver
