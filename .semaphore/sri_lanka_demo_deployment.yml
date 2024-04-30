@@ -7,7 +7,7 @@ blocks:
         - name: sentry-release-auth-token
         - name: argocd
       jobs:
-        - name: Deploy to Sri Lanka Production
+        - name: Deploy to Sri Lanka Demo
           commands:
             - checkout
             - script/argocd_deployment.sh $LK_STAGING_ARGOCD_ENDPOINT $ARGOCD_USERNAME $LK_STAGING_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
