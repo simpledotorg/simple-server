@@ -20,7 +20,7 @@ wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.0.0_1.0.1f
 sudo dpkg -i --force-all libssl1.0.0_1.0.1f-1ubuntu2_amd64.deb
 
 gem install semaphore_test_boosters
-cache restore
+# cache restore
 yarn install
 bundle config set deployment 'true'
 bundle config set path 'vendor/bundle'
@@ -29,4 +29,5 @@ bundle exec rake db:setup
 bundle exec rake db:test:prepare
 RAILS_ENV="test" bundle exec rails db:refresh_matviews
 RAILS_ENV="test" NODE_OPTIONS="--openssl-legacy-provider" bundle exec rake assets:precompile
-cache store
+RAILS_ENV=test bundle exec rake parallel:setup
+# cache store
