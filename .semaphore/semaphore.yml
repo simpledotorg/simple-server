@@ -42,7 +42,7 @@ blocks:
             - bundle install
             - "bundle exec standardrb"
         - name: RSpec
-          parallelism: 64
+          parallelism: 32
           commands:
             - checkout
             - docker run -d --name postgres14-$SEMAPHORE_JOB_INDEX -p 543$SEMAPHORE_JOB_INDEX:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:14
