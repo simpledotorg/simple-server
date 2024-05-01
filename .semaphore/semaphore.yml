@@ -48,7 +48,7 @@ blocks:
           commands:
             - checkout
             - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX script/semaphore_setup
-            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - timeout 300s bash -c 'TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT' || (echo "Timeout occurred, re-running the command."; exec $0)
       epilogue:
         always:
           commands:
