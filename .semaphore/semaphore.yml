@@ -29,7 +29,7 @@ blocks:
     task:
       env_vars:
         - name: DATABASE_URL
-          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
+          value: "postgresql://postgres:@0.0.0.0:5432"
         - name: RAILS_ENV
           value: "test"
         - name: TB_RSPEC_OPTIONS
@@ -44,11 +44,15 @@ blocks:
             - bundle install
             - "bundle exec standardrb"
         - name: RSpec
-          parallelism: 8
+          parallelism: 32
           commands:
             - checkout
-            - script/semaphore_setup
-            - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX script/semaphore_setup
+            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
+            - psql $DATABASE_URL -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'simple-server_test$SEMAPHORE_JOB_INDEX';"
+            - psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
+            - psql $DATABASE_URL -c "DROP DATABASE IF EXISTS 'simple-server_test$SEMAPHORE_JOB_INDEX';"
       epilogue:
         always:
           commands:
