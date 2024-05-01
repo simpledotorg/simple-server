@@ -47,8 +47,8 @@ blocks:
           parallelism: 8
           commands:
             - checkout
-            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_COUNT script/semaphore_setup
-            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_COUNT rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX script/semaphore_setup
+            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
       epilogue:
         always:
           commands:
