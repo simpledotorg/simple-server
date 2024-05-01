@@ -48,7 +48,10 @@ blocks:
           commands:
             - checkout
             - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX script/semaphore_setup
-            - timeout 300s TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT || (echo "Command timed out, rerunning..."; TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT)
+            - TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
+            - psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
+            - psql $DATABASE_URL -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'simple-server_test$TEST_ENV_NUMBER';"
+            - psql $DATABASE_URL -c "SELECT count(*) FROM pg_stat_activity;"
       epilogue:
         always:
           commands:
