@@ -46,3 +46,7 @@ promotions:
     pipeline_file: sri_lanka_demo_deployment.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
+  - name: India Production Deployment
+    pipeline_file: india_production_deployment.yml
+    auto_promote:
+      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
