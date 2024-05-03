@@ -52,7 +52,7 @@ module OneOff
       def blood_sugar_type_code
         case blood_sugar.blood_sugar_type
         when "random" then "271061004"
-        when "post_prandial" then "TODO"
+        when "post_prandial" then "372661000119106"
         when "fasting" then "365757006"
         when "hba1c" then "443911005"
         else raise "Invalid blood sugar type: #{blood_sugar.blood_sugar_type}"
@@ -93,13 +93,16 @@ module OneOff
               ]
             ),
             subject: FHIR::Reference.new(reference: "Patient/#{blood_sugar.patient_id}"),
-            period: FHIR::Period.new(start: blood_sugar.recorded_at.iso8601), # TODO: we don't store end period
+            period: FHIR::Period.new(
+              start: blood_sugar.recorded_at.iso8601,
+              end: blood_sugar.recorded_at.iso8601
+            ),
             reasonCode: [
               FHIR::CodeableConcept.new(
                 coding: [
                   FHIR::Coding.new(
                     system: "http://snomed.info/sct",
-                    code: "1156892006" # TODO
+                    code: "372661000119106"
                   )
                 ]
               )
@@ -112,11 +115,11 @@ module OneOff
         }
       end
 
-      def encounter_id
+      def parent_encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar.patient_id + meta.lastUpdated.to_date.iso8601)
       end
 
-      def parent_encounter_id
+      def encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar.id)
       end
 

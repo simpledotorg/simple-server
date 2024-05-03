@@ -114,7 +114,10 @@ module OneOff
               ]
             ),
             subject: FHIR::Reference.new(reference: "Patient/#{blood_pressure.patient_id}"),
-            period: FHIR::Period.new(start: blood_pressure.recorded_at.iso8601), # TODO: we don't store end period
+            period: FHIR::Period.new(
+              start: blood_pressure.recorded_at.iso8601,
+              end: blood_pressure.recorded_at.iso8601
+            ),
             reasonCode: [
               FHIR::CodeableConcept.new(
                 coding: [

@@ -49,13 +49,13 @@ module OneOff
                 ]
               ),
               subject: patient_ref,
-              period: encounter_period, # TODO: we don't store end period
+              period: encounter_period,
               reasonCode: [
                 FHIR::CodeableConcept.new(
                   coding: [
                     FHIR::Coding.new(
                       system: "http://snomed.info/sct",
-                      code: "TODO" # TODO
+                      code: "TODO"
                     )
                   ]
                 )

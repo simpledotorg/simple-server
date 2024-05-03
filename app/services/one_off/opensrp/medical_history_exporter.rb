@@ -22,7 +22,7 @@ module OneOff
 
       def generate_condition(code:, display:)
         FHIR::Condition.new(
-          id: medical_history.id,
+          id: condition_id(code),
           subject: FHIR::Reference.new(
             reference: "Patient/#{medical_history.patient_id}"
           ),
@@ -93,7 +93,10 @@ module OneOff
               ]
             ),
             subject: FHIR::Reference.new(reference: "Patient/#{medical_history.patient_id}"),
-            period: FHIR::Period.new(start: medical_history.device_updated_at.iso8601), # TODO: we don't store end period
+            period: FHIR::Period.new(
+              start: medical_history.device_updated_at.iso8601,
+              end: medical_history.device_updated_at.iso8601
+            ),
             reasonCode: [
               FHIR::CodeableConcept.new(
                 coding: [
@@ -104,12 +107,16 @@ module OneOff
                 ]
               )
             ],
-            diagnosis: FHIR::Reference.new(reference: "Condition/#{medical_history.id}"),
+            diagnosis: FHIR::Reference.new(reference: "Condition/#{condition_id(code)}"),
             location: nil,
             serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}"),
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
           )
         }
+      end
+
+      def condition_id(code)
+        medical_history.id + "_" + code
       end
 
       def encounter_id

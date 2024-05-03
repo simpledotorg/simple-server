@@ -32,6 +32,16 @@ module OneOff
               )
             ]
           ),
+          reasonCode: [
+            FHIR::CodeableConcept.new(
+              coding: [
+                FHIR::Coding.new(
+                  system: "http://snomed.info/sct",
+                  code: "1156892006"
+                )
+              ]
+            )
+          ],
           participant: [
             FHIR::Appointment::Participant.new(
               actor: FHIR::Reference.new(reference: "Patient/#{appointment.patient_id}"),
@@ -86,7 +96,7 @@ module OneOff
             ),
             subject: FHIR::Reference.new(reference: "Patient/#{appointment.patient_id}"),
             appointment: FHIR::Reference.new(reference: "Appointment/#{appointment.id}"),
-            period: FHIR::Period.new(start: appointment.scheduled_date.iso8601), # TODO: we don't store end period
+            period: FHIR::Period.new(start: appointment.scheduled_date.iso8601, end: appointment.scheduled_date.iso8601),
             reasonCode: [
               FHIR::CodeableConcept.new(
                 coding: [
@@ -123,7 +133,7 @@ module OneOff
 
       def appointment_status_code
         case appointment.status
-        when "scheduled" then "pending"
+        when "scheduled" then "booked"
         when "visited" then "fulfilled"
         when "cancelled" then "cancelled"
         else raise "Invalid appointment status: #{appointment.status}"
