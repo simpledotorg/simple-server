@@ -60,6 +60,14 @@ module OneOff
       end
 
       def export_encounter
+        codes = [
+          (HTN_CONDITION_MAPPING[:code] if medical_history.hypertension_yes?),
+          (DM_CONDITION_MAPPING[:code] if medical_history.diabetes_yes?)
+        ].compact
+        generate_export_encounter(codes) if codes.present?
+      end
+
+      def generate_export_encounter(codes)
         {
           parent_id: parent_encounter_id,
           encounter_opensrp_ids: opensrp_ids,
@@ -107,7 +115,7 @@ module OneOff
                 ]
               )
             ],
-            diagnosis: FHIR::Reference.new(reference: "Condition/#{condition_id(code)}"),
+            diagnosis: codes.map { |code| FHIR::Reference.new(reference: "Condition/#{condition_id(code)}") },
             location: nil,
             serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}"),
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
