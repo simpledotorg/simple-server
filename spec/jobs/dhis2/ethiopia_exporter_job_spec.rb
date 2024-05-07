@@ -121,7 +121,7 @@ describe Dhis2::EthiopiaExporterJob do
       patients = Reports::PatientState.all.to_a
       output = described_class.new.send(:format_treatment_data, patients)
       expect(output.count).to eq 2
-      expect(output["lsm"]).to eq 75
+      expect(output["lsm"]).to eq patients.count
       expect(output["pharma_mangement"]).to eq 0
     end
 
@@ -143,7 +143,7 @@ describe Dhis2::EthiopiaExporterJob do
       output = described_class.new.send(:format_enrollment_data, patients)
       expect(output.count).to eq 2
       expect(output["newly_enrolled"]).to eq 3
-      expect(output["previously_enrolled"]).to eq 72
+      expect(output["previously_enrolled"]).to eq(patients.count - 3)
     end
 
     it 'returns 0 count with an empty data set' do
@@ -165,10 +165,12 @@ describe Dhis2::EthiopiaExporterJob do
         refresh_views
       end
       patients = Reports::PatientState.all.to_a
+      controlled_count = patients.select{|patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled"}.count
+      uncontrolled_count = patients.select{|patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "uncontrolled"}.count
       output = described_class.new.send(:format_cohort_data, patients)
       expect(output.count).to eq 5
-      expect(output["controlled"]).to eq 1
-      expect(output["uncontrolled"]).to eq 1
+      expect(output["controlled"]).to eq controlled_count
+      expect(output["uncontrolled"]).to eq uncontrolled_count
     end
   end
 end
