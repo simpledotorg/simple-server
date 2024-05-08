@@ -15,7 +15,6 @@ describe Dhis2::EthiopiaExporterJob do
     allow(Dhis2::Client).to receive(:new).with(configuration).and_return(client)
   end
 
-
   describe "#perform" do
     let(:data_elements) { CountryConfig.dhis2_data_elements.fetch(:dhis2_data_elements) }
     let(:facility_data) {
@@ -28,15 +27,17 @@ describe Dhis2::EthiopiaExporterJob do
       }
     }
     let(:gender_age_data) { {["female", 33] => 74, ["male", 96] => 72} }
-    let(:gender_age_count) { {
-      "18_29_male" => 0,
-      "18_29_female" => 0,
-      "30_39_male" => 0,
-      "30_39_female" => 74,
-      "40_69_male" => 0,
-      "40_69_female" => 0,
-      "70_200_male" => 72,
-      "70_200_female" => 0}
+    let(:gender_age_count) {
+      {
+        "18_29_male" => 0,
+        "18_29_female" => 0,
+        "30_39_male" => 0,
+        "30_39_female" => 74,
+        "40_69_male" => 0,
+        "40_69_female" => 0,
+        "70_200_male" => 72,
+        "70_200_female" => 0
+      }
     }
     let(:treatment_type_count) { {"lsm" => 0, "pharma_mangement" => 0} }
     let(:enrollment_data_count) { {"newly_enrolled" => 0, "previously_enrolled" => 0} }
@@ -62,11 +63,11 @@ describe Dhis2::EthiopiaExporterJob do
             end
           else
             export_data << {
-                data_element: data_elements[data_element],
-                org_unit: facility_identifier.identifier,
-                period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
-                value: value[:value]
-              }
+              data_element: data_elements[data_element],
+              org_unit: facility_identifier.identifier,
+              period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
+              value: value[:value]
+            }
           end
         end
       end
@@ -84,11 +85,11 @@ describe Dhis2::EthiopiaExporterJob do
     end
   end
 
-  describe '#format_gender_age_data' do
+  describe "#format_gender_age_data" do
     subject { described_class.new.send(:format_gender_age_data, gender_age_data) }
 
     let(:gender_age_data) { {["female", 33] => 74, ["male", 96] => 72, ["female", 31] => 4, ["male", 8] => 6} }
-    it 'returns the data in gender and age range key' do
+    it "returns the data in gender and age range key" do
       output = subject
       expect(output.count).to eq 8
       expect(output["18_29_male"]).to eq 0
@@ -101,10 +102,10 @@ describe Dhis2::EthiopiaExporterJob do
       expect(output["70_200_female"]).to eq 0
     end
 
-    context 'with empty gender age data' do
+    context "with empty gender age data" do
       let(:gender_age_data) { {} }
 
-      it 'returns zero for all the ranges' do
+      it "returns zero for all the ranges" do
         output = subject
         expect(output.count).to eq 8
         expect(output.values.uniq).to eq [0]
@@ -112,8 +113,8 @@ describe Dhis2::EthiopiaExporterJob do
     end
   end
 
-  describe '#format_treatment_data' do
-    it 'returns the data segregated with treatment type' do
+  describe "#format_treatment_data" do
+    it "returns the data segregated with treatment type" do
       Timecop.freeze("April 25th 2024") do
         create_list(:patient, 3, :hypertension, :under_care)
         Reports::PatientState.refresh
@@ -125,7 +126,7 @@ describe Dhis2::EthiopiaExporterJob do
       expect(output["pharma_mangement"]).to eq 0
     end
 
-    it 'returns 0 count with an empty data set' do
+    it "returns 0 count with an empty data set" do
       output = described_class.new.send(:format_treatment_data, [])
       expect(output.count).to eq 2
       expect(output["lsm"]).to eq 0
@@ -133,8 +134,8 @@ describe Dhis2::EthiopiaExporterJob do
     end
   end
 
-  describe '#format_enrollment_data' do
-    it 'returns the data segregated by enrollment time' do
+  describe "#format_enrollment_data" do
+    it "returns the data segregated by enrollment time" do
       Timecop.freeze("April 25th 2024") do
         create_list(:patient, 3, :hypertension, :under_care)
         Reports::PatientState.refresh
@@ -146,7 +147,7 @@ describe Dhis2::EthiopiaExporterJob do
       expect(output["previously_enrolled"]).to eq(patients.count - 3)
     end
 
-    it 'returns 0 count with an empty data set' do
+    it "returns 0 count with an empty data set" do
       output = described_class.new.send(:format_enrollment_data, [])
       expect(output.count).to eq 2
       expect(output["newly_enrolled"]).to eq 0
@@ -154,19 +155,19 @@ describe Dhis2::EthiopiaExporterJob do
     end
   end
 
-  describe '#format_cohort_data' do
-    it 'returns the data segregated by enrollment time' do
+  describe "#format_cohort_data" do
+    it "returns the data segregated by enrollment time" do
       Timecop.freeze("April 25th 2024") do
-        p1 = create(:patient, :hypertension, :controlled)
-        p2 = create(:patient, :hypertension, :uncontrolled)
+        create(:patient, :hypertension, :controlled)
+        create(:patient, :hypertension, :uncontrolled)
         create(:patient, :hypertension, :lost_to_follow_up)
         create(:patient, :hypertension, :dead)
         create(:patient, :hypertension, status: "migrated")
         refresh_views
       end
       patients = Reports::PatientState.all.to_a
-      controlled_count = patients.select{|patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled"}.count
-      uncontrolled_count = patients.select{|patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "uncontrolled"}.count
+      controlled_count = patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled" }
+      uncontrolled_count = patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "uncontrolled" }
       output = described_class.new.send(:format_cohort_data, patients)
       expect(output.count).to eq 5
       expect(output["controlled"]).to eq controlled_count
