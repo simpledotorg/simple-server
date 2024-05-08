@@ -1,10 +1,31 @@
 dhis2_data_elements:
-  htn_cumulative_assigned: "nrK3Yj6ELl0"
-  htn_cumulative_assigned_adjusted: "DxHkdQjTpXC"
-  htn_controlled: "ZCkeHFQETzb"
-  htn_uncontrolled: "z4mVPviB8OH"
-  htn_missed_visits: "tNRBsYt0ZOK"
-  htn_ltfu: "qI3kE1DizFL"
-  htn_dead: "ZNYhcG2efAB"
-  htn_cumulative_registrations: "PX8qBGsdF5G"
-  htn_monthly_registrations: "Tx3CKEUFqNN"
+  htn_enrolled_under_care: "EBJOc6MwpUE"
+  htn_enrolled_under_care_treatment: "Z9LhFzvk1pG"
+  htn_by_enrollment_time: FegpLg25B6l
+  htn_cohort_registered: x4c7Oa9GoCQ
+  htn_cohort_outcome: O7vl9TZXgPx
+
+dhis2_age_gender_category_elements:
+  18_29_male: pWdVVTrQ2bc
+  18_29_female: RHPx2hMqAkR
+  30_39_male: uqZCbejOvcA
+  30_39_female: BDUBnmZSHDc
+  40_69_male: fzvmjOLNNmR
+  40_69_female: HMVfu4sD49X
+  70_200_male: EsWT9bHtDdz
+  70_200_female: qngnLBJ5dbh
+
+dhis2_treatment_category_elements:
+  lsm: Pstp0QNNjm5
+  pharma_mangement: cHCvSLCnh18
+
+dhis2_enrollment_time_category_elements:
+  newly_enrolled: bn7fE1Eucm0
+  previously_enrolled: xbP4EYANBA8
+
+dhis2_cohort_category_elements:
+  controlled: WPjwKs4ZivK
+  uncontrolled: CFqsBHggkym
+  lost_to_follow_up: DsLHjt2lSlg
+  dead: y7Bsmkt1Qek
+  transferred_out: BE7a3Z3HWtD
