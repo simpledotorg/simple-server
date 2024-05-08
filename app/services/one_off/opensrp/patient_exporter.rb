@@ -173,7 +173,7 @@ module OneOff
                 )
               }
             ],
-            serviceProvider: FHIR::Reference.new(reference: "Organization/#{patient.registration_facility_id}")
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}")
           )
         }
       end

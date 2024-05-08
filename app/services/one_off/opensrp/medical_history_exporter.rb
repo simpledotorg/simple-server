@@ -124,7 +124,7 @@ module OneOff
       end
 
       def condition_id(code)
-        medical_history.id + "_" + code
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, medical_history.id + "_" + code)
       end
 
       def encounter_id

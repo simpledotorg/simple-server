@@ -15,6 +15,7 @@ module OneOff
           meta: meta,
           status: appointment_status_code,
           start: appointment.scheduled_date.beginning_of_day.iso8601,
+          end: appointment.scheduled_date.beginning_of_day.iso8601,
           created: appointment.device_created_at.iso8601,
           serviceType: FHIR::CodeableConcept.new(
             coding: [
@@ -109,7 +110,7 @@ module OneOff
             ],
             diagnosis: nil,
             location: nil,
-            serviceProvider: FHIR::Reference.new(reference: "Organization/#{appointment.facility_id}"),
+            serviceProvider: FHIR::Reference.new(reference: "Organization/#{opensrp_ids[:organization_id]}"),
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
           )
         }

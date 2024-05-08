@@ -15,6 +15,7 @@ module OneOff
         unit = "%{HemoglobinA1C}" if blood_sugar.blood_sugar_type_hba1c?
 
         FHIR::Observation.new(
+          id: blood_sugar.id,
           identifier: [
             FHIR::Identifier.new(
               value: blood_sugar.id

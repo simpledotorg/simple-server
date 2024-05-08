@@ -37,7 +37,7 @@ namespace :opensrp do
           device_updated_at: Time.current)
       end
     end
-    patients = remove_pii(patients)
+    # patients = remove_pii(patients)
     file_path = args[:file_path]
 
     resources = []
