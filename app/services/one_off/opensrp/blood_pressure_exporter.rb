@@ -15,7 +15,7 @@ module OneOff
       end
 
       def parent_encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_pressure.patient_id + meta.lastUpdated.to_date.iso8601)
+        "patient-visit-#{meta.lastUpdated.to_date.iso8601}-#{blood_pressure.patient_id}"
       end
 
       def export

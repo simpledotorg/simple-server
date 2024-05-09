@@ -132,7 +132,7 @@ module OneOff
       end
 
       def parent_encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, medical_history.patient_id + meta.lastUpdated.to_date.iso8601)
+        "patient-visit-#{meta.lastUpdated.to_date.iso8601}-#{medical_history.patient_id}"
       end
 
       def meta

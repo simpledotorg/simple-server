@@ -43,8 +43,10 @@ namespace :opensrp do
     resources = []
     encounters = []
     patients.each do |patient|
-      resources << OneOff::Opensrp::PatientExporter.new(patient, OPENSRP_ORG_MAP).export
-      encounters << OneOff::Opensrp::PatientExporter.new(patient, OPENSRP_ORG_MAP).export_registration_encounter
+      patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, OPENSRP_ORG_MAP)
+      resources << patient_exporter.export
+      resources << patient_exporter.export_registration_questionnaire_response
+      encounters << patient_exporter.export_registration_encounter
 
       patient.blood_pressures.each do |bp|
         bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, OPENSRP_ORG_MAP)

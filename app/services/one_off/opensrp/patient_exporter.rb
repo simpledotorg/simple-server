@@ -45,7 +45,7 @@ module OneOff
             postalCode: patient.address.pin,
             use: "home",
             type: "physical",
-            text: "#{patient.address.street_address} (#{patient.address.village_or_colony}), [No GND Registered]"
+            text: address_text
           ),
           generalPractitioner: [
             FHIR::Reference.new(reference: "Practitioner/#{opensrp_ids[:practitioner_id]}")
@@ -64,6 +64,10 @@ module OneOff
             )
           }]
         )
+      end
+
+      def address_text
+        "#{patient.address.street_address} (#{patient.address.village_or_colony}), [No GND Registered]"
       end
 
       def patient_identifiers
@@ -178,12 +182,181 @@ module OneOff
         }
       end
 
+      def export_registration_questionnaire_response
+        FHIR::QuestionnaireResponse.new(
+          id: questionnaire_response_id,
+          meta: meta,
+          contained: [
+            FHIR::List.new(
+              id: questionnaire_response_list_id,
+              status: "current",
+              mode: "working",
+              title: "GeneratedResourcesList",
+              date: patient.device_updated_at.iso8601,
+              entry: [
+                {
+                  deleted: false,
+                  date: patient.device_updated_at.iso8601,
+                  item: {
+                    reference: "Patient/6036f25a-df55-41f0-bcfb-e46281a14f1d"
+                  }
+                },
+                {
+                  deleted: false,
+                  date: patient.device_updated_at.iso8601,
+                  item: {
+                    reference: "Encounter/63333f16-f354-5044-8e00-4379ea2edb58"
+                  }
+                }
+              ]
+            )
+          ],
+          questionnaire: "Questionnaire/dc-clinic-patient-registration",
+          status: "completed",
+          subject: FHIR::Reference.new(reference: "Patient/#{patient.id}"),
+          authored: patient.device_updated_at.iso8601,
+          author: FHIR::Reference.new(reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"),
+          item: [
+            {
+              linkId: "registration-title",
+              text: "Registration date"
+            },
+            {
+              linkId: "enrollment-date",
+              answer: [
+                {valueDate: patient.device_updated_at.to_date.iso8601}
+              ]
+            },
+            {
+              linkId: "facility",
+              answer: [
+                {
+                  valueReference: FHIR::Reference.new(
+                    reference: "Location/#{opensrp_ids[:location_id]}",
+                    display: opensrp_ids[:name]
+                  ),
+                  item: [
+                    {
+                      linkId: "facility-hint",
+                      text: "Facility"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              linkId: "client-information-title",
+              text: "2. Client information"
+            },
+            {
+              linkId: "reporting-name",
+              answer: [
+                {
+                  valueString: patient.full_name,
+                  item: [
+                    {
+                      linkId: "reporting-name-hint",
+                      text: "Patient Name"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              linkId: "date-of-birth",
+              answer: [
+                {
+                  valueDate: birth_date.iso8601,
+                  item: [
+                    {
+                      linkId: "1-most-recent",
+                      text: "Date of birth"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              linkId: "gender",
+              answer: [
+                {
+                  valueCoding: {
+                    system: "http://hl7.org/fhir/administrative-gender",
+                    code: patient.gender,
+                    display: patient.gender.capitalize
+                  },
+                  item: [
+                    {
+                      linkId: "gender-hint",
+                      text: "Gender"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              linkId: "phone-number",
+              answer: patient.phone_numbers.map do |phone_number|
+                        {
+                          valueString: phone_number.number,
+                          item: [{linkId: "phone-number-hint", text: "Phone number (optional)"}]
+                        }
+                      end
+            },
+            {
+              linkId: "preferred-language",
+              answer: [
+                {
+                  valueCoding: FHIR::Coding.new(
+                    system: "urn:ietf:bcp:47",
+                    code: "si",
+                    display: "Sinhala"
+                  ),
+                  item: [
+                    {
+                      linkId: "preferred-language-hint",
+                      text: "Preferred SMS text language"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              linkId: "home-address-title",
+              text: "Home address"
+            },
+            {
+              linkId: "address",
+              answer: [
+                {
+                  valueString: address_text,
+                  item: [
+                    {
+                      linkId: "address-hint",
+                      text: "Address name and house number"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        )
+      end
+
+      def questionnaire_response_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, patient.id + "_questionnaire_response")
+      end
+
+      def questionnaire_response_list_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, patient.id + "_questionnaire_response_list")
+      end
+
       def encounter_id
         Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, patient.id)
       end
 
       def parent_encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, patient.id + meta.lastUpdated.to_date.iso8601)
+        "patient-visit-#{meta.lastUpdated.to_date.iso8601}-#{patient.id}"
       end
 
       def meta

@@ -43,10 +43,7 @@ module OneOff
           encounter: FHIR::Reference.new(
             reference: "Encounter/#{encounter_id}"
           ),
-          meta: FHIR::Meta.new(
-            lastUpdated: blood_sugar.device_updated_at.iso8601,
-            createdAt: blood_sugar.recorded_at.iso8601
-          )
+          meta: meta
         )
       end
 
@@ -54,7 +51,7 @@ module OneOff
         case blood_sugar.blood_sugar_type
         when "random" then "271061004"
         when "post_prandial" then "372661000119106"
-        when "fasting" then "365757006"
+        when "fasting" then "271062006"
         when "hba1c" then "443911005"
         else raise "Invalid blood sugar type: #{blood_sugar.blood_sugar_type}"
         end
@@ -117,7 +114,7 @@ module OneOff
       end
 
       def parent_encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar.patient_id + meta.lastUpdated.to_date.iso8601)
+        "patient-visit-#{meta.lastUpdated.to_date.iso8601}-#{blood_sugar.patient_id}"
       end
 
       def encounter_id
