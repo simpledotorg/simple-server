@@ -8,12 +8,12 @@ class Prometheus
   attr_reader :client, :registered_collectors
 
   def self.register(type, name, description = nil)
-    throw "collector: #{name} is already registered" if exists?(name)
+    raise "collector: #{name} is already registered" if exists?(name)
     REGISTERED_COLLECTORS[name] = CLIENT.register(type, name, description)
   end
 
   def self.observe(name, value, labels = {})
-    throw "collector: #{name} is not registered" unless exists?(name)
+    raise "collector: #{name} is not registered" unless exists?(name)
     REGISTERED_COLLECTORS[name].observe(value, labels)
   end
 
