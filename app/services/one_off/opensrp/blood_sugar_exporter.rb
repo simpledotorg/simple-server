@@ -33,6 +33,7 @@ module OneOff
             system: "http://unitsofmeasure.org",
             code: unit
           ),
+          effectiveDateTime: blood_sugar.recorded_at.iso8601,
           status: "final",
           subject: FHIR::Reference.new(
             reference: "Patient/#{blood_sugar.patient_id}"

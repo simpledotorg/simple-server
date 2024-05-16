@@ -30,7 +30,8 @@ module OneOff
           code: FHIR::CodeableConcept.new(
             coding: FHIR::Coding.new(
               system: "http://snomed.info/sct",
-              code: "38341003"
+              code: "75367002",
+              display: "Blood pressure systolic & diastolic"
             )
           ),
           component: [
@@ -46,6 +47,7 @@ module OneOff
           encounter: FHIR::Reference.new(
             reference: "Encounter/#{encounter_id}"
           ),
+          effectiveDateTime: blood_pressure.recorded_at.iso8601,
           status: "final",
           category: [
             FHIR::CodeableConcept.new(

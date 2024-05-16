@@ -20,12 +20,23 @@ module PurgeUsersData
       PatientPhoneNumber,
       Patient,
       Address,
-      Teleconsultation]
+      Teleconsultation,
+      Questionnaire,
+      QuestionnaireResponse,
+      Region,
+      FacilityGroup,
+      Facility,
+      Organization]
 
     tables = models.map(&:table_name).join(", ")
     time = Benchmark.ms {
       ActiveRecord::Base.transaction do
         ActiveRecord::Base.connection.execute("truncate #{tables}")
+        # code to deal with
+        # Region,
+        #      FacilityGroup,
+        #       Facility,
+        #       Organization
       end
     }
     puts "Truncated Patient related tables in #{time.round} ms"
