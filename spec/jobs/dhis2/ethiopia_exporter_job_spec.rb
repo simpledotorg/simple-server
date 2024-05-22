@@ -5,6 +5,7 @@ describe Dhis2::EthiopiaExporterJob do
   let(:configuration) { {} }
   let(:client) { double }
   let(:data_value_sets) { double }
+  let(:attribute_option_combo_id) { CountryConfig.dhis2_data_elements.fetch(:dhis2_attribute_option) }
 
   before do
     allow(ENV).to receive(:fetch).and_call_original
@@ -58,6 +59,7 @@ describe Dhis2::EthiopiaExporterJob do
                 org_unit: facility_identifier.identifier,
                 category_option_combo: id,
                 period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
+                attribute_option_combo: attribute_option_combo_id,
                 value: value[:values][category_key]
               }
             end
@@ -66,6 +68,7 @@ describe Dhis2::EthiopiaExporterJob do
               data_element: data_elements[data_element],
               org_unit: facility_identifier.identifier,
               period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
+              attribute_option_combo: attribute_option_combo_id,
               value: value[:value]
             }
           end
