@@ -14,7 +14,7 @@ describe PatientStates::Hypertension::RegistrationsUnderCareQuery do
       refresh_views
       expect(PatientStates::Hypertension::RegistrationsUnderCareQuery.new(regions[:facility_1].region, period).call.count).to eq(2)
       expect(PatientStates::Hypertension::RegistrationsUnderCareQuery.new(regions[:facility_1].region, period).call
-        .map { |x| x.patient_id }).to eq(hypertension_under_care_patients.map { |x| x.id })
+        .map { |x| x.patient_id }).to match_array(hypertension_under_care_patients.map { |x| x.id })
     end
 
     it "does not return patient in another facility" do
