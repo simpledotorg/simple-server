@@ -885,7 +885,8 @@ CREATE TABLE public.patients (
     reminder_consent character varying DEFAULT 'denied'::character varying NOT NULL,
     deleted_by_user_id uuid,
     deleted_reason character varying,
-    assigned_facility_id uuid
+    assigned_facility_id uuid,
+    eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
 );
 
 
@@ -7695,6 +7696,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230713065420'),
 ('20230713135154'),
 ('20231208091419'),
-('20240411074916');
+('20240411074916'),
+('20240522054839');
 
 
