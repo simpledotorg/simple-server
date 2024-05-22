@@ -1,7 +1,7 @@
 dhis2_data_elements:
   htn_enrolled_under_care: "EBJOc6MwpUE"
   htn_enrolled_under_care_treatment: "Z9LhFzvk1pG"
-  htn_by_enrollment_time: FegpLg25B6l
+  htn_by_enrollment_time: V3I330eoIWi
   htn_cohort_registered: x4c7Oa9GoCQ
   htn_cohort_outcome: O7vl9TZXgPx
 
@@ -20,8 +20,8 @@ dhis2_treatment_category_elements:
   pharma_mangement: cHCvSLCnh18
 
 dhis2_enrollment_time_category_elements:
-  newly_enrolled: bn7fE1Eucm0
-  previously_enrolled: xbP4EYANBA8
+  newly_enrolled: RZdSv3uSaEY
+  previously_enrolled: dMkEK66TNLC
 
 dhis2_cohort_category_elements:
   controlled: WPjwKs4ZivK
