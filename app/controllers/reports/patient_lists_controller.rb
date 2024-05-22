@@ -22,7 +22,7 @@ class Reports::PatientListsController < AdminController
     response.headers["Last-Modified"] = Time.zone.now.ctime.to_s
     zip_kit_stream(filename: "#{file_name}.zip") do |zip|
       zip.write_deflated_file("#{file_name}.csv") do |sink|
-        exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?, batch_size: (ENV.fetch("REPORT_ENUMERATOR_BATCH_SIZE") || 1000).to_i).each do |chunk|
+        exporter.csv_enumerator(patients, display_blood_sugars: model.region.diabetes_management_enabled?, batch_size: (ENV.fetch("REPORT_ENUMERATOR_BATCH_SIZE", 1000)).to_i).each do |chunk|
           sink << chunk.map(&:to_csv).join
         end
       end
