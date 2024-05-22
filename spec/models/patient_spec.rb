@@ -111,12 +111,21 @@ describe Patient, type: :model do
     it "validates deleted reason" do
       patient = Patient.new
 
-      # valid deleted reasons should not cause problems
-      Patient::DELETED_REASONS.each { |reason| patient.deleted_reason = reason }
-      # nil is also a valid reason
-      patient.deleted_reason = nil
+      expect {
+        Patient::DELETED_REASONS.each { |reason| patient.deleted_reason = reason }
+      }.not_to raise_error
 
       expect { patient.deleted_reason = "something else" }.to raise_error(ArgumentError)
+    end
+
+    it "validates reassignment eligibility" do
+      patient = Patient.new
+
+      expect {
+        Patient::REASSIGNMENT_ELIGIBILITY.each { |eligibility| patient.eligible_for_reassignment = eligibility }
+      }.not_to raise_error
+
+      expect { patient.eligible_for_reassignment = "something else" }.to raise_error(ArgumentError)
     end
   end
 
