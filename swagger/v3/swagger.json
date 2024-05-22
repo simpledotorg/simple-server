@@ -1557,6 +1557,14 @@
             "accidental_registration",
             null
           ]
+        },
+        "eligible_for_reassignment": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
         }
       },
       "required": [
@@ -1759,6 +1767,14 @@
             "unknown",
             "accidental_registration",
             null
+          ]
+        },
+        "eligible_for_reassignment": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
           ]
         },
         "address": {

@@ -11,6 +11,7 @@ FactoryBot.define do
     date_of_birth { nil }
     age { rand(18..100) }
     age_updated_at { Time.current }
+    eligible_for_reassignment { Patient::REASSIGNMENT_ELIGIBILITY.sample }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     recorded_at { device_created_at }

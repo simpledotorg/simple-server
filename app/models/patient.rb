@@ -14,9 +14,14 @@ class Patient < ApplicationRecord
   ANONYMIZED_DATA_FIELDS = %w[id created_at registration_date registration_facility_name user_id age gender]
   DELETED_REASONS = %w[duplicate unknown accidental_registration].freeze
 
+  REASSIGNMENT_ELIGIBILITY = %w[yes no unknown].freeze
+
   enum status: STATUSES.zip(STATUSES).to_h, _prefix: true
 
   enum deleted_reason: DELETED_REASONS.zip(DELETED_REASONS).to_h, _prefix: true
+
+  enum eligible_for_reassignment: REASSIGNMENT_ELIGIBILITY.zip(REASSIGNMENT_ELIGIBILITY).to_h,
+    _prefix: true, _default: "unknown"
 
   enum reminder_consent: {
     granted: "granted",
@@ -113,6 +118,7 @@ class Patient < ApplicationRecord
 
   validate :past_date_of_birth
   validates :status, presence: true
+  validates :eligible_for_reassignment, presence: true
 
   validates :device_created_at, presence: true
   validates :device_updated_at, presence: true
