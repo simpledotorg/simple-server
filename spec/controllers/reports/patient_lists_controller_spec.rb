@@ -62,7 +62,7 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       expect(response.status).to eq(200)
     end
 
-    it "works even when ENV variable - 'REPORT_ENUMERATOR_BATCH_SIZE' is not defined" do
+    it "falls back to a default batch size when 'REPORT_ENUMERATOR_BATCH_SIZE' is not set" do
       ENV.delete("REPORT_ENUMERATOR_BATCH_SIZE")
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
