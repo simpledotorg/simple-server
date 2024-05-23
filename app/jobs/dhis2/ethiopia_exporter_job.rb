@@ -90,12 +90,11 @@ module Dhis2
     end
 
     def format_cohort_data(registered_patients)
-      # registered_patient_count = registered_patients.count
       controlled_count = registered_patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled" }
       uncontrolled_count = registered_patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "uncontrolled" }
-      lost_to_follow_up_count = registered_patients.count{ |patient| patient.htn_care_state == "lost_to_follow_up" }
+      lost_to_follow_up_count = registered_patients.count { |patient| patient.htn_care_state == "lost_to_follow_up" }
       dead_count = registered_patients.count { |patient| patient.htn_care_state == "dead" }
-      transferred_out_count = registered_patients.count{ |patient| patient.status == "migrated" }
+      transferred_out_count = registered_patients.count { |patient| patient.status == "migrated" }
       {
         "controlled" => controlled_count,
         "uncontrolled" => uncontrolled_count,
