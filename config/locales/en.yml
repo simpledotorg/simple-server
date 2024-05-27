@@ -55,6 +55,8 @@ en:
   bp_not_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
+  htn_cascade_copy: 
+    reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled."
   bs_below_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
@@ -143,7 +145,7 @@ en:
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population"
   diabetes_patient_coverage_copy: "Total registered patients diagnosed with diabetes divided by the region's estimated diabetic population"
   total_estimated_hypertensive_population:
-    district_copy: "The approximate number of people in %{region_name} with hypertension"
+    district_copy: "The approximate number of people in %{region_name} with hypertension (usually derived from a STEPS survey)."
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   total_estimated_diabetic_population:
     district_copy: "The approximate number of people in %{region_name} with diabetes"

@@ -589,8 +589,14 @@
   .w-lg-224px {
     width: 224px;
   }
+  .w-lg-66 {
+    width: 66.6666%;
+  }
   .w-lg-50 {
     width: 50%;
+  }
+  .w-lg-33 {
+    width: 33.3333%;
   }
   .w-lg-full {
     width: 100%;
@@ -752,4 +758,45 @@
   min-width: 2em;
   text-align: center;
   display: inline-block;
+}
+
+.coverage {
+  display: flex;
+  margin-top: 32px;
+}
+
+.coverage p {
+  padding: 2px 8px;
+}
+
+.coverage-column {
+  border-right: 1px solid $grey-light;
+  flex: 1;
+  line-height: 1.2;
+}
+
+.coverage-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  height: 240px;
+  margin-bottom: 4px;
+}
+
+.coverage-bar-fill {
+  position: relative;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #6d7070;
+}
+
+.coverage-number {
+  position: absolute;
+  top: -1.75em;
+  padding-left: 8px;
+}
+
+.coverage-estimated {
+  text-align: center;
+  margin-top: 4px;
 }
