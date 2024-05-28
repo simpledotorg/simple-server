@@ -125,7 +125,8 @@ en:
     total_registered_patients: "Total diabetes patients registered in %{region_name}"
     monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   assigned_patients_copy:
-    total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
+    total_assigned_patients: "Hypertension patients assigned to a facility in %{region_name}. Dead patients are excluded."
+    facility_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_assigned_patients_copy:
     total_assigned_patients: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
