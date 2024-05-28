@@ -61,5 +61,13 @@ RSpec.describe Reports::PatientListsController, type: :controller do
       get :show, params: {id: facility.region.slug, report_scope: "facility"}
       expect(response.status).to eq(200)
     end
+
+    it "falls back to a default batch size when 'REPORT_ENUMERATOR_BATCH_SIZE' is not set" do
+      ENV.delete("REPORT_ENUMERATOR_BATCH_SIZE")
+      admin_with_pii.accesses.create!(resource: facility_group)
+      sign_in(admin_with_pii.email_authentication)
+      get :show, params: {id: facility_group.slug, report_scope: "district"}
+      expect { response.body }.not_to raise_error(KeyError)
+    end
   end
 end
