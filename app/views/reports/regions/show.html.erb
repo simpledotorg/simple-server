@@ -28,225 +28,220 @@
 
 <h4 class="mt-5 mb-32px">Program management indicators</h4>
 <div class="d-lg-flex flex-lg-wrap">
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="bp-controlled"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+  <div class="d-lg-flex w-lg-33 pr-lg-2">
+  <div id="bp-controlled"
+     data-period="<%= @period.to_s %>"
+     class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+        justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
 
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-          <div class="d-flex flex-1">
-            <h3 class="mb-0px mr-8px">
-              % BP controlled
-            </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
-                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-          </div>
-          <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("bp_controlled_copy.reports_card_subtitle") %>
-        </p>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-green-dark graph-percent fs-28px"
-             data-rate="">
-          </p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-total-patients=""></span>
-              patients with controlled BP from
-              <span data-period-start=""></span>
-              to
-              <span data-period-end=""></span>
-            </p>
-            <p class="m-0px c-grey-dark c-print-black">
-              of <span data-registrations=""></span>
-              patients registered till
-              <span data-registrations-period-end=""></span>
-            </p>
-          </div>
-        </div>
+    <div class="pt-20px px-20px">
+    <div class="d-flex mb-8px">
+      <div class="d-flex flex-1">
+      <h3 class="mb-0px mr-8px">
+        % BP controlled
+      </h3>
+      <%= render "definition_tooltip",
+             definitions: { "Numerator" => t("bp_controlled_copy.numerator"),
+                    "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
       </div>
+      <%= render "reports/regions/ltfu_toggle", id: "controlledGraphLtfuToggle", enabled: @with_ltfu %>
+    </div>
+    <p class="c-grey-dark">
+      <%= t("bp_controlled_copy.reports_card_subtitle") %>
+    </p>
+    <div class="mb-12px d-lg-flex align-lg-center">
+      <p class="c-print-black c-green-dark graph-percent fs-28px"
+       data-rate="">
+      </p>
       <div>
-        <div class="p-relative mb-12px">
-          <div class="h-320px mr-8px ml-8px">
-            <canvas id="controlledPatientsTrend"></canvas>
-          </div>
-        </div>
+      <p class="m-0px c-black">
+        <span data-total-patients=""></span>
+        patients with controlled BP from
+        <span data-period-start=""></span>
+        to
+        <span data-period-end=""></span>
+      </p>
+      <p class="m-0px c-grey-dark c-print-black">
+        of <span data-registrations=""></span>
+        patients registered till
+        <span data-registrations-period-end=""></span>
+      </p>
       </div>
+    </div>
+    </div>
+    <div>
+    <div class="p-relative mb-12px">
+      <div class="h-320px mr-8px ml-8px">
+      <canvas id="controlledPatientsTrend"></canvas>
+      </div>
+    </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="cumulative-registrations"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-          <div class="d-flex flex-1">
-            <h3 class="mb-0px mr-8px">
-              Registrations
-            </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
-                                      "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
-          </div>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
-        </p>
-        <div class="d-flex align-center mb-24px">
-          <div class="flex-1 d-lg-flex align-lg-center">
-            <p class="c-print-black c-purple graph-percent fs-28px"
-              data-total-patients="">
-            </p>
-            <div>
-              <p class="m-0px c-black c-print-black">
-                total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
-                <span data-registrations-period-end=""></span>
-              </p>
-            </div>
-          </div>
-          <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
-            <p class="c-print-black c-purple-medium graph-percent fs-28px"
-              data-monthly-registrations="">
-            </p>
-            <div>
-              <p class="m-0px c-black c-print-black">
-                new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
-                <span data-registrations-month-end=""></span>
-              </p>
-            </div>
-          </div>
-        </div>
+  </div>
+  <div class="d-lg-flex w-lg-33 pl-lg-2 pr-lg-2">
+  <div id="bp-uncontrolled"
+     data-period="<%= @period.to_s %>"
+     class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+      justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <div class="pt-20px px-20px">
+    <div class="d-flex mb-8px">
+      <div class="d-flex flex-1">
+        <h3 class="mb-0px mr-8px">
+        % BP not controlled
+        </h3>
+        <%= render "definition_tooltip",
+             definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
+                    "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
       </div>
-      <div class="h-320px mr-13px ml-13px pb-4px">
-        <canvas id="cumulativeRegistrationsTrend"></canvas>
+      <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
+    </div>
+    <p class="c-grey-dark">
+      <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
+    </p>
+    <div class="mb-12px d-lg-flex align-lg-center">
+      <p class="c-print-black c-red graph-percent fs-28px"
+       data-rate="">
+      </p>
+      <div>
+      <p class="m-0px c-black">
+        <span data-total-patients=""></span>
+        patients with uncontrolled BP from
+        <span data-period-start=""></span>
+        to
+        <span data-period-end=""></span>
+      </p>
+      <p class="m-0px c-grey-dark c-print-black">
+        of
+        <span data-registrations=""></span>
+        patients registered till
+        <span data-registrations-period-end=""></span>
+      </p>
       </div>
-      <% if @region.diabetes_management_enabled? %>
-        <div>
-          <div class="p-relative px-20px mb-12px">
-            <p class="m-0px c-grey-dark c-print-black">
-              <strong data-hypertension-only-registrations=""></strong> HTN-only,
-              <strong class="ml-8px" data-hypertension-and-diabetes-registrations="">00</strong> DM+HTN
-            </p>
-          </div>
-        </div>
-      <% end %>
+    </div>
+    </div>
+    <div>
+    <div class="p-relative mb-16px">
+      <div class="h-320px mr-16px mb-12px ml-13px">
+      <canvas id="uncontrolledPatientsTrend"></canvas>
+      </div>
+    </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pr-lg-2">
-    <div id="bp-uncontrolled"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-            <div class="d-flex flex-1">
-              <h3 class="mb-0px mr-8px">
-                % BP not controlled
-              </h3>
-              <%= render "definition_tooltip",
-                         definitions: { "Numerator" => t("bp_not_controlled_copy.numerator"),
-                                        "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-            </div>
-            <%= render "reports/regions/ltfu_toggle", id: "uncontrolledGraphLtfuToggle", enabled: @with_ltfu %>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("bp_not_controlled_copy.reports_card_subtitle") %>
-        </p>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-red graph-percent fs-28px"
-             data-rate="">
-          </p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-total-patients=""></span>
-              patients with uncontrolled BP from
-              <span data-period-start=""></span>
-              to
-              <span data-period-end=""></span>
-            </p>
-            <p class="m-0px c-grey-dark c-print-black">
-              of
-              <span data-registrations=""></span>
-              patients registered till
-              <span data-registrations-period-end=""></span>
-            </p>
-          </div>
-        </div>
+  </div>
+  <div class="d-lg-flex w-lg-33 pl-lg-2">
+  <div id="missed-visits"
+     data-period="<%= @period.to_s %>"
+     class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+      justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <div class="pt-20px px-20px">
+    <div class="d-flex mb-8px">
+      <div class="d-flex flex-1">
+      <h3 class="mb-0px mr-8px">
+        % Missed visits
+      </h3>
+      <%= render "definition_tooltip",
+             definitions: { "Numerator" => t("missed_visits_copy.numerator"),
+                    "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
       </div>
+      <%= render "reports/regions/ltfu_toggle", id: "missedVisitsGraphLtfuToggle", enabled: @with_ltfu %>
+    </div>
+    <p class="c-grey-dark">
+      <%= t("missed_visits_copy.reports_card_subtitle") %>
+    </p>
+    <div class="mb-12px d-lg-flex align-lg-center">
+      <p class="c-print-black c-blue graph-percent fs-28px"
+       data-rate="">
+      </p>
       <div>
-        <div class="p-relative mb-16px">
-          <div class="h-320px mr-16px mb-12px ml-13px">
-            <canvas id="uncontrolledPatientsTrend"></canvas>
-          </div>
-        </div>
+      <p class="m-0px c-black">
+        <span data-total-patients=""></span>
+        patients with no visit from
+        <span data-period-start=""></span>
+        to
+        <span data-period-end=""></span>
+      </p>
+      <p class="m-0px c-grey-dark c-print-black">
+        of
+        <span data-registrations=""></span>
+        patients registered till
+        <span data-registrations-period-end=""></span>
+      </p>
       </div>
+    </div>
+    </div>
+    <div>
+    <div class="h-320px mr-16px mb-16px ml-13px">
+      <canvas id="missedVisitsTrend"></canvas>
+    </div>
     </div>
   </div>
-  <div class="d-lg-flex w-lg-50 pl-lg-2">
-    <div id="missed-visits"
-         data-period="<%= @period.to_s %>"
-         class="mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-          justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
-      <div class="pt-20px px-20px">
-        <div class="d-flex mb-8px">
-          <div class="d-flex flex-1">
-            <h3 class="mb-0px mr-8px">
-              % Missed visits
-            </h3>
-            <%= render "definition_tooltip",
-                       definitions: { "Numerator" => t("missed_visits_copy.numerator"),
-                                      "Denominator" => t(control_graph_denominator_copy, region_name: @region.name) } %>
-          </div>
-          <%= render "reports/regions/ltfu_toggle", id: "missedVisitsGraphLtfuToggle", enabled: @with_ltfu %>
-        </div>
-        <p class="c-grey-dark">
-          <%= t("missed_visits_copy.reports_card_subtitle") %>
-        </p>
-        <div class="mb-12px d-lg-flex align-lg-center">
-          <p class="c-print-black c-blue graph-percent fs-28px"
-             data-rate="">
-          </p>
-          <div>
-            <p class="m-0px c-black">
-              <span data-total-patients=""></span>
-              patients with no visit from
-              <span data-period-start=""></span>
-              to
-              <span data-period-end=""></span>
-            </p>
-            <p class="m-0px c-grey-dark c-print-black">
-              of
-              <span data-registrations=""></span>
-              patients registered till
-              <span data-registrations-period-end=""></span>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div>
-        <div class="h-320px mr-16px mb-16px ml-13px">
-          <canvas id="missedVisitsTrend"></canvas>
-        </div>
-      </div>
-    </div>
   </div>
 </div>
-<%= render "treatment_outcomes_card" %>
-<h4 class="mt-5 mb-32px">Details</h4>
 <div class="d-lg-flex flex-lg-wrap">
-  <%= render Dashboard::Hypertension::CoverageCardComponent.new(
-    region: @region,
-    data: @data,
-    period: @period,
-    current_admin: current_admin
-  ) %>
+  <div class="d-lg-flex w-lg-66 pr-lg-2">
+  <div id="cumulative-registrations"
+     data-period="<%= @period.to_s %>"
+     class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+        justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+    <div class="pt-20px px-20px">
+    <div class="d-flex mb-8px">
+      <div class="d-flex flex-1">
+      <h3 class="mb-0px mr-8px">
+        Registrations
+      </h3>
+      <%= render "definition_tooltip",
+             definitions: { "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name),
+                    "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name) } %>
+      </div>
+    </div>
+    <p class="c-grey-dark">
+      <%= t("registered_patients_copy.reports_card_subtitle", region_name: @region.name) %>
+    </p>
+    <div class="d-flex align-center mb-24px">
+      <div class="flex-1 d-lg-flex align-lg-center">
+      <p class="c-print-black c-purple graph-percent fs-28px"
+        data-total-patients="">
+      </p>
+      <div>
+        <p class="m-0px c-black c-print-black">
+        total <%= "registration".pluralize(@data.dig(:cumulative_registrations, @period)) %><br>till
+        <span data-registrations-period-end=""></span>
+        </p>
+      </div>
+      </div>
+      <div class="flex-1 d-lg-flex align-lg-center flex-lg-1">
+      <p class="c-print-black c-purple-medium graph-percent fs-28px"
+        data-monthly-registrations="">
+      </p>
+      <div>
+        <p class="m-0px c-black c-print-black">
+        new <%= "registration".pluralize(@data.dig(:registrations, @period)) %><br>in
+        <span data-registrations-month-end=""></span>
+        </p>
+      </div>
+      </div>
+    </div>
+    </div>
+    <div class="h-320px mr-13px ml-13px pb-4px">
+    <canvas id="cumulativeRegistrationsTrend"></canvas>
+    </div>
+    <% if @region.diabetes_management_enabled? %>
+    <div>
+      <div class="p-relative px-20px mb-12px">
+      <p class="m-0px c-grey-dark c-print-black">
+        <strong data-hypertension-only-registrations=""></strong> HTN-only,
+        <strong class="ml-8px" data-hypertension-and-diabetes-registrations="">00</strong> DM+HTN
+      </p>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  </div>
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
+
+<%= render "treatment_outcomes_card" %>
+
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
   <h4 class="mt-5 mb-32px">Medications</h4>
   <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
@@ -260,75 +255,86 @@
   <%= render "facility_details" %>
 <% else %>
   <%= render(RegistrationsAndFollowUpsComponent.new(@region,
-    current_admin: current_admin,
-    repository: @details_repository,
-    current_period: @period)) %>
+  current_admin: current_admin,
+  repository: @details_repository,
+  current_period: @period)) %>
 <% end %>
 <div class="d-flex jc-space-between">
   <h4 class="mt-5 mb-32px">Overdue</h4>
   <div class="d-flex" style="margin-top: 43px;">
-    <form method="get" name="overdue_form">
-      <div class="custom-control custom-switch checkbox-outside-card">
-        <input type="checkbox"
-             onChange="this.form.submit()"
-             name="with_non_contactable"
-             for="overdue_form"
-             class="custom-control-input"
-             id="overdue-section"
-             <% if @with_non_contactable %>checked<% end %>>
-        <label class="font-weight-normal custom-control-label <% unless false %>c-grey-dark<% end %>"
-             for="overdue-section">
-          Include non-contactable patients
-        </label>
-      </div>
-    </form>
-    <div class="ml-8px" style="margin-top: 2px;">
-      <%= render "definition_tooltip",
-                    definitions: {"" => t("overdue_toggle_tooltip.additional"),
-                                  "list" => t("overdue_toggle_tooltip.list")} %>
+  <form method="get" name="overdue_form">
+    <div class="custom-control custom-switch checkbox-outside-card">
+    <input type="checkbox"
+       onChange="this.form.submit()"
+       name="with_non_contactable"
+       for="overdue_form"
+       class="custom-control-input"
+       id="overdue-section"
+       <% if @with_non_contactable %>checked<% end %>>
+    <label class="font-weight-normal custom-control-label <% unless false %>c-grey-dark<% end %>"
+       for="overdue-section">
+      Include non-contactable patients
+    </label>
     </div>
+  </form>
+  <div class="ml-8px" style="margin-top: 2px;">
+    <%= render "definition_tooltip",
+          definitions: {"" => t("overdue_toggle_tooltip.additional"),
+                  "list" => t("overdue_toggle_tooltip.list")} %>
+  </div>
   </div>
 </div>
 <div class="d-lg-flex flex-lg-wrap">
   <%= render(Dashboard::Hypertension::OverduePatientsComponent.new(
-      region: @region,
-      data: @data,
-      period: @period,
-      with_non_contactable: @with_non_contactable)) %>
+    region: @region,
+    data: @data,
+    period: @period,
+    with_non_contactable: @with_non_contactable)) %>
   <%= render(Dashboard::Hypertension::OverduePatientsCalledComponent.new(
-      region: @region,
-      data: @data,
-      period: @period,
-      with_non_contactable: @with_non_contactable)) %>
+    region: @region,
+    data: @data,
+    period: @period,
+    with_non_contactable: @with_non_contactable)) %>
   <%= render(Dashboard::Hypertension::OverduePatientsReturnToCareComponent.new(
-        region: @region,
-        data: @data,
-        period: @period,
-        with_non_contactable: @with_non_contactable)) %>
+    region: @region,
+    data: @data,
+    period: @period,
+    with_non_contactable: @with_non_contactable)) %>
   <div class="d-lg-flex w-lg-50 pl-lg-2 hidden mb-16px">
-    <div class="no-card-gap-filler">
-      <p>
-        Intentionally blank
-      </p>
-    </div>
+  <div class="no-card-gap-filler">
+    <p>
+    Intentionally blank
+    </p>
+  </div>
   </div>
   <%= render(Dashboard::Hypertension::OverduePatientsCalledTableComponent.new(
-      region: @region,
-      data: @data,
-      repository: @details_repository,
-      period: @period,
-      current_admin: @current_admin,
-      with_non_contactable: @with_non_contactable)) %>
+    region: @region,
+    data: @data,
+    repository: @details_repository,
+    period: @period,
+    current_admin: @current_admin,
+    with_non_contactable: @with_non_contactable)) %>
 </div>
 <h4 class="mt-5 mb-32px">Cohort reports</h4>
 <div class="d-lg-flex">
   <%= render Reports::CohortComponent.new(@cohort_period, @cohort_data) %>
 </div>
+
+<h4 class="mt-5 mb-32px">Patient counts</h4>
+<div class="d-lg-flex flex-lg-wrap">
+  <%= render Dashboard::Hypertension::CoverageCardComponent.new(
+  region: @region,
+  data: @data,
+  period: @period,
+  current_admin: current_admin
+  ) %>
+</div>
+
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">BP Recording Activity</h4>
   <%= render "shared/recent_bp_log",
-              blood_pressures: @recent_blood_pressures,
-              display_model: :facility %>
+        blood_pressures: @recent_blood_pressures,
+        display_model: :facility %>
 <% end %>
 <%= render "overview_footnotes" %>
 <div id="data-json" style="display: none;">
@@ -336,16 +342,16 @@
 </div>
 <script>
   window.addEventListener("DOMContentLoaded", () => {
-    new Reports({
-      withLtfu: <%= @with_ltfu %>,
-      showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>,
-      regionType: '<%= @region.region_type %>',
-      countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
-    }).initialize();
+  new Reports({
+    withLtfu: <%= @with_ltfu %>,
+    showGoalLines: <%= Flipper.enabled?(:goal_lines, current_admin) %>,
+    regionType: '<%= @region.region_type %>',
+    countryAbbreviation: '<%= CountryConfig.current[:abbreviation] %>'
+  }).initialize();
 
-    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    checkboxes.forEach(element => {
-      createScrollTrackingListener(element.id)
-    });
+  const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+  checkboxes.forEach(element => {
+    createScrollTrackingListener(element.id)
+  });
   });
 </script>

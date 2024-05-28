@@ -26,21 +26,12 @@
       <%= number_with_delimiter(data[:ltfu_patients]) %>
     </p>
   </div>
-  <div class="d-flex ai-center jc-between">
-    <p class="mb-8px">
-      Dead patients
-    </p>
-    <p class="mb-8px" id="dead-patients">
-      <%= number_with_delimiter(data[:dead_patients]) %>
-    </p>
-  </div>
 </div>
 <div class="d-flex ai-center jc-between">
   <p class="mb-8px fw-bold">
-    Total registered patients
-    <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_registrations]) %>
+   Dead patients
   </p>
   <p class="mb-8px fw-bold" id="cumulative-registrations">
-    <%= number_with_delimiter(data[:cumulative_registrations]) %>
+    <%= number_with_delimiter(data[:dead_patients]) %>
   </p>
 </div>
