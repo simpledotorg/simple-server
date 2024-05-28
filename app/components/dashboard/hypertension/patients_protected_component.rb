@@ -9,6 +9,7 @@ class Dashboard::Hypertension::PatientsProtectedComponent < ApplicationComponent
 
   def graph_data
     {
+      patientsProtected: data[:controlled_patients],
       **period_data
     }
   end
@@ -17,7 +18,7 @@ class Dashboard::Hypertension::PatientsProtectedComponent < ApplicationComponent
 
   def period_data
     {
-      startDate: period.advance(months: -17),
+      startDate: period.advance(months: -36),
       endDate: period_info(:name)
     }
   end

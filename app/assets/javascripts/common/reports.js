@@ -523,6 +523,40 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
+    
+    htnProtected: function (data) {
+      console.log(data)
+
+      const config = {
+        options: {
+          scales: {
+            y: {
+              ticks: {
+                display: true,
+                count: 10,
+                stepSize: 500
+              },
+              grid: {
+                drawTicks: false
+              },
+              max: 5000
+            }
+          }
+        },
+        data: {
+          labels: Object.keys(data.patientsProtected),
+          datasets: [
+            {
+              label: "Patients with BP <140/90",
+              data: Object.values(data.patientsProtected),
+              backgroundColor: "#3BB231",
+              borderColor: "rgba(69, 205, 57, 0.1)",
+            }
+          ]
+        }
+      };
+      return withBaseLineConfig(config);
+    },
   };
 
   return {
