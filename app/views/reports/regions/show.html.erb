@@ -242,14 +242,11 @@
 
 <%= render "treatment_outcomes_card" %>
 
-<% if current_admin.feature_enabled?(:medications_dispensation) %>
-  <h4 class="mt-5 mb-32px">Medications</h4>
-  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
-<% end %>
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
   <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
 <% end %>
+
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
   <%= render "facility_details" %>
@@ -259,6 +256,12 @@
   repository: @details_repository,
   current_period: @period)) %>
 <% end %>
+
+<% if current_admin.feature_enabled?(:medications_dispensation) %>
+  <h4 class="mt-5 mb-32px">Medications</h4>
+  <%= render Dashboard::MedicationDispensationComponent.new(data: @data, region: @region, period: @period) %>
+<% end %>
+
 <div class="d-flex jc-space-between">
   <h4 class="mt-5 mb-32px">Overdue</h4>
   <div class="d-flex" style="margin-top: 43px;">
