@@ -30,4 +30,7 @@ dhis2_cohort_category_elements:
   dead: y7Bsmkt1Qek
   transferred_out: BE7a3Z3HWtD
 
+dhis2_cohort_registered_category_elements:
+  default: HllvX50cXC0
+
 dhis2_attribute_option: HllvX50cXC0
