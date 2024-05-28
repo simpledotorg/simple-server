@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class SetUpSmsRemindersIndiaJuneJuly2024 < ActiveRecord::Migration[6.1]
-  INCLUDED_FACILITY_SLUG = [
+  INCLUDED_FACILITY_SLUGS = [
     Facility.where(district: "Chennai").pluck(:slug),
     Facility.where(state: "West Bengal").pluck(:slug)
   ].flatten
@@ -9,13 +9,12 @@ class SetUpSmsRemindersIndiaJuneJuly2024 < ActiveRecord::Migration[6.1]
   # Regions where Simple is active and we send sms reminders currently:
   # States - All of West Bengal and select districts in Tamil Nadu
   # Districts - Chennai
-  REGION_FILTERS = {"facilities" => {"include" => INCLUDED_FACILITY_SLUG}}
+  REGION_FILTERS = {"facilities" => {"include" => INCLUDED_FACILITY_SLUGS}}
   PATIENTS_PER_DAY = 20_000
-  EXPERIMENTS_DATA = (6..7).map do |month_number|
-    month = Date::ABBR_MONTHNAMES[month_number]
+  EXPERIMENTS_DATA = %w[Jun Jul].map do |month|
     {
-      start_time: DateTime.new(2024, month_number).beginning_of_month,
-      end_time: DateTime.new(2024, month_number).end_of_month,
+      start_time: "#{month} 2024".to_datetime.beginning_of_month,
+      end_time: "#{month} 2024".to_datetime.end_of_month,
       current_patients_experiment_name: "Current Patient #{month} 2024",
       stale_patients_experiment_name: "Stale Patient #{month} 2024"
     }
@@ -56,6 +55,7 @@ class SetUpSmsRemindersIndiaJuneJuly2024 < ActiveRecord::Migration[6.1]
   end
 
   def down
+    return unless CountryConfig.current_country?("India") && SimpleServer.env.production?
     EXPERIMENTS_DATA.map do |experiment_data|
       Experimentation::Experiment.current_patients.find_by_name(experiment_data[:current_patients_experiment_name])&.cancel
       Experimentation::Experiment.stale_patients.find_by_name(experiment_data[:stale_patients_experiment_name])&.cancel
