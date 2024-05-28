@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class SetUpSmsRemindersIndiaJuneJuly2024 < ActiveRecord::Migration[6.1]
+class SetUpSmsReminderIndia2024JuneJuly < ActiveRecord::Migration[6.1]
   INCLUDED_FACILITY_SLUGS = [
     Facility.where(district: "Chennai").pluck(:slug),
     Facility.where(state: "West Bengal").pluck(:slug)
