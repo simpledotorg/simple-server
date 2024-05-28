@@ -2,7 +2,7 @@ dhis2_data_elements:
   htn_enrolled_under_care: "EBJOc6MwpUE"
   htn_enrolled_under_care_treatment: "Z9LhFzvk1pG"
   htn_by_enrollment_time: V3I330eoIWi
-  htn_cohort_registered: x4c7Oa9GoCQ
+  htn_cohort_registered: TnxpgPlHdGJ
   htn_cohort_outcome: O7vl9TZXgPx
 
 dhis2_age_gender_category_elements:
@@ -29,5 +29,8 @@ dhis2_cohort_category_elements:
   lost_to_follow_up: DsLHjt2lSlg
   dead: y7Bsmkt1Qek
   transferred_out: BE7a3Z3HWtD
+
+dhis2_cohort_registered_category_elements:
+  default: HllvX50cXC0
 
 dhis2_attribute_option: HllvX50cXC0

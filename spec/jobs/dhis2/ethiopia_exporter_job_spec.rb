@@ -23,7 +23,7 @@ describe Dhis2::EthiopiaExporterJob do
         htn_enrolled_under_care: {category_option_key: "dhis2_age_gender_category_elements", values: gender_age_count},
         htn_enrolled_under_care_treatment: {category_option_key: "dhis2_treatment_category_elements", values: treatment_type_count},
         htn_by_enrollment_time: {category_option_key: "dhis2_enrollment_time_category_elements", values: enrollment_data_count},
-        htn_cohort_registered: {value: 0},
+        htn_cohort_registered: {category_option_key: "dhis2_cohort_registered_category_elements", values: cohort_registered_data_count},
         htn_cohort_outcome: {category_option_key: "dhis2_cohort_category_elements", values: cohort_data_count}
       }
     }
@@ -42,6 +42,7 @@ describe Dhis2::EthiopiaExporterJob do
     }
     let(:treatment_type_count) { {"lsm" => 0, "pharma_mangement" => 0} }
     let(:enrollment_data_count) { {"newly_enrolled" => 0, "previously_enrolled" => 0} }
+    let(:cohort_registered_data_count) { {"default" => 0} }
     let(:cohort_data_count) { {"controlled" => 0, "uncontrolled" => 0, "lost_to_follow_up" => 0, "dead" => 0, "transferred_out" => 0} }
     let(:patients) { Reports::PatientState.where(hypertension: "yes") }
 
