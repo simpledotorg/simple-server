@@ -1,6 +1,7 @@
+require "benchmark"
+
 class RefreshReportingViews
   prepend SentryHandler
-  include ActiveSupport::Benchmarkable
   REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
   REPORTING_VIEW_DAILY_REFRESH_KEY = "last_reporting_view_daily_refresh_time".freeze
 
@@ -114,12 +115,17 @@ class RefreshReportingViews
 
   def benchmark_and_statsd(operation)
     name = "refresh_reporting_views.#{operation}"
-    benchmark(name) do
+    result = nil
+    ms = Benchmark.ms do
       Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
-        Statsd.instance.time(name) do
-          yield
-        end
+        result = yield
       end
     end
+    Statsd.instance.timing(name, ms)
+    if Flipper.enabled?(:prometheus_metrics)
+      Prometheus.register(:gauge, name) unless Prometheus.exists?(name)
+      Prometheus.observe(name, ms)
+    end
+    result
   end
 end
