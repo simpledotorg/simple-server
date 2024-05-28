@@ -7,7 +7,7 @@ class SetUpSmsRemindersIndiaJuneJuly2024 < ActiveRecord::Migration[6.1]
   ].flatten
 
   # Regions where Simple is active and we send sms reminders currently:
-  # States - All of West Bengal, selcted districts in Tamil Nadu
+  # States - All of West Bengal and select districts in Tamil Nadu
   # Districts - Chennai
   REGION_FILTERS = {"facilities" => {"include" => INCLUDED_FACILITY_SLUG}}
   PATIENTS_PER_DAY = 20_000
