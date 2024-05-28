@@ -12,7 +12,7 @@ module Dhis2
         htn_enrolled_under_care: {category_option_key: "dhis2_age_gender_category_elements", values: format_gender_age_data(PatientStates::Hypertension::RegistrationsUnderCareGenderAgeAggregatedQuery.new(region, period).call)},
         htn_enrolled_under_care_treatment: {category_option_key: "dhis2_treatment_category_elements", values: format_treatment_data(PatientStates::Hypertension::RegistrationsUnderCareQuery.new(region, period).call)},
         htn_by_enrollment_time: {category_option_key: "dhis2_enrollment_time_category_elements", values: format_enrollment_data(PatientStates::Hypertension::CumulativeRegistrationsQuery.new(region, period).call)},
-        htn_cohort_registered: {value: cohort_registered_patients.count},
+        htn_cohort_registered: {category_option_key: "dhis2_cohort_registered_category_elements", values: format_cohort_registered_data(cohort_registered_patients)},
         htn_cohort_outcome: {category_option_key: "dhis2_cohort_category_elements", values: format_cohort_data(cohort_registered_patients)}
       }
     end
@@ -102,6 +102,10 @@ module Dhis2
         "dead" => dead_count,
         "transferred_out" => transferred_out_count
       }
+    end
+
+    def format_cohort_registered_data(registered_patients)
+      { "default" =>  registered_patients.count }
     end
   end
 end
