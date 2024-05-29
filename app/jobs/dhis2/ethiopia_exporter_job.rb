@@ -105,7 +105,7 @@ module Dhis2
     end
 
     def format_cohort_registered_data(registered_patients)
-      { "default" =>  registered_patients.count }
+      {"default" => registered_patients.count}
     end
   end
 end
