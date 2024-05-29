@@ -20,10 +20,10 @@
                 <div>
                     <div class="coverage">
                         <!-- DISPLAY THIS IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION -->
-                        <!--div class="coverage-modal">
-                            <p class="c-grey-dark">Add the estimated people with hypertension to see the treatment cascade.</p>
-                            <a href="#" class="fs-14px">+ Add population</a>
-                        </div-->
+                        <div class="coverage-modal">
+                            <p class="c-grey-dark">Add the estimated people with hypertension to display the treatment cascade.</p>
+                            <a href="#" class="fs-14px">+ Estimated people data</a>
+                        </div>
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="overage-bar-fill bg-grey-light" style="height: 100%;">
@@ -31,12 +31,15 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                                250,800
+                                100,000
+                                <!-- IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION, DISPLAY A QUESTION MARK -->
+                                <!-- ? -->
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Estimated people with hypertension
                             </p>
                         </div>
+                        <!-- IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION, SET ALL 3 COVERAGE BARS TO 2% HEIGHT AND DON'T DISPLAY <P CLASS="COVERAGE NUMBER"></P> -->
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="coverage-bar-fill bg-purple-light" style="height: 5%;">
