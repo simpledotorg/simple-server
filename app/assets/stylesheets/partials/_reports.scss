@@ -763,10 +763,20 @@
 .coverage {
   display: flex;
   margin-top: 32px;
-}
-
-.coverage p {
-  padding: 2px 8px;
+  position: relative;
+  
+  p {
+    padding: 2px 8px;
+  }
+  
+  .coverage-modal {
+    position: absolute;
+    width: 100%;
+    height: 220px;
+    padding: 40px 20px;
+    background: $grey-light;
+    text-align: center;
+  }
 }
 
 .coverage-column {
@@ -779,7 +789,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  height: 240px;
+  height: 220px;
   margin-bottom: 4px;
 }
 
