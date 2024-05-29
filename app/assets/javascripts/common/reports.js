@@ -548,8 +548,8 @@ DashboardReports = () => {
             {
               label: "Patients with BP <140/90",
               data: Object.values(data.patientsProtected),
-              backgroundColor: "#3BB231",
-              borderColor: "rgba(69, 205, 57, 0.1)",
+              backgroundColor: "rgba(69, 205, 57, 0.1)",
+              borderColor: "#3BB231",
             }
           ]
         }
