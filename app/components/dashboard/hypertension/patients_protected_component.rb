@@ -10,6 +10,7 @@ class Dashboard::Hypertension::PatientsProtectedComponent < ApplicationComponent
   def graph_data
     {
       patientsProtected: data[:controlled_patients],
+      patientsProtectedWithSuffix: data[:controlled_patients].map { |k, v| [k, "#{v} patients"] }.to_h,
       **period_data
     }
   end
