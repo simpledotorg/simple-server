@@ -22,7 +22,7 @@ class Prometheus
   end
 end
 
-if Rails.env.production? && Flipper.enabled?(:prometheus_metrics)
+if Rails.env.production?
   # This reports stats per request like HTTP status and timings
   Rails.application.middleware.unshift PrometheusExporter::Middleware
 end
