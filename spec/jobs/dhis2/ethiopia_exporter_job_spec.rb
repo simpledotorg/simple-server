@@ -6,6 +6,7 @@ describe Dhis2::EthiopiaExporterJob do
   let(:client) { double }
   let(:data_value_sets) { double }
   let(:attribute_option_combo_id) { CountryConfig.dhis2_data_elements.fetch(:dhis2_attribute_option) }
+  let(:age_buckets) { [18, 30, 40, 70] }
 
   before do
     allow(ENV).to receive(:fetch).and_call_original
@@ -30,23 +31,24 @@ describe Dhis2::EthiopiaExporterJob do
     let(:gender_age_data) { {["female", 33] => 74, ["male", 96] => 72} }
     let(:gender_age_count) {
       {
-        "18_29_male" => 0,
-        "18_29_female" => 0,
-        "30_39_male" => 0,
-        "30_39_female" => 74,
-        "40_69_male" => 0,
-        "40_69_female" => 0,
-        "70_200_male" => 72,
-        "70_200_female" => 0
+        "male_18_29_" => 0,
+        "female_18_29" => 0,
+        "male_30_39" => 0,
+        "female_30_39" => 74,
+        "male_40_69" => 0,
+        "female_40_69" => 0,
+        "male_70_plus" => 72,
+        "female_70_plus" => 0
       }
     }
-    let(:treatment_type_count) { {"lsm" => 0, "pharma_mangement" => 0} }
+    let(:treatment_type_count) { {"lsm" => 0, "pharma_management" => 0} }
     let(:enrollment_data_count) { {"newly_enrolled" => 0, "previously_enrolled" => 0} }
     let(:cohort_registered_data_count) { {"default" => 0} }
     let(:cohort_data_count) { {"controlled" => 0, "uncontrolled" => 0, "lost_to_follow_up" => 0, "dead" => 0, "transferred_out" => 0} }
     let(:patients) { Reports::PatientState.where(hypertension: "yes") }
 
     it "exports HTN metrics required by Ethiopia for a facility for the last n months to DHIS2" do
+      allow_any_instance_of(Dhis2::Dhis2ExporterJob).to receive(:disaggregate_by_gender_age).with(patients, age_buckets).and_return(gender_age_count)
       facility_identifier = create(:facility_business_identifier)
       total_months = 2
       periods = (Period.current.advance(months: -total_months)..Period.current.previous)
@@ -76,7 +78,6 @@ describe Dhis2::EthiopiaExporterJob do
         end
       end
       Reports::PatientState.refresh
-      expect_any_instance_of(PatientStates::Hypertension::RegistrationsUnderCareGenderAgeAggregatedQuery).to receive_message_chain(:call).and_return(gender_age_data)
       expect_any_instance_of(PatientStates::Hypertension::RegistrationsUnderCareQuery).to receive_message_chain(:call).and_return(patients.to_a)
       expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive_message_chain(:call).and_return(patients.to_a)
       expect_any_instance_of(PatientStates::Hypertension::RegistrationsForMonthsQuery).to receive_message_chain(:call).and_return(patients.to_a)
@@ -89,77 +90,64 @@ describe Dhis2::EthiopiaExporterJob do
     end
   end
 
-  describe "#format_gender_age_data" do
-    subject { described_class.new.send(:format_gender_age_data, gender_age_data) }
-
-    let(:gender_age_data) { {["female", 33] => 74, ["male", 96] => 72, ["female", 31] => 4, ["male", 8] => 6} }
-    it "returns the data in gender and age range key" do
-      output = subject
-      expect(output.count).to eq 8
-      expect(output["18_29_male"]).to eq 0
-      expect(output["30_39_male"]).to eq 0
-      expect(output["40_69_male"]).to eq 0
-      expect(output["70_200_male"]).to eq 72
-      expect(output["18_29_female"]).to eq 0
-      expect(output["30_39_female"]).to eq 78
-      expect(output["40_69_female"]).to eq 0
-      expect(output["70_200_female"]).to eq 0
-    end
-
-    context "with empty gender age data" do
-      let(:gender_age_data) { {} }
-
-      it "returns zero for all the ranges" do
-        output = subject
-        expect(output.count).to eq 8
-        expect(output.values.uniq).to eq [0]
-      end
-    end
-  end
-
-  describe "#format_treatment_data" do
+  describe "#segregate_and_format_treatment_data" do
     it "returns the data segregated with treatment type" do
       Timecop.freeze("April 25th 2024") do
         create_list(:patient, 3, :hypertension, :under_care)
         Reports::PatientState.refresh
       end
       patients = Reports::PatientState.all.to_a
-      output = described_class.new.send(:format_treatment_data, patients)
+      output = described_class.new.send(:segregate_and_format_treatment_data, patients)
       expect(output.count).to eq 2
       expect(output["lsm"]).to eq patients.count
-      expect(output["pharma_mangement"]).to eq 0
+      expect(output["pharma_management"]).to eq 0
     end
 
     it "returns 0 count with an empty data set" do
-      output = described_class.new.send(:format_treatment_data, [])
+      output = described_class.new.send(:segregate_and_format_treatment_data, [])
       expect(output.count).to eq 2
       expect(output["lsm"]).to eq 0
-      expect(output["pharma_mangement"]).to eq 0
+      expect(output["pharma_management"]).to eq 0
+    end
+
+    it "also includes patients with lsm prescribed drugs" do
+      Timecop.freeze("April 25th 2024") do
+        create(:patient, :hypertension, :under_care)
+        patient_2 = create(:patient, :hypertension, :under_care)
+        prescription_drug = create(:prescription_drug, patient: patient_2, recorded_at: Time.current - 1.month, name: "Lifestyle Management")
+        Reports::PatientVisit.refresh
+        Reports::PatientState.refresh
+      end
+      patients = Reports::PatientState.all.to_a
+      output = described_class.new.send(:segregate_and_format_treatment_data, patients)
+      expect(output.count).to eq 2
+      expect(output["lsm"]).to eq patients.count
+      expect(output["pharma_management"]).to eq 0
     end
   end
 
-  describe "#format_enrollment_data" do
+  describe "#segregate_and_format_enrollment_data" do
     it "returns the data segregated by enrollment time" do
       Timecop.freeze("April 25th 2024") do
         create_list(:patient, 3, :hypertension, :under_care)
         Reports::PatientState.refresh
       end
       patients = Reports::PatientState.all.to_a
-      output = described_class.new.send(:format_enrollment_data, patients)
+      output = described_class.new.send(:segregate_and_format_enrollment_data, patients)
       expect(output.count).to eq 2
       expect(output["newly_enrolled"]).to eq 3
       expect(output["previously_enrolled"]).to eq(patients.count - 3)
     end
 
     it "returns 0 count with an empty data set" do
-      output = described_class.new.send(:format_enrollment_data, [])
+      output = described_class.new.send(:segregate_and_format_enrollment_data, [])
       expect(output.count).to eq 2
       expect(output["newly_enrolled"]).to eq 0
       expect(output["previously_enrolled"]).to eq 0
     end
   end
 
-  describe "#format_cohort_data" do
+  describe "#segregate_and_format_cohort_data" do
     it "returns the data segregated by enrollment time" do
       Timecop.freeze("April 25th 2024") do
         create(:patient, :hypertension, :controlled)
@@ -172,7 +160,7 @@ describe Dhis2::EthiopiaExporterJob do
       patients = Reports::PatientState.all.to_a
       controlled_count = patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled" }
       uncontrolled_count = patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "uncontrolled" }
-      output = described_class.new.send(:format_cohort_data, patients)
+      output = described_class.new.send(:segregate_and_format_cohort_data, patients)
       expect(output.count).to eq 5
       expect(output["controlled"]).to eq controlled_count
       expect(output["uncontrolled"]).to eq uncontrolled_count
