@@ -6,18 +6,18 @@ dhis2_data_elements:
   htn_cohort_outcome: O7vl9TZXgPx
 
 dhis2_age_gender_category_elements:
-  18_29_male: I2D33GuvivH
-  18_29_female: rFly722Z2Qn
-  30_39_male: DJVYUMi7K4s
-  30_39_female: ey0nULL2c1M
-  40_69_male: Cb8Hda5cLS8
-  40_69_female: WLImI1jc2Yi
-  70_200_male: wUE6cyvSBm4
-  70_200_female: lFfR4vo7oH3
+  male_18_29: I2D33GuvivH
+  female_18_29: rFly722Z2Qn
+  male_30_39: DJVYUMi7K4s
+  female_30_39: ey0nULL2c1M
+  male_40_69: Cb8Hda5cLS8
+  female_40_69: WLImI1jc2Yi
+  male_70_plus: wUE6cyvSBm4
+  female_70_plus: lFfR4vo7oH3
 
 dhis2_treatment_category_elements:
   lsm: Pstp0QNNjm5
-  pharma_mangement: cHCvSLCnh18
+  pharma_management: cHCvSLCnh18
 
 dhis2_enrollment_time_category_elements:
   newly_enrolled: RZdSv3uSaEY
