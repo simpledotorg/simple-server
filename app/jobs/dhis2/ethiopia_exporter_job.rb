@@ -41,7 +41,7 @@ module Dhis2
               category_option_combo: id,
               period: reporting_period(period),
               attribute_option_combo: attribute_option_id,
-              value: options[:values][category_key]
+              value: options[:values][category_key] || 0
             }
           end
         else
@@ -50,7 +50,7 @@ module Dhis2
             org_unit: facility_identifier.identifier,
             period: reporting_period(period),
             attribute_option_combo: attribute_option_id,
-            value: options[:value]
+            value: options[:value] || 0
           }
         end
       end
