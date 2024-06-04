@@ -55,16 +55,7 @@ module Dhis2
     end
 
     def format_facility_period_data(facility_data, facility_identifier, period)
-      formatted_facility_data = []
-      facility_data.each do |data_element, value|
-        formatted_facility_data << {
-          data_element: data_elements_map[data_element],
-          org_unit: facility_identifier.identifier,
-          period: reporting_period(period),
-          value: value
-        }
-      end
-      formatted_facility_data
+      raise NotImplementedError
     end
 
     def data_elements_map
