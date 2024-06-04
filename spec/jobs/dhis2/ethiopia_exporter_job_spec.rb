@@ -63,7 +63,7 @@ describe Dhis2::EthiopiaExporterJob do
                 category_option_combo: id,
                 period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
                 attribute_option_combo: attribute_option_combo_id,
-                value: value[:values][category_key]
+                value: value[:values][category_key] || 0
               }
             end
           else
@@ -72,7 +72,7 @@ describe Dhis2::EthiopiaExporterJob do
               org_unit: facility_identifier.identifier,
               period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
               attribute_option_combo: attribute_option_combo_id,
-              value: value[:value]
+              value: value[:value] || 0
             }
           end
         end
