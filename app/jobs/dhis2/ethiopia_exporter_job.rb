@@ -59,7 +59,7 @@ module Dhis2
 
     def segregate_and_format_treatment_data(under_care_patients)
       htn_under_care_patient_count = under_care_patients.count
-      lsm_drug_ids = PrescriptionDrug.where('name like ?', '%Life%').pluck(:id)
+      lsm_drug_ids = PrescriptionDrug.where("name like ?", "%Life%").pluck(:id)
       htn_under_care_patient_lsm_count = under_care_patients.count { |patient| patient.prescription_drug_id.nil? || lsm_drug_ids.include?(patient.prescription_drug_id) }
       htn_under_care_patient_medication_count = htn_under_care_patient_count - htn_under_care_patient_lsm_count
       {
