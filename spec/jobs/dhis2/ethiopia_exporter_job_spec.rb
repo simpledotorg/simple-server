@@ -115,7 +115,7 @@ describe Dhis2::EthiopiaExporterJob do
       Timecop.freeze("April 25th 2024") do
         create(:patient, :hypertension, :under_care)
         patient_2 = create(:patient, :hypertension, :under_care)
-        prescription_drug = create(:prescription_drug, patient: patient_2, recorded_at: Time.current - 1.month, name: "Lifestyle Management")
+        create(:prescription_drug, patient: patient_2, recorded_at: Time.current - 1.month, name: "Lifestyle Management")
         Reports::PatientVisit.refresh
         Reports::PatientState.refresh
       end
