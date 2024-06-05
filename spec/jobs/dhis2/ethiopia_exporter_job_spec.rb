@@ -13,6 +13,7 @@ describe Dhis2::EthiopiaExporterJob do
     allow(ENV).to receive(:fetch).with("DHIS2_DATA_ELEMENTS_FILE").and_return("config/data/dhis2/ethiopia-production.yml")
     allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
     allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
+    allow(Flipper).to receive(:enabled?).with(:prometheus_metrics).and_return(false)
     allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return(configuration)
     allow(Dhis2::Client).to receive(:new).with(configuration).and_return(client)
   end
