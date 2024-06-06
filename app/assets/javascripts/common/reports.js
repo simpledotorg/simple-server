@@ -525,20 +525,19 @@ DashboardReports = () => {
     },
     
     htnProtected: function (data) {
-      console.log(data)
-
       const config = {
         options: {
           scales: {
             y: {
               ticks: {
                 display: true,
-                count: 10,
+                count: null,
+                stepSize: null
               },
               grid: {
                 drawTicks: false
               },
-              max: null
+              max: null 
             }
           }
         },
