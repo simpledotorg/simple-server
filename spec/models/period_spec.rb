@@ -202,4 +202,9 @@ RSpec.describe Period, type: :model do
       expect(period.month?).to eq false
     end
   end
+
+  it "returns ltfu since date" do
+    current_month_date = Date.parse("January 1st, 2024")
+    expect(Period.month(current_month_date).ltfu_since_date).to eq("31-Jan-2023")
+  end
 end
