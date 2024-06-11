@@ -33,24 +33,14 @@ module Dhis2
       formatted_facility_data = []
       facility_data.each do |data_element, options|
         attribute_option_id = attribute_option_map_id
-        if options[:category_option_key]
-          category_element_map(options[:category_option_key]).each do |category_key, id|
-            formatted_facility_data << {
-              data_element: data_elements_map[data_element],
-              org_unit: facility_identifier.identifier,
-              category_option_combo: id,
-              period: reporting_period(period),
-              attribute_option_combo: attribute_option_id,
-              value: options[:values][category_key] || 0
-            }
-          end
-        else
+        category_element_map(options[:category_option_key]).each do |category_key, id|
           formatted_facility_data << {
             data_element: data_elements_map[data_element],
             org_unit: facility_identifier.identifier,
+            category_option_combo: id,
             period: reporting_period(period),
             attribute_option_combo: attribute_option_id,
-            value: options[:value] || 0
+            value: options[:values][category_key] || 0
           }
         end
       end

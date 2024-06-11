@@ -56,24 +56,14 @@ describe Dhis2::EthiopiaExporterJob do
       export_data = []
       periods.each do |period|
         facility_data.each do |data_element, value|
-          if value[:category_option_key]
-            CountryConfig.dhis2_data_elements.fetch((value[:category_option_key])).each do |category_key, id|
-              export_data << {
-                data_element: data_elements[data_element],
-                org_unit: facility_identifier.identifier,
-                category_option_combo: id,
-                period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
-                attribute_option_combo: attribute_option_combo_id,
-                value: value[:values][category_key] || 0
-              }
-            end
-          else
+          CountryConfig.dhis2_data_elements.fetch((value[:category_option_key])).each do |category_key, id|
             export_data << {
               data_element: data_elements[data_element],
               org_unit: facility_identifier.identifier,
+              category_option_combo: id,
               period: EthiopiaCalendarUtilities.gregorian_month_period_to_ethiopian(period).to_s(:dhis2),
               attribute_option_combo: attribute_option_combo_id,
-              value: value[:value] || 0
+              value: value[:values][category_key] || 0
             }
           end
         end
@@ -156,7 +146,7 @@ describe Dhis2::EthiopiaExporterJob do
         create(:patient, :hypertension, :lost_to_follow_up)
         create(:patient, :hypertension, :dead)
         create(:patient, :hypertension, status: "migrated")
-        refresh_views
+        Reports::PatientState.refresh
       end
       patients = Reports::PatientState.all.to_a
       controlled_count = patients.count { |patient| patient.htn_care_state == "under_care" && patient.last_bp_state == "controlled" }
