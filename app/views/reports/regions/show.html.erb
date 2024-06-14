@@ -7,23 +7,20 @@
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 
 <div class="d-lg-flex flex-lg-wrap">
-  <!-- IF block/facility report use this:-->
-    <!-- <div class="d-lg-flex pr-lg-2 w-lg-full"> -->
-  <!-- IF org/district use this:-->  
   <div class="d-lg-flex pr-lg-2 w-lg-66 flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
       region: @region,
       data: @data,
       period: @period)) %>
   </div>
-  
-  <!-- Only IF org/district show the cascade:-->
-  <div class="d-lg-flex w-lg-33 pl-lg-2">
-    <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
-      region: @region,
-      data: @data,
-      period: @period)) %>
-  </div>
+  <% if %[organization state district].include?(@region.region_type) %>
+    <div class="d-lg-flex w-lg-33 pl-lg-2">
+      <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
+        region: @region,
+        data: @data,
+        period: @period)) %>
+    </div>
+  <% end %>
 </div>
 
 <h4 class="mt-5 mb-32px">Program management indicators</h4>
