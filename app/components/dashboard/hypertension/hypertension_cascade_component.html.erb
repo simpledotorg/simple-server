@@ -19,7 +19,7 @@
             <div class="p-relative mb-12px">
                 <div>
                     <div class="coverage">
-                        <% if @region.estimated_population.nil? %>
+                        <% unless @region.estimated_population %>
                         <div class="coverage-modal">
                             <p class="c-grey-dark">Add the estimated people with hypertension to display the treatment cascade.</p>
                             <% if @region.district_region? %>
@@ -30,6 +30,7 @@
                             <% end %>
                         </div>
                         <% else %>
+                        <% end %>
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="overage-bar-fill bg-grey-light" style="height: 100%;">
@@ -37,7 +38,7 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                            <%= @region.estimated_population.population %>
+                            <%= @estimated_population ? @estimated_population.population : "?" %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Estimated people with hypertension
@@ -46,7 +47,9 @@
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="coverage-bar-fill bg-purple-light" style="height: <%= cumulative_registrations_rate %>;">
-                                  <p class="coverage-number c-purple"><%= cumulative_registrations_rate %></p>
+                                  <% if @estimated_population %>
+                                    <p class="coverage-number c-purple"><%= cumulative_registrations_rate %></p>
+                                  <% end %>
                                 </div>
                             </div>
                             <p class="mb-0px">
@@ -59,7 +62,9 @@
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="coverage-bar-fill bg-purple-medium" style="height: <%= under_care_patients_rate %>;">
-                                  <p class="coverage-number under-care c-purple"> <%= under_care_patients_rate %></p>
+                                  <% if @estimated_population %>
+                                    <p class="coverage-number under-care c-purple"> <%= under_care_patients_rate %></p>
+                                  <% end %>
                                 </div>
                             </div>
                             <p class="mb-0px">
@@ -72,7 +77,9 @@
                         <div class="coverage-column">
                             <div class="coverage-bar">
                                 <div class="coverage-bar-fill bg-green" style="height: <%= controlled_patients_rate %>;">
-                                    <p class="coverage-number bp-controlled c-green-dark"><%= controlled_patients_rate %></p>
+                                  <% if @estimated_population %>
+                                      <p class="coverage-number bp-controlled c-green-dark"><%= controlled_patients_rate %></p>
+                                  <% end %>
                                 </div>
                             </div>
                             <p class="mb-0px">
@@ -82,7 +89,6 @@
                                 Patients with BP controlled
                             </p>
                         </div>
-                        <% end %>
                     </div>
 
                 </div>

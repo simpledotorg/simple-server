@@ -5,7 +5,7 @@
         subtitle: "Patients with hypertension in #{region.name}") %>
     
     <!-- Remove this after Hypertension Cascade card is implemented
-      <% if region.supports_htn_population_coverage %>
+      <% if region.supports_htn_population_coverage && !Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
         <%= render(Dashboard::PopulationCoverageComponent.new(
           region: region,
           cumulative_registrations: data.dig(:cumulative_registrations, period),
