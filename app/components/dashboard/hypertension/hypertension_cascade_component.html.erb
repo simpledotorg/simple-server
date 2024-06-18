@@ -19,11 +19,15 @@
             <div class="p-relative mb-12px">
                 <div>
                     <div class="coverage">
-                        <!-- DISPLAY THIS IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION -->
                         <% if @region.estimated_population.nil? %>
                         <div class="coverage-modal">
                             <p class="c-grey-dark">Add the estimated people with hypertension to display the treatment cascade.</p>
-                            <a href="#" class="fs-14px">+ Estimated people data</a>
+                            <% if @region.district_region? %>
+                              <%= link_to "+ Estimated people data", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
+                            <% end %>
+                            <% if  @region.state_region? %>
+                              <%= link_to "+ Estimated people data", "/admin/facilities", :class => "fs-14px" %>
+                            <% end %>
                         </div>
                         <% else %>
                         <div class="coverage-column">
@@ -34,18 +38,15 @@
                             </div>
                             <p class="mb-0px">
                             <%= @region.estimated_population.population %>
-                                <!-- IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION, DISPLAY A QUESTION MARK -->
-                                <!-- ? -->
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Estimated people with hypertension
                             </p>
                         </div>
-                        <!-- IF ESTIMATED POPULATION ISN'T AVAILABLE IN THIS REGION, SET ALL 3 COVERAGE BARS TO 2% HEIGHT AND DON'T DISPLAY <P CLASS="COVERAGE NUMBER"></P> -->
                         <div class="coverage-column">
                             <div class="coverage-bar">
-                                <div class="coverage-bar-fill bg-purple-light" style="height: <%= cumulative_registrations_rate %>%;">
-                                  <p class="coverage-number c-purple"><%= cumulative_registrations_rate %>%</p>
+                                <div class="coverage-bar-fill bg-purple-light" style="height: <%= cumulative_registrations_rate %>;">
+                                  <p class="coverage-number c-purple"><%= cumulative_registrations_rate %></p>
                                 </div>
                             </div>
                             <p class="mb-0px">
@@ -57,8 +58,8 @@
                         </div>
                         <div class="coverage-column">
                             <div class="coverage-bar">
-                                <div class="coverage-bar-fill bg-purple-medium" style="height: <%= under_care_patients_rate %>%;">
-                                  <p class="coverage-number under-care c-purple"> <%= under_care_patients_rate %>%</p>
+                                <div class="coverage-bar-fill bg-purple-medium" style="height: <%= under_care_patients_rate %>;">
+                                  <p class="coverage-number under-care c-purple"> <%= under_care_patients_rate %></p>
                                 </div>
                             </div>
                             <p class="mb-0px">
@@ -70,8 +71,8 @@
                         </div>
                         <div class="coverage-column">
                             <div class="coverage-bar">
-                                <div class="coverage-bar-fill bg-green" style="height: <%= controlled_patients_rate %>%;">
-                                    <p class="coverage-number bp-controlled c-green-dark"><%= controlled_patients_rate %>%</p>
+                                <div class="coverage-bar-fill bg-green" style="height: <%= controlled_patients_rate %>;">
+                                    <p class="coverage-number bp-controlled c-green-dark"><%= controlled_patients_rate %></p>
                                 </div>
                             </div>
                             <p class="mb-0px">
