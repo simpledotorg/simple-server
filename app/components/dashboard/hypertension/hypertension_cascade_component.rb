@@ -28,7 +28,11 @@ class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationCompone
     number_to_percentage(@controlled_patients * 100 / @estimated_population.population, precision: 0)
   end
 
-  def all_districts_have_hypertension_estimate?
-    @region.district_regions.all?(&:estimated_population)
+  def show_estimate?
+    if @region.district_region?
+      @estimated_population
+    else
+      @region.district_regions.all?(&:estimated_population)
+    end
   end
 end
