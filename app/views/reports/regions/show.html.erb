@@ -6,6 +6,7 @@
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 
+<% if Flipper.enabled?(:patients_protected, current_admin) %>
 <div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex pr-lg-2 w-lg-66 flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
@@ -13,7 +14,7 @@
       data: @data,
       period: @period)) %>
   </div>
-  <% if %[organization state district].include?(@region.region_type) %>
+  <% if %[organization state district].include?(@region.region_type) && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
     <div class="d-lg-flex w-lg-33 pl-lg-2">
       <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
         region: @region,
@@ -22,6 +23,7 @@
     </div>
   <% end %>
 </div>
+<% end %>
 
 <h4 class="mt-5 mb-32px">Program management indicators</h4>
 <div class="d-lg-flex flex-lg-wrap">
