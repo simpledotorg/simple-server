@@ -1,0 +1,92 @@
+<div id="htn-cascade" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+
+    <div class="pt-20px px-20px">
+        <div class="d-flex mb-8px">
+            <div class="d-flex flex-1">
+                <h3 class="mb-0px mr-8px">
+                    Hypertension treatment cascade
+                </h3>
+                <%= render "definition_tooltip" , definitions: { "Estimated people with hypertension"=>
+                    t("total_estimated_hypertensive_population.district_copy", region_name: @region.name),
+                    "Patients under care" => t("patients_under_care_copy") } %>
+            </div>
+        </div>
+        <p class="c-grey-dark">
+            <%= t("htn_cascade_copy.reports_card_subtitle", region_name: @region.name) %>
+        </p>
+        <div>
+            <div class="p-relative mb-12px">
+                <div>
+                    <div class="coverage">
+                        <% if @region.estimated_population.nil? %>
+                        <div class="coverage-modal">
+                            <p class="c-grey-dark">Add the estimated people with hypertension to display the treatment cascade.</p>
+                            <% if @region.district_region? %>
+                              <%= link_to "+ Estimated people data", edit_admin_facility_group_path(@region.source), :class => "fs-14px" %>
+                            <% end %>
+                            <% if  @region.state_region? %>
+                              <%= link_to "+ Estimated people data", "/admin/facilities", :class => "fs-14px" %>
+                            <% end %>
+                        </div>
+                        <% else %>
+                        <div class="coverage-column">
+                            <div class="coverage-bar">
+                                <div class="overage-bar-fill bg-grey-light" style="height: 100%;">
+                                    <p class="coverage-estimated c-grey-dark">100%</p>
+                                </div>
+                            </div>
+                            <p class="mb-0px">
+                            <%= @region.estimated_population.population %>
+                            </p>
+                            <p class="text-grey fs-lg-14px mb-0px">
+                                Estimated people with hypertension
+                            </p>
+                        </div>
+                        <div class="coverage-column">
+                            <div class="coverage-bar">
+                                <div class="coverage-bar-fill bg-purple-light" style="height: <%= cumulative_registrations_rate %>;">
+                                  <p class="coverage-number c-purple"><%= cumulative_registrations_rate %></p>
+                                </div>
+                            </div>
+                            <p class="mb-0px">
+                              <%= @cumulative_registrations %>
+                            </p>
+                            <p class="text-grey fs-lg-14px mb-0px">
+                                Cumulative registered patients
+                            </p>
+                        </div>
+                        <div class="coverage-column">
+                            <div class="coverage-bar">
+                                <div class="coverage-bar-fill bg-purple-medium" style="height: <%= under_care_patients_rate %>;">
+                                  <p class="coverage-number under-care c-purple"> <%= under_care_patients_rate %></p>
+                                </div>
+                            </div>
+                            <p class="mb-0px">
+                              <%= @under_care_patients %>
+                            </p>
+                            <p class="text-grey fs-lg-14px mb-0px">
+                                Patients under care
+                            </p>
+                        </div>
+                        <div class="coverage-column">
+                            <div class="coverage-bar">
+                                <div class="coverage-bar-fill bg-green" style="height: <%= controlled_patients_rate %>;">
+                                    <p class="coverage-number bp-controlled c-green-dark"><%= controlled_patients_rate %></p>
+                                </div>
+                            </div>
+                            <p class="mb-0px">
+                              <%= @controlled_patients %>
+                            </p>
+                            <p class="text-grey fs-lg-14px mb-0px">
+                                Patients with BP controlled
+                            </p>
+                        </div>
+                        <% end %>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
