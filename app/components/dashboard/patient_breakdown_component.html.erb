@@ -1,7 +1,11 @@
 <div class="d-flex ai-center jc-between">
   <p class="mb-8px fw-bold">
     Total assigned patients
-    <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_assigned_patients]) %>
+    <% if @region.facility_region? %>
+      <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_assigned_patients_facility]) %>
+    <% else %>
+      <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_assigned_patients]) %>
+    <% end %>
   </p>
   <p class="mb-8px fw-bold" id="cumulative-assigned-patients">
     <%= number_with_delimiter(data[:cumulative_assigned_patients]) %>
@@ -26,21 +30,12 @@
       <%= number_with_delimiter(data[:ltfu_patients]) %>
     </p>
   </div>
-  <div class="d-flex ai-center jc-between">
-    <p class="mb-8px">
-      Dead patients
-    </p>
-    <p class="mb-8px" id="dead-patients">
-      <%= number_with_delimiter(data[:dead_patients]) %>
-    </p>
-  </div>
 </div>
 <div class="d-flex ai-center jc-between">
-  <p class="mb-8px fw-bold">
-    Total registered patients
-    <%= render Dashboard::Card::TooltipComponent.new(tooltips[:cumulative_registrations]) %>
+  <p class="pt-3 mb-8px fw-bold">
+   Dead patients
   </p>
-  <p class="mb-8px fw-bold" id="cumulative-registrations">
-    <%= number_with_delimiter(data[:cumulative_registrations]) %>
+  <p class="pt-3 mb-8px fw-bold" id="dead-patients">
+    <%= number_with_delimiter(data[:dead_patients]) %>
   </p>
 </div>
