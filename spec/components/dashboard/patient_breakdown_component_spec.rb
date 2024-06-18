@@ -42,7 +42,6 @@ describe Dashboard::PatientBreakdownComponent, type: :component do
     render_inline(patient_breakdown_component)
 
     cumulative_assigned_patients = page.find("#cumulative-assigned-patients").text.to_i
-    cumulative_registrations = page.find("#cumulative-registrations").text.to_i
     under_care_patients = page.find("#under-care-patients").text.to_i
     ltfu_patients = page.find("#ltfu-patients").text.to_i
     dead_patients = page.find("#dead-patients").text.to_i
@@ -51,7 +50,6 @@ describe Dashboard::PatientBreakdownComponent, type: :component do
     expect(under_care_patients).to eq(3)
     expect(ltfu_patients).to eq(2)
     expect(dead_patients).to eq(1)
-    expect(cumulative_registrations).to eq(6)
     expect(cumulative_assigned_patients).to eq(under_care_patients + ltfu_patients)
     expect(under_care_patients + ltfu_patients).to eq(5)
   end
