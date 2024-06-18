@@ -116,6 +116,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
         :deleted_reason,
         :registration_facility_id,
         :assigned_facility_id,
+        :eligible_for_reassignment,
         phone_numbers: [permitted_phone_number_params],
         address: permitted_address_params,
         business_identifiers: [permitted_business_identifier_params]
