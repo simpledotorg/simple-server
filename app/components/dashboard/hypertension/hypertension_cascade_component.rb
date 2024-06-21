@@ -1,7 +1,7 @@
 class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationComponent
   attr_reader :data, :contactable, :period
 
-  FIXED_RATE_WHEN_NO_ESTIMATE = "2%" # We should a fixed rate when there's no esimate for the region
+  FIXED_RATE_WHEN_NO_ESTIMATE = "2%" # We show a fixed rate when there's no estimate for the region
 
   def initialize(region:, data:, period:)
     @region = region

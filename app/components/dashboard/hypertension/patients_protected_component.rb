@@ -4,7 +4,7 @@ class Dashboard::Hypertension::PatientsProtectedComponent < ApplicationComponent
   def initialize(region:, data:, period:)
     @region = region
     @data = data
-    # Show only data upto last month
+    # Show only data up to last month
     @period = period.advance(months: -1)
     @period_start = period.advance(months: -36)
   end
