@@ -19,8 +19,7 @@ class SetUpSmsReminderSriLanka2024JuneJuly < ActiveRecord::Migration[6.1]
           name: experiment_data[:current_patients_experiment_name],
           start_time: experiment_data[:start_time],
           end_time: experiment_data[:end_time],
-          max_patients_per_day: PATIENTS_PER_DAY,
-          filters: REGION_FILTERS
+          max_patients_per_day: PATIENTS_PER_DAY
         ).tap do |experiment|
           cascade = experiment.treatment_groups.create!(description: "sms_reminders_cascade - #{experiment_data[:current_patients_experiment_name]}")
           cascade.reminder_templates.create!(message: "notifications.sri_lanka.one_day_before_appointment", remind_on_in_days: -1)
