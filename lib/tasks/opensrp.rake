@@ -22,10 +22,10 @@ namespace :opensrp do
   task :export, [:file_path] => :environment do |_task, args|
     patients = Patient
       .where(assigned_facility_id: "27ed8faa-e36d-4de9-b25d-c87ea1b66b06")
-      .order(:created_at).take 2
+      .order(:created_at).take 40
     patients.concat(Patient
       .where(assigned_facility_id: "4be64aa8-7f86-4a0b-97b7-1da8e93a7d68")
-      .order(:created_at).take(3))
+      .order(:created_at).take(60))
     patients.each do |patient|
       if rand(2) == 0 && !patient.business_identifiers.pluck(:identifier_type).include?("sri_lanka_personal_health_number")
         identifier_value = ["#{("A".."Z").to_a.sample(4).join}/#{rand(100..999)}/#{rand(1000..9999)}",
@@ -62,6 +62,7 @@ namespace :opensrp do
         drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, OPENSRP_ORG_MAP)
         resources << drug_exporter.export_medication
         resources << drug_exporter.export
+        resources << drug_exporter.export_dosage_flag
         encounters << drug_exporter.export_encounter
       end
       OneOff::Opensrp::MedicalHistoryExporter.new(patient.medical_history, OPENSRP_ORG_MAP).then do |medical_history_exporter|
@@ -72,6 +73,10 @@ namespace :opensrp do
         next unless appointment.status_scheduled?
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, OPENSRP_ORG_MAP)
         resources << appointment_exporter.export
+        if appointment.call_results.present?
+          resources << appointment_exporter.export_call_outcome_task
+          resources << appointment_exporter.export_call_outcome_flag
+        end
         encounters << appointment_exporter.export_encounter
       end
     end
@@ -111,7 +116,8 @@ namespace :opensrp do
       appointment_date: patient.appointments.order(device_updated_at: :desc).where(status: "scheduled")&.first&.device_updated_at&.to_date&.iso8601,
       medication: patient.prescription_drugs.order(device_updated_at: :desc).where(is_deleted: false)&.first&.values_at(:name, :dosage)&.join(" "),
       glucose_measure: patient.latest_blood_sugar&.blood_sugar_value.then { |bs| "%.2f" % bs if bs },
-      glucose_measure_type: patient.latest_blood_sugar&.blood_sugar_type
+      glucose_measure_type: patient.latest_blood_sugar&.blood_sugar_type,
+      call_outcome: patient.appointments.order(device_updated_at: :desc)&.first&.call_results&.order(device_created_at: :desc)&.first&.result_type
     }
   end
 

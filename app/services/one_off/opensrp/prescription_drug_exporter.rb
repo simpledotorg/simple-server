@@ -57,6 +57,84 @@ module OneOff
         )
       end
 
+      def export_dosage_flag
+        FHIR::Flag.new(
+          id: flag_id,
+          meta: {
+            lastUpdated: "2024-06-11T09:14:59.356+03:00",
+            tag: [
+              {
+                system: "https://smartregister.org/care-team-tag-id",
+                code: opensrp_ids[:care_team_id],
+                display: "Practitioner CareTeam"
+              },
+              {
+                system: "https://smartregister.org/location-tag-id",
+                code: opensrp_ids[:location_id],
+                display: "Practitioner Location"
+              },
+              {
+                system: "https://smartregister.org/organisation-tag-id",
+                code: opensrp_ids[:organization_id],
+                display: "Practitioner Organization"
+              },
+              {
+                system: "https://smartregister.org/practitioner-tag-id",
+                code: opensrp_ids[:practitioner_id],
+                display: "Practitioner"
+              },
+              {
+                system: "https://smartregister.org/app-version",
+                code: "2.0.0-diabetesCompassClinic",
+                display: "Application Version"
+              }
+            ]
+          },
+          identifier: [
+            {
+              use: "usual",
+              value: flag_id
+            }
+          ],
+          status: "active",
+          category: [
+            {
+              coding: [
+                {
+                  system: "http://terminology.hl7.org/CodeSystem/flag-category",
+                  code: "clinical",
+                  display: "Clinical"
+                }
+              ],
+              text: "Clinical"
+            }
+          ],
+          code: {
+            coding: [
+              {
+                system: "https://smartregister.org/",
+                code: "GENPATIENTNOTES",
+                display: "General patient notes"
+              }
+            ],
+            text: "#{prescription_drug.name} #{prescription_drug.dosage || ""} #{prescription_drug.frequency || ""}"
+          },
+          subject: {
+            reference: "Patient/#{prescription_drug.patient_id}"
+          },
+          period: {
+            start: prescription_drug.device_created_at.beginning_of_day.iso8601,
+            end: prescription_drug.device_created_at.end_of_day.iso8601
+          },
+          encounter: {
+            reference: "Encounter/#{encounter_id}"
+          },
+          author: {
+            reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"
+          }
+        )
+      end
+
       def export_encounter
         {
           parent_id: parent_encounter_id,
@@ -108,6 +186,10 @@ module OneOff
             partOf: FHIR::Reference.new(reference: "Encounter/#{parent_encounter_id}")
           )
         }
+      end
+
+      def flag_id
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, prescription_drug.id + "_dosage_flag_id")
       end
 
       def encounter_id
