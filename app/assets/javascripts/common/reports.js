@@ -531,11 +531,11 @@ DashboardReports = () => {
             y: {
               ticks: {
                 display: true,
-                count: null,
+                count: 11,
                 stepSize: null
               },
               grid: {
-                drawTicks: false
+                drawTicks: true 
               },
               max: null 
             }
