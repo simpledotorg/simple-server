@@ -49,6 +49,8 @@ en:
     requested: "As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}."
     confidential: "Please note that this information is confidential and should be kept private."
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+  patients_protected:
+    title: Patients protected from heart attacks & strokes in %{region_name}
   bp_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP <140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP <140/90 at their last visit in the last 3 months"
