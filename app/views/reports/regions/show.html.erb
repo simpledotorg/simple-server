@@ -5,16 +5,17 @@
 <%= render "header" %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
+<% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
 
 <% if Flipper.enabled?(:patients_protected, current_admin) %>
 <div class="d-lg-flex flex-lg-wrap">
-  <div class="d-lg-flex pr-lg-2 w-lg-66 flex-fill">
+  <div class="d-lg-flex <%= show_htn_cascade ? "pr-lg-2" : "" %> w-lg-66 flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
       region: @region,
       data: @data,
       period: @period)) %>
   </div>
-  <% if %[organization state district].include?(@region.region_type) && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
+  <% if show_htn_cascade && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
     <div class="d-lg-flex w-lg-33 pl-lg-2">
       <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
         region: @region,
