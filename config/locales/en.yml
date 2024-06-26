@@ -49,12 +49,16 @@ en:
     requested: "As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}."
     confidential: "Please note that this information is confidential and should be kept private."
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+  patients_protected_copy:
+    title: Patients protected from heart attacks & strokes in %{region_name}
   bp_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP <140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP <140/90 at their last visit in the last 3 months"
   bp_not_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
+  htn_cascade_copy: 
+    reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled."
   bs_below_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
@@ -123,7 +127,8 @@ en:
     total_registered_patients: "Total diabetes patients registered in %{region_name}"
     monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   assigned_patients_copy:
-    total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
+    total_assigned_patients: "Hypertension patients assigned to a facility in %{region_name}. Dead patients are excluded."
+    facility_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_assigned_patients_copy:
     total_assigned_patients: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
@@ -143,7 +148,7 @@ en:
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population"
   diabetes_patient_coverage_copy: "Total registered patients diagnosed with diabetes divided by the region's estimated diabetic population"
   total_estimated_hypertensive_population:
-    district_copy: "The approximate number of people in %{region_name} with hypertension"
+    district_copy: "The approximate number of people in %{region_name} with hypertension (usually derived from a STEPS survey)."
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   total_estimated_diabetic_population:
     district_copy: "The approximate number of people in %{region_name} with diabetes"
