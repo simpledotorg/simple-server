@@ -14,17 +14,17 @@ class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationCompone
   end
 
   def cumulative_registrations_rate
-    return FIXED_RATE_WHEN_NO_ESTIMATE unless @estimated_population
+    return FIXED_RATE_WHEN_NO_ESTIMATE unless show_estimate?
     number_to_percentage(@cumulative_registrations * 100 / @estimated_population.population, precision: 0)
   end
 
   def under_care_patients_rate
-    return FIXED_RATE_WHEN_NO_ESTIMATE unless @estimated_population
+    return FIXED_RATE_WHEN_NO_ESTIMATE unless show_estimate?
     number_to_percentage(@under_care_patients * 100 / @estimated_population.population, precision: 0)
   end
 
   def controlled_patients_rate
-    return FIXED_RATE_WHEN_NO_ESTIMATE unless @estimated_population
+    return FIXED_RATE_WHEN_NO_ESTIMATE unless show_estimate?
     number_to_percentage(@controlled_patients * 100 / @estimated_population.population, precision: 0)
   end
 
