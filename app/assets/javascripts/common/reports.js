@@ -530,12 +530,8 @@ DashboardReports = () => {
           scales: {
             y: {
               ticks: {
-                display: true,
                 count: 11,
                 stepSize: null
-              },
-              grid: {
-                drawTicks: true 
               },
               max: null 
             }
