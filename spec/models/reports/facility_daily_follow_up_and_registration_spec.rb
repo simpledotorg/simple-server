@@ -37,7 +37,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     mh = build(:medical_history, hypertension: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes], diabetes: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes])
     patient_2 = create(:patient, medical_history: mh, gender: "male", recorded_at: 1.day.ago, registration_user: user, registration_facility: facility)
     patient_3 = create(:patient, :diabetes, gender: "female", recorded_at: 1.day.ago, registration_user: user, registration_facility: facility)
-    now = Time.now
+    now = Time.current
     create(:blood_pressure, patient: patient_1, user: user, facility: facility, recorded_at: now)
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: now)
     create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: now)
@@ -84,7 +84,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
 
   it "contains records for appointments" do
     patient = create(:patient, :hypertension, recorded_at: june_2021[:long_ago])
-    now = Time.now
+    now = Time.current
     create(:appointment, patient: patient, facility: facility, device_created_at: now)
 
     described_class.refresh
