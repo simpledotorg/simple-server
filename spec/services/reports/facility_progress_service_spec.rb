@@ -1,6 +1,10 @@
 require "rails_helper"
 
 RSpec.describe Reports::FacilityProgressService, type: :model do
+  around do |example|
+    with_reporting_time_zone { example.run }
+  end
+
   let(:user) { create(:user) }
   let(:facility) { create(:facility) }
   let(:seven_days_ago) { 7.days.ago }
@@ -16,30 +20,27 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
       _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
-      with_reporting_time_zone do
-        refresh_views
-        service = described_class.new(facility, Period.current)
-        expect(service.daily_registrations(3.days.ago.to_date)).to eq(3)
-        expect(service.daily_registrations(1.days.ago.to_date)).to eq(0)
-        expect(service.daily_registrations(Date.current)).to eq(1)
-      end
+      refresh_views
+      service = described_class.new(facility, Period.current)
+
+      expect(service.daily_registrations(3.days.ago.to_date)).to eq(3)
+      expect(service.daily_registrations(1.days.ago.to_date)).to eq(0)
+      expect(service.daily_registrations(Date.current)).to eq(1)
     end
 
     it "returns counts for HTN only if diabetes is not enabled" do
-      skip "time zone issues in CI"
       facility = create(:facility, enable_diabetes_management: false)
       _htn_patient1 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
       _htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
       _dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 3.days.ago)
       _htn_patient3 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 1.minute.ago)
 
-      with_reporting_time_zone do
-        refresh_views
-        service = described_class.new(facility, Period.current)
-        expect(service.daily_registrations(3.days.ago)).to eq(2)
-        expect(service.daily_registrations(1.days.ago)).to eq(0)
-        expect(service.daily_registrations(Date.current)).to eq(1)
-      end
+      refresh_views
+      service = described_class.new(facility, Period.current)
+
+      expect(service.daily_registrations(3.days.ago.to_date)).to eq(2)
+      expect(service.daily_registrations(1.days.ago.to_date)).to eq(0)
+      expect(service.daily_registrations(Date.current)).to eq(1)
     end
   end
 
@@ -51,17 +52,17 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         patient3 = create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         patient4 = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-        one_day_ago # ensure this is set to UTC time zone
+        one_day_ago
         create(:appointment, recorded_at: two_days_ago, patient: patient1, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_days_ago, patient: patient2, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_days_ago, patient: patient3, facility: facility, user: user)
         create(:blood_sugar, recorded_at: two_days_ago, patient: patient4, facility: facility, user: user)
-        with_reporting_time_zone do
-          refresh_views
-          service = described_class.new(facility, Period.current)
-          expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(3)
-          expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
-        end
+
+        refresh_views
+        service = described_class.new(facility, Period.current)
+
+        expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(3)
+        expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
       end
     end
 
@@ -72,7 +73,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         htn_patient2 = create(:patient, :hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         undiagnosed_patient = create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         dm_patient = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-        one_day_ago # ensure this is set to UTC time zone
+        one_day_ago
         create(:appointment, recorded_at: seven_days_ago, patient: htn_patient1, facility: facility, user: user)
         create(:appointment, recorded_at: two_days_ago, patient: htn_patient1, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_days_ago, patient: htn_patient2, facility: facility, user: user)
@@ -80,14 +81,12 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         create(:blood_sugar, recorded_at: two_days_ago, patient: dm_patient, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
 
-        with_reporting_time_zone do
-          refresh_views
-          service = described_class.new(facility, Period.current)
-          expect(service.daily_follow_ups(seven_days_ago.to_date)).to eq(1)
-          expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(2)
-          expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
-          expect(service.daily_follow_ups(Date.current)).to eq(0)
-        end
+        refresh_views
+        service = described_class.new(facility, Period.current)
+        expect(service.daily_follow_ups(seven_days_ago.to_date)).to eq(1)
+        expect(service.daily_follow_ups(two_days_ago.to_date)).to eq(2)
+        expect(service.daily_follow_ups(one_day_ago.to_date)).to eq(0)
+        expect(service.daily_follow_ups(Date.current)).to eq(0)
       end
     end
 
@@ -105,11 +104,10 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         create(:blood_sugar, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
         create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient, facility: facility, user: user)
 
-        with_reporting_time_zone do
-          refresh_views
-          service = described_class.new(facility, Period.current)
-          expect(service.daily_follow_ups(Date.current)).to eq(3)
-        end
+        refresh_views
+        service = described_class.new(facility, Period.current)
+
+        expect(service.daily_follow_ups(Date.current)).to eq(3)
       end
     end
   end
