@@ -4,7 +4,7 @@ class DisableSmsRemindersBdSylhetJuly2024 < ActiveRecord::Migration[6.1]
   DISTRICTS_NO_SYLHET = %w[Moulvibazar Habiganj Sunamganj Barishal Jhalokathi Feni
     Chattogram Bandarban Pabna Rajshahi Sirajganj Sherpur Jamalpur].freeze
 
-  INCLUDED_FACILITY_SLUG = Facility.where(facility_type: "UHC", district: DISTRICTS).pluck(:slug)
+  INCLUDED_FACILITY_SLUG = Facility.where(facility_type: "UHC", district: DISTRICTS_NO_SYLHET).pluck(:slug)
 
   UPDATED_REGION_FILTERS = {
     "facilities" => {"include" => INCLUDED_FACILITY_SLUG}
