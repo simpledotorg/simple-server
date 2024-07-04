@@ -1,5 +1,6 @@
 require "sidekiq-unique-jobs"
 require "sidekiq/throttled"
+require "prometheus_exporter/instrumentation"
 
 Dir.glob(Rails.root.join("lib", "sidekiq_middleware", "**", "*.rb")).sort.each { |f| require f }
 
@@ -31,7 +32,26 @@ SIDEKIQ_STATS_KEY = "worker"
 SIDEKIQ_STATS_PREFIX = "#{SimpleServer.env}.#{CountryConfig.current[:abbreviation]}"
 
 Sidekiq.configure_server do |config|
-  config.on(:shutdown) { Statsd.instance.close }
+  config.server_middleware do |chain|
+    chain.add PrometheusExporter::Instrumentation::Sidekiq
+  end
+  config.death_handlers << PrometheusExporter::Instrumentation::Sidekiq.death_handler
+
+  config.on :startup do
+    PrometheusExporter::Instrumentation::Process.start type: "sidekiq"
+    PrometheusExporter::Instrumentation::SidekiqProcess.start
+    PrometheusExporter::Instrumentation::SidekiqQueue.start
+    PrometheusExporter::Instrumentation::SidekiqStats.start
+    PrometheusExporter::Instrumentation::ActiveRecord.start(
+      custom_labels: {type: "sidekiq"},
+      config_labels: [:database, :host]
+    )
+  end
+
+  config.on(:shutdown) do
+    PrometheusExporter::Client.default.stop(wait_timeout_seconds: 10)
+    Statsd.instance.close
+  end
 
   config.client_middleware do |chain|
     chain.add SidekiqUniqueJobs::Middleware::Client
@@ -47,6 +67,8 @@ Sidekiq.configure_server do |config|
 
   SidekiqUniqueJobs::Server.configure(config)
 end
+
+Sidekiq.logger.level = Rails.logger.level
 
 Sidekiq::Throttled.setup!
 SidekiqUniqueJobs.configure do |config|

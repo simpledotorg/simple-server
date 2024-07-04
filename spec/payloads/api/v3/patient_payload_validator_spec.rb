@@ -101,6 +101,12 @@ describe Api::V3::PatientPayloadValidator, type: :model do
         expect(payload.valid?).to be false
         expect(payload.errors[:schema]).to be_present
       end
+
+      it "validates that the reassignment eligibility is present in the prescribed enum" do
+        payload = new_patient_payload("eligible_for_reassignment" => "foo")
+        expect(payload.valid?).to be false
+        expect(payload.errors[:schema]).to be_present
+      end
     end
 
     describe "Data validations" do

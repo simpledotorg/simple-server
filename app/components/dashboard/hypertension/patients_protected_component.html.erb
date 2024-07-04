@@ -1,0 +1,12 @@
+  <%= render Dashboard::Card::GraphComponent.new(id: "htnProtected", data: graph_data, period: @period) do |c| %>
+    <%= c.title(title: t("patients_protected_copy.title", region_name: @region.name),
+    subtitle: t("bp_controlled_copy.reports_card_subtitle")) do |title| %>
+      <%= title.tooltip({ "Definition" => t("bp_controlled_copy.numerator") }) %>
+    <%end%>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black c-green-dark graph-percent fs-28px" data-key="patientsProtectedWithSuffix" ></p>
+      </div>
+    <%end%>
+  <%end%>
+

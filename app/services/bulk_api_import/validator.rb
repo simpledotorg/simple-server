@@ -6,8 +6,17 @@ class BulkApiImport::Validator
 
   def validate
     error = validate_schema
+
     unless error.present?
       error = validate_facilities
+    end
+
+    unless error.present?
+      error = validate_patients
+    end
+
+    unless error.present?
+      error = validate_observation_codes
     end
 
     error
@@ -19,6 +28,80 @@ class BulkApiImport::Validator
       @params.to_json
     )
     {schema_errors: schema_errors} if schema_errors.present?
+  end
+
+  def validate_observation_codes
+    invalid_observations = resources_by_type[:observation]&.map do |observation|
+      identifier = observation[:identifier][0][:value]
+      observation_codes = observation[:component]&.map { |component| component.dig(:code, :coding, 0, :code) }
+      next if valid_blood_pressure_codes?(observation_codes) || valid_blood_sugar_codes?(observation_codes)
+      [identifier, observation_codes]
+    end&.compact&.to_h
+
+    if invalid_observations.present?
+      {
+        invalid_observation_codes_error: {
+          invalid_observations: invalid_observations,
+          message: <<~ERRSTRING
+            Invalid set of codes for the following identifiers: #{invalid_observations.pretty_inspect}.
+            For blood pressure observation: Ensure that both systolic and diastolic measurements are present with the correct codes.
+            For blood sugar observations: Ensure that only one code is present and matching the list of accepted codes."
+          ERRSTRING
+        }
+      }
+    end
+  end
+
+  def valid_blood_pressure_codes?(codes)
+    codes.to_set == Api::V4::Imports::ALLOWED_BP_CODES.to_set
+  end
+
+  def valid_blood_sugar_codes?(codes)
+    codes.count == 1 && Api::V4::Imports::ALLOWED_BS_CODES.include?(codes.first)
+  end
+
+  def validate_patients
+    patient_ids = [
+      *appointment_resource_patients,
+      *observation_resource_patients,
+      *medication_request_resource_patients,
+      *condition_resource_patients
+    ]
+
+    found_patients = PatientBusinessIdentifier
+      .joins(patient: {assigned_facility: :facility_group})
+      .where(patient_business_identifiers: {identifier: patient_ids},
+        facility_groups: {organization_id: @organization})
+      .pluck(:identifier)
+
+    unknown_patients = patient_ids - found_patients
+    if unknown_patients.present?
+      {invalid_patient_error: "found unknown patient IDs: #{unknown_patients}. Have you imported this patient yet?"}
+    end
+  end
+
+  def appointment_resource_patients
+    resources_by_type[:appointment]&.map do |resource|
+      resource.dig(:participant, 0, :actor, :identifier)
+    end&.compact&.uniq
+  end
+
+  def observation_resource_patients
+    resources_by_type[:observation]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
+  end
+
+  def medication_request_resource_patients
+    resources_by_type[:medication_request]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
+  end
+
+  def condition_resource_patients
+    resources_by_type[:condition]&.map do |resource|
+      resource[:subject][:identifier]
+    end&.compact&.uniq
   end
 
   def validate_facilities

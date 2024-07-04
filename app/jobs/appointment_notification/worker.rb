@@ -11,6 +11,7 @@ class AppointmentNotification::Worker
     return unless flipper_enabled?
 
     notification = Notification.find(notification_id)
+
     NotificationDispatchService.call(notification) if scheduled?(notification)
   end
 

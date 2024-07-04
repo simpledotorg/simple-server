@@ -199,7 +199,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       filters = {
         "states" => {"exclude" => ["Excluded State"]},
         "blocks" => {"exclude" => [facility3.block_region.id]},
-        "facilities" => {"exclude" => [facility1.id]}
+        "facilities" => {"exclude" => [facility1.slug]}
       }
 
       eligible_patient = create(:patient, age: 18)
@@ -221,7 +221,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       filters = {
         "states" => {"include" => [facility1.state]},
         "blocks" => {"include" => [facility1.block_region.id]},
-        "facilities" => {"include" => [facility1.id]}
+        "facilities" => {"include" => [facility1.slug]}
       }
 
       expect(described_class.eligible_patients(filters)).to include(patient1)

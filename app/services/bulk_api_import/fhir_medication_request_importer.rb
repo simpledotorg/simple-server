@@ -8,8 +8,16 @@ class BulkApiImport::FhirMedicationRequestImporter
     QID: :QDS
   }.with_indifferent_access
 
-  def initialize(med_request_resource)
-    @resource = med_request_resource
+  MEDICATION_STATUS_MAPPING = {
+    "active" => :active,
+    "inactive" => :inactive,
+    "entered-in-error" => :inactive
+  }
+
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -17,26 +25,25 @@ class BulkApiImport::FhirMedicationRequestImporter
       .then { Api::V3::PrescriptionDrugTransformer.from_request(_1).merge(metadata) }
       .then { PrescriptionDrug.merge(_1) }
 
-    AuditLog.merge_log(import_user, merge_result) if merge_result.present?
+    AuditLog.merge_log(@import_user, merge_result) if merge_result.present?
     merge_result
   end
 
   def metadata
-    {user_id: import_user.id}
+    {user_id: @import_user.id}
   end
 
   def build_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource[:subject][:identifier]),
-      facility_id: translate_facility_id(@resource[:performer][:identifier]),
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
+      facility_id: translate_facility_id(@resource[:performer][:identifier], org_id: @organization_id),
       is_protocol_drug: false,
       name: contained_medication[:code][:coding][0][:display],
       rxnorm_code: contained_medication[:code][:coding][0][:code],
       frequency: frequency,
-      duration_in_days: @resource.dig(:dispenseRequest, :expectedSupplyDuration, :value),
       dosage: dosage,
-      is_deleted: false,
+      is_deleted: drug_deleted?,
       **timestamps
     }.compact.with_indifferent_access
   end
@@ -56,5 +63,9 @@ class BulkApiImport::FhirMedicationRequestImporter
     else
       @resource.dig(:dosageInstruction, 0, :text)
     end
+  end
+
+  def drug_deleted?
+    MEDICATION_STATUS_MAPPING[contained_medication[:status]] == :inactive
   end
 end

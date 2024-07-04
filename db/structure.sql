@@ -885,7 +885,8 @@ CREATE TABLE public.patients (
     reminder_consent character varying DEFAULT 'denied'::character varying NOT NULL,
     deleted_by_user_id uuid,
     deleted_reason character varying,
-    assigned_facility_id uuid
+    assigned_facility_id uuid,
+    eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
 );
 
 
@@ -6938,6 +6939,27 @@ CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON publi
 
 
 --
+-- Name: index_reporting_patient_states_on_age; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_age ON public.reporting_patient_states USING btree (age);
+
+
+--
+-- Name: index_reporting_patient_states_on_gender; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_gender ON public.reporting_patient_states USING btree (gender);
+
+
+--
+-- Name: index_reporting_patient_states_on_gender_and_age; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_gender_and_age ON public.reporting_patient_states USING btree (gender, age);
+
+
+--
 -- Name: index_teleconsultations_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7141,10 +7163,38 @@ CREATE INDEX patient_states_care_state ON public.reporting_patient_states USING 
 
 
 --
+-- Name: patient_states_month_date_assigned_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_assigned_facility ON public.reporting_patient_states USING btree (month_date, assigned_facility_id);
+
+
+--
+-- Name: patient_states_month_date_assigned_facility_region; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_assigned_facility_region ON public.reporting_patient_states USING btree (month_date, assigned_facility_region_id);
+
+
+--
 -- Name: patient_states_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX patient_states_month_date_patient_id ON public.reporting_patient_states USING btree (month_date, patient_id);
+
+
+--
+-- Name: patient_states_month_date_registration_facility; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_registration_facility ON public.reporting_patient_states USING btree (month_date, registration_facility_id);
+
+
+--
+-- Name: patient_states_month_date_registration_facility_region; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_registration_facility_region ON public.reporting_patient_states USING btree (month_date, registration_facility_region_id);
 
 
 --
@@ -7644,6 +7694,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230614171507'),
 ('20230713065237'),
 ('20230713065420'),
-('20230713135154');
+('20230713135154'),
+('20231208091419'),
+('20240411074916'),
+('20240522054839');
 
 

@@ -9,8 +9,10 @@ class BulkApiImport::FhirObservationImporter
                     "88365-2" => :fasting,
                     "4548-4" => :hba1c}
 
-  def initialize(observation_resource)
-    @resource = observation_resource
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -23,7 +25,7 @@ class BulkApiImport::FhirObservationImporter
       raise "unknown observation type"
     end
 
-    AuditLog.merge_log(import_user, merge_result) if merge_result.present?
+    AuditLog.merge_log(@import_user, merge_result) if merge_result.present?
     merge_result
   end
 
@@ -41,10 +43,10 @@ class BulkApiImport::FhirObservationImporter
 
   def build_blood_pressure_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource[:subject][:identifier]),
-      facility_id: translate_facility_id(@resource[:performer][0][:identifier]),
-      user_id: import_user.id,
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
+      facility_id: translate_facility_id(@resource[:performer][0][:identifier], org_id: @organization_id),
+      user_id: @import_user.id,
       recorded_at: @resource[:effectiveDateTime],
       **dig_blood_pressure,
       **timestamps
@@ -61,10 +63,10 @@ class BulkApiImport::FhirObservationImporter
 
   def build_blood_sugar_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource[:subject][:identifier]),
-      facility_id: translate_facility_id(@resource[:performer][0][:identifier]),
-      user_id: import_user.id,
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource[:subject][:identifier], org_id: @organization_id),
+      facility_id: translate_facility_id(@resource[:performer][0][:identifier], org_id: @organization_id),
+      user_id: @import_user.id,
       recorded_at: @resource[:effectiveDateTime],
       **dig_blood_sugar,
       **timestamps
@@ -87,6 +89,6 @@ class BulkApiImport::FhirObservationImporter
 
   # For compatibility with SyncEncounterObservation
   def current_user
-    import_user
+    @import_user
   end
 end

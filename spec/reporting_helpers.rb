@@ -22,7 +22,7 @@ module ReportingHelpers
     {
       now: now,
       long_ago: now - 5.years,
-      under_12_months_ago: timezone.local(year - 1, month + 1, 1, 0, 0, 1),
+      under_12_months_ago: now - 11.months + 1.second,
       over_12_months_ago: now - 11.months - 1.second,
       month_string: "#{year}-#{"%02d" % month}",
       beginning_of_month: now,

@@ -4,6 +4,7 @@ def build_medication_request_import_resource
   contained_medication = {
     resourceType: "Medication",
     id: Faker::Alphanumeric.alphanumeric,
+    status: %w[active inactive entered-in-error].sample,
     code: {
       coding: [{system: "http://www.nlm.nih.gov/research/umls/rxnorm",
                 code: Faker::Alphanumeric.alphanumeric,
@@ -11,6 +12,7 @@ def build_medication_request_import_resource
     }
   }
 
+  medication_unit = %w[mg ml g].sample
   {
     contained: [contained_medication],
     resourceType: "MedicationRequest",
@@ -30,9 +32,9 @@ def build_medication_request_import_resource
     dosageInstruction: [{
       timing: {code: %w[QD BID TID QID].sample},
       doseAndRate: [{doseQuantity: {value: Faker::Number.between(from: 1, to: 10),
-                                    unit: "mg",
+                                    unit: medication_unit,
                                     system: "http://unitsofmeasure.org",
-                                    code: "mg"}}],
+                                    code: medication_unit}}],
       text: Faker::Quote.yoda
     }]
   }

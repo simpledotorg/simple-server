@@ -4,7 +4,11 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
   describe "#perform" do
     before do
       Flipper.enable(:notifications)
+      Flipper.enable(:experiment)
       allow(Statsd.instance).to receive(:increment).with(anything)
+      messaging_channel = Messaging::Twilio::ReminderSms
+      allow(CountryConfig.current).to receive(:[]).and_call_original
+      allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
     end
 
     def mock_successful_twilio_delivery

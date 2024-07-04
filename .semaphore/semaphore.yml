@@ -2,8 +2,8 @@ version: v1.0
 name: Test simple-server
 agent:
   machine:
-    type: e1-standard-8
-    os_image: ubuntu1804
+    type: e2-standard-4
+    os_image: ubuntu2204
 auto_cancel:
   running:
     when: "true"
@@ -28,8 +28,6 @@ blocks:
   - name: Tests
     task:
       env_vars:
-        - name: DATABASE_URL
-          value: "postgresql://postgres:@0.0.0.0:5432/myapp_test"
         - name: RAILS_ENV
           value: "test"
         - name: TB_RSPEC_OPTIONS
@@ -44,9 +42,12 @@ blocks:
             - bundle install
             - "bundle exec standardrb"
         - name: RSpec
-          parallelism: 8
+          parallelism: 32
           commands:
             - checkout
+            - docker run -d --name postgres14-$SEMAPHORE_JOB_INDEX -p 543$SEMAPHORE_JOB_INDEX:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:14
+            - export DATABASE_URL=postgresql://postgres@localhost:543$SEMAPHORE_JOB_INDEX
+            - export TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX
             - script/semaphore_setup
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
       epilogue:

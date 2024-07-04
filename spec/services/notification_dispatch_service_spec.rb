@@ -102,6 +102,16 @@ RSpec.describe NotificationDispatchService do
     expect(notification.reload.status).to eq("cancelled")
   end
 
+  it "silently cancels notification if the patient or facility on the notification is deleted" do
+    notification = create(:notification)
+    messaging_channel = mock_messaging_channel
+    allow(messaging_channel).to receive(:send_message).and_raise(Messaging::MissingReferenceError.new("Patient missing/deleted"))
+    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_reference")
+
+    described_class.call(notification)
+    expect(notification.reload.status).to eq("cancelled")
+  end
+
   it "passes a block to the communication channel that updates the notification in a transaction with communication creation" do
     notification = create(:notification)
     communication = create(:communication)

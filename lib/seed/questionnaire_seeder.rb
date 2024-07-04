@@ -25,7 +25,7 @@ module Seed
         layout: drug_stock_reports_seed_layout)
 
       (1..3).map do |n|
-        QuestionnaireResponses::MonthlyScreeningReports.new(n.month.ago).pre_fill
+        QuestionnaireResponses::MonthlyScreeningReports.new(n.month.ago).seed
         QuestionnaireResponses::MonthlySuppliesReports.new(n.month.ago).seed
         QuestionnaireResponses::DrugStockReports.new(n.month.ago).seed
       end

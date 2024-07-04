@@ -22,7 +22,8 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :call_result,
     :reminder_consent,
     :deleted_reason,
-    :skip_facility_authorization
+    :skip_facility_authorization,
+    :eligible_for_reassignment
   )
 
   attr_writer :request_user_id

@@ -33,6 +33,7 @@ gem "dogstatsd-ruby", "~> 5.2"
 gem "ed25519", "~> 1.2"
 gem "factory_bot_rails", "~> 6.1", require: false
 gem "faker", require: false
+gem "fhir_models", require: false
 gem "flipper-active_record"
 gem "flipper-ui"
 gem "flipper"
@@ -93,6 +94,8 @@ gem "whenever", require: false
 gem "wkhtmltoimage-binary"
 gem "table_print"
 gem "doorkeeper", "~> 5.6"
+gem "prometheus_exporter"
+gem "zip_kit"
 
 group :development, :test do
   gem "active_record_query_trace", require: false
@@ -141,6 +144,6 @@ group :test do
   gem "puma"
   gem "rspec-sidekiq"
   gem "simplecov", require: false
-  gem "webdrivers", ">= 5.2.0"
+  gem "webdrivers", ">= 5.3.1"
   gem "webmock"
 end

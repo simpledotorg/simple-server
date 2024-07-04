@@ -3,8 +3,10 @@ class BulkApiImport::FhirAppointmentImporter
 
   STATUS_MAPPING = {"pending" => "scheduled", "fulfilled" => "visited", "cancelled" => "cancelled"}
 
-  def initialize(appointment_resource)
-    @resource = appointment_resource
+  def initialize(resource:, organization_id:)
+    @resource = resource
+    @organization_id = organization_id
+    @import_user = find_or_create_import_user(organization_id)
   end
 
   def import
@@ -15,18 +17,18 @@ class BulkApiImport::FhirAppointmentImporter
     appointment = Appointment.merge(transformed_params)
     appointment.update_patient_status
 
-    AuditLog.merge_log(import_user, appointment) if appointment.present?
+    AuditLog.merge_log(@import_user, appointment) if appointment.present?
     appointment
   end
 
   def request_metadata
-    {user_id: import_user.id}
+    {user_id: @import_user.id}
   end
 
   def build_attributes
     {
-      id: translate_id(@resource.dig(:identifier, 0, :value)),
-      patient_id: translate_id(@resource.dig(:participant, 0, :actor, :identifier)),
+      id: translate_id(@resource.dig(:identifier, 0, :value), org_id: @organization_id),
+      patient_id: translate_id(@resource.dig(:participant, 0, :actor, :identifier), org_id: @organization_id),
       facility_id: facility_id,
       scheduled_date: scheduled_date,
       status: STATUS_MAPPING[@resource[:status]],
@@ -37,7 +39,7 @@ class BulkApiImport::FhirAppointmentImporter
   end
 
   def facility_id
-    @facility_id ||= translate_facility_id(@resource.dig(:appointmentOrganization, :identifier))
+    @facility_id ||= translate_facility_id(@resource.dig(:appointmentOrganization, :identifier), org_id: @organization_id)
   end
 
   def scheduled_date

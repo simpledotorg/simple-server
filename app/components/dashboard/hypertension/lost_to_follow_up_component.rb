@@ -20,13 +20,12 @@ class Dashboard::Hypertension::LostToFollowUpComponent < ApplicationComponent
 
   def period_data
     {
-      startDate: period_info(:bp_control_start_date),
-      endDate: period_info(:bp_control_end_date),
-      registrationDate: period_info(:bp_control_registration_date)
+      startDate: period_info(:ltfu_since_date),
+      endDate: period_info(:ltfu_end_date)
     }
   end
 
   def period_info(key)
-    data[:period_info].map { |k, v| [k, v[key]] }.to_h
+    data[:period_info].transform_values { |v| v[key] }
   end
 end

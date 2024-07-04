@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+/usr/sbin/cron -f &
+
+bundle exec sidekiq  -C config/sidekiq.yml -e production
