@@ -12,11 +12,15 @@ class Dashboard::Hypertension::PatientsProtectedComponent < ApplicationComponent
   def graph_data
     {
       patientsProtected: patients_protected,
-      patientsProtectedWithSuffix: patients_protected.map { |k, v| [k, "#{v} patients"] }.to_h
+      patientsProtectedWithSuffix: patients_protected_with_suffix
     }
   end
 
   private
+
+  def patients_protected_with_suffix
+    patients_protected.transform_values { |v| "#{number_with_delimiter(v, delimiter: ",")} patients" }.to_h
+  end
 
   def patients_protected
     period_range = (period_start..period)
