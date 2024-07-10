@@ -12,7 +12,6 @@
   <div class="d-lg-flex <%= show_htn_cascade ? "pr-lg-2" : "" %> w-lg-66 flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
       region: @region,
-      data: @data,
       period: @period)) %>
   </div>
   <% if show_htn_cascade && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
