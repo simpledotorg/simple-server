@@ -4,8 +4,10 @@ class AuditLogFormatter
   end
 end
 
-::AuditLogger = Logger.new("#{Rails.root}/log/audit.log")
-::AuditLogger.formatter = AuditLogFormatter.new
+unless ENV['DISABLE_AUDIT_LOGGING'] == 'true'
+  ::AuditLogger = Logger.new("#{Rails.root}/log/audit.log")
+  ::AuditLogger.formatter = AuditLogFormatter.new
 
-::PatientLookupAuditLogger = Logger.new("#{Rails.root}/log/patient_lookup_audit.log")
-::PatientLookupAuditLogger.formatter = AuditLogFormatter.new
+  ::PatientLookupAuditLogger = Logger.new("#{Rails.root}/log/patient_lookup_audit.log")
+  ::PatientLookupAuditLogger.formatter = AuditLogFormatter.new
+end
