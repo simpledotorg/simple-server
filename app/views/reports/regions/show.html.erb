@@ -9,7 +9,7 @@
 
 <% if Flipper.enabled?(:patients_protected, current_admin) %>
 <div class="d-lg-flex flex-lg-wrap">
-  <div class="d-lg-flex <% if Flipper.enabled?(:patients_protected_htn_cascade, current_admin) %>pr-lg-2 w-lg-66<% end %> flex-fill">
+  <div class="d-lg-flex <% if Flipper.enabled?(:patients_protected_htn_cascade, current_admin) && show_htn_cascade %>pr-lg-2 w-lg-66<% end %> flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
       region: @region,
       period: @period)) %>
