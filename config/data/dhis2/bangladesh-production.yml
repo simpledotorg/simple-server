@@ -21,10 +21,10 @@ disaggregated_dhis2_data_elements:
   htn_missed_visits: "DktVuX67zy3"
 
 disaggregated_diabetes_dhis2_data_elements:
-  dm_patients_with_bs_below_200: "Yer5NiM1jJK"
-  dm_patients_with_bs_over_200: "CKjtDbqnfFx"
-  dm_cumulative_assigned_patients: "dwxbGnWc9Ay"
-  dm_cumulative_assigned_patients_adjusted: "bqvyLmLfNon"
+  dm_bs_below_200: "Yer5NiM1jJK"
+  dm_bs_over_200: "CKjtDbqnfFx"
+  dm_cumulative_assigned: "dwxbGnWc9Ay"
+  dm_cumulative_assigned_adjusted: "bqvyLmLfNon"
   dm_cumulative_registrations: "GU00VagwQiF"
   dm_dead: "MMPJ7RUkxpw"
   dm_monthly_registrations: "xWJKOFUbqm5"
