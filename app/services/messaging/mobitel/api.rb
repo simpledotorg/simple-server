@@ -1,7 +1,8 @@
 class Messaging::Mobitel::Api
   HOST = "https://msmsenterpriseapi.mobitel.lk"
   URL_PATHS = {
-    send_sms: "/EnterpriseSMSV3/esmsproxy.php"
+    send_sms: "/EnterpriseSMSV3/esmsproxy.php",
+    send_sms_multi_lang: "/EnterpriseSMSV3/esmsproxy_multilang.php"
   }
   MESSAGE_TYPE = {
     non_promotional: 0,
@@ -15,7 +16,7 @@ class Messaging::Mobitel::Api
   end
 
   def send_sms(recipient_number:, message:)
-    post(URL_PATHS[:send_sms], {
+    get(URL_PATHS[:send_sms_multi_lang], {
       m: message,
       r: recipient_number,
       a: message_alias,
@@ -43,13 +44,11 @@ class Messaging::Mobitel::Api
     ENV["MOBITEL_API_PASSWORD"]
   end
 
-  def post(path, params = {})
+  def get(path, params = {})
     uri = URI("#{HOST}#{path}")
     uri.query = URI.encode_www_form(params)
 
     response = Net::HTTP.get_response(uri)
-
-    puts uri
 
     unless response.is_a?(Net::HTTPSuccess)
       raise Messaging::Mobitel::Error.new(
