@@ -7,10 +7,10 @@ class Messaging::Mobitel::Sms < Messaging::Channel
 
   def send_message(recipient_number:, message:, &with_communication_do)
     track_metrics do
+      send_sms(recipient_number, message)
       create_communication(
         recipient_number,
         message,
-        send_sms(recipient_number, message),
         &with_communication_do
       )
     end
@@ -31,12 +31,11 @@ class Messaging::Mobitel::Sms < Messaging::Channel
     end
   end
 
-  def create_communication(recipient_number, message, response_code, &with_communication_do)
+  def create_communication(recipient_number, message, &with_communication_do)
     ActiveRecord::Base.transaction do
       MobitelDeliveryDetail.create_with_communication!(
         message: message,
-        recipient_number: recipient_number,
-        resonse_code: resonse_code
+        recipient_number: recipient_number
       ).tap do |communication|
         with_communication_do&.call(communication)
       end
