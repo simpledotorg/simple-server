@@ -101,9 +101,15 @@ class Reports::RegionsController < AdminController
     }
 
     if @region.facility_region?
-      @recent_blood_pressures = paginate(
-        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
-      )
+      @recent_blood_pressures = if Flipper.enabled?(:fast_bp_log)
+        paginate(
+          BloodPressure.where(facility_id: @region.source_id).for_recent_bp_log.includes(:patient, :facility)
+        )
+      else
+        paginate(
+          @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+        )
+      end
     end
 
     # ======================
