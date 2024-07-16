@@ -1,0 +1,65 @@
+facilities_to_migrate:
+  - facility_slug: hwc-umri-pragane-balapur
+    org_unit_id: ueuQlqb8ccl
+  - facility_slug: dh-kundalwadi
+    org_unit_id: Rp268JB6Ne4
+  - facility_slug: hwc-vadghar
+    org_unit_id: cDw53Ej8rju
+  - facility_slug: hwc-karanje-tarf-satara
+    org_unit_id: GvFqTavdpGE
+  - facility_slug: hwc-ghatanji
+    org_unit_id: plnHVbJR6p4
+  - facility_slug: uhc-katai
+    org_unit_id: BV4IomHvri4
+  - facility_slug: village-poladpur
+    org_unit_id: qjboFI0irVu
+  - facility_slug: village-devrukh
+    org_unit_id: dWOAzMcK2Wt
+  - facility_slug: chc-pali
+    org_unit_id: kbGqmM6ZWWV
+  - facility_slug: village-godoli
+    org_unit_id: eoYV2p74eVz
+  - facility_slug: hwc-kudal
+    org_unit_id: nq7F0t1Pz6t
+  - facility_slug: hwc-murud-janjira
+    org_unit_id: r5WWF9WDzoa
+  - facility_slug: chc-vangani
+    org_unit_id: yMCshbaVExv
+  - facility_slug: village-karivali
+    org_unit_id: tlMeFk8C4CG
+  - facility_slug: sad-pandharpur
+    org_unit_id: BH7rDkWjUqc
+  - facility_slug: uhc-chakan-gaon
+    org_unit_id: Rll4VmTDRiE
+  - facility_slug: village-kudal
+    org_unit_id: XtuhRhmbrJM
+  - facility_slug: village-matheran
+    org_unit_id: c41XRVOYNJm
+
+programs:
+  htn_registry: "pMIglSEqPGS"
+
+program_stages:
+  htn_visit: "anb2cjLx3WM"
+
+tracked_entity_types:
+  person_htn: "MCPQUTHX1Ze"
+
+event_attributes:
+  systolic: "IxEwYiq1FTq"
+  diastolic: "yNhtHKtKkO1"
+  amlodipine: "eGY7e5Ttbys"
+  losartan: "yUYbcCXo9Mv"
+  hydrochlorothiazide: "D8FWXAtCuL2"
+  telmisartan: "lWmOLo5hFYQ"
+
+patient_attributes:
+  hypertension: "jCRIT4GMMOS"
+  current_address: "A6Hb0Kvg4vb"
+  date_of_birth: "NI0QRzJvQ0k"
+  last_name: "ENRjVGxVL6l"
+  first_name: "sB1IHYu2xQT"
+  sex: "oindugucx72"
+  ncd_patient_status: "fI1P3Mg1zOZ"
+  phone_number: "YRDy9xy9jD0"
+  receiving_htn_treatment: "l5yxkxHgTw9"
