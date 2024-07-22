@@ -1512,6 +1512,39 @@ CREATE TABLE public.medicine_purposes (
 
 
 --
+-- Name: mobitel_delivery_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.mobitel_delivery_details (
+    id bigint NOT NULL,
+    recipient_number character varying NOT NULL,
+    message character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: mobitel_delivery_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.mobitel_delivery_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: mobitel_delivery_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.mobitel_delivery_details_id_seq OWNED BY public.mobitel_delivery_details.id;
+
+
+--
 -- Name: notifications; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5349,6 +5382,13 @@ ALTER TABLE ONLY public.flipper_gates ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: mobitel_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobitel_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.mobitel_delivery_details_id_seq'::regclass);
+
+
+--
 -- Name: observations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5630,6 +5670,14 @@ ALTER TABLE ONLY public.machine_users
 
 ALTER TABLE ONLY public.medical_histories
     ADD CONSTRAINT medical_histories_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: mobitel_delivery_details mobitel_delivery_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.mobitel_delivery_details
+    ADD CONSTRAINT mobitel_delivery_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -7697,6 +7745,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230713135154'),
 ('20231208091419'),
 ('20240411074916'),
-('20240522054839');
+('20240522054839'),
+('20240716132001');
 
 
