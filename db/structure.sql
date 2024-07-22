@@ -6987,6 +6987,13 @@ CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON publi
 
 
 --
+-- Name: index_reporting_patient_follow_ups_on_facility_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_follow_ups_on_facility_id ON public.reporting_patient_follow_ups USING btree (facility_id);
+
+
+--
 -- Name: index_reporting_patient_states_on_age; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7746,6 +7753,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20231208091419'),
 ('20240411074916'),
 ('20240522054839'),
-('20240716132001');
-
-
+('20240716132001'),
+('20240719202605');
