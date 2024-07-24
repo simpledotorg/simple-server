@@ -55,14 +55,12 @@
     current_admin: current_admin
   ) %>
 
-  <% unless Flipper.enabled?(:disable_healthworker_activiity) %>
-    <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
+  <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
       region: @region,
       recent_blood_sugars: @recent_blood_sugars,
       display_model: :facility,
       page: @page
-    ) %>
-  <% end %>
+  ) %>
 <% else %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent.new(
     region: @region,
