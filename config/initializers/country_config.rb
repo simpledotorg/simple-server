@@ -75,7 +75,7 @@ class CountryConfig
       sms_country_code: ENV["SMS_COUNTRY_CODE"] || "+94",
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
-      appointment_reminders_channel: "Messaging::Twilio::ReminderSms",
+      appointment_reminders_channel: "Messaging::Mobitel::Sms",
       sorted_facility_sizes: %w[large medium small community teaching_hospital national_hospital],
       facility_sizes: {
         community: "community",
