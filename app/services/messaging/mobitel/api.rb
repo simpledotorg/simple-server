@@ -17,7 +17,7 @@ class Messaging::Mobitel::Api
 
   def send_sms(recipient_number:, message:)
     get(URL_PATHS[:send_sms_multi_lang], {
-      m: message,
+      m: message.tr("\n", " "),
       r: recipient_number,
       a: message_alias,
       u: api_username,
