@@ -80,13 +80,44 @@ module OneOff
         patient.business_identifiers.simple_bp_passport.each do |identifier|
           identifiers.prepend(FHIR::Identifier.new(
             value: identifier.identifier,
-            use: "secondary"
+            use: "secondary",
+            type: FHIR::CodeableConcept.new(
+              coding: [
+                FHIR::Coding.new(
+                  system: "https://smartregister.org/",
+                  code: "QR_CODE",
+                  display: "QR code"
+                )
+              ]
+            )
+          ))
+          identifiers.prepend(FHIR::Identifier.new(
+            value: identifier.shortcode.delete("^0-9"),
+            use: "secondary",
+            type: FHIR::CodeableConcept.new(
+              coding: [
+                FHIR::Coding.new(
+                  system: "https://smartregister.org/",
+                  code: "QR_SHORT_CODE",
+                  display: "QR short code"
+                )
+              ]
+            )
           ))
         end
         patient.business_identifiers.sri_lanka_personal_health_number.each do |identifier|
           identifiers.prepend(FHIR::Identifier.new(
             value: identifier.identifier,
-            use: "official"
+            use: "official",
+            type: FHIR::CodeableConcept.new(
+              coding: [
+                FHIR::Coding.new(
+                  system: "https://smartregister.org/",
+                  code: "PHN",
+                  display: "PHN"
+                )
+              ]
+            )
           ))
         end
         identifiers
@@ -298,7 +329,7 @@ module OneOff
               linkId: "phone-number",
               answer: patient.phone_numbers.map do |phone_number|
                         {
-                          valueString: phone_number.number,
+                          valueInteger: phone_number.number.delete("^0-9").to_i,
                           item: [{linkId: "phone-number-hint", text: "Phone number (optional)"}]
                         }
                       end

@@ -233,19 +233,6 @@ module OneOff
         ]
       end
 
-      def dispense_request
-        return if prescription_drug.duration_in_days.nil?
-
-        FHIR::MedicationRequest::DispenseRequest.new(
-          expectedSupplyDuration: FHIR::Duration.new(
-            value: prescription_drug.duration_in_days,
-            unit: "days",
-            system: "http://unitsofmeasure.org",
-            code: "d"
-          )
-        )
-      end
-
       # There are a number of ways dosage can be entered without
       # conforming to the below regex. We're only parsing values
       # in mg without frequency added in the dosage string. This
