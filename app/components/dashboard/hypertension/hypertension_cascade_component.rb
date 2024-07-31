@@ -7,10 +7,10 @@ class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationCompone
     @region = region
     @data = data
     @period = period
-    @estimated_population = @region.estimated_population
-    @cumulative_registrations = data.dig(:cumulative_registrations, period)
-    @under_care_patients = data.dig(:under_care, period)
-    @controlled_patients = data.dig(:controlled_patients, period)
+    @estimated_population = format(@region.estimated_population)
+    @cumulative_registrations = format(data.dig(:cumulative_registrations, period))
+    @under_care_patients = format(data.dig(:under_care, period))
+    @controlled_patients = format(data.dig(:controlled_patients, period))
   end
 
   def cumulative_registrations_rate
@@ -34,5 +34,15 @@ class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationCompone
     else
       @region.district_regions.all?(&:estimated_population)
     end
+  end
+
+  def period_end
+    period.end.to_s(:day_mon_year)
+  end
+
+  private
+
+  def format(value)
+    number_with_delimiter(value, delimiter: ",")
   end
 end
