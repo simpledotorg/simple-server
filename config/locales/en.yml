@@ -59,7 +59,7 @@ en:
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
   htn_cascade_copy: 
     title: Hypertension treatment cascade
-    reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled."
+    reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled till %{period}"
   bs_below_200_copy:
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"

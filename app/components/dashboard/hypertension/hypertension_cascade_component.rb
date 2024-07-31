@@ -36,6 +36,10 @@ class Dashboard::Hypertension::HypertensionCascadeComponent < ApplicationCompone
     end
   end
 
+  def period_end
+    period.end.to_s(:day_mon_year)
+  end
+
   private
 
   def format(value)
