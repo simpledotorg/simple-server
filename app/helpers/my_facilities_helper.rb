@@ -40,4 +40,18 @@ module MyFacilitiesHelper
      diabetes: {full: "Diabetes Tablets", short: "Diabetes"},
      other: {full: "Other Tablets", short: "Other"}}.with_indifferent_access
   end
+
+  def add_special_drug(protocol_drugs, region)
+    if CountryConfig.current[:name] == "Bangladesh"
+      special_drug = region.source.protocol.protocol_drugs.find_by(
+        stock_tracked: false,
+        name: "Rosuvastatin",
+        dosage: "5 mg"
+      )
+
+      # Include the special drug if it exists and is not already in the list
+      protocol_drugs << special_drug if special_drug.present? && protocol_drugs.exclude?(special_drug)
+    end
+    protocol_drugs
+  end
 end
