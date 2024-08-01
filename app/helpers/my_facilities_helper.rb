@@ -42,7 +42,7 @@ module MyFacilitiesHelper
   end
 
   def add_special_drug(protocol_drugs, region)
-    if CountryConfig.current[:name] == 'Bangladesh'
+    if CountryConfig.current[:name] == "Bangladesh"
       special_drug = region.source.protocol.protocol_drugs.find_by(
         stock_tracked: false,
         name: "Rosuvastatin",
