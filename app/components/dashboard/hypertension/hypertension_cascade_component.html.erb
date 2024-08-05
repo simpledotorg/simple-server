@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                            <%= show_estimate? ? @estimated_population.population : "?" %>
+                            <%= show_estimate? ? number_with_delimiter(@estimated_population.population, delimiter: ",")  : "?" %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Estimated people with hypertension
@@ -52,7 +52,7 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                              <%= @cumulative_registrations %>
+                              <%= number_with_delimiter(@cumulative_registrations, delimiter: ",") %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Cumulative registered patients
@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                              <%= @under_care_patients %>
+                              <%= number_with_delimiter(@under_care_patients, delimiter: ",") %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Patients under care
@@ -82,7 +82,7 @@
                                 </div>
                             </div>
                             <p class="mb-0px">
-                              <%= @controlled_patients %>
+                              <%= number_with_delimiter(@controlled_patients, delimiter: ",") %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
                                 Patients with BP controlled
