@@ -1,5 +1,5 @@
 <div id="htn-cascade" data-period="<%= @period.to_s %>" class="mt-8px mx-0px mb-16px pb-4px bg-white br-4px bs-small d-lg-flex fd-lg-column
-                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black">
+                justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black mr-lg-2">
 
     <div class="pt-20px px-20px">
         <div class="d-flex mb-8px">
@@ -8,8 +8,8 @@
                   <%= t("htn_cascade_copy.title") %>
                 </h3>
                 <%= render "definition_tooltip" , definitions: { "Estimated people with hypertension"=>
-                    t("total_estimated_hypertensive_population.district_copy", region_name: @region.name),
-                    "Patients under care" => t("patients_under_care_copy") } %>
+                    t("total_estimated_hypertensive_population.district_copy", region_name: @region.name), "Cumulative registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name), 
+                    "Patients under care" => t("patients_under_care_copy"), "Patients with BP controlled" => t("patients_bp_controlled_copy", region_name: @region.name), } %>
             </div>
         </div>
         <p class="c-grey-dark">

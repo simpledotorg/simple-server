@@ -14,14 +14,6 @@
       region: @region,
       period: @period)) %>
   </div>
-  <% if show_htn_cascade && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
-    <div class="d-lg-flex w-lg-33 pl-lg-2">
-      <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
-        region: @region,
-        data: @data,
-        period: @period)) %>
-    </div>
-  <% end %>
 </div>
 <% end %>
 
@@ -229,6 +221,23 @@
   </div>
   <%= render(Dashboard::Hypertension::LostToFollowUpComponent.new(data: @data, region: @region, period: @period)) %>
 </div>
+<% if show_htn_cascade && Flipper.enabled?(:patients_protected_htn_cascade, current_admin)%>
+  <div class="d-lg-flex flex-lg-wrap">
+    <div class="d-lg-flex w-lg-33">
+      <%= render(Dashboard::Hypertension::HypertensionCascadeComponent.new(
+        region: @region,
+        data: @data,
+        period: @period)) %>
+    </div>
+    <div class="d-lg-flex w-lg-66 pl-lg-2 hidden mb-16px">
+      <div class="no-card-gap-filler">
+        <p>
+        Intentionally blank
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <%= render "treatment_outcomes_card" %>
 
@@ -293,11 +302,11 @@
     period: @period,
     with_non_contactable: @with_non_contactable)) %>
   <div class="d-lg-flex w-lg-50 pl-lg-2 hidden mb-16px">
-  <div class="no-card-gap-filler">
-    <p>
-    Intentionally blank
-    </p>
-  </div>
+    <div class="no-card-gap-filler">
+      <p>
+      Intentionally blank
+      </p>
+    </div>
   </div>
   <%= render(Dashboard::Hypertension::OverduePatientsCalledTableComponent.new(
     region: @region,
