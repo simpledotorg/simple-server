@@ -10,53 +10,6 @@ module OneOff
         @opensrp_ids = opensrp_mapping[@prescription_drug.facility_id]
       end
 
-      def export
-        FHIR::MedicationDispense.new(
-          id: prescription_drug.id,
-          status: prescription_drug.is_deleted ? "stopped" : "completed",
-          medicationReference: FHIR::Reference.new(
-            reference: "Medication/#{Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, "medication" + prescription_drug.id)}"
-          ),
-          context: FHIR::Reference.new(
-            reference: "Encounter/#{encounter_id}"
-          ),
-          # type: FHIR::CodeableConcept.new(
-          #   coding: [
-          #     FHIR::Coding.new(
-          #       system: "http://terminology.hl7.org/ValueSet/v3-ActPharmacySupplyType",
-          #       code: "TODO"
-          #     )
-          #   ]
-          # ),
-          performer: [{
-            actor: FHIR::Reference.new(
-              reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"
-            )
-          }],
-          subject: FHIR::Reference.new(
-            reference: "Patient/#{prescription_drug.patient_id}"
-          ),
-          whenPrepared: nil,
-          whenHandedOver: prescription_drug.device_created_at.iso8601,
-          meta: meta
-        )
-      end
-
-      def export_medication
-        FHIR::Medication.new(
-          id: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, "medication" + prescription_drug.id),
-          identifier: FHIR::Identifier.new(value: Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, "medication" + prescription_drug.id)),
-          status: prescription_drug.is_deleted ? "inactive" : "active",
-          code: FHIR::CodeableConcept.new(
-            coding: FHIR::Coding.new(
-              system: "http://www.nlm.nih.gov/research/umls/rxnorm",
-              code: prescription_drug.rxnorm_code,
-              display: prescription_drug.name
-            )
-          )
-        )
-      end
-
       def export_dosage_flag
         FHIR::Flag.new(
           id: flag_id,

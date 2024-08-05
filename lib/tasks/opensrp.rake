@@ -60,8 +60,6 @@ namespace :opensrp do
       end
       patient.prescription_drugs.each do |drug|
         drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, OPENSRP_ORG_MAP)
-        resources << drug_exporter.export_medication
-        resources << drug_exporter.export
         resources << drug_exporter.export_dosage_flag
         encounters << drug_exporter.export_encounter
       end
