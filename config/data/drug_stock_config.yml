@@ -502,6 +502,9 @@ Sylhet:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
 Mymensingh:
   load_coefficient: 1
   drug_categories:
@@ -518,6 +521,9 @@ Mymensingh:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
 Rajshahi:
   load_coefficient: 1
   drug_categories:
@@ -534,6 +540,9 @@ Rajshahi:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
 Dhaka:
   load_coefficient: 1
   drug_categories:
@@ -550,6 +559,9 @@ Dhaka:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
 Barishal:
   load_coefficient: 1
   drug_categories:
@@ -566,6 +578,9 @@ Barishal:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
 Chattogram:
   load_coefficient: 1
   drug_categories:
@@ -582,3 +597,6 @@ Chattogram:
       '316047': 1
       '316049': 2
       '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
