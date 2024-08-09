@@ -25,9 +25,11 @@ class Messaging::Mobitel::Sms < Messaging::Channel
     ).tap { |response| raise_api_errors(response) }
   end
 
-  def raise_api_errors(code)
+  def raise_api_errors(body)
+    code = body[:resultcode].to_i
+    message = body[:response]
     unless code == API_SUCCESS_RESPONSE
-      raise Messaging::Mobitel::Error.new("API failed with code: #{code}", code)
+      raise Messaging::Mobitel::Error.new("API failed with code: #{code} and message: #{message}", code)
     end
   end
 
