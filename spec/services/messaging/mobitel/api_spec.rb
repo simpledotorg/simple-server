@@ -41,20 +41,20 @@ RSpec.describe Messaging::Mobitel::Api do
       message = "Test Message"
       recipient_number = Faker::PhoneNumber.phone_number
 
-      request = stub_request(:get, "https://msmsenterpriseapi.mobitel.lk/EnterpriseSMSV3/esmsproxy_multilang.php")
-        .with(query: hash_including({}))
-        .to_return(body: "200")
+      request = stub_request(:post, "https://msmsenterpriseapi.mobitel.lk/EnterpriseSMSV3/esmsproxyMultilang.php")
+        .with(body: hash_including({}))
+        .to_return(body: "{\"resultcode\":\"200\",\"response\":\"Message sent OK\"}")
       described_class.new.send_sms(recipient_number: recipient_number, message: message)
       expect(request).to have_been_made
     end
 
-    it "raises an exception if non 200 resopnse is received" do
+    it "raises an exception if non JSON resopnse is received" do
       stub_credentials(:username, :password, :alias)
       message = "Test Message"
       recipient_number = Faker::PhoneNumber.phone_number
 
-      stub_request(:get, "https://msmsenterpriseapi.mobitel.lk/EnterpriseSMSV3/esmsproxy_multilang.php")
-        .with(query: hash_including({}))
+      stub_request(:post, "https://msmsenterpriseapi.mobitel.lk/EnterpriseSMSV3/esmsproxyMultilang.php")
+        .with(body: hash_including({}))
         .to_return(body: "Not found")
 
       expect {
