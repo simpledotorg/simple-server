@@ -49,3 +49,17 @@ en-LK:
         large: "District General Hospitals"
         national_hospital: "National Hospitals"
         teaching_hospital: "Teaching Hospitals"
+  bs_below_200_copy:
+    numerator: "Patients with FBS<126, or Hba1c <7.0 at their last visit in the last 3 months"
+    reports_card_title: "Blood Sugar Controlled"
+    reports_card_subtitle: "Diabetes patients in %{region_name} with FBS <126 mg/dl or HbA1c <7 at their last visit in the last 3 months"
+    summary: "patients with blood sugar controlled from"
+  bs_over_200_copy:
+    reports_card_title: "Blood Sugar Uncontrolled"
+    reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 126-199 or blood sugar ≥200 at their last visit in the last 3 months"
+    bs_200_to_299:
+      numerator: "Patients with FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months"
+      summary: "patients with a blood sugar 126-199 from"
+    bs_over_300:
+      numerator: "Patients with FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
+      summary: "patients with a blood sugar ≥200 from"
