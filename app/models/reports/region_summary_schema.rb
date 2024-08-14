@@ -597,17 +597,53 @@ module Reports
       values_at("adjusted_bs_below_200_under_care")
     end
 
+    def cumulative_blood_sugar_type_patients(blood_sugar_types = [], blood_sugar_risk_type = nil)
+      return {} if blood_sugar_types.empty? || blood_sugar_risk_type.nil?
+      regional_patient_hash = {}
+      base_blood_sugar_type = blood_sugar_types.first
+      remaining_blood_sugar_types = blood_sugar_types - [base_blood_sugar_type]
+      return adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type) if remaining_blood_sugar_types.empty?
+      adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type).each { |slug, period_values|
+        resultant_period_values = period_values.dup
+        remaining_blood_sugar_types.each { |blood_sugar_type_to_add|
+          resultant_period_values.merge!(adjusted_diabetes_under_care(blood_sugar_risk_type, blood_sugar_type_to_add)[slug]) { |period, base_value, value_to_add|
+            base_value + value_to_add
+          }
+        }
+        regional_patient_hash[slug] = resultant_period_values
+      }
+      regional_patient_hash
+    end
+
+    memoize def bs_below_200_patients_fasting_and_hba1c
+      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_below_200)
+    end
+
     memoize def bs_200_to_300_patients
       values_at("adjusted_bs_200_to_300_under_care")
+    end
+
+    memoize def bs_200_to_300_patients_fasting_and_hba1c
+      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_200_to_300)
     end
 
     memoize def bs_over_300_patients
       values_at("adjusted_bs_over_300_under_care")
     end
 
+    memoize def bs_over_300_patients_fasting_and_hba1c
+      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_over_300)
+    end
+
     memoize def bs_below_200_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def bs_below_200_rates_fasting_and_hba1c(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates_fasting_and_hba1c(entry, with_ltfu)[__method__]
       end
     end
 
@@ -617,9 +653,21 @@ module Reports
       end
     end
 
+    memoize def bs_200_to_300_rates_fasting_and_hba1c(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates_fasting_and_hba1c(entry, with_ltfu)[__method__]
+      end
+    end
+
     memoize def bs_over_300_rates(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         diabetes_treatment_outcome_rates(entry, with_ltfu)[__method__]
+      end
+    end
+
+    memoize def bs_over_300_rates_fasting_and_hba1c(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        diabetes_treatment_outcome_rates_fasting_and_hba1c(entry, with_ltfu)[__method__]
       end
     end
 
@@ -718,6 +766,22 @@ module Reports
         bs_over_300_rates: adjusted_diabetes_under_care(:bs_over_300)[entry.region.slug][entry.period],
         missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
         visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period]
+      })
+    end
+
+    memoize def diabetes_treatment_outcome_rates_fasting_and_hba1c(entry, with_ltfu)
+      rounded_percentages({
+        bs_below_200_rates_fasting_and_hba1c: adjusted_diabetes_under_care(:bs_below_200, :fasting)[entry.region.slug][entry.period] + adjusted_diabetes_under_care(:bs_below_200, :hba1c)[entry.region.slug][entry.period],
+        bs_200_to_300_rates_fasting_and_hba1c: adjusted_diabetes_under_care(:bs_200_to_300, :fasting)[entry.region.slug][entry.period] + adjusted_diabetes_under_care(:bs_200_to_300, :hba1c)[entry.region.slug][entry.period],
+        bs_over_300_rates_fasting_and_hba1c: adjusted_diabetes_under_care(:bs_over_300, :fasting)[entry.region.slug][entry.period] + adjusted_diabetes_under_care(:bs_over_300, :hba1c)[entry.region.slug][entry.period],
+        missed_visits_rates: diabetes_missed_visits(with_ltfu: with_ltfu)[entry.region.slug][entry.period],
+        visited_without_bs_taken_rates: visited_without_bs_taken[entry.region.slug][entry.period],
+        bs_below_200_rates_random: adjusted_diabetes_under_care(:bs_below_200, :random)[entry.region.slug][entry.period],
+        bs_below_200_rates_post_prandial: adjusted_diabetes_under_care(:bs_below_200, :post_prandial)[entry.region.slug][entry.period],
+        bs_200_to_300_rates_random: adjusted_diabetes_under_care(:bs_200_to_300, :random)[entry.region.slug][entry.period],
+        bs_200_to_300_rates_post_prandial: adjusted_diabetes_under_care(:bs_200_to_300, :post_prandial)[entry.region.slug][entry.period],
+        bs_over_300_rates_random: adjusted_diabetes_under_care(:bs_over_300, :random)[entry.region.slug][entry.period],
+        bs_over_300_rates_post_prandial: adjusted_diabetes_under_care(:bs_over_300, :post_prandial)[entry.region.slug][entry.period]
       })
     end
 
