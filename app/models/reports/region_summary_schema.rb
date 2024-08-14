@@ -603,10 +603,10 @@ module Reports
       base_blood_sugar_type = blood_sugar_types.first
       remaining_blood_sugar_types = blood_sugar_types - [base_blood_sugar_type]
       return adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type) if remaining_blood_sugar_types.empty?
-      adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type).each{ |slug, period_values|
+      adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type).each { |slug, period_values|
         resultant_period_values = period_values.dup
-        remaining_blood_sugar_types.each{ |blood_sugar_type_to_add|
-          resultant_period_values.merge!(adjusted_diabetes_under_care(blood_sugar_risk_type, blood_sugar_type_to_add)[slug]){|period, base_value, value_to_add|
+        remaining_blood_sugar_types.each { |blood_sugar_type_to_add|
+          resultant_period_values.merge!(adjusted_diabetes_under_care(blood_sugar_risk_type, blood_sugar_type_to_add)[slug]) { |period, base_value, value_to_add|
             base_value + value_to_add
           }
         }

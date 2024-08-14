@@ -47,7 +47,7 @@ module Reports
         adjusted_diabetes_patient_counts: adjusted_diabetes_patients_without_ltfu[slug],
         bs_below_200_patients: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_below_200_patients_fasting_and_hba1c[slug] : bs_below_200_patients[slug],
         bs_below_200_rates: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_below_200_rates_fasting_and_hba1c[slug] : bs_below_200_rates[slug],
-        bs_below_200_with_ltfu_rates: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_below_200_rates_fasting_and_hba1c(with_ltfu: true)[slug] :bs_below_200_rates(with_ltfu: true)[slug],
+        bs_below_200_with_ltfu_rates: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_below_200_rates_fasting_and_hba1c(with_ltfu: true)[slug] : bs_below_200_rates(with_ltfu: true)[slug],
         bs_below_200_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_below_200)[slug],
         bs_200_to_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_200_to_300)[slug],
         bs_over_300_breakdown_rates: diabetes_treatment_outcome_breakdown_rates(:bs_over_300)[slug],
@@ -58,7 +58,6 @@ module Reports
         bs_over_300_patients: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_over_300_patients_fasting_and_hba1c[slug] : bs_over_300_patients[slug],
         bs_over_300_rates: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_over_300_rates_fasting_and_hba1c[slug] : bs_over_300_rates[slug],
         bs_over_300_with_ltfu_rates: Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? bs_over_300_rates_fasting_and_hba1c(with_ltfu: true)[slug] : bs_over_300_rates(with_ltfu: true)[slug],
-
         diabetes_missed_visits: diabetes_missed_visits[slug],
         diabetes_missed_visits_with_ltfu: diabetes_missed_visits(with_ltfu: true)[slug],
         diabetes_missed_visits_rates: diabetes_missed_visits_rates[slug],
