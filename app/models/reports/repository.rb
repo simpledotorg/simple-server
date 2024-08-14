@@ -50,8 +50,11 @@ module Reports
       appts_scheduled_32_to_62_days_rates
       appts_scheduled_more_than_62_days_rates
       bs_below_200_rates
+      bs_below_200_rates_fasting_and_hba1c
       bs_200_to_300_rates
+      bs_200_to_300_rates_fasting_and_hba1c
       bs_over_300_rates
+      bs_over_300_rates_fasting_and_hba1c
       diabetes_missed_visits_rates
       visited_without_bs_taken_rates
       diabetes_appts_scheduled_0_to_14_days_rates
@@ -114,8 +117,11 @@ module Reports
       adjusted_diabetes_patients_with_ltfu
       adjusted_diabetes_patients
       bs_below_200_patients
+      bs_below_200_patients_fasting_and_hba1c
       bs_200_to_300_patients
+      bs_200_to_300_patients_fasting_and_hba1c
       bs_over_300_patients
+      bs_over_300_patients_fasting_and_hba1c
       diabetes_missed_visits
       visited_without_bs_taken
       diabetes_patients_with_bs_taken
