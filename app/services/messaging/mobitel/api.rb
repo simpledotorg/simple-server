@@ -1,9 +1,6 @@
 class Messaging::Mobitel::Api
   HOST = "https://msmsenterpriseapi.mobitel.lk"
-  URL_PATHS = {
-    send_sms: "/EnterpriseSMSV3/esmsproxy.php",
-    send_sms_multi_lang: "/EnterpriseSMSV3/esmsproxy_multilang.php"
-  }
+  SEND_SMS_PATH = "/EnterpriseSMSV3/esmsproxyMultilang.php"
   MESSAGE_TYPE = {
     non_promotional: 0,
     promotional: 1
@@ -16,13 +13,13 @@ class Messaging::Mobitel::Api
   end
 
   def send_sms(recipient_number:, message:)
-    get(URL_PATHS[:send_sms_multi_lang], {
-      m: message.tr("\n", " "),
-      r: recipient_number,
-      a: message_alias,
-      u: api_username,
-      p: api_password,
-      t: message_type
+    post(SEND_SMS_PATH, {
+      message: message,
+      recipient: recipient_number,
+      alias: message_alias,
+      username: api_username,
+      password: api_password,
+      messageType: message_type
     })
   end
 
@@ -44,11 +41,9 @@ class Messaging::Mobitel::Api
     ENV["MOBITEL_API_PASSWORD"]
   end
 
-  def get(path, params = {})
+  def post(path, body = {})
     uri = URI("#{HOST}#{path}")
-    uri.query = URI.encode_www_form(params)
-
-    response = Net::HTTP.get_response(uri)
+    response = Net::HTTP.post(uri, body.to_json)
 
     unless response.is_a?(Net::HTTPSuccess)
       raise Messaging::Mobitel::Error.new(
@@ -59,12 +54,10 @@ class Messaging::Mobitel::Api
   end
 
   def is_success(response)
-    code = response.body
-    unless code.to_i.to_s == code
-      raise Messaging::Mobitel::Error.new(
-        "Non standard response received for Mobitel API: #{response.body}"
-      )
-    end
-    code.to_i
+    JSON.parse(response.body)
+  rescue JSON::ParserError
+    raise Messaging::Mobitel::Error.new(
+      "Non standard response received for Mobitel API: #{response.body}"
+    )
   end
 end
