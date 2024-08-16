@@ -6,7 +6,7 @@ RSpec.describe Messaging::Mobitel::Sms do
       mock_api = double("MobitelApiDouble")
       allow(Messaging::Mobitel::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
-      allow(mock_api).to receive(:send_sms).and_return({resultcode: "165", response: "No recipients found"})
+      allow(mock_api).to receive(:send_sms).and_return({"resultcode" => "165", "response" => "No recipients found"})
 
       expect(mock_api).to receive(:send_sms).with(
         recipient_number: "+11001100",
@@ -26,7 +26,7 @@ RSpec.describe Messaging::Mobitel::Sms do
       mock_api = double("MobitelApiDouble")
       allow(Messaging::Mobitel::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
-      allow(mock_api).to receive(:send_sms).and_return({resultcode: "200", response: "Message sent OK"})
+      allow(mock_api).to receive(:send_sms).and_return({"resultcode" => "200", "response" => "Message sent OK"})
 
       communication = described_class.send_message(
         recipient_number: phone_number,
@@ -40,7 +40,7 @@ RSpec.describe Messaging::Mobitel::Sms do
       mock_api = double("MobitelApiDouble")
       allow(Messaging::Mobitel::Api).to receive(:new).and_return(mock_api)
       allow(mock_api).to receive(:send_sms)
-      allow(mock_api).to receive(:send_sms).and_return({resultcode: "200", response: "Message sent OK"})
+      allow(mock_api).to receive(:send_sms).and_return({"resultcode" => "200", "response" => "Message sent OK"})
 
       expect { |b|
         described_class.send_message(
