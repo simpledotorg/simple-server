@@ -1,12 +1,19 @@
 <div id="bs-over-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsOver200PatientsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
-      title: t("bs_over_200_copy.reports_card_title").html_safe,
-      subtitle: t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name)) do |title| %>
-      <%= title.tooltip({ "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator"),
-                          "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300.numerator"),
-                          "Denominator" => t(denominator_copy, region_name: @region.name) }) %>
-      <%= title.ltfu_toggle(id: 'uncontrolledGraphLtfuToggle', enabled: with_ltfu) %>
+      title: (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_over_200_copy.reports_card_title_fbs") : t("bs_over_200_copy.reports_card_title")).html_safe,
+      subtitle: (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_over_200_copy.reports_card_subtitle_fbs", region_name: @region.name) : t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name))) do |title| %>
+      <% if Flipper.enabled?(:use_who_standard_for_diabetes_indicator) %>
+        <%= title.tooltip({ "Blood sugar 126-199 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator_fbs"),
+                            "Blood sugar ≥200 numerator" => t("bs_over_200_copy.bs_over_300.numerator_fbs"),
+                            "Denominator" => t(denominator_copy, region_name: @region.name) }) %>
+        <%= title.ltfu_toggle(id: 'uncontrolledGraphLtfuToggle', enabled: with_ltfu) %>
+      <% else %>
+        <%= title.tooltip({ "Blood sugar 200-299 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator"),
+                            "Blood sugar ≥300 numerator" => t("bs_over_200_copy.bs_over_300.numerator"),
+                            "Denominator" => t(denominator_copy, region_name: @region.name) }) %>
+        <%= title.ltfu_toggle(id: 'uncontrolledGraphLtfuToggle', enabled: with_ltfu) %>
+      <% end %>
     <% end %>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
@@ -15,7 +22,7 @@
         <div>
           <p class="m-0px c-black">
             <span data-key="bsOver300Numerator" data-format="numberWithCommas"></span>
-            <%= t("bs_over_200_copy.bs_over_300.summary") %>
+            <%= Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_over_200_copy.bs_over_300.summary_fbs") : t("bs_over_200_copy.bs_over_300.summary") %>
             <span data-key="startDate"></span>
             to
             <span data-key="endDate"></span>
@@ -33,7 +40,7 @@
         <div>
           <p class="m-0px c-black">
             <span data-key="bs200to300Numerator" data-format="numberWithCommas"></span>
-            <%= t("bs_over_200_copy.bs_200_to_299.summary") %>
+            <%= Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_over_200_copy.bs_200_to_299.summary_fbs") : t("bs_over_200_copy.bs_200_to_299.summary") %>
             <span data-key="startDate"></span>
             to
             <span data-key="endDate"></span>
