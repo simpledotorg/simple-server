@@ -1,7 +1,8 @@
 <div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsBelow200PatientsTrend", data: graph_data, period: period) do |c| %>
-    <%= c.title(title: "Blood sugar &lt;200".html_safe, subtitle: t("bs_below_200_copy.reports_card_subtitle", region_name: region.name)) do |title| %>
-      <%= title.tooltip({ "Numerator" => t("bs_below_200_copy.numerator"),
+    <%= c.title(title: (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title")).html_safe, 
+                subtitle: (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_below_200_copy.reports_card_subtitle_fbs", region_name: region.name) : t("bs_below_200_copy.reports_card_subtitle", region_name: region.name))) do |title| %>
+      <%= title.tooltip({ "Numerator" => (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator")),
                           "Denominator" => t(denominator_copy, region_name: region.name) }) %>
       <%= title.ltfu_toggle(id: 'controlledGraphLtfuToggle', enabled: with_ltfu) %>
     <% end %>
@@ -12,7 +13,7 @@
         <div>
           <p class="m-0px c-black">
             <span data-key="bsBelow200Numerator" data-format="numberWithCommas"></span>
-            patients with a blood sugar &lt;200 from
+            <%= (Flipper.enabled?(:use_who_standard_for_diabetes_indicator) ? t("bs_below_200_copy.summary_fbs") : t("bs_below_200_copy.summary")) %>
             <span data-key="startDate"></span>
             to
             <span data-key="endDate"></span>
