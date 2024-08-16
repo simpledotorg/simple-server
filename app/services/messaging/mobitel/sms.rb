@@ -26,8 +26,8 @@ class Messaging::Mobitel::Sms < Messaging::Channel
   end
 
   def raise_api_errors(body)
-    code = body[:resultcode].to_i
-    message = body[:response]
+    code = body["resultcode"].to_i
+    message = body["response"]
     unless code == API_SUCCESS_RESPONSE
       raise Messaging::Mobitel::Error.new("API failed with code: #{code} and message: #{message}", code)
     end
