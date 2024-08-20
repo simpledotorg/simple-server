@@ -8,7 +8,7 @@
 <% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
 
 <% if Flipper.enabled?(:patients_protected, current_admin) %>
-<div class="d-lg-flex flex-lg-wrap mr-0">
+<div class="d-lg-flex flex-lg-wrap">
   <div class="d-lg-flex flex-fill">
     <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
       region: @region,
