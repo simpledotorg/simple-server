@@ -8,8 +8,8 @@
                   <%= t("htn_cascade_copy.title") %>
                 </h3>
                 <%= render "definition_tooltip" , definitions: { "Estimated people with hypertension"=>
-                    t("total_estimated_hypertensive_population.district_copy", region_name: @region.name), "Cumulative registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name), 
-                    "Patients under care" => t("patients_under_care_copy"), "Patients with BP controlled" => t("patients_bp_controlled_copy", region_name: @region.name), } %>
+                    t("total_estimated_hypertensive_population.district_copy", region_name: @region.name), "Total registered patients" => t("registered_patients_copy.total_registered_patients", region_name: @region.name), 
+                    "Patients under care" => t("patients_under_care_copy"), "Patients with controlled BP" => t("patients_bp_controlled_copy", region_name: @region.name), } %>
             </div>
         </div>
         <p class="c-grey-dark">
@@ -55,7 +55,7 @@
                               <%= number_with_delimiter(@cumulative_registrations, delimiter: ",") %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
-                                Cumulative registered patients
+                                Total registrations
                             </p>
                         </div>
                         <div class="coverage-column">
@@ -85,7 +85,7 @@
                               <%= number_with_delimiter(@controlled_patients, delimiter: ",") %>
                             </p>
                             <p class="text-grey fs-lg-14px mb-0px">
-                                Patients with BP controlled
+                                Patients with controlled BP
                             </p>
                         </div>
                     </div>
