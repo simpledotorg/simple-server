@@ -10,7 +10,6 @@ describe Reports::RepositoryPresenter do
   end
 
   describe "#to_hash" do
-    subject { presenter.to_hash(region) }
 
     it "returns required keys" do
       expected_keys = [
@@ -103,12 +102,12 @@ describe Reports::RepositoryPresenter do
         :contactable_patients_returned_with_result_remind_to_call_later_rates,
         :contactable_patients_returned_with_result_removed_from_list_rates
       ]
-      expect(subject.keys).to match_array(expected_keys)
+      expect(presenter.to_hash(region).keys).to match_array(expected_keys)
     end
 
     context "when the feature flag for global diabetes indicator is enabled" do
       before do
-        Flipper.enable(:use_who_standard_for_diabetes_indicator)
+        Flipper.enable(:diabetes_who_standard_indicator)
       end
 
       it "includes fasting and hba1c counts and rates" do
@@ -118,7 +117,7 @@ describe Reports::RepositoryPresenter do
         expect(presenter.schema).to receive(:bs_200_to_300_rates_fasting_and_hba1c).twice.and_call_original
         expect(presenter.schema).to receive(:bs_over_300_patients_fasting_and_hba1c).and_call_original
         expect(presenter.schema).to receive(:bs_over_300_rates_fasting_and_hba1c).twice.and_call_original
-        subject
+        presenter.to_hash(region)
       end
     end
   end

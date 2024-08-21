@@ -597,26 +597,26 @@ module Reports
       values_at("adjusted_bs_below_200_under_care")
     end
 
-    def cumulative_blood_sugar_type_patients(blood_sugar_types = [], blood_sugar_risk_type = nil)
-      return {} if blood_sugar_types.empty? || blood_sugar_risk_type.nil?
-      regional_patient_hash = {}
-      base_blood_sugar_type = blood_sugar_types.first
-      remaining_blood_sugar_types = blood_sugar_types - [base_blood_sugar_type]
-      return adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type) if remaining_blood_sugar_types.empty?
-      adjusted_diabetes_under_care(blood_sugar_risk_type, base_blood_sugar_type).each { |slug, period_values|
-        resultant_period_values = period_values.dup
-        remaining_blood_sugar_types.each { |blood_sugar_type_to_add|
-          resultant_period_values.merge!(adjusted_diabetes_under_care(blood_sugar_risk_type, blood_sugar_type_to_add)[slug]) { |period, base_value, value_to_add|
-            base_value + value_to_add
-          }
-        }
-        regional_patient_hash[slug] = resultant_period_values
-      }
-      regional_patient_hash
+    def diabetes_patients_by_risk_state_and_type(risk_state:, types:)
+      valid_risk_states = BloodSugar::THRESHOLDS.keys.map(&:to_sym)
+      valid_types = BloodSugar.blood_sugar_types.keys.map(&:to_sym)
+
+      raise ArgumentError, "Invalid risk state" unless valid_risk_states.include?(risk_state)
+      raise ArgumentError, "Invalid types" unless types.all? { |type| valid_types.include?(type) }
+
+      types.each_with_object({}) do |type, result|
+        adjusted_diabetes_under_care(risk_state, type).each do |slug, count_by_period|
+          count_by_period.each do |period, count|
+            result[slug] ||= {}
+            result[slug][period] ||= 0
+            result[slug][period] += count
+          end
+        end
+      end
     end
 
     memoize def bs_below_200_patients_fasting_and_hba1c
-      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_below_200)
+      diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:fasting, :hba1c])
     end
 
     memoize def bs_200_to_300_patients
@@ -624,7 +624,7 @@ module Reports
     end
 
     memoize def bs_200_to_300_patients_fasting_and_hba1c
-      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_200_to_300)
+      diabetes_patients_by_risk_state_and_type(risk_state: :bs_200_to_300, types: [:fasting, :hba1c])
     end
 
     memoize def bs_over_300_patients
@@ -632,7 +632,7 @@ module Reports
     end
 
     memoize def bs_over_300_patients_fasting_and_hba1c
-      cumulative_blood_sugar_type_patients([:fasting, :hba1c], :bs_over_300)
+      diabetes_patients_by_risk_state_and_type(risk_state: :bs_over_300, types: [:fasting, :hba1c])
     end
 
     memoize def bs_below_200_rates(with_ltfu: false)
