@@ -407,7 +407,7 @@ describe Reports::RegionSummarySchema, type: :model do
       end
     end
 
-    describe "#cumulative_blood_sugar_type_patients" do
+    describe "#diabetes_patients_by_risk_state_and_type" do
       context "with multiple sugar types passed" do
         it "returns the cumulative values of blood sugar types passed related to blood sugar risk type" do
           facility_1_patients = create_list(:patient, 6, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
@@ -419,10 +419,20 @@ describe Reports::RegionSummarySchema, type: :model do
           create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients[5], facility: facility_1, recorded_at: jan_2020 + 2.months)
           refresh_views
           schema = described_class.new([facility_1.region, region], periods: range)
-          expect(schema.cumulative_blood_sugar_type_patients([:fasting, :random], :bs_below_200)[facility_1.region.slug]["Mar 2020".to_period]).to eq(2)
-          expect(schema.cumulative_blood_sugar_type_patients([:fasting], :bs_below_200)[facility_1.region.slug]["Mar 2020".to_period]).to eq(1)
-          expect(schema.cumulative_blood_sugar_type_patients([:fasting, :hba1c, :random], :bs_below_200)[facility_1.region.slug]["Mar 2020".to_period]).to eq(3)
-          expect(schema.cumulative_blood_sugar_type_patients([:fasting, :hba1c, :random], :bs_over_300)[facility_1.region.slug]["Mar 2020".to_period]).to eq(3)
+          expect(schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:fasting, :random])[facility_1.region.slug]["Mar 2020".to_period]).to eq(2)
+          expect(schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:fasting])[facility_1.region.slug]["Mar 2020".to_period]).to eq(1)
+          expect(schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:fasting, :hba1c, :random])[facility_1.region.slug]["Mar 2020".to_period]).to eq(3)
+          expect(schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_over_300, types: [:fasting, :hba1c, :random])[facility_1.region.slug]["Mar 2020".to_period]).to eq(3)
+        end
+
+        it "raises error with invalid blood sugar type" do
+          schema = described_class.new([facility_1.region, region], periods: range)
+          expect{ schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:test_blood_type])}.to raise_error(ArgumentError, "Invalid types")
+        end
+
+        it "raises error with invalid risk state" do
+          schema = described_class.new([facility_1.region, region], periods: range)
+          expect{ schema.diabetes_patients_by_risk_state_and_type(risk_state: :random_state, types: [:fasting])}.to raise_error(ArgumentError, "Invalid risk state")
         end
       end
     end
