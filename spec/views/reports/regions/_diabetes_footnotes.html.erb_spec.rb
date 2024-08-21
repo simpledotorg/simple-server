@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
   let(:distict_with_facilities) { setup_district_with_facilities }
@@ -7,7 +7,7 @@ RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
   it "has the correct labels" do
     assign(:region, region)
     render
-    all_texts = Capybara.string(rendered).all('p')
+    all_texts = Capybara.string(rendered).all("p")
     expect(all_texts[8].text.strip).to eq("Blood sugar < 200")
     expect(all_texts[9].text.strip).to eq("Numerator: Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months")
     expect(all_texts[11].text.strip).to eq("Blood Sugar 200-299")
@@ -24,7 +24,7 @@ RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
     it "has the updated labels" do
       assign(:region, region)
       render
-      all_texts = Capybara.string(rendered).all('p')
+      all_texts = Capybara.string(rendered).all("p")
       expect(all_texts[8].text.strip).to eq("Blood sugar < 126")
       expect(all_texts[9].text.strip).to eq("Numerator: Patients with FBS <126, or HbA1c <7.0 at their last visit in the last 3 months")
       expect(all_texts[11].text.strip).to eq("Blood Sugar 126-199")
@@ -34,4 +34,3 @@ RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
     end
   end
 end
-

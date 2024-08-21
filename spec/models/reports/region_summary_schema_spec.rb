@@ -427,12 +427,12 @@ describe Reports::RegionSummarySchema, type: :model do
 
         it "raises error with invalid blood sugar type" do
           schema = described_class.new([facility_1.region, region], periods: range)
-          expect{ schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:test_blood_type])}.to raise_error(ArgumentError, "Invalid types")
+          expect { schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:test_blood_type]) }.to raise_error(ArgumentError, "Invalid types")
         end
 
         it "raises error with invalid risk state" do
           schema = described_class.new([facility_1.region, region], periods: range)
-          expect{ schema.diabetes_patients_by_risk_state_and_type(risk_state: :random_state, types: [:fasting])}.to raise_error(ArgumentError, "Invalid risk state")
+          expect { schema.diabetes_patients_by_risk_state_and_type(risk_state: :random_state, types: [:fasting]) }.to raise_error(ArgumentError, "Invalid risk state")
         end
       end
     end

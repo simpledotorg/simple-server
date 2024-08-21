@@ -10,7 +10,6 @@ describe Reports::RepositoryPresenter do
   end
 
   describe "#to_hash" do
-
     it "returns required keys" do
       expected_keys = [
         :adjusted_patient_counts_with_ltfu,
