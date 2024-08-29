@@ -1,5 +1,6 @@
 /home/deploy/apps/simple-server/shared/log/*.log {
   su root root
+  size 500M
   daily
   rotate 3
   missingok
@@ -8,6 +9,7 @@
   delaycompress
   copytruncate
   dateext
+  dateformat -%Y%m%d-%H%M%S
   lastaction
     /usr/bin/s3cmd sync /home/deploy/apps/simple-server/shared/log/*.gz "s3://$LOG_ARCHIVE_S3_PATH_PREFIX/$HOSTNAME/rails/"
   endscript
