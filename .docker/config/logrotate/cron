@@ -1,5 +1,6 @@
 /home/deploy/apps/simple-server/shared/log/*.log {
   su root root
+  size 500M
   daily
   rotate 3
   missingok
