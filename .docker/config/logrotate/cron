@@ -8,6 +8,7 @@
   delaycompress
   copytruncate
   dateext
+  dateformat -%Y%m%d-%H%M%S
   lastaction
     /usr/bin/s3cmd sync /home/deploy/apps/simple-server/shared/log/*.gz "s3://$LOG_ARCHIVE_S3_PATH_PREFIX/$HOSTNAME/rails/"
   endscript
