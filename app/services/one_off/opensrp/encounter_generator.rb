@@ -10,9 +10,8 @@ module OneOff
       end
 
       def generate
-        encounters.group_by { |encounter| encounter[:parent_id] }.tap { |x| p x.keys }.map do |parent_id, child_encounters|
-          p parent_id
-          p opensrp_ids = child_encounters.first[:encounter_opensrp_ids]
+        encounters.group_by { |encounter| encounter[:parent_id] }.map do |parent_id, child_encounters|
+          opensrp_ids = child_encounters.first[:encounter_opensrp_ids]
           first_child_encounter = child_encounters.first[:child_encounter]
           patient_ref = first_child_encounter.subject
           encounter_period = first_child_encounter.period
@@ -34,10 +33,12 @@ module OneOff
               ),
               type: [
                 FHIR::CodeableConcept.new(
-                  coding: FHIR::Coding.new(
-                    system: "http://snomed.info/sct",
-                    code: "185389009"
-                  )
+                  coding: [
+                    FHIR::Coding.new(
+                      system: "https://smartregister.org",
+                      code: "facility_visit"
+                    )
+                  ]
                 )
               ],
               serviceType: FHIR::CodeableConcept.new(
@@ -54,8 +55,8 @@ module OneOff
                 FHIR::CodeableConcept.new(
                   coding: [
                     FHIR::Coding.new(
-                      system: "http://snomed.info/sct",
-                      code: "TODO"
+                      system: "https://smartregister.org",
+                      code: "facility_visit"
                     )
                   ]
                 )

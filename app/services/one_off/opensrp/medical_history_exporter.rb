@@ -5,8 +5,8 @@ module OneOff
     class MedicalHistoryExporter
       attr_reader :medical_history
 
-      DM_CONDITION_MAPPING = {code: "44054006", display: "Diabetes mellitus type 2"}
-      HTN_CONDITION_MAPPING = {code: "38341003", display: "Hypertension"}
+      DM_CONDITION_MAPPING = {code: "diabetes", system: "https://smartregister.org", display: "Diabetes"}
+      HTN_CONDITION_MAPPING = {code: "38341003", system: "http://snomed.info/sct", display: "Hypertension"}
 
       def initialize(medical_history, opensrp_mapping)
         @medical_history = medical_history
@@ -20,7 +20,7 @@ module OneOff
         conditions
       end
 
-      def generate_condition(code:, display:)
+      def generate_condition(code:, display:, system:)
         FHIR::Condition.new(
           id: condition_id(code),
           subject: FHIR::Reference.new(
@@ -29,8 +29,8 @@ module OneOff
           code: FHIR::CodeableConcept.new(
             coding: [
               FHIR::Coding.new(
-                system: "http://snomed.info/sct",
                 code: code,
+                system: system,
                 display: display
               )
             ],

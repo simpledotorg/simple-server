@@ -3,11 +3,18 @@ require "fhir_models"
 module OneOff
   module Opensrp
     class BloodSugarExporter
-      attr_reader :blood_sugar
+      attr_reader :blood_sugar, :patient
 
-      def initialize(blood_sugar, opensrp_mapping)
-        @blood_sugar = blood_sugar
-        @opensrp_ids = opensrp_mapping[@blood_sugar.facility_id]
+      def initialize(blood_sugar_or_patient, opensrp_mapping)
+        if blood_sugar_or_patient.is_a?(Patient)
+          @patient = blood_sugar_or_patient
+          @blood_sugar = nil
+          @opensrp_ids = opensrp_mapping[@patient.assigned_facility_id]
+        else
+          @blood_sugar = blood_sugar_or_patient
+          @patient = @blood_sugar.patient
+          @opensrp_ids = opensrp_mapping[@blood_sugar.facility_id]
+        end
       end
 
       def export
@@ -48,6 +55,30 @@ module OneOff
         )
       end
 
+      def export_no_diabetes_observation
+        FHIR::Observation.new(
+          meta: meta,
+          code: FHIR::CodeableConcept.new(
+            coding: [
+              FHIR::Coding.new(
+                system: "https://smartregister.org",
+                code: "no_diabetes",
+                display: "No Diabetes"
+              )
+            ]
+          ),
+          subject: FHIR::Reference.new(
+            reference: "Patient/#{patient.id}"
+          ),
+          performer: FHIR::Reference.new(
+            reference: "Practitioner/#{opensrp_ids[:practitioner_id]}"
+          ),
+          encounter: FHIR::Reference.new(
+            reference: "Encounter/#{encounter_id}"
+          )
+        )
+      end
+
       def blood_sugar_type_code
         case blood_sugar.blood_sugar_type
         when "random" then "271061004"
@@ -77,10 +108,12 @@ module OneOff
             ),
             type: [
               FHIR::CodeableConcept.new(
-                coding: FHIR::Coding.new(
-                  system: "http://snomed.info/sct",
-                  code: "44054006"
-                )
+                coding: [
+                  FHIR::Coding.new(
+                    system: "https://smartregister.org",
+                    code: "facility_visit"
+                  )
+                ]
               )
             ],
             serviceType: FHIR::CodeableConcept.new(
@@ -100,8 +133,8 @@ module OneOff
               FHIR::CodeableConcept.new(
                 coding: [
                   FHIR::Coding.new(
-                    system: "http://snomed.info/sct",
-                    code: "372661000119106"
+                    system: "https://smartregister.org",
+                    code: "glucose_measure"
                   )
                 ]
               )
@@ -119,12 +152,12 @@ module OneOff
       end
 
       def encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar.id)
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar&.id || "no_diabetes_#{patient.id}")
       end
 
       def meta
         FHIR::Meta.new(
-          lastUpdated: blood_sugar.device_updated_at.iso8601,
+          lastUpdated: blood_sugar&.device_updated_at&.iso8601 || patient.device_updated_at.iso8601,
           tag: [
             FHIR::Coding.new(
               system: "https://smartregister.org/app-version",

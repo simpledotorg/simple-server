@@ -53,11 +53,18 @@ namespace :opensrp do
         resources << bp_exporter.export
         encounters << bp_exporter.export_encounter
       end
-      patient.blood_sugars.each do |bs|
-        bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, OPENSRP_ORG_MAP)
-        resources << bs_exporter.export
-        encounters << bs_exporter.export_encounter
+
+      if patient.medical_history.diabetes_no?
+        bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(patient, OPENSRP_ORG_MAP)
+        resources << bs_exporter.export_no_diabetes_observation
+      else
+        patient.blood_sugars.each do |bs|
+          bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, OPENSRP_ORG_MAP)
+          resources << bs_exporter.export
+          encounters << bs_exporter.export_encounter
+        end
       end
+
       patient.prescription_drugs.each do |drug|
         drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, OPENSRP_ORG_MAP)
         resources << drug_exporter.export_dosage_flag
