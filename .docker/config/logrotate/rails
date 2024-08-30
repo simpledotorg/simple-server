@@ -1,7 +1,6 @@
 /home/app/log/*.log {
   su app app
   size 500M
-  daily
   rotate 3
   missingok
   notifempty
