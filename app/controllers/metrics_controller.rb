@@ -1,5 +1,9 @@
+# frozen_string_literal: true
+
+# MetricsController is responsible for handling requests related to metrics,
+# including exposing SendGrid-related metrics in a format compatible with Prometheus.
 class MetricsController < ApplicationController
-  def index
+  def index # rubocop:disable Metrics/MethodLength
     result = SendgridService.new.check_credits
 
     if result[:error]
@@ -14,7 +18,6 @@ class MetricsController < ApplicationController
         sendgrid_http_return_code: result[:http_return_code],
         sendgrid_http_response_time: result[:http_response_time].round(2)
       }
-
       render plain: metrics_to_plain(metrics)
     end
   end

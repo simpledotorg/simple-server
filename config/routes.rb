@@ -15,7 +15,6 @@ Rails.application.routes.draw do
 
   mount Rswag::Ui::Engine => "/api-docs"
   mount Rswag::Api::Engine => "/api-docs"
-  # mount PrometheusExporter::Server::Rack, at: '/metrics'
 
   concern :sync_routes do
     scope "/patients" do
@@ -169,7 +168,6 @@ Rails.application.routes.draw do
       resources :drug_stocks, only: [:index]
 
       get "states", to: "states#index"
-
     end
   end
 
