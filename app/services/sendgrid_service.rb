@@ -5,7 +5,7 @@ class SendgridService
     start_time = Time.now
     Rails.logger.info("SendGrid balance check started...")
 
-    sg = SendGrid::API.new(api_key: ENV['SENDGRID_API_KEY'])
+    sg = SendGrid::API.new(api_key: ENV["SENDGRID_API_KEY"])
     response = sg.client.user.credits.get
 
     response_time = Time.now - start_time
@@ -21,20 +21,20 @@ class SendgridService
 
     Rails.logger.info("SendGrid balance check completed.")
     metrics
-  rescue StandardError => e
+  rescue => e
     Rails.logger.error("Error during SendGrid balance check: #{e.message}")
-    { error: e.message }
+    {error: e.message}
   end
 
   private
 
   def parse_metrics(data)
-    total = data['total']
-    remain = data['remain']
-    used = data['used']
-    plan_reset_date = Date.parse(data['next_reset']) + 1
-    plan_completion_status = (Date.today < plan_reset_date) ? 1 : 0
-    exceeded_limit_status = (used > THRESHOLD) ? 1 : 0
+    total = data["total"]
+    remain = data["remain"]
+    used = data["used"]
+    plan_reset_date = Date.parse(data["next_reset"]) + 1
+    plan_completion_status = Date.today < plan_reset_date ? 1 : 0
+    exceeded_limit_status = used > THRESHOLD ? 1 : 0
 
     {
       total: total,
@@ -48,6 +48,6 @@ class SendgridService
 
   def handle_error(response)
     Rails.logger.error("Failed to fetch SendGrid credits: #{response.body}")
-    { error: response.body }
+    {error: response.body}
   end
 end

@@ -1,5 +1,5 @@
 # spec/controllers/metrics_controller_spec.rb
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe MetricsController, type: :controller do
   let(:sendgrid_service) { instance_double(SendgridService) }
@@ -19,18 +19,18 @@ RSpec.describe MetricsController, type: :controller do
     allow(SendgridService).to receive(:new).and_return(sendgrid_service)
   end
 
-  describe 'GET #index' do
-    context 'when the SendGrid service call is successful' do
+  describe "GET #index" do
+    context "when the SendGrid service call is successful" do
       before do
         allow(sendgrid_service).to receive(:check_credits).and_return(metrics)
         get :index
       end
 
-      it 'returns a successful response' do
+      it "returns a successful response" do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'returns the correct metrics format' do
+      it "returns the correct metrics format" do
         expect(response.body).to include("sendgrid_total_emails #{metrics[:total]}")
         expect(response.body).to include("sendgrid_emails_remaining_count #{metrics[:remain]}")
         expect(response.body).to include("sendgrid_email_used_count #{metrics[:used]}")
@@ -41,17 +41,17 @@ RSpec.describe MetricsController, type: :controller do
       end
     end
 
-    context 'when the SendGrid service call fails' do
+    context "when the SendGrid service call fails" do
       before do
-        allow(sendgrid_service).to receive(:check_credits).and_return({ error: 'Some error' })
+        allow(sendgrid_service).to receive(:check_credits).and_return({error: "Some error"})
         get :index
       end
 
-      it 'returns an unprocessable entity status' do
+      it "returns an unprocessable entity status" do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it 'returns the correct error message' do
+      it "returns the correct error message" do
         expect(response.body).to include("Error fetching metrics: Some error")
       end
     end

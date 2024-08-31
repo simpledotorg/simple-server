@@ -3,7 +3,7 @@
 # MetricsController is responsible for handling requests related to metrics,
 # including exposing SendGrid-related metrics in a format compatible with Prometheus.
 class MetricsController < ApplicationController
-  def index # rubocop:disable Metrics/MethodLength
+  def index
     result = SendgridService.new.check_credits
 
     if result[:error]
