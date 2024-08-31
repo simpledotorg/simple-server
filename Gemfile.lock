@@ -426,7 +426,7 @@ GEM
     prawn (2.4.0)
       pdf-core (~> 0.9.0)
       ttfunk (~> 1.7)
-    prometheus_exporter (2.1.0)
+    prometheus_exporter (2.0.8)
       webrick
     prosopite (1.1.3)
     pry (0.14.1)
@@ -568,6 +568,7 @@ GEM
     ruby-progressbar (1.13.0)
     ruby-statistics (3.0.0)
     ruby2_keywords (0.0.5)
+    ruby_http_client (3.5.5)
     rubyzip (2.3.2)
     sanitize (6.0.0)
       crass (~> 1.0.2)
@@ -589,6 +590,8 @@ GEM
       rubyzip (>= 1.2.2, < 3.0)
       websocket (~> 1.0)
     semantic_range (3.0.0)
+    sendgrid-ruby (6.7.0)
+      ruby_http_client (~> 3.4)
     sentry-rails (5.4.2)
       railties (>= 5.0)
       sentry-ruby (~> 5.4.2)
@@ -807,6 +810,7 @@ DEPENDENCIES
   sassc-rails
   scenic
   scientist
+  sendgrid-ruby
   sentry-rails
   sentry-ruby
   sentry-sidekiq
