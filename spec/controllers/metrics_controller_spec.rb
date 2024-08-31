@@ -31,13 +31,13 @@ RSpec.describe MetricsController, type: :controller do
       end
 
       it "returns the correct metrics format" do
-        expect(response.body).to include("sendgrid_total_emails #{metrics[:total]}")
+        expect(response.body).to include("sendgrid_email_limit_count #{metrics[:total]}")
         expect(response.body).to include("sendgrid_emails_remaining_count #{metrics[:remain]}")
         expect(response.body).to include("sendgrid_email_used_count #{metrics[:used]}")
         expect(response.body).to include("sendgrid_plan_limit_expire #{metrics[:plan_completion_status]}")
         expect(response.body).to include("sendgrid_email_limit_exceeded_by_threshold_limit #{metrics[:exceeded_limit_status]}")
-        expect(response.body).to include("sendgrid_http_return_code #{metrics[:http_return_code]}")
-        expect(response.body).to include("sendgrid_http_response_time #{metrics[:http_response_time]}")
+        expect(response.body).to include("sendgrid_monitoring_http_return_code #{metrics[:http_return_code]}")
+        expect(response.body).to include("sendgrid_monitoring_http_response_time_seconds #{metrics[:http_response_time]}")
       end
     end
 
