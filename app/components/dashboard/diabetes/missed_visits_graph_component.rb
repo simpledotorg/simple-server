@@ -4,7 +4,7 @@ class Dashboard::Diabetes::MissedVisitsGraphComponent < ApplicationComponent
   attr_reader :period
   attr_reader :with_ltfu
 
-  def initialize(data:, region:, period:, with_ltfu: false, current_admin:)
+  def initialize(data:, region:, period:, current_admin:, with_ltfu: false)
     @data = data
     @region = region
     @period = period
