@@ -1,4 +1,4 @@
-<% use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator) %>
+<% use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, @current_admin) %>
 <% title_text = use_who_standard ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title") %>
 <% subtitle_text = use_who_standard ? t("bs_below_200_copy.reports_card_subtitle_fbs", region_name: region.name) : t("bs_below_200_copy.reports_card_subtitle", region_name: region.name) %>
 <% numerator_text = use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator") %>
