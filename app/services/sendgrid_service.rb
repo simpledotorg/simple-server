@@ -33,16 +33,12 @@ class SendgridService
     remain = data["remain"]
     used = data["used"]
     plan_reset_date = Date.parse(data["next_reset"]) + 1
-    plan_completion_status = Date.today < plan_reset_date ? 1 : 0
-    exceeded_limit_status = used > THRESHOLD ? 1 : 0
-
+    time_until_expiration_seconds = [(plan_reset_date - Date.today).to_i * 24 * 60 * 60, 0].max
     {
       total: total,
       remain: remain,
       used: used,
-      plan_reset_date: plan_reset_date,
-      plan_completion_status: plan_completion_status,
-      exceeded_limit_status: exceeded_limit_status
+      time_until_expiration_seconds: time_until_expiration_seconds
     }
   end
 
