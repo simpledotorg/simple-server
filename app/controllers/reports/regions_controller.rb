@@ -167,7 +167,7 @@ class Reports::RegionsController < AdminController
   def diabetes
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range)
+    @repository = Reports::Repository.new(@region, periods: range, current_admin: current_admin)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
