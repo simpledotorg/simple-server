@@ -8,11 +8,13 @@ describe Dashboard::Diabetes::BsBelow200GraphComponent, type: :component do
   let(:region) { distict_with_facilities[:region] }
   let(:facility_1) { distict_with_facilities[:facility_1] }
   let(:region_data) { presenter.call(region) }
+  let(:user) { create(:user) }
   let(:bs_below200_graph_component) {
     described_class.new(
       region: region,
       data: region_data,
-      period: Period.current
+      period: Period.current,
+      current_admin: user
     )
   }
 
@@ -26,7 +28,7 @@ describe Dashboard::Diabetes::BsBelow200GraphComponent, type: :component do
 
   context "with the feature flag for global diabetes indicator enabled" do
     before do
-      Flipper.enable(:diabetes_who_standard_indicator)
+      Flipper.enable(:diabetes_who_standard_indicator, user)
     end
 
     it "has the updated labels" do
