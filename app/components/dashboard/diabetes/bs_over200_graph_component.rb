@@ -4,11 +4,12 @@ class Dashboard::Diabetes::BsOver200GraphComponent < ApplicationComponent
   attr_reader :period
   attr_reader :with_ltfu
 
-  def initialize(data:, region:, period:, with_ltfu: false)
+  def initialize(data:, region:, period:, current_admin:, with_ltfu: false)
     @data = data
     @region = region
     @period = period
     @with_ltfu = with_ltfu
+    @current_admin = current_admin
   end
 
   def graph_data
