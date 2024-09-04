@@ -1,19 +1,18 @@
 module Reports
   class RepositoryPresenter < SimpleDelegator
-    def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA, current_admin: nil)
+    def self.create(regions, period:, months: Reports::MAX_MONTHS_OF_DATA, use_who_standard: nil)
       start_period = period.advance(months: -(months - 1))
       range = Range.new(start_period, period)
-      repo = Reports::Repository.new(regions, periods: range, current_admin: current_admin)
+      repo = Reports::Repository.new(regions, periods: range, use_who_standard: use_who_standard)
       new(repo)
     end
 
-    def call(region)
-      to_hash(region)
+    def call(region, use_who_standard = nil)
+      to_hash(region, use_who_standard)
     end
 
-    def to_hash(region)
+    def to_hash(region, use_who_standard = nil)
       slug = region.slug
-      use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
       {
         adjusted_patient_counts_with_ltfu: adjusted_patients_with_ltfu[slug],
         adjusted_patient_counts: adjusted_patients_without_ltfu[slug],

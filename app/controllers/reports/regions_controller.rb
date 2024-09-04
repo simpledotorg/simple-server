@@ -165,18 +165,19 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
+    @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range, current_admin: current_admin)
+    @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
-    @data = @presenter.call(@region)
+    @data = @presenter.call(@region, @use_who_standard)
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
-    repo = Reports::Repository.new(@child_regions, periods: @period)
+    repo = Reports::Repository.new(@child_regions, periods: @period, use_who_standard: @use_who_standard)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -196,9 +197,9 @@ class Reports::RegionsController < AdminController
 
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
     @details_period_range = Range.new(@period.advance(months: -5), @period)
-    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range, use_who_standard: @use_who_standard)
     chart_range = (@period.advance(months: months)..@period)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, use_who_standard: @use_who_standard)
     @details_chart_data = {
       ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
       **medications_dispensation_data(region: @region, period: @period, diagnosis: :diabetes)

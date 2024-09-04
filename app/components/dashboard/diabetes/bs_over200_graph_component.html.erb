@@ -1,15 +1,14 @@
-<% use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, @current_admin) %>
-<% title_text = use_who_standard ? t("bs_over_200_copy.reports_card_title_fbs") : t("bs_over_200_copy.reports_card_title") %>
-<% subtitle_text = use_who_standard ? t("bs_over_200_copy.reports_card_subtitle_fbs", region_name: @region.name) : t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
-<% bs_over_300_summary_text = use_who_standard ? t("bs_over_200_copy.bs_over_300.summary_fbs") : t("bs_over_200_copy.bs_over_300.summary") %>
-<% bs_200_to_299_summary_text = use_who_standard ? t("bs_over_200_copy.bs_200_to_299.summary_fbs") : t("bs_over_200_copy.bs_200_to_299.summary") %>
+<% title_text = @use_who_standard ? t("bs_over_200_copy.reports_card_title_fbs") : t("bs_over_200_copy.reports_card_title") %>
+<% subtitle_text = @use_who_standard ? t("bs_over_200_copy.reports_card_subtitle_fbs", region_name: @region.name) : t("bs_over_200_copy.reports_card_subtitle", region_name: @region.name) %>
+<% bs_over_300_summary_text = @use_who_standard ? t("bs_over_200_copy.bs_over_300.summary_fbs") : t("bs_over_200_copy.bs_over_300.summary") %>
+<% bs_200_to_299_summary_text = @use_who_standard ? t("bs_over_200_copy.bs_200_to_299.summary_fbs") : t("bs_over_200_copy.bs_200_to_299.summary") %>
 
 <div id="bs-over-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsOver200PatientsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
       title: title_text.html_safe,
       subtitle: subtitle_text) do |title| %>
-      <% if use_who_standard %>
+      <% if @use_who_standard %>
         <%= title.tooltip({ "Blood sugar 126-199 numerator" => t("bs_over_200_copy.bs_200_to_299.numerator_fbs"),
                             "Blood sugar ≥200 numerator" => t("bs_over_200_copy.bs_over_300.numerator_fbs"),
                             "Denominator" => t(denominator_copy, region_name: @region.name) }) %>
