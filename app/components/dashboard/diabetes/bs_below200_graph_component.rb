@@ -4,11 +4,12 @@ class Dashboard::Diabetes::BsBelow200GraphComponent < ApplicationComponent
   attr_reader :period
   attr_reader :with_ltfu
 
-  def initialize(data:, region:, period:, with_ltfu: false)
+  def initialize(data:, region:, period:, use_who_standard:, with_ltfu: false)
     @data = data
     @region = region
     @period = period
     @with_ltfu = with_ltfu
+    @use_who_standard = use_who_standard
   end
 
   def denominator_copy

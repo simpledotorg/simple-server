@@ -3,9 +3,11 @@ require "rails_helper"
 RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
   let(:distict_with_facilities) { setup_district_with_facilities }
   let(:region) { distict_with_facilities[:region] }
+  let(:use_who_standard) { false }
 
   it "has the correct labels" do
     assign(:region, region)
+    assign(:use_who_standard, use_who_standard)
     render
     all_texts = Capybara.string(rendered).all("p")
     expect(all_texts[8].text.strip).to eq("Blood sugar < 200")
@@ -17,12 +19,11 @@ RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
   end
 
   context "with the feature flag for global diabetes indicator enabled" do
-    before do
-      Flipper.enable(:diabetes_who_standard_indicator)
-    end
+    let(:use_who_standard) { true }
 
     it "has the updated labels" do
       assign(:region, region)
+      assign(:use_who_standard, use_who_standard)
       render
       all_texts = Capybara.string(rendered).all("p")
       expect(all_texts[8].text.strip).to eq("Blood sugar < 126")
