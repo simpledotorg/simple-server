@@ -7,7 +7,7 @@ describe Reports::RepositoryPresenter do
   let(:use_who_standard) { nil }
 
   it "create works" do
-    expect(presenter.to_hash(region, use_who_standard).keys).to include(:adjusted_patient_counts_with_ltfu, :period_info)
+    expect(presenter.to_hash(region).keys).to include(:adjusted_patient_counts_with_ltfu, :period_info)
   end
 
   describe "#to_hash" do
@@ -102,7 +102,7 @@ describe Reports::RepositoryPresenter do
         :contactable_patients_returned_with_result_remind_to_call_later_rates,
         :contactable_patients_returned_with_result_removed_from_list_rates
       ]
-      expect(presenter.to_hash(region, use_who_standard).keys).to match_array(expected_keys)
+      expect(presenter.to_hash(region).keys).to match_array(expected_keys)
     end
 
     context "when the feature flag for global diabetes indicator is enabled" do
@@ -115,7 +115,7 @@ describe Reports::RepositoryPresenter do
         expect(presenter.schema).to receive(:bs_200_to_300_rates_fasting_and_hba1c).twice.and_call_original
         expect(presenter.schema).to receive(:bs_over_300_patients_fasting_and_hba1c).and_call_original
         expect(presenter.schema).to receive(:bs_over_300_rates_fasting_and_hba1c).twice.and_call_original
-        presenter.to_hash(region, use_who_standard)
+        presenter.to_hash(region)
       end
     end
   end

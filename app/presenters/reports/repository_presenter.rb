@@ -7,11 +7,11 @@ module Reports
       new(repo)
     end
 
-    def call(region, use_who_standard = nil)
-      to_hash(region, use_who_standard)
+    def call(region)
+      to_hash(region)
     end
 
-    def to_hash(region, use_who_standard = nil)
+    def to_hash(region)
       slug = region.slug
       {
         adjusted_patient_counts_with_ltfu: adjusted_patients_with_ltfu[slug],

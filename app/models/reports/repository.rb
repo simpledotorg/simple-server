@@ -15,7 +15,7 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :overdue_patient_query
     attr_reader :schema
-    attr_reader :current_admin
+    attr_reader :use_who_standard
     alias_method :range, :periods
 
     def initialize(regions, periods:, use_who_standard: nil)

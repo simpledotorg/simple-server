@@ -170,7 +170,7 @@ class Reports::RegionsController < AdminController
     range = Range.new(start_period, @period)
     @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
-    @data = @presenter.call(@region, @use_who_standard)
+    @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 
