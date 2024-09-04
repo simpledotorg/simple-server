@@ -15,9 +15,10 @@ module Reports
     attr_reader :registered_patients_query
     attr_reader :overdue_patient_query
     attr_reader :schema
+    attr_reader :current_admin
     alias_method :range, :periods
 
-    def initialize(regions, periods:)
+    def initialize(regions, periods:, use_who_standard: nil)
       @regions = Array(regions).map(&:region)
       @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
@@ -32,6 +33,7 @@ module Reports
       @registered_patients_query = RegisteredPatientsQuery.new
       @overdue_patient_query = OverduePatientsQuery.new
       @overdue_calls_query = OverdueCallsQuery.new
+      @use_who_standard = use_who_standard
     end
 
     delegate :cache, :logger, to: Rails
