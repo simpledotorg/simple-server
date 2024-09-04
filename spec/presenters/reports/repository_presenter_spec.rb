@@ -3,7 +3,8 @@ require "rails_helper"
 describe Reports::RepositoryPresenter do
   let(:facility) { create(:facility) }
   let(:region) { facility.region }
-  let(:presenter) { described_class.create(region, period: Reports.default_period) }
+  let(:presenter) { described_class.create(region, period: Reports.default_period, use_who_standard: use_who_standard) }
+  let(:use_who_standard) { nil }
 
   it "create works" do
     expect(presenter.to_hash(region).keys).to include(:adjusted_patient_counts_with_ltfu, :period_info)
@@ -105,9 +106,7 @@ describe Reports::RepositoryPresenter do
     end
 
     context "when the feature flag for global diabetes indicator is enabled" do
-      before do
-        Flipper.enable(:diabetes_who_standard_indicator)
-      end
+      let(:use_who_standard) { true }
 
       it "includes fasting and hba1c counts and rates" do
         expect(presenter.schema).to receive(:bs_below_200_patients_fasting_and_hba1c).and_call_original
