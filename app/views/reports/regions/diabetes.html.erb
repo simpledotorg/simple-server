@@ -5,7 +5,7 @@
 <%= render "header" %>
 
 <% args = { data: @data, region: @region, period: @period } %>
-<% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu, current_admin: current_admin } %>
+<% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu, use_who_standard: @use_who_standard } %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(args_with_ltfu) %>

@@ -1,8 +1,7 @@
-<% use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, @current_admin) %>
-<% title_text = use_who_standard ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title") %>
-<% subtitle_text = use_who_standard ? t("bs_below_200_copy.reports_card_subtitle_fbs", region_name: region.name) : t("bs_below_200_copy.reports_card_subtitle", region_name: region.name) %>
-<% numerator_text = use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator") %>
-<% summary_text = use_who_standard ? t("bs_below_200_copy.summary_fbs") : t("bs_below_200_copy.summary") %>
+<% title_text = @use_who_standard ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title") %>
+<% subtitle_text = @use_who_standard ? t("bs_below_200_copy.reports_card_subtitle_fbs", region_name: region.name) : t("bs_below_200_copy.reports_card_subtitle", region_name: region.name) %>
+<% numerator_text = @use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator") %>
+<% summary_text = @use_who_standard ? t("bs_below_200_copy.summary_fbs") : t("bs_below_200_copy.summary") %>
 
 <div id="bs-below-200" class="d-lg-flex w-lg-50 pr-lg-2">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsBelow200PatientsTrend", data: graph_data, period: period) do |c| %>

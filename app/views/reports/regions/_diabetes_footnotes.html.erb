@@ -1,5 +1,3 @@
-<% use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, @current_admin) %>
-
 <div class="row mt-5 mb-64px">
     <div class="col-lg-7">
       <h4 class="mb-16px pb-8px">
@@ -47,11 +45,11 @@
       </div>
       <div class="mb-24px">
         <p class="mb-8px fs-16px fw-bold c-grey-dark">
-          <%= use_who_standard ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title") %>
+          <%= @use_who_standard ? t("bs_below_200_copy.reports_card_title_fbs") : t("bs_below_200_copy.reports_card_title") %>
         </p>
         <div class="pl-16px">
           <p class="mb-8px fs-14px c-grey-dark">
-            <strong>Numerator:</strong> <%= use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator") %>
+            <strong>Numerator:</strong> <%= @use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark">
             <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
@@ -60,11 +58,11 @@
       </div>
       <div class="mb-24px">
         <p class="mb-8px fs-16px fw-bold c-grey-dark">
-          <%= use_who_standard ? t("bs_over_200_copy.bs_200_to_299.title_fbs") : t("bs_over_200_copy.bs_200_to_299.title") %>
+          <%= @use_who_standard ? t("bs_over_200_copy.bs_200_to_299.title_fbs") : t("bs_over_200_copy.bs_200_to_299.title") %>
         </p>
         <div class="pl-16px">
           <p class="mb-8px fs-14px c-grey-dark">
-            <strong>Numerator:</strong> <%= use_who_standard ? t("bs_over_200_copy.bs_200_to_299.numerator_fbs") : t("bs_over_200_copy.bs_200_to_299.numerator") %>
+            <strong>Numerator:</strong> <%= @use_who_standard ? t("bs_over_200_copy.bs_200_to_299.numerator_fbs") : t("bs_over_200_copy.bs_200_to_299.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark">
             <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
@@ -73,11 +71,11 @@
       </div>
       <div class="mb-24px">
         <p class="mb-8px fs-16px fw-bold c-grey-dark">
-          <%= use_who_standard ? t("bs_over_200_copy.bs_over_300.title_fbs") : t("bs_over_200_copy.bs_over_300.title") %>
+          <%= @use_who_standard ? t("bs_over_200_copy.bs_over_300.title_fbs") : t("bs_over_200_copy.bs_over_300.title") %>
         </p>
         <div class="pl-16px">
           <p class="mb-8px fs-14px c-grey-dark">
-            <strong>Numerator:</strong> <%= use_who_standard ? t("bs_over_200_copy.bs_over_300.numerator_fbs") : t("bs_over_200_copy.bs_over_300.numerator") %>
+            <strong>Numerator:</strong> <%= @use_who_standard ? t("bs_over_200_copy.bs_over_300.numerator_fbs") : t("bs_over_200_copy.bs_over_300.numerator") %>
           </p>
           <p class="mb-0px fs-14px c-grey-dark">
             <strong>Denominator:</strong> <%= t("diabetes_denominator_copy", region_name: @region.name) %>
