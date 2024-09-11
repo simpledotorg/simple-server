@@ -46,7 +46,7 @@ class Metrics
   private
 
   def record_metric(type, event, count, labels = {}, description = nil)
-    name = "#{@prefix}_#{event}"
+    name = "#{@prefix}_#{event}".downcase
     Prometheus
       .instance
       .register(type, name, description)

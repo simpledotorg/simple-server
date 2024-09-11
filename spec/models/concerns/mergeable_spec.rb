@@ -70,7 +70,7 @@ describe Mergeable do
 
     metrics_instance = instance_double(Metrics)
     allow(Metrics).to receive(:with_prefix).with("merge").and_return(metrics_instance)
-    expect(metrics_instance).to receive(:increment).with("patient", {status: "old"})
+    expect(metrics_instance).to receive(:increment).with("Patient", {status: "old"})
     Patient.merge(updated_patient.attributes)
   end
 
@@ -83,7 +83,7 @@ describe Mergeable do
 
     metrics_instance = instance_double(Metrics)
     allow(Metrics).to receive(:with_prefix).with("merge").and_return(metrics_instance)
-    expect(metrics_instance).to receive(:increment).with("patient", {status: "identical"})
+    expect(metrics_instance).to receive(:increment).with("Patient", {status: "identical"})
     Patient.merge(updated_patient.attributes)
   end
 
