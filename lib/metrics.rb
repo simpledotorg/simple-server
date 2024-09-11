@@ -13,34 +13,51 @@ class Metrics
   end
 
   def gauge(event, count, labels = {}, description = nil)
-    name = "#{@prefix}_#{event}"
-    Prometheus
-      .instance
-      .register(:gauge, name, description)
-      .observe(name, count, labels)
+    record_metric(:gauge, event, count, labels, description)
   end
 
   def increment(event, labels = {}, description = nil)
-    name = "#{@prefix}_#{event}"
-    Prometheus
-      .instance
-      .register(:counter, name, description)
-      .observe(name, 1, labels)
+    record_metric(:counter, event, 1, labels, description)
   end
 
   def histogram(event, count, labels = {}, description = nil)
-    name = "#{@prefix}_#{event}"
-    Prometheus
-      .instance
-      .register(:histogram, name, description)
-      .observe(name, count, labels)
+    record_metric(:histogram, event, count, labels, description)
   end
 
   def summary(event, count, labels = {}, description = nil)
+    record_metric(:summary, event, count, labels, description)
+  end
+
+  def benchmark_and_gauge(event, labels = {}, description = nil, &block)
+    raise ArgumentError, "Block must be provided" unless block
+    benchmark_and_metric(:gauge, event, labels, description, &block)
+  end
+
+  def benchmark_and_histogram(event, labels = {}, description = nil, &block)
+    raise ArgumentError, "Block must be provided" unless block
+    benchmark_and_metric(:histogram, event, labels, description, &block)
+  end
+
+  def benchmark_and_summary(event, labels = {}, description = nil, &block)
+    raise ArgumentError, "Block must be provided" unless block
+    benchmark_and_metric(:summary, event, labels, description, &block)
+  end
+
+  private
+
+  def record_metric(type, event, count, labels = {}, description = nil)
     name = "#{@prefix}_#{event}"
     Prometheus
       .instance
-      .register(:summary, name, description)
+      .register(type, name, description)
       .observe(name, count, labels)
+  end
+
+  def benchmark_and_metric(type, event, labels, description)
+    start = Time.now
+    yield
+  ensure
+    elapsed_time_ms = ((Time.now - start) * 1000).round
+    record_metric(type, event, elapsed_time_ms, labels, description)
   end
 end
