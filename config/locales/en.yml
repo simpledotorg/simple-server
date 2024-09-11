@@ -66,9 +66,9 @@ en:
     summary: "patients with a blood sugar <200 from"
     summary_fbs: "patients with a blood sugar <126 from"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
-    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with blood sugar <126 or HbA1c <7 at their last visit in the last 3 months"
+    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with blood sugar <126 or HBA1C <7% at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
-    numerator_fbs: "Patients with FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
+    numerator_fbs: "Patients with FBS <126, or HBA1C <7.0% at their last visit in the last 3 months"
     rbs_ppbs:
       numerator: "Patients with RBS/PPBS <200 at their last visit in the last 3 months"
     fasting:
@@ -79,14 +79,14 @@ en:
     reports_card_title: "Blood sugar 200-299 or ≥300"
     reports_card_title_fbs: "Blood sugar 126-199 or ≥200"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
-    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with blood sugar 126-199 or blood sugar ≥200 at their last visit in the last 3 months"
+    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with blood sugar 126-199mg/dl or blood sugar ≥200mg/dl at their last visit in the last 3 months"
     bs_200_to_299:
       title: "Blood Sugar 200-299"
       title_fbs: "Blood Sugar 126-199"
       summary: "patients with a blood sugar 200-299 from"
-      summary_fbs: "patients with a blood sugar 126-199 from"
+      summary_fbs: "patients with a blood sugar 126-199mg/dl from"
       numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months"
-      numerator_fbs: "Patients with FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months"
+      numerator_fbs: "Patients with FBS 126-199, or HBA1C 7.0%-8.9% at their last visit in the last 3 months"
       rbs_ppbs:
         numerator: "Patients with RBS/PPBS 200-299 at their last visit in the last 3 months"
       fasting:
@@ -97,9 +97,9 @@ en:
       title: "Blood sugar ≥300"
       title_fbs: "Blood sugar ≥200"
       numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
-      numerator_fbs: "Patients with FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
+      numerator_fbs: "Patients with FBS ≥200, or HBA1C ≥9.0% at their last visit in the last 3 months"
       summary: "patients with a blood sugar ≥300 from"
-      summary_fbs: "patients with a blood sugar ≥200 from"
+      summary_fbs: "patients with a blood sugar ≥200mg/dl from"
       rbs_ppbs:
         numerator: "Patients with RBS/PPBS ≥300 at their last visit in the last 3 months"
       fasting:
