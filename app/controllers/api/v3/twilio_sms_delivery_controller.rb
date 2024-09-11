@@ -9,8 +9,7 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     twilio_message.update(update_params)
 
     communication_type = twilio_message.communication.communication_type
-    event = [communication_type, twilio_message.result].join("_")
-    metrics.increment(event)
+    metrics.increment(communication_type, {result: twilio_message.result})
 
     head :ok
   end
