@@ -56,7 +56,7 @@ module Mergeable
     end
 
     def increment_metric(event)
-      Statsd.instance.increment("merge.#{self}.#{event}")
+      Metrics.with_prefix("merge").increment(to_s.downcase, {status: event.to_s})
     end
 
     def discarded_record(record)
