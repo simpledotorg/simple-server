@@ -27,11 +27,11 @@ RSpec.describe "reports/regions/_diabetes_footnotes.html.erb", type: :view do
       render
       all_texts = Capybara.string(rendered).all("p")
       expect(all_texts[8].text.strip).to eq("Blood sugar < 126")
-      expect(all_texts[9].text.strip).to eq("Numerator: Patients with FBS <126, or HBA1C <7.0% at their last visit in the last 3 months")
+      expect(all_texts[9].text.strip).to eq("Numerator: Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months")
       expect(all_texts[11].text.strip).to eq("Blood Sugar 126-199")
-      expect(all_texts[12].text.strip).to eq("Numerator: Patients with FBS 126-199, or HBA1C 7.0%-8.9% at their last visit in the last 3 months")
+      expect(all_texts[12].text.strip).to eq("Numerator: Patients with FBS 126-199mg/dL, or HbA1c 7%-8.9% at their last visit in the last 3 months")
       expect(all_texts[14].text.strip).to eq("Blood sugar ≥200")
-      expect(all_texts[15].text.strip).to eq("Numerator: Patients with FBS ≥200, or HBA1C ≥9.0% at their last visit in the last 3 months")
+      expect(all_texts[15].text.strip).to eq("Numerator: Patients with FBS ≥200mg/dL, or HbA1c ≥9% at their last visit in the last 3 months")
     end
   end
 end
