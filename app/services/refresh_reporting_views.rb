@@ -68,6 +68,7 @@ class RefreshReportingViews
   def initialize(views:)
     @logger = Rails.logger.child(class: self.class.name)
     @all = true if views == :all
+    @metrics = Metrics.with_object(self)
     @views = if views == :all
       V1_REPORTING_VIEWS + V2_REPORTING_VIEWS
     else
@@ -114,18 +115,12 @@ class RefreshReportingViews
   end
 
   def benchmark_and_statsd(operation)
-    name = "refresh_reporting_views.#{operation}"
+    name = "refresh_duration_milliseconds"
     result = nil
     ms = Benchmark.ms do
-      Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
-        result = yield
-      end
+      result = yield
     end
-    Statsd.instance.timing(name, ms)
-    if Flipper.enabled?(:prometheus_metrics)
-      Prometheus.register(:gauge, name) unless Prometheus.exists?(name)
-      Prometheus.observe(name, ms)
-    end
+    @metrics.gauge(name, ms, {view: operation})
     result
   end
 end

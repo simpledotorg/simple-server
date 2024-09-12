@@ -65,7 +65,9 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "updates the result and delivered_on" do
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.delivered")
+          metrics_instance = instance_double(Metrics)
+          allow(Metrics).to receive(:with_prefix).with("twilio_callback").and_return(metrics_instance)
+          expect(metrics_instance).to receive(:increment).with("manual_call", {result: "delivered"})
           session_id = SecureRandom.uuid
           twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
             session_id: session_id,
@@ -97,7 +99,9 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "updates the result and read_at when result is 'read'" do
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.read")
+          metrics_instance = instance_double(Metrics)
+          allow(Metrics).to receive(:with_prefix).with("twilio_callback").and_return(metrics_instance)
+          expect(metrics_instance).to receive(:increment).with("manual_call", {result: "read"})
           session_id = SecureRandom.uuid
           twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
             session_id: session_id,
@@ -134,6 +138,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           create(:communication, :whatsapp, notification: notification)
           communication = create(:communication, :sms, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+          metrics_instance = instance_double(Metrics)
+          allow(Metrics).to receive(:with_prefix).with("twilio_callback").and_return(metrics_instance)
 
           params = base_callback_params.merge(
             "MessageSid" => session_id,
@@ -142,7 +148,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.sms.failed")
+          expect(metrics_instance).to receive(:increment).with("sms", {result: "failed"})
 
           post :create, params: params
         end
@@ -152,6 +158,8 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           notification = create(:notification)
           communication = create(:communication, :whatsapp, notification: notification)
           create(:twilio_sms_delivery_detail, session_id: session_id, result: "queued", communication: communication)
+          metrics_instance = instance_double(Metrics)
+          allow(Metrics).to receive(:with_prefix).with("twilio_callback").and_return(metrics_instance)
 
           params = base_callback_params.merge(
             "MessageSid" => session_id,
@@ -160,7 +168,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
+          expect(metrics_instance).to receive(:increment).with("whatsapp", {result: "failed"})
 
           post :create, params: params
         end
@@ -169,10 +177,12 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           it "logs failure if the attempt failed, doesn't schedule a fallback message" do
             twilio_client = double("TwilioClientDouble")
             twilio_response = double("TwilioClientResponseDouble")
+            metrics_instance = instance_double(Metrics)
             allow(Twilio::REST::Client).to receive(:new).and_return(twilio_client)
             allow(twilio_client).to receive_message_chain("messages.create").and_return(twilio_response)
             allow(twilio_response).to receive(:sid).and_return(nil)
             allow(twilio_response).to receive(:status).and_return(nil)
+            allow(Metrics).to receive(:with_prefix).with("twilio_callback").and_return(metrics_instance)
 
             session_id = SecureRandom.uuid
             notification = create(:notification, message: "notifications.covid.medication_reminder", purpose: "covid_medication_reminder")
@@ -186,7 +196,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             )
             set_twilio_signature_header(callback_url, params)
             expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-            expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
+            expect(metrics_instance).to receive(:increment).with("whatsapp", {result: "failed"})
 
             post :create, params: params
           end
