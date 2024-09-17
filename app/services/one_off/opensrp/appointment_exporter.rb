@@ -119,7 +119,8 @@ module OneOff
       def export_call_outcome_task
         call_outcome_mapping = {
           "agreed_to_visit" => "call_outcome_follow_up",
-          "remind_to_call_later" => "rescheduled_call_outcome_follow_up"
+          "remind_to_call_later" => "rescheduled_call_outcome_follow_up",
+          "removed_from_overdue_list" => "call_outcome_follow_up"
         }
         latest_call_result_type = appointment.call_results.order(device_created_at: :desc).first.result_type
         FHIR::Task.new(
