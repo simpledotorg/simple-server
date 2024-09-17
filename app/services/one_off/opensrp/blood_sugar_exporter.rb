@@ -9,12 +9,11 @@ module OneOff
         if blood_sugar_or_patient.is_a?(Patient)
           @patient = blood_sugar_or_patient
           @blood_sugar = nil
-          @opensrp_ids = opensrp_mapping[@patient.assigned_facility_id]
         else
           @blood_sugar = blood_sugar_or_patient
           @patient = @blood_sugar.patient
-          @opensrp_ids = opensrp_mapping[@blood_sugar.facility_id]
         end
+        @opensrp_ids = opensrp_mapping[@patient.assigned_facility_id]
       end
 
       def export

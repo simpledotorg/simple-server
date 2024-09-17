@@ -7,7 +7,7 @@ module OneOff
 
       def initialize(appointment, opensrp_mapping)
         @appointment = appointment
-        @opensrp_ids = opensrp_mapping[@appointment.facility_id]
+        @opensrp_ids = opensrp_mapping[@appointment.patient.assigned_facility_id]
       end
 
       def export
