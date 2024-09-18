@@ -7,7 +7,7 @@ module OneOff
 
       def initialize(prescription_drug, opensrp_mapping)
         @prescription_drug = prescription_drug
-        @opensrp_ids = opensrp_mapping[@prescription_drug.facility_id]
+        @opensrp_ids = opensrp_mapping[@prescription_drug.patient.assigned_facility_id]
       end
 
       def export_dosage_flag

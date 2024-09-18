@@ -19,7 +19,8 @@ namespace :opensrp do
 
     resources = []
     encounters = []
-    Patient.where(assigned_facility_id: OPENSRP_ORG_MAP.keys).each do |patient|
+    patients = Patient.where(assigned_facility_id: OPENSRP_ORG_MAP.keys)
+    patients.each do |patient|
       patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, OPENSRP_ORG_MAP)
       resources << patient_exporter.export
       resources << patient_exporter.export_registration_questionnaire_response
