@@ -7,7 +7,7 @@ module OneOff
 
       def initialize(blood_pressure, opensrp_mapping)
         @blood_pressure = blood_pressure
-        @opensrp_ids = opensrp_mapping[@blood_pressure.facility_id]
+        @opensrp_ids = opensrp_mapping[@blood_pressure.patient.assigned_facility_id]
       end
 
       def encounter_id

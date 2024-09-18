@@ -10,7 +10,7 @@ module OneOff
       end
 
       def generate
-        encounters.group_by { |encounter| encounter[:parent_id] }.map do |parent_id, child_encounters|
+        encounters.compact.group_by { |encounter| encounter[:parent_id] }.map do |parent_id, child_encounters|
           opensrp_ids = child_encounters.first[:encounter_opensrp_ids]
           first_child_encounter = child_encounters.first[:child_encounter]
           patient_ref = first_child_encounter.subject
