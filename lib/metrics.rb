@@ -54,10 +54,10 @@ class Metrics
   end
 
   def benchmark_and_metric(type, event, labels, description)
-    start = Time.now
+    start = Process.clock_gettime(Process::CLOCK_MONOTONIC)
     yield
   ensure
-    elapsed_time_ms = ((Time.now - start) * 1000).round
+    elapsed_time_ms = ((Process.clock_gettime(Process::CLOCK_MONOTONIC) - start) * 1000).round
     record_metric(type, event, elapsed_time_ms, labels, description)
   end
 end
