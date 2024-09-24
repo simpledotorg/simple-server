@@ -56,7 +56,7 @@ module Mergeable
     end
 
     def increment_metric(event)
-      Metrics.with_prefix("merge").increment(to_s, {status: event.to_s})
+      Metrics.instance.increment("#{table_name}_merged", {status: event})
     end
 
     def discarded_record(record)

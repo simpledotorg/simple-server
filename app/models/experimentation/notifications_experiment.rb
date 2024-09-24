@@ -215,15 +215,12 @@ module Experimentation
     def self.time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      label = "#{name}.#{method_name}"
-
-      benchmark(label) do
-        Statsd.instance.time(label) do
+      event = "notification_experiments_tasks_duration_seconds"
+      benchmark(event) do
+        Metrics.instance.benchmark_and_gauge(event, {task: method_name}) do
           yield(block)
         end
       end
-
-      Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
     delegate :time, to: self

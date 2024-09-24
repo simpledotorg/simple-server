@@ -68,9 +68,7 @@ describe Mergeable do
 
     updated_patient.device_updated_at = 10.minutes.ago
 
-    metrics_instance = instance_double(Metrics)
-    allow(Metrics).to receive(:with_prefix).with("merge").and_return(metrics_instance)
-    expect(metrics_instance).to receive(:increment).with("Patient", {status: "old"})
+    expect(Metrics.instance).to receive(:increment).with("patients_merged", {status: :old})
     Patient.merge(updated_patient.attributes)
   end
 
@@ -81,9 +79,7 @@ describe Mergeable do
 
     updated_patient.device_updated_at = existing_patient.device_updated_at
 
-    metrics_instance = instance_double(Metrics)
-    allow(Metrics).to receive(:with_prefix).with("merge").and_return(metrics_instance)
-    expect(metrics_instance).to receive(:increment).with("Patient", {status: "identical"})
+    expect(Metrics.instance).to receive(:increment).with("patients_merged", {status: :identical})
     Patient.merge(updated_patient.attributes)
   end
 

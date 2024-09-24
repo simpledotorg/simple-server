@@ -97,7 +97,7 @@ RSpec.describe QuestionnaireResponse, type: :model do
 
       updated_questionnaire_response.device_updated_at = 10.minutes.ago
 
-      expect(Statsd.instance).to receive(:increment).with("merge.QuestionnaireResponse.updated")
+      expect(Metrics.instance).to receive(:increment).with("questionnaire_responses_merged", {:status=>:updated})
       QuestionnaireResponse.merge(updated_questionnaire_response.attributes)
     end
 
@@ -108,7 +108,7 @@ RSpec.describe QuestionnaireResponse, type: :model do
 
       updated_questionnaire_response.device_updated_at = existing_questionnaire_response.device_updated_at
 
-      expect(Statsd.instance).to receive(:increment).with("merge.QuestionnaireResponse.updated")
+      expect(Metrics.instance).to receive(:increment).with(("questionnaire_responses_merged", {:status=>:updated}))
       QuestionnaireResponse.merge(updated_questionnaire_response.attributes)
     end
 

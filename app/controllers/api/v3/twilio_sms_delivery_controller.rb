@@ -9,16 +9,12 @@ class Api::V3::TwilioSmsDeliveryController < ApplicationController
     twilio_message.update(update_params)
 
     communication_type = twilio_message.communication.communication_type
-    metrics.increment(communication_type, {result: twilio_message.result})
+    Metrics.instance.increment("twilio_callbacks", {result: twilio_message.result, communication_type: communication_type})
 
     head :ok
   end
 
   private
-
-  def metrics
-    @metrics ||= Metrics.with_prefix("twilio_callback")
-  end
 
   def update_params
     details = {result: message_status}

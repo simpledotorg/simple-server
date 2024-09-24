@@ -68,7 +68,6 @@ class RefreshReportingViews
   def initialize(views:)
     @logger = Rails.logger.child(class: self.class.name)
     @all = true if views == :all
-    @metrics = Metrics.with_object(self)
     @views = if views == :all
       V1_REPORTING_VIEWS + V2_REPORTING_VIEWS
     else
@@ -110,17 +109,16 @@ class RefreshReportingViews
         klass = name.constantize
         klass.refresh
       end
-      Statsd.instance.flush
     end
   end
 
   def benchmark_and_statsd(operation)
-    name = "refresh_duration_milliseconds"
+    view = operation == "all" ? "all" : operation.constantize.table_name
+    name = "reporting_views_refresh_duration_seconds"
     result = nil
-    ms = Benchmark.ms do
+    Metrics.instance.benchmark_and_gauge(name, {view: view}) do
       result = yield
     end
-    @metrics.gauge(name, ms, {view: operation})
     result
   end
 end
