@@ -65,7 +65,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "updates the result and delivered_on" do
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.delivered")
+          expect(Metrics.instance).to receive(:increment).with("twilio_callbacks", {result: "delivered", communication_type: "manual_call"})
           session_id = SecureRandom.uuid
           twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
             session_id: session_id,
@@ -97,7 +97,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
         end
 
         it "updates the result and read_at when result is 'read'" do
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.manual_call.read")
+          expect(Metrics.instance).to receive(:increment).with("twilio_callbacks", {result: "read", communication_type: "manual_call"})
           session_id = SecureRandom.uuid
           twilio_sms_delivery_detail = create(:twilio_sms_delivery_detail,
             session_id: session_id,
@@ -142,7 +142,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.sms.failed")
+          expect(Metrics.instance).to receive(:increment).with("twilio_callbacks", {result: "failed", communication_type: "sms"})
 
           post :create, params: params
         end
@@ -160,7 +160,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
           set_twilio_signature_header(callback_url, params)
 
           expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-          expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
+          expect(Metrics.instance).to receive(:increment).with("twilio_callbacks", {result: "failed", communication_type: "whatsapp"})
 
           post :create, params: params
         end
@@ -186,7 +186,7 @@ RSpec.describe Api::V3::TwilioSmsDeliveryController, type: :controller do
             )
             set_twilio_signature_header(callback_url, params)
             expect(AppointmentNotification::Worker).not_to receive(:perform_at)
-            expect(Statsd.instance).to receive(:increment).with("twilio_callback.whatsapp.failed")
+            expect(Metrics.instance).to receive(:increment).with("twilio_callbacks", {result: "failed", communication_type: "whatsapp"})
 
             post :create, params: params
           end
