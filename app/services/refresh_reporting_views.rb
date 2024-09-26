@@ -109,22 +109,15 @@ class RefreshReportingViews
         klass = name.constantize
         klass.refresh
       end
-      Statsd.instance.flush
     end
   end
 
   def benchmark_and_statsd(operation)
-    name = "refresh_reporting_views.#{operation}"
+    view = operation == "all" ? "all" : operation.constantize.table_name
+    name = "reporting_views_refresh_duration_seconds"
     result = nil
-    ms = Benchmark.ms do
-      Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
-        result = yield
-      end
-    end
-    Statsd.instance.timing(name, ms)
-    if Flipper.enabled?(:prometheus_metrics)
-      Prometheus.register(:gauge, name) unless Prometheus.exists?(name)
-      Prometheus.observe(name, ms)
+    Metrics.instance.benchmark_and_gauge(name, {view: view}) do
+      result = yield
     end
     result
   end
