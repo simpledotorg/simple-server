@@ -118,6 +118,7 @@ class MergePatientService
   end
 
   def log_update_discarded_patient
-    Statsd.instance.increment("#{self.class}.update_discarded_patient")
+    Metrics.instance.increment("discarded_patients_updated_total", {},
+      "Total number of patients who were discarded and then their record was updated. This is a rare scenario, uptick should be investigated.")
   end
 end

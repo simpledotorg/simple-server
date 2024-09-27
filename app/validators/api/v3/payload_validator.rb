@@ -34,6 +34,6 @@ class Api::V3::PayloadValidator
   end
 
   def track_invalid
-    Statsd.instance.increment("merge.#{model_name}.schema_invalid")
+    Metrics.instance.increment("#{model_name.underscore.pluralize}_merged", {status: :schema_invalid})
   end
 end

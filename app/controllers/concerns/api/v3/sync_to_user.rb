@@ -90,7 +90,7 @@ module Api::V3::SyncToUser
     def time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      Statsd.instance.time("#{method_name}.#{model.name}") do
+      Metrics.instance.benchmark_and_gauge("sync_to_user_operation_duration_seconds", {operation: method_name, model: model.name.downcase}) do
         yield(block)
       end
     end

@@ -56,7 +56,7 @@ module Mergeable
     end
 
     def increment_metric(event)
-      Statsd.instance.increment("merge.#{self}.#{event}")
+      Metrics.instance.increment("#{table_name}_merged", {status: event})
     end
 
     def discarded_record(record)

@@ -4,27 +4,27 @@ RSpec.describe RecordCounter do
   let(:user) { create(:user) }
   let(:facility) { create(:facility) }
 
-  it "sends total counts as gauges to Statsd" do
+  it "sends total counts as gauges to Metrics" do
     patients = create_list(:patient, 3, registration_facility: facility, registration_user: user)
     create(:appointment, patient: patients.first, facility: facility, user: user)
     create(:blood_pressure, patient: patients.first, facility: facility, user: user)
 
-    expect(Statsd.instance).to receive(:gauge).with(anything, 0).at_least(1).times
-    expect(Statsd.instance).to receive(:gauge).with("counts.Appointment", 1)
-    expect(Statsd.instance).to receive(:gauge).with("counts.BloodPressure", 1)
-    expect(Statsd.instance).to receive(:gauge).with("counts.Facility", 2)
-    expect(Statsd.instance).to receive(:gauge).with("counts.FacilityGroup", 2)
-    expect(Statsd.instance).to receive(:gauge).with("counts.MedicalHistory", 3)
-    expect(Statsd.instance).to receive(:gauge).with("counts.Patient", 3)
-    expect(Statsd.instance).to receive(:gauge).with("counts.Region", Region.count)
-    expect(Statsd.instance).to receive(:gauge).with("counts.User", 1)
+    expect(Metrics.instance).to receive(:gauge).with(anything, 0).at_least(1).times
+    expect(Metrics.instance).to receive(:gauge).with("appointments", 1)
+    expect(Metrics.instance).to receive(:gauge).with("blood_pressures", 1)
+    expect(Metrics.instance).to receive(:gauge).with("facilities", 2)
+    expect(Metrics.instance).to receive(:gauge).with("facility_groups", 2)
+    expect(Metrics.instance).to receive(:gauge).with("medical_histories", 3)
+    expect(Metrics.instance).to receive(:gauge).with("patients", 3)
+    expect(Metrics.instance).to receive(:gauge).with("regions", Region.count)
+    expect(Metrics.instance).to receive(:gauge).with("users", 1)
 
-    expect(Statsd.instance).to receive(:histogram)
-      .with("counts.facilities_per_district", kind_of(Numeric)).at_least(1).times
-    expect(Statsd.instance).to receive(:histogram)
-      .with("counts.assigned_patients_per_facility", kind_of(Numeric)).at_least(1).times
-    expect(Statsd.instance).to receive(:histogram)
-      .with("counts.assigned_patients_per_block", kind_of(Numeric)).at_least(1).times
+    expect(Metrics.instance).to receive(:histogram)
+      .with("facilities_per_district", kind_of(Numeric)).at_least(1).times
+    expect(Metrics.instance).to receive(:histogram)
+      .with("assigned_patients_per_facility", kind_of(Numeric)).at_least(1).times
+    expect(Metrics.instance).to receive(:histogram)
+      .with("assigned_patients_per_block", kind_of(Numeric)).at_least(1).times
     RecordCounter.new.call
   end
 end
