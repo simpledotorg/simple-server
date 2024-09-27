@@ -5,14 +5,9 @@ module OneOff
     class BloodSugarExporter
       attr_reader :blood_sugar, :patient
 
-      def initialize(blood_sugar_or_patient, opensrp_mapping)
-        if blood_sugar_or_patient.is_a?(Patient)
-          @patient = blood_sugar_or_patient
-          @blood_sugar = nil
-        else
-          @blood_sugar = blood_sugar_or_patient
-          @patient = @blood_sugar.patient
-        end
+      def initialize(blood_sugar, opensrp_mapping)
+        @blood_sugar = blood_sugar
+        @patient = @blood_sugar.patient
         @opensrp_ids = opensrp_mapping[@patient.assigned_facility_id]
       end
 
@@ -151,7 +146,7 @@ module OneOff
       end
 
       def encounter_id
-        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar&.id || "no_diabetes_#{patient.id}")
+        Digest::UUID.uuid_v5(Digest::UUID::DNS_NAMESPACE, blood_sugar&.id)
       end
 
       def meta
