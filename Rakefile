@@ -10,7 +10,8 @@ end
 
 task :after_hook do
   at_exit do
-    # Rake tasks often quit before the data is sent to the collector.
+    # Rake tasks often quit before the data is sent to the Prometheus
+    # collector.
     # This hook will wait for 10 seconds for the queue to become empty
     # and closing the socket.
     PrometheusExporter::Client.default.stop(wait_timeout_seconds: 10)
