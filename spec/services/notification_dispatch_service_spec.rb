@@ -92,7 +92,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     notification.patient.phone_numbers.update_all(phone_type: :invalid)
     expect(mock_messaging_channel).not_to receive(:send_message)
-    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_mobile_number")
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "no_mobile_number"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
@@ -102,7 +102,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     messaging_channel = mock_messaging_channel
     allow(messaging_channel).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
-    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.invalid_phone_number")
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "invalid_phone_number"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
@@ -120,7 +120,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     messaging_channel = mock_messaging_channel
     allow(messaging_channel).to receive(:send_message).and_raise(Messaging::MissingReferenceError.new("Patient missing/deleted"))
-    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_reference")
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "no_reference"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")

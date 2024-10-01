@@ -5,9 +5,8 @@ namespace :alpha_sms do
     expiry_date = response.dig(:data, :validity)&.to_date
     balance_amount = response.dig(:data, :balance)&.to_f
 
-    Statsd.instance.gauge("alpha_sms_balance_bdt", balance_amount)
-    Statsd.instance.gauge("alpha_sms_balance_days_till_expiry", (expiry_date - Date.current).to_i)
-    Statsd.instance.flush
+    Metrics.gauge("alpha_sms_balance_bdt", balance_amount)
+    Metrics.gauge("alpha_sms_balance_days_till_expiry", (expiry_date - Date.current).to_i)
 
     print("Balance: #{balance_amount} BDT\nExpiry: #{expiry_date}")
   end
