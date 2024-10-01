@@ -116,7 +116,7 @@ class RefreshReportingViews
     view = operation == "all" ? "all" : operation.constantize.table_name
     name = "reporting_views_refresh_duration_seconds"
     result = nil
-    Metrics.instance.benchmark_and_gauge(name, {view: view}) do
+    Metrics.benchmark_and_gauge(name, {view: view}) do
       result = yield
     end
     result

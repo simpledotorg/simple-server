@@ -58,7 +58,7 @@ class DuplicatePassportAnalytics
       Rails.logger.info msg: "#{duplicate_passports_across_facilities.size} passports have duplicate patients across facilities"
     end
 
-    Metrics.instance.gauge("duplicate_passports_across_facilities", duplicate_passports_across_facilities.size)
+    Metrics.gauge("duplicate_passports_across_facilities", duplicate_passports_across_facilities.size)
   end
 
   def trend(metrics, since, step)
@@ -230,7 +230,7 @@ class DuplicatePassportAnalytics
   end
 
   def gauge(stat, value)
-    Metrics.instance.gauge(stat.to_s, value)
+    Metrics.gauge(stat.to_s, value)
   end
 
   # rubygems implements levenshtein_distance for guessing typos, we can reuse it

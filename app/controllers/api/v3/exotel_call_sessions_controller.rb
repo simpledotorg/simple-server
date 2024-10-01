@@ -69,7 +69,7 @@ class Api::V3::ExotelCallSessionsController < ApplicationController
   end
 
   def report_call_info
-    Metrics.instance.increment("exotel_call_sessions", {call_type: call_type, call_status: call_status})
+    Metrics.increment("exotel_call_sessions", {call_type: call_type, call_status: call_status})
   end
 
   def schedule_call_log_job(user_phone_number, callee_phone_number)

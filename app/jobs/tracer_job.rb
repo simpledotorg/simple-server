@@ -5,7 +5,7 @@ class TracerJob
   sidekiq_options retry: false # job will be discarded if it fails
 
   def perform(submitted_at, raise_error)
-    Metrics.instance.increment("tracer_jobs")
+    Metrics.increment("tracer_jobs")
     if raise_error
       raise Admin::ErrorTracesController::Boom, "Error trace triggered via sidekiq!"
     end

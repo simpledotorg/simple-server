@@ -12,7 +12,7 @@ class RunnerTrace
   end
 
   def call
-    Metrics.instance.increment("runner_traces_total")
+    Metrics.increment("runner_traces_total")
     logger.info msg: "about to raise an error",
       sentry_debug_info: sentry_debug_info
     raise Error, "Runner trace error"

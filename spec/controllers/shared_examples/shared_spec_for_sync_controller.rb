@@ -140,8 +140,8 @@ RSpec.shared_examples "a working sync controller creating records" do
 
     it "returns errors for some invalid records, and accepts others" do
       model_name = partially_valid_payload.keys.first.singularize.classify
-      allow(Metrics.instance).to receive(:increment).with(anything, anything)
-      expect(Metrics.instance).to receive(:increment).with("#{model_name.underscore.pluralize}_merged", {status: :schema_invalid}).exactly(5).times
+      allow(Metrics).to receive(:increment).with(anything, anything)
+      expect(Metrics).to receive(:increment).with("#{model_name.underscore.pluralize}_merged", {status: :schema_invalid}).exactly(5).times
       post(:sync_from_user, params: partially_valid_payload, as: :json)
 
       response_errors = JSON(response.body)["errors"]

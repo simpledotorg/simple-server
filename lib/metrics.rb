@@ -1,5 +1,5 @@
-class Metrics
-  include Singleton
+module Metrics
+  extend self
 
   def gauge(event, count, labels = {}, description = nil)
     record_metric(:gauge, event, count, labels, description)

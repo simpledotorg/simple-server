@@ -124,7 +124,7 @@ RSpec.describe Api::V3::ExotelCallSessionsController, type: :controller do
       end
 
       it "should report metrics" do
-        expect(Metrics.instance).to receive(:increment).with("exotel_call_sessions", {call_type: "call_attempt", call_status: "completed"})
+        expect(Metrics).to receive(:increment).with("exotel_call_sessions", {call_type: "call_attempt", call_status: "completed"})
 
         get :terminate, params: {From: user.phone_number,
                                  digits: patient.phone_numbers.first.number,

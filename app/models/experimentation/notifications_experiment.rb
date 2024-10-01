@@ -217,7 +217,7 @@ module Experimentation
 
       event = "notification_experiments_tasks_duration_seconds"
       benchmark(event) do
-        Metrics.instance.benchmark_and_gauge(event, {task: method_name}) do
+        Metrics.benchmark_and_gauge(event, {task: method_name}) do
           yield(block)
         end
       end

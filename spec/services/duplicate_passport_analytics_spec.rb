@@ -102,11 +102,11 @@ RSpec.describe DuplicatePassportAnalytics do
     end
 
     it "reports all reportable metrics on statsd" do
-      expect(Metrics.instance).to receive(:gauge).with("duplicate_passports_across_facilities", 2)
-      expect(Metrics.instance).to receive(:gauge).with("duplicate_passports_in_same_facility", 1)
-      expect(Metrics.instance).to receive(:gauge).with("duplicate_passports_across_districts", 0)
-      expect(Metrics.instance).to receive(:gauge).with("duplicate_passports_across_blocks", 1)
-      expect(Metrics.instance).to receive(:gauge).with("duplicate_passports_across_facilities", 2) # legacy
+      expect(Metrics).to receive(:gauge).with("duplicate_passports_across_facilities", 2)
+      expect(Metrics).to receive(:gauge).with("duplicate_passports_in_same_facility", 1)
+      expect(Metrics).to receive(:gauge).with("duplicate_passports_across_districts", 0)
+      expect(Metrics).to receive(:gauge).with("duplicate_passports_across_blocks", 1)
+      expect(Metrics).to receive(:gauge).with("duplicate_passports_across_facilities", 2) # legacy
 
       described_class.new.report
     end

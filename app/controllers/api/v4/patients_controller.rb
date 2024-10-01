@@ -17,7 +17,7 @@ class Api::V4::PatientsController < APIController
       json: Oj.dump({
         patients: patients.map do |patient|
           retention = retention(patient)
-          Metrics.instance.increment("patient_online_lookups", {retention_type: retention[:type], current_state_name: current_state.name, current_user_id: current_user.id})
+          Metrics.increment("patient_online_lookups", {retention_type: retention[:type], current_state_name: current_state.name, current_user_id: current_user.id})
           Api::V4::PatientLookupTransformer.to_response(patient, retention)
         end
       }, mode: :compat),

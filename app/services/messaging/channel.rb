@@ -28,14 +28,14 @@ class Messaging::Channel
   end
 
   def track_metrics(&block)
-    Metrics.instance.increment("#{self.class.communication_type}_attempts")
+    Metrics.increment("#{self.class.communication_type}_attempts")
 
     begin
       response = yield block
-      Metrics.instance.increment("#{self.class.communication_type}_sent")
+      Metrics.increment("#{self.class.communication_type}_sent")
       response
     rescue Messaging::Error => exception
-      Metrics.instance.increment("#{self.class.communication_type}_errors")
+      Metrics.increment("#{self.class.communication_type}_errors")
       raise exception
     end
   end

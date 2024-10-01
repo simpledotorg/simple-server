@@ -26,22 +26,22 @@ class RecordCounter
 
   def count_totals
     MODELS_TO_COUNT.each do |model|
-      Metrics.instance.gauge(model.table_name, model.count)
+      Metrics.gauge(model.table_name, model.count)
     end
   end
 
   def count_per_region_totals
     Region.district_regions.find_each do |district|
       count = district.facilities.count
-      Metrics.instance.histogram("facilities_per_district", count)
+      Metrics.histogram("facilities_per_district", count)
     end
     Region.facility_regions.find_each do |facility|
       count = facility.assigned_patients.count
-      Metrics.instance.histogram("assigned_patients_per_facility", count)
+      Metrics.histogram("assigned_patients_per_facility", count)
     end
     Region.block_regions.find_each.each do |block|
       count = block.assigned_patients.count
-      Metrics.instance.histogram("assigned_patients_per_block", count)
+      Metrics.histogram("assigned_patients_per_block", count)
     end
   end
 end

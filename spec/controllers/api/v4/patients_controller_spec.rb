@@ -163,7 +163,7 @@ RSpec.describe Api::V4::PatientsController, type: :controller do
     it "increments a statsd metric" do
       patient = create(:patient)
       set_headers(patient.registration_user, patient.registration_facility)
-      expect(Metrics.instance).to receive(:increment).with("patient_online_lookups", {
+      expect(Metrics).to receive(:increment).with("patient_online_lookups", {
         current_state_name: patient.registration_facility.state,
         current_user_id: patient.registration_user.id,
         retention_type: "temporary"

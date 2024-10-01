@@ -5,7 +5,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
     before do
       Flipper.enable(:notifications)
       Flipper.enable(:experiment)
-      allow(Metrics.instance).to receive(:increment).with(anything)
+      allow(Metrics).to receive(:increment).with(anything)
       messaging_channel = Messaging::Twilio::ReminderSms
       allow(CountryConfig.current).to receive(:[]).and_call_original
       allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
@@ -27,7 +27,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       pending_notification = create(:notification, status: "pending")
       cancelled_notification = create(:notification, status: "cancelled")
 
-      expect(Metrics.instance).to receive(:increment)
+      expect(Metrics).to receive(:increment)
         .with("notifications_skipped", {reason: "not_scheduled"})
         .exactly(2).times
 
@@ -44,7 +44,7 @@ RSpec.describe AppointmentNotification::Worker, type: :job do
       Flipper.disable(:experiment)
       notification = create(:notification, status: :scheduled)
 
-      expect(Metrics.instance).to receive(:increment).with("notifications_skipped", {reason: "feature_disabled"})
+      expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "feature_disabled"})
       expect {
         described_class.perform_async(notification.id)
         described_class.drain
