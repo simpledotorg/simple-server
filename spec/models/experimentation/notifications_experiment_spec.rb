@@ -838,7 +838,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   describe "#time" do
     it "calls statsd instance time" do
-      expect(Statsd.instance).to receive(:time).with("Experimentation::NotificationsExperiment.monitor")
+      expect(Metrics).to receive(:benchmark_and_gauge).with("notification_experiments_tasks_duration_seconds", {task: :monitor})
 
       create(:experiment)
       described_class.first.monitor
