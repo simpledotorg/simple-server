@@ -6,10 +6,7 @@ class Messaging::Channel
   # to handle known errors properly.
 
   def initialize
-    @metrics = Metrics.with_object(self)
   end
-
-  attr_reader :metrics
 
   # The channel implementation is responsible for creating a Communication
   # and delivery details. This should return the communication object that was created.
@@ -31,14 +28,14 @@ class Messaging::Channel
   end
 
   def track_metrics(&block)
-    metrics.increment("#{self.class.communication_type}.attempts")
+    Metrics.increment("#{self.class.communication_type}_attempts")
 
     begin
       response = yield block
-      metrics.increment("#{self.class.communication_type}.send")
+      Metrics.increment("#{self.class.communication_type}_sent")
       response
     rescue Messaging::Error => exception
-      metrics.increment("#{self.class.communication_type}.errors")
+      Metrics.increment("#{self.class.communication_type}_errors")
       raise exception
     end
   end
