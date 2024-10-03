@@ -48,4 +48,22 @@ module Metrics
     elapsed_time_seconds = Process.clock_gettime(Process::CLOCK_MONOTONIC) - start
     record_metric(type, event, elapsed_time_seconds, labels, description)
   end
+
+  class Prometheus
+    include Singleton
+
+    def initialize
+      @client = PrometheusExporter::Client.default
+      @collectors = {}
+    end
+
+    def register(type, name, description = nil)
+      @collectors[name] ||= @client.register(type, name, description)
+      self
+    end
+
+    def observe(name, value, labels = {})
+      @collectors[name].observe(value, labels)
+    end
+  end
 end
