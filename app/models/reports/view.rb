@@ -4,7 +4,9 @@ module Reports
 
     def self.refresh
       ActiveRecord::Base.transaction do
-        refresh_view if materialized?
+        puts "Refreshing #{table_name} which is a ctas table" if ctas_table?
+        refresh_ctas if ctas_table?
+        # refresh_view if materialized?
         add_comments
       end
     end
@@ -32,6 +34,27 @@ module Reports
 
     def self.materialized?
       raise NotImplementedError
+      # false
+    end
+
+    def self.ctas_table?
+      false
+    end
+
+    def self.select_sql
+      ActiveRecord::Base.connection.execute(
+        "SELECT pg_get_viewdef('#{table_name}', true)"
+      ).first["pg_get_viewdef"]
+    end
+
+    def self.add_indexes(temp_table_name)
+      query = <<-SQL
+        SELECT indexdef
+        FROM pg_indexes
+        WHERE tablename = '#{table_name}'
+      SQL
+
+      ActiveRecord::Base.connection.execute(query).map { |row| row["indexdef"] }
     end
   end
 end
