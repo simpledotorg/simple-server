@@ -1,0 +1,59 @@
+<h1 class="page-header">
+  Settings
+</h1>
+<div id="settings">
+  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
+  <%= link_to (admin_facilities_path), class: "nav-link settings-nav-link #{active_controller?("admin/facilities")}" do %>
+      Facilities
+  <% end %>
+  <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+    <%= link_to (admin_organizations_path), class: "nav-link settings-nav-link #{active_controller?("admin/organizations")}", id: "nav-organizations-link" do %>
+      Organizations
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+    <%= link_to (admin_protocols_path), class: "nav-link settings-nav-link #{active_controller?("admin/protocols")}" do %>
+      Mobile app medications
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
+    <%= link_to (admins_path), class: "nav-link settings-nav-link #{active_controller?("admins")}" do %>
+      Dashboard admins
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? || current_admin.accessible_users(:manage).any?  %>
+    <%= link_to (admin_users_path), class: "nav-link settings-nav-link #{active_controller?("admin/users")}", id: "mobile-app-users" do %>
+      Mobile app users
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user?  %>
+    <%= link_to (new_admin_patient_import_path), class: "nav-link settings-nav-link #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
+      Patient import
+    <% end %>
+  <% end %>
+
+  <% if current_admin.power_user? %>
+  <div class="nav-divider"></div>
+  <% end %>
+
+  <% if current_admin.power_user? %>
+    <%= link_to ("/sidekiq"), class: "nav-link settings-nav-link settings-nav-link #{active_controller?("sidekiq")}" do %>
+      Sidekiq
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? %>
+    <%= link_to ("/flipper"), class: "nav-link settings-nav-link #{active_controller?("flipper")}" do %>
+      Flipper
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? %>
+    <%= link_to admin_error_traces_path, class: "nav-link settings-nav-link #{active_controller?("admin/error_traces")}" do %>
+      Error traces
+    <% end %>
+  <% end %>
+  <% if current_admin.power_user? %>
+    <%= link_to admin_cphc_migration_path, class: "nav-link settings-nav-link #{active_controller?("admin/cphc_migration")}" do %>
+      CPHC Migration
+    <% end %>
+  <% end %>
+<% end %>
