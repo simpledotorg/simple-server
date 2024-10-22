@@ -35,6 +35,7 @@ module Metrics
   private
 
   def record_metric(type, event, count, labels = {}, description = nil)
+    return unless Rails.env.production?
     Prometheus
       .instance
       .register(type, event, description)

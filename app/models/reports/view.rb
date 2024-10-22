@@ -6,7 +6,8 @@ module Reports
       ActiveRecord::Base.transaction do
         puts "Refreshing #{table_name} which is a ctas table" if ctas_table?
         refresh_ctas if ctas_table?
-        # refresh_view if materialized?
+        # puts "Refreshing #{table_name} which is not a ctas table" if materialized?
+        refresh_view if ENV["NO_MATVIEW"] == "false"
         add_comments
       end
     end
@@ -33,12 +34,16 @@ module Reports
     end
 
     def self.materialized?
-      raise NotImplementedError
-      # false
+      # raise NotImplementedError
+      if ENV["CTAS"] == "true"
+        false
+      else
+        raise NotImplementedError
+      end
     end
 
     def self.ctas_table?
-      false
+      ENV["CTAS"] == "true"
     end
 
     def self.select_sql

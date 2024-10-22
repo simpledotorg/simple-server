@@ -6,17 +6,16 @@ class RefreshReportingViews
   REPORTING_VIEW_DAILY_REFRESH_KEY = "last_reporting_view_daily_refresh_time".freeze
 
   # Keep the views below in the order as defined, as they have dependencies on earlier matviews in the lists
-  V1_REPORTING_VIEWS = %w[
-    LatestBloodPressuresPerPatientPerMonth
-    LatestBloodPressuresPerPatient
-    BloodPressuresPerFacilityPerDay
-    MaterializedPatientSummary
-  ].freeze
+  V1_REPORTING_VIEWS = []
+  # V1_REPORTING_VIEWS = %w[
+  #   LatestBloodPressuresPerPatientPerMonth
+  #   LatestBloodPressuresPerPatient
+  #   BloodPressuresPerFacilityPerDay
+  #   MaterializedPatientSummary
+  # ].freeze
 
   # The order for these must remain BPs -> Visits -> States
   V2_REPORTING_VIEWS = %w[
-    Reports::Month
-    Reports::Facility
     Reports::PatientBloodPressure
     Reports::PatientBloodSugar
     Reports::OverdueCalls
@@ -104,6 +103,7 @@ class RefreshReportingViews
   attr_reader :views
 
   def refresh
+    puts "refreshing views: #{views.inspect}"
     views.each do |name|
       benchmark_and_statsd(name) do
         klass = name.constantize

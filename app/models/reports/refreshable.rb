@@ -4,7 +4,9 @@ module Reports
     #
     # By default this will be done within a transaction, unless the `transaction` arg is set to false
     def refresh(transaction: true)
-      refresh_ctas if ctas_table?
+      puts "Refreshing #{table_name} which is a ctas table" if ctas_table?
+      return refresh_ctas if ctas_table?
+      puts "Refreshing #{table_name} which is a matview"
       return refresh_view unless transaction
       ActiveRecord::Base.transaction do
         refresh_view
@@ -12,15 +14,23 @@ module Reports
     end
 
     def ctas_table?
-      false
+      ENV["CTAS"] == "true"
     end
 
     def select_sql
-      raise NotImplementedError, "#{name} must implement select_sql method for CTAS refresh"
+      ActiveRecord::Base.connection.execute(
+        "SELECT pg_get_viewdef('#{table_name}', true)"
+      ).first["pg_get_viewdef"]
     end
 
     def add_indexes(temp_table_name)
-      raise NotImplementedError, "#{name} must implement add_indexes method for CTAS refresh"
+      query = <<-SQL
+        SELECT indexdef
+        FROM pg_indexes
+        WHERE tablename = '#{table_name}'
+      SQL
+
+      ActiveRecord::Base.connection.execute(query).map { |row| row["indexdef"] }
     end
 
     def validate_new_table(temp_table_name)
@@ -46,6 +56,7 @@ module Reports
     end
 
     def refresh_view
+      puts "Refreshing #{table_name} with concurrently=#{refresh_concurrently?}"
       ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
       Scenic.database.refresh_materialized_view(table_name, concurrently: refresh_concurrently?, cascade: false)
     end
