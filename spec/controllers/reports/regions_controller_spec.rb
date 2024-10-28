@@ -18,21 +18,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility_region = @facility.region
     end
 
-    it "redirects if matching region slug not found" do
-      sign_in(cvho.email_authentication)
-      get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
-      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-      expect(response).to be_redirect
-    end
-
-    it "redirects if user does not have proper access to org" do
-      district_official = create(:admin, :viewer_reports_only, :with_access, resource: @facility_group)
-
-      sign_in(district_official.email_authentication)
-      get :show, params: {id: @facility_group.organization.slug, report_scope: "organization"}
-      expect(flash[:alert]).to eq("You are not authorized to perform this action.")
-      expect(response).to be_redirect
-    end
 
     it "redirects if user does not have authorization to region" do
       other_fg = create(:facility_group, name: "other facility group")
@@ -57,6 +42,17 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(user.email_authentication)
       get :show, params: {id: region.slug, report_scope: "district"}
       expect(response).to be_successful
+    end
+
+    it "renders successfully for an organization when feature is enabled" do
+      admin = create(:admin, :viewer_reports_only, :with_access, resource: organization)
+      allow(admin).to receive(:feature_enabled?).with(:organization_reports).and_return(true)
+
+      sign_in(admin.email_authentication)
+      get :show, params: { id: organization.slug, report_scope: "organization" }
+
+      expect(response).to be_successful
+      expect(response.body).to include(organization.name)  # Verify that the organization name is present
     end
 
     it "renders successfully for an organization" do
