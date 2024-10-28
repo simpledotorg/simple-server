@@ -5,9 +5,16 @@
   <nav class="breadcrumb mb-0px pb-16px">
     <%= link_to "All reports", dashboard_districts_path %>
     
-    <% @region.ancestors.where(region_type: %w[organization state district block facility]).order(:path).each do |region| %>
-      <i class="fas fa-chevron-right"></i>
-      <%= link_to_if(accessible_region?(region, :view_reports), region.name, reports_region_path(region.slug, report_scope: region.region_type)) %>
+    <% if current_admin.feature_enabled?(:organization_reports) %>
+      <% @region.ancestors.where(region_type: %w[organization state district block facility]).order(:path).each do |region| %>
+        <i class="fas fa-chevron-right"></i>
+        <%= link_to_if(accessible_region?(region, :view_reports), region.name, reports_region_path(region.slug, report_scope: region.region_type)) %>
+      <% end %>
+    <% else %>
+      <% @region.ancestors.where(region_type: %w[state district block facility]).order(:path).each do |region| %>
+        <i class="fas fa-chevron-right"></i>
+        <%= link_to_if(accessible_region?(region, :view_reports), region.name, reports_region_path(region.slug, report_scope: region.region_type)) %>
+      <% end %>
     <% end %>
 
     <i class="fas fa-chevron-right"></i>
