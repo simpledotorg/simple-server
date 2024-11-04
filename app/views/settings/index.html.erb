@@ -4,99 +4,97 @@
 <div id="settings">
   <div id="d-flex row">
     <div class="card d-flex mb-2">
-  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-  <%= link_to (admin_facilities_path), class: "nav-link settings-nav-link #{active_controller?("admin/facilities")}" do %>
-        <h3>
-          Facilities
-        </h3>
-      
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
-    <%= link_to (admin_organizations_path), class: "nav-link settings-nav-link #{active_controller?("admin/organizations")}", id: "nav-organizations-link" do %>
-        <h3>
-          Organizations
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
-    <%= link_to (admin_protocols_path), class: "nav-link settings-nav-link #{active_controller?("admin/protocols")}" do %>
-        <h3>
-          Mobile App Medications
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-    <%= link_to (admins_path), class: "nav-link settings-nav-link #{active_controller?("admins")}" do %>
-        <h3>
-          Dashboard Admins
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? || current_admin.accessible_users(:manage).any?  %>
-    <%= link_to (admin_users_path), class: "nav-link settings-nav-link #{active_controller?("admin/users")}", id: "mobile-app-users" do %>
-        <h3>
-          Mobile App Users
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user?  %>
-    <%= link_to (new_admin_patient_import_path), class: "nav-link settings-nav-link #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
-        <h3>
-          Patient Import
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
+      <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
+        <%= link_to(admin_facilities_path, class: "nav-link settings-nav-link #{active_controller?("admin/facilities")}") do %>
+          <h3>Facilities</h3>
+          <p>Manage and oversee facilities accessible to administrators.</p>
+        <% end %>
+      <% end %>
+    </div>
+    
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+        <%= link_to(admin_organizations_path, class: "nav-link settings-nav-link #{active_controller?("admin/organizations")}", id: "nav-organizations-link") do %>
+          <h3>Organizations</h3>
+          <p>Administer and control organization-level settings and data.</p>
+        <% end %>
+      <% end %>
+    </div>
 
-  <% if current_admin.power_user? %>
-  <div class="nav-divider"></div>
-  <% end %>
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+        <%= link_to(admin_protocols_path, class: "nav-link settings-nav-link #{active_controller?("admin/protocols")}") do %>
+          <h3>Mobile App Medications</h3>
+          <p>Configure and manage medication protocols available on the mobile app.</p>
+        <% end %>
+      <% end %>
+    </div>
 
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? %>
-    <%= link_to ("/sidekiq"), class: "nav-link settings-nav-link settings-nav-link #{active_controller?("sidekiq")}" do %>
-        <h3>
-          Sidekiq
-        </h3>
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
+        <%= link_to(admins_path, class: "nav-link settings-nav-link #{active_controller?("admins")}") do %>
+          <h3>Dashboard Admins</h3>
+          <p>Assign and oversee administrators with access to the dashboard.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? || current_admin.accessible_users(:manage).any? %>
+        <%= link_to(admin_users_path, class: "nav-link settings-nav-link #{active_controller?("admin/users")}", id: "mobile-app-users") do %>
+          <h3>Mobile App Users</h3>
+          <p>Manage user accounts and access permissions for the mobile app.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? %>
+        <%= link_to(new_admin_patient_import_path, class: "nav-link settings-nav-link #{active_controller?("admin/patient_imports")}", id: "patient-import") do %>
+          <h3>Patient Import</h3>
+          <p>Import patient data into the system for easier management and access.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% if current_admin.power_user? %>
+      <div class="nav-divider"></div>
     <% end %>
-  <% end %>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? %>
+        <%= link_to("/sidekiq", class: "nav-link settings-nav-link #{active_controller?("sidekiq")}") do %>
+          <h3>Sidekiq</h3>
+          <p>Access Sidekiq for background job processing and monitoring.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? %>
+        <%= link_to("/flipper", class: "nav-link settings-nav-link #{active_controller?("flipper")}") do %>
+          <h3>Flipper</h3>
+          <p>Manage feature flags to control the availability of features.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? %>
+        <%= link_to(admin_error_traces_path, class: "nav-link settings-nav-link #{active_controller?("admin/error_traces")}") do %>
+          <h3>Error Traces</h3>
+          <p>Review and track error traces for debugging and maintenance.</p>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="card d-flex mb-2">
+      <% if current_admin.power_user? %>
+        <%= link_to(admin_cphc_migration_path, class: "nav-link settings-nav-link #{active_controller?("admin/cphc_migration")}") do %>
+          <h3>CPHC Migration</h3>
+          <p>Manage and oversee data migration processes for CPHC.</p>
+        <% end %>
+      <% end %>
+    </div>
   </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? %>
-    <%= link_to ("/flipper"), class: "nav-link settings-nav-link #{active_controller?("flipper")}" do %>
-        <h3>
-          Flipper
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? %>
-    <%= link_to admin_error_traces_path, class: "nav-link settings-nav-link #{active_controller?("admin/error_traces")}" do %>
-        <h3>
-          Error traces
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  <div class="card d-flex mb-2">
-  <% if current_admin.power_user? %>
-    <%= link_to admin_cphc_migration_path, class: "nav-link settings-nav-link #{active_controller?("admin/cphc_migration")}" do %>
-        <h3>
-          CPHC Migration
-        </h3>
-    <% end %>
-  <% end %>
-  </div>
-  </div>
-<% end %>
+</div>
