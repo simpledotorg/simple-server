@@ -33,7 +33,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       expect(response).to be_redirect
     end
-
+    
     it "redirects if user does not have authorization to region" do
       other_fg = create(:facility_group, name: "other facility group")
       other_fg.facilities << build(:facility, name: "other facility")
