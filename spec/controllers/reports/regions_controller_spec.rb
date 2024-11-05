@@ -33,6 +33,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       expect(flash[:alert]).to eq("You are not authorized to perform this action.")
       expect(response).to be_redirect
     end
+    
     it "redirects if user does not have authorization to region" do
       other_fg = create(:facility_group, name: "other facility group")
       other_fg.facilities << build(:facility, name: "other facility")
@@ -56,17 +57,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
       sign_in(user.email_authentication)
       get :show, params: {id: region.slug, report_scope: "district"}
       expect(response).to be_successful
-    end
-
-    it "renders successfully for an organization when feature is enabled" do
-      admin = create(:admin, :viewer_reports_only, :with_access, resource: organization)
-      allow(admin).to receive(:feature_enabled?).with(:organization_reports).and_return(true)
-
-      sign_in(admin.email_authentication)
-      get :show, params: {id: organization.slug, report_scope: "organization"}
-
-      expect(response).to be_successful
-      expect(response.body).to include(organization.name)
     end
 
     it "renders successfully for an organization" do
