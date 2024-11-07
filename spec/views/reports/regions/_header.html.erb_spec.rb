@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe "reports/regions/_header.html.erb", type: :view do
-  # include Rails.application.routes.url_helpers
-
   let(:organization) { create(:organization) }
   let(:current_admin) { create(:admin, :manager) }
   let(:organization_region) { create(:region, name: "Organization", region_type: "organization", path: "organization") }

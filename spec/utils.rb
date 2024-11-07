@@ -34,20 +34,20 @@ end
 # This utility method injects helper methods defined in a controller into a view spec context.
 # Purpose:
 # In Rails, helper methods defined in controllers are not automatically included in view specs.
-# This method allows for the injection of these helper methods into the context of a view spec, 
+# This method allows for the injection of these helper methods into the context of a view spec,
 # enabling their use in tests.
 # Parameters:
 # - controller_class: The controller class from which to extract the helper methods.
-# - context: The context (typically `self`) where the helper methods will be injected, 
+# - context: The context (typically `self`) where the helper methods will be injected,
 #   allowing the view spec to access and use them.
 # Usage:
-# Call this method within a view spec setup to ensure that controller helper methods 
+# Call this method within a view spec setup to ensure that controller helper methods
 # are available during the test:
 # inject_controller_helper_methods(MyController, self)
-# This method dynamically defines the helper methods on the context provided, 
+# This method dynamically defines the helper methods on the context provided,
 # making them accessible within the view spec.
 def inject_controller_helper_methods(controller_class, context)
-  helper_module = (controller = controller_class.new)._helpers
+  helper_module = controller_class.new._helpers
   helper_methods = helper_module.instance_methods(false).sort
   helper_method = ->(method) { helper_module.instance_method(method) }
 
