@@ -1,0 +1,22 @@
+<div id="diabetes-report" class="d-none">
+  <div class="mb-8px pt-16px pb-16px bgc-white bs-card">
+    <a
+      class="d-inline-flex ai-center h-24px mb-24px pl-16px tt-uppercase"
+      href="#"
+      onclick="goToPage(id='diabetes-report', 'home-page'); return false;"
+    >
+      <%= inline_file("chevron-left.svg") %>
+      back
+    </a>
+    <div class="pr-16px pl-16px">
+      <h1 class="m-0px mb-8px fw-bold fs-24px">
+        <%= t("progress_tab.diabetes_report_title") %> <%= t("progress_tab.report") %>
+      </h1>
+    </div>
+  </div>
+  <%= render(Reports::ProgressAssignedPatientsComponent.new(
+    assigned_patients: diabetes_reports_data[:assigned_patients],
+    region: diabetes_reports_data[:region],
+    diagnosis: "diabetes"
+  )) %>
+</div>

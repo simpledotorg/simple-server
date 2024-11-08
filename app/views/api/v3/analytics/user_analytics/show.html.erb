@@ -73,17 +73,15 @@
             </p>
           </a>
           <a
-            class="p-relative f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-grey-light-new br-8px"
+            class=" f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-purple-light bs-purple-light-button br-8px"
             href="#"
+            onclick="goToPage('home-page', 'diabetes-report'); return false;"
           >
             <div class="d-flex ai-center jc-center w-32px h-32px mb-8px bgc-white br-8px">
-              <%= inline_file("graph-grey.svg") %>
+              <%= inline_file("graph-purple.svg") %>
             </div>
-            <p class="m-0px p-0px ta-left fw-medium fs-16px c-grey-dark">
+            <p class="m-0px p-0px ta-left fw-medium fs-16px c-purple">
               <%= t("progress_tab.diabetes_report_title") %>
-            </p>
-            <p class="p-absolute b-0 l-0 w-100 fw-regular fs-12px c-grey ta-center bs-border-box">
-              <%= t("progress_tab.coming_soon") %>
             </p>
           </a>
         </div>
@@ -212,6 +210,12 @@
     <%= render(ProgressTab::Hypertension::DiagnosisReportComponent.new(
       hypertension_reports_data: @service.hypertension_reports_data,
       cohort_data: @user_analytics.statistics.dig(:cohorts),
+      last_updated_at: @user_analytics.last_updated_at
+    ))
+    %>
+
+    <%= render(ProgressTab::Diabetes::DiagnosisReportComponent.new(
+      diabetes_reports_data: @service.diabetes_reports_data,
       last_updated_at: @user_analytics.last_updated_at
     ))
     %>
