@@ -232,8 +232,7 @@
     %>
 
     <%= render(ProgressTab::Diabetes::DiagnosisReportComponent.new(
-      diabetes_reports_data: @service.diabetes_reports_data,
-      last_updated_at: @user_analytics.last_updated_at
+      diabetes_reports_data: @service.diabetes_reports_data
     ))
     %>
     <!--  TODO:  The partial "api/v3/analytics/user_analytics/diagnosis_report" need to be removed once the Diabetes reports are released -->
