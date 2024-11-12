@@ -88,6 +88,14 @@ module Reports
       }
     end
 
+    def diabetes_reports_data
+      {
+
+        assigned_patients: repository.cumulative_assigned_diabetic_patients[@region.slug][@period],
+        region: @region
+      }
+    end
+
     memoize def daily_total_follow_ups
       total_follow_ups_per_period(period_type: "daily", facility_data: @daily_facility_data)
     end
