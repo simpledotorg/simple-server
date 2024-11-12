@@ -90,7 +90,6 @@ module Reports
 
     def diabetes_reports_data
       {
-
         assigned_patients: repository.cumulative_assigned_diabetic_patients[@region.slug][@period],
         region: @region
       }
