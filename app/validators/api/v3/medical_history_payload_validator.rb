@@ -10,6 +10,8 @@ class Api::V3::MedicalHistoryPayloadValidator < Api::V3::PayloadValidator
     :diabetes,
     :hypertension,
     :diagnosed_with_hypertension,
+    :bmi,
+    :is_smoking,
     :created_at,
     :updated_at
   )

@@ -45,6 +45,8 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
         :diabetes,
         :hypertension,
         :diagnosed_with_hypertension,
+        :bmi,
+        :is_smoking,
         :created_at,
         :updated_at
       )
