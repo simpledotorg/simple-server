@@ -237,7 +237,9 @@ CREATE TABLE public.medical_histories (
     deleted_at timestamp without time zone,
     user_id uuid,
     hypertension text,
-    receiving_treatment_for_diabetes text
+    receiving_treatment_for_diabetes text,
+    bmi integer,
+    is_smoking boolean
 );
 
 
@@ -7754,6 +7756,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240411074916'),
 ('20240522054839'),
 ('20240716132001'),
-('20240719202605');
+('20240719202605'),
+('20241113161638');
 
 
