@@ -1,6 +1,7 @@
 require "rails_helper"
 
 RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component do
+  include ApplicationHelper
   let(:diabetes_reports_data) do
     {
       assigned_patients: 100,
@@ -8,7 +9,9 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
       diagnosis: "diabetes"
     }
   end
-  subject { render_inline(described_class.new(diabetes_reports_data: diabetes_reports_data)) }
+  let(:last_updated_at) {Time.current}
+
+  subject { render_inline(described_class.new(diabetes_reports_data: diabetes_reports_data, last_updated_at: last_updated_at)) }
 
   it "renders the diabetes report section" do
     expect(subject).to have_css("div#diabetes-report")
@@ -22,5 +25,11 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     expect(subject.text).to include("Region 1")
     expect(subject.text).to include(diabetes_reports_data[:assigned_patients].to_s)
     expect(subject.text).to include("diabetes")
+  end
+
+  it "displays the last updated date and time" do
+    formatted_date = display_date(last_updated_at)
+    formatted_time = display_time(last_updated_at)
+    expect(subject).to have_text(I18n.t("progress_tab.last_updated_at", date: formatted_date, time: formatted_time))
   end
 end
