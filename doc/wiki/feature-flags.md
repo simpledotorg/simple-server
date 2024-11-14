@@ -37,3 +37,4 @@ to facility the launch of a new feature, and may reference the Simple team's int
 | patients_protected                        | Yes                          | To selectively launch the [patients protected](https://app.shortcut.com/simpledotorg/epic/11405) section on the HTN dashboard.
 | patients_protected_htn_cascade            | Yes                          | To selectively launch the HTN cascade subsection of the [patients protected](https://app.shortcut.com/simpledotorg/epic/11405) feature on the HTN dashboard.
 | diabetes_who_standard_indicator           | Yes                          | When enabled, only FBS and HBA1c measurements are considered for calculating diabetes controlled and uncontrolled rate
+| diabetes_progress_report_tab				| Yes						   | When the progress tab is activated, the diabetes section will be displayed as enabled, followed by a comprehensive listing of all associated key indicators.
