@@ -9,7 +9,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
       diagnosis: "diabetes"
     }
   end
-  let(:last_updated_at) {Time.current}
+  let(:last_updated_at) { Time.current }
 
   subject { render_inline(described_class.new(diabetes_reports_data: diabetes_reports_data, last_updated_at: last_updated_at)) }
 
