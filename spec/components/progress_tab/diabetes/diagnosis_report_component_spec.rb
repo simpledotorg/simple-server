@@ -20,6 +20,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
       },
       region: region,
       assigned_patients: 100,
+      diagnosis: "diabetes"
     }
   end
 
@@ -52,7 +53,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
 
   it "renders the Reports::ProgressAssignedPatientsComponent with correct data" do
     expect(subject).to have_text(region.name)
-    expect(subject).to have_text("15")
+    expect(subject.text).to include(diabetes_reports_data[:assigned_patients].to_s)
     expect(subject).to have_text("diabetes")
   end
 
