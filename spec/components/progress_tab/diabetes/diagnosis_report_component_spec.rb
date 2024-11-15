@@ -13,19 +13,13 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
         period_july => 44,
         period_august => 49
       },
-      assigned_patients: {
-        region.slug => {
-          period_june => 10,
-          period_july => 12,
-          period_august => 15
-        }
-      },
       period_info: {
         period_june => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023", ltfu_end_date: "30-Jun-2024"},
         period_july => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023", ltfu_end_date: "31-Jul-2024"},
         period_august => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023", ltfu_end_date: "31-Aug-2024"}
       },
-      region: region
+      region: region,
+      assigned_patients: 100,
     }
   end
 
