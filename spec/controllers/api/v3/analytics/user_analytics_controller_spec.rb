@@ -32,6 +32,22 @@ RSpec.describe Api::V3::Analytics::UserAnalyticsController, type: :controller do
         expect(response.body).to include("Enter drug stock")
       end
 
+      it "does not render drug stock form if feature flag is disabled" do
+        Flipper.disable(:diabetes_progress_report_tab)
+        get :show, format: :html
+        expect(response.body).to include(I18n.t("progress_tab.coming_soon"))
+        expect(response.body).to include(I18n.t("progress_tab.diabetes_report_title"))
+        expect(response.body).to_not include("goToPage('home-page', 'diabetes-report')")
+      end
+
+      it "renders drug stock form if feature flag is enabled" do
+        Flipper.enable(:diabetes_progress_report_tab)
+        get :show, format: :html
+        expect(response.body).to include("goToPage('home-page', 'diabetes-report')")
+        expect(response.body).to include(I18n.t("progress_tab.diabetes_report_title"))
+        expect(response.body).to_not include(I18n.t("progress_tab.coming_soon"))
+      end
+
       it "renders successfully for follow_ups_v2 with no data" do
         Flipper.enable(:follow_ups_v2_progress_tab)
         patients = create_list(:patient, 2, registration_facility: request_facility, registration_user: request_user, recorded_at: 3.months.ago)
