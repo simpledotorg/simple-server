@@ -1,8 +1,6 @@
 require "rails_helper"
 
 RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component do
-  include ApplicationHelper
-
   let(:region) { double("Region", slug: "region_slug", name: "Region 1") }
   let(:period_june) { double("Period", type: "month", value: "2024-06-01") }
   let(:period_july) { double("Period", type: "month", value: "2024-07-01") }
@@ -59,19 +57,18 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
   end
 
   it "renders the Reports::ProgressAssignedPatientsComponent with correct data" do
-    expect(subject).to have_text("Region 1")
+    expect(subject).to have_text(region.name)
     expect(subject).to have_text("15")
     expect(subject).to have_text("diabetes")
   end
 
   it "displays the last updated date and time" do
-    formatted_date = display_date(last_updated_at)
-    formatted_time = display_time(last_updated_at)
-    expect(subject).to have_text(I18n.t("progress_tab.last_updated_at", date: formatted_date, time: formatted_time))
+    formatted_date = Time.zone.now.strftime("%d-%b-%Y at %I:%M %p")
+    expect(subject).to have_text("Data last updated on #{formatted_date}")
   end
 
   it "renders the Reports::ProgressTotalRegistrationsComponent" do
-    expect(subject).to have_text("Region 1")
+    expect(subject).to have_text(region.name)
     expect(subject).to have_text("49")
   end
 end
