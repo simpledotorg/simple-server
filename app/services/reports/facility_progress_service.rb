@@ -90,7 +90,10 @@ module Reports
 
     def diabetes_reports_data
       {
+        monthly_follow_ups: repository.diabetes_follow_ups[@region.slug],
+        total_registrations: repository.cumulative_diabetes_registrations[@region.slug],
         assigned_patients: repository.cumulative_assigned_diabetic_patients[@region.slug][@period],
+        period_info: repository.period_info(@region),
         region: @region
       }
     end
