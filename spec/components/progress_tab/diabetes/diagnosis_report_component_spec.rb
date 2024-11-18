@@ -18,6 +18,11 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
         period_july => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023", ltfu_end_date: "31-Jul-2024"},
         period_august => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023", ltfu_end_date: "31-Aug-2024"}
       },
+      monthly_follow_ups: {
+        period_june => 15,
+        period_july => 20,
+        period_august => 18
+      },
       region: region,
       assigned_patients: 100,
       diagnosis: "diabetes"
@@ -30,6 +35,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     allow(repository).to receive(:cumulative_diabetes_registrations).and_return(diabetes_reports_data[:total_registrations])
     allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
     allow(repository).to receive(:period_info).and_return(diabetes_reports_data[:period_info])
+    allow(repository).to receive(:monthly_follow_ups).and_return(diabetes_reports_data[:monthly_follow_ups])
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
