@@ -120,8 +120,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       refresh_views
       service = described_class.new(facility, Period.current)
       result = service.diabetes_reports_data
-
-      # Check if result includes the necessary keys
       expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
       expect(result[:assigned_patients]).to eq(dm_patients.count)
 
@@ -151,8 +149,6 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
           name: "Nov-2024"
         }
       }
-
-      # Assert that the period_info matches the expected structure
       expect(result[:period_info]).to eq(expected_period_info)
     end
   end
