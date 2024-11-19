@@ -58,8 +58,8 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
   end
 
   it "displays the last updated date and time" do
-    formatted_date = Time.zone.now.strftime("%d-%b-%Y at %I:%M %p")
-    expect(subject).to have_text("Data last updated on #{formatted_date}")
+    formatted_date_time = last_updated_at.strftime("%d-%b-%Y at %I:%M %p")
+    expect(subject).to have_text("Data last updated on #{formatted_date_time}")
   end
 
   it "renders the Reports::ProgressTotalRegistrationsComponent" do

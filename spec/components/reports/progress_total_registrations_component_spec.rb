@@ -2,25 +2,27 @@ require "rails_helper"
 
 RSpec.describe Reports::ProgressTotalRegistrationsComponent, type: :component do
   let(:region) { double("Region", name: "Region 1") }
-  let(:total_registrations) do
+  let(:total_registrations_data) do
     {
-      Period.new(type: :month, value: "2024-06-01") => 42,
-      Period.new(type: :month, value: "2024-07-01") => 44,
-      Period.new(type: :month, value: "2024-08-01") => 49,
-      Period.new(type: :month, value: "2024-09-01") => 56,
-      Period.new(type: :month, value: "2024-10-01") => 61,
-      Period.new(type: :month, value: "2024-11-01") => 62
+      "2024-06-01" => 42,
+      "2024-07-01" => 44,
+      "2024-08-01" => 49,
+      "2024-09-01" => 56,
+      "2024-10-01" => 61,
+      "2024-11-01" => 62
     }
   end
+
+  let(:total_registrations) do
+    total_registrations_data.map { |date, value| [Period.new(type: :month, value: date), value] }.to_h
+  end
+
   let(:period_info) do
-    {
-      Period.new(type: :month, value: "2024-06-01") => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023"},
-      Period.new(type: :month, value: "2024-07-01") => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023"},
-      Period.new(type: :month, value: "2024-08-01") => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023"},
-      Period.new(type: :month, value: "2024-09-01") => {name: "Sep-2024", ltfu_since_date: "30-Sep-2023"},
-      Period.new(type: :month, value: "2024-10-01") => {name: "Oct-2024", ltfu_since_date: "31-Oct-2023"},
-      Period.new(type: :month, value: "2024-11-01") => {name: "Nov-2024", ltfu_since_date: "30-Nov-2023"}
-    }
+    total_registrations_data.keys.map do |date|
+      period = Period.new(type: :month, value: date)
+      ltfu_since_date = Date.parse(date).prev_year.end_of_month.strftime("%d-%b-%Y")
+      [period, {name: Date.parse(date).strftime("%b-%Y"), ltfu_since_date: ltfu_since_date}]
+    end.to_h
   end
   let(:diagnosis) { "diabetes" }
 
@@ -51,23 +53,16 @@ RSpec.describe Reports::ProgressTotalRegistrationsComponent, type: :component do
 
   it "passes the correct data to the data bar graph partial" do
     expect(subject).to have_selector('div[data-graph-type="bar-chart"]')
-    expect(subject).to have_text("42")
-    expect(subject).to have_text("44")
-    expect(subject).to have_text("49")
-    expect(subject).to have_text("56")
-    expect(subject).to have_text("61")
-    expect(subject).to have_text("62")
-    expect(subject).to have_text("Jun-2024")
-    expect(subject).to have_text("Jul-2024")
-    expect(subject).to have_text("Aug-2024")
-    expect(subject).to have_text("Sep-2024")
-    expect(subject).to have_text("Oct-2024")
-    expect(subject).to have_text("Nov-2024")
+
+    expectations = [
+      "42", "44", "49", "56", "61", "62",
+      "Jun-2024", "Jul-2024", "Aug-2024", "Sep-2024", "Oct-2024", "Nov-2024"
+    ]
+    expectations.each { |expectation| expect(subject).to have_text(expectation) }
   end
 
   it "displays the correct number of total registrations" do
-    total_values = total_registrations.values
-    total_values.each do |value|
+    total_registrations_data.values.each do |value|
       expect(subject).to have_text(value.to_s)
     end
   end
