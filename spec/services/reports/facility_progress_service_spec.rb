@@ -11,6 +11,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
   let(:two_days_ago) { 2.days.ago }
   let(:one_day_ago) { 1.day.ago }
   let(:two_minutes_ago) { 2.minutes.ago }
+  let(:region) { double("Region", name: "Region 1") }
 
   context "daily registrations" do
     it "returns counts for HTN or DM patients if diabetes is enabled" do
@@ -109,6 +110,46 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
 
         expect(service.daily_follow_ups(Date.current)).to eq(3)
       end
+    end
+
+    it "includes the region, assigned patients, total registration, and period info" do
+      facility = create(:facility, enable_diabetes_management: true)
+      dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+      create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+
+      refresh_views
+      service = described_class.new(facility, Period.current)
+      result = service.diabetes_reports_data
+      expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
+      expect(result[:assigned_patients]).to eq(dm_patients.count)
+
+      expected_period_info = {
+        Period.new(type: :month, value: "2024-09-01") => {
+          bp_control_end_date: "30-Sep-2024",
+          bp_control_registration_date: "30-Jun-2024",
+          bp_control_start_date: "1-Jul-2024",
+          ltfu_end_date: "30-Sep-2024",
+          ltfu_since_date: "30-Sep-2023",
+          name: "Sep-2024"
+        },
+        Period.new(type: :month, value: "2024-10-01") => {
+          bp_control_end_date: "31-Oct-2024",
+          bp_control_registration_date: "31-Jul-2024",
+          bp_control_start_date: "1-Aug-2024",
+          ltfu_end_date: "31-Oct-2024",
+          ltfu_since_date: "31-Oct-2023",
+          name: "Oct-2024"
+        },
+        Period.new(type: :month, value: "2024-11-01") => {
+          bp_control_end_date: "30-Nov-2024",
+          bp_control_registration_date: "31-Aug-2024",
+          bp_control_start_date: "1-Sep-2024",
+          ltfu_end_date: "30-Nov-2024",
+          ltfu_since_date: "30-Nov-2023",
+          name: "Nov-2024"
+        }
+      }
+      expect(result[:period_info]).to eq(expected_period_info)
     end
   end
 end
