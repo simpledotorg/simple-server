@@ -2,34 +2,50 @@ require "rails_helper"
 
 RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component do
   let(:region) { double("Region", slug: "region_slug", name: "Region 1") }
-  let(:period_june) { double("Period", type: "month", value: "2024-06-01") }
-  let(:period_july) { double("Period", type: "month", value: "2024-07-01") }
-  let(:period_august) { double("Period", type: "month", value: "2024-08-01") }
   let(:repository) { double("Repository") }
+  let(:last_updated_at) { Time.current }
+
+  let(:data) do
+    {
+      "2024-06-01" => 42,
+      "2024-07-01" => 44,
+      "2024-08-01" => 49
+    }
+  end
+
+  let(:total_registrations) do
+    data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:period_info) do
+    data.keys.map do |date_str|
+      period = Period.new(type: :month, value: date_str)
+      date = Date.parse(date_str)
+      [
+        period,
+        {
+          name: date.strftime("%b-%Y"),
+          ltfu_since_date: (date - 1.year).end_of_month.strftime("%d-%b-%Y"),
+          ltfu_end_date: date.end_of_month.strftime("%d-%b-%Y")
+        }
+      ]
+    end.to_h
+  end
+
   let(:diabetes_reports_data) do
     {
-      total_registrations: {
-        period_june => 42,
-        period_july => 44,
-        period_august => 49
-      },
-      period_info: {
-        period_june => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023", ltfu_end_date: "30-Jun-2024"},
-        period_july => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023", ltfu_end_date: "31-Jul-2024"},
-        period_august => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023", ltfu_end_date: "31-Aug-2024"}
-      },
+      total_registrations: total_registrations,
+      period_info: period_info,
       region: region,
       assigned_patients: 100,
       diagnosis: "diabetes"
     }
   end
 
-  let(:last_updated_at) { Time.current }
-
   before do
-    allow(repository).to receive(:cumulative_diabetes_registrations).and_return(diabetes_reports_data[:total_registrations])
+    allow(repository).to receive(:cumulative_diabetes_registrations).and_return(total_registrations)
     allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
-    allow(repository).to receive(:period_info).and_return(diabetes_reports_data[:period_info])
+    allow(repository).to receive(:period_info).and_return(period_info)
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
