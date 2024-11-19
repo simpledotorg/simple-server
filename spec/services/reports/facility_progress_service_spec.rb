@@ -112,44 +112,36 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       end
     end
 
-    it "includes the region, assigned patients, total registration, and period info" do
-      facility = create(:facility, enable_diabetes_management: true)
-      dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-      create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+    context "diabetes reports" do
+      it "returns the correct diabetes report data" do
+        facility = create(:facility, enable_diabetes_management: true)
+        dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
 
-      refresh_views
-      service = described_class.new(facility, Period.current)
-      result = service.diabetes_reports_data
-      expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
-      expect(result[:assigned_patients]).to eq(dm_patients.count)
+        refresh_views
+        service = described_class.new(facility, Period.current)
+        result = service.diabetes_reports_data
 
-      expected_period_info = {
-        Period.new(type: :month, value: "2024-09-01") => {
-          bp_control_end_date: "30-Sep-2024",
-          bp_control_registration_date: "30-Jun-2024",
-          bp_control_start_date: "1-Jul-2024",
-          ltfu_end_date: "30-Sep-2024",
-          ltfu_since_date: "30-Sep-2023",
-          name: "Sep-2024"
-        },
-        Period.new(type: :month, value: "2024-10-01") => {
-          bp_control_end_date: "31-Oct-2024",
-          bp_control_registration_date: "31-Jul-2024",
-          bp_control_start_date: "1-Aug-2024",
-          ltfu_end_date: "31-Oct-2024",
-          ltfu_since_date: "31-Oct-2023",
-          name: "Oct-2024"
-        },
-        Period.new(type: :month, value: "2024-11-01") => {
-          bp_control_end_date: "30-Nov-2024",
-          bp_control_registration_date: "31-Aug-2024",
-          bp_control_start_date: "1-Sep-2024",
-          ltfu_end_date: "30-Nov-2024",
-          ltfu_since_date: "30-Nov-2023",
-          name: "Nov-2024"
-        }
-      }
-      expect(result[:period_info]).to eq(expected_period_info)
+        months = ["2024-09-01", "2024-10-01", "2024-11-01"]
+        expected_period_info = months.map do |month|
+          date = Date.parse(month)
+          [
+            Period.new(type: :month, value: month),
+            {
+              bp_control_end_date: date.end_of_month.strftime("%d-%b-%Y"),
+              bp_control_registration_date: (date - 3.months).end_of_month.strftime("%d-%b-%Y"),
+              bp_control_start_date: (date - 2.months).beginning_of_month.strftime("%-d-%b-%Y"),
+              ltfu_end_date: date.end_of_month.strftime("%d-%b-%Y"),
+              ltfu_since_date: (date - 1.year).end_of_month.strftime("%d-%b-%Y"),
+              name: date.strftime("%b-%Y")
+            }
+          ]
+        end.to_h
+
+        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
+        expect(result[:assigned_patients]).to eq(dm_patients.count)
+        expect(result[:period_info]).to eq(expected_period_info)
+      end
     end
   end
 end
