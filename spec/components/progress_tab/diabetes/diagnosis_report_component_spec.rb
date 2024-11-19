@@ -2,20 +2,22 @@ require "rails_helper"
 
 RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component do
   let(:region) { double("Region", slug: "region_slug", name: "Region 1") }
+  let(:period_june) { double("Period", type: "month", value: "2024-06-01") }
+  let(:period_july) { double("Period", type: "month", value: "2024-07-01") }
+  let(:period_august) { double("Period", type: "month", value: "2024-08-01") }
   let(:repository) { double("Repository") }
-
-  let(:current_date) { Date.new(2024, 9, 1) }
   let(:diabetes_reports_data) do
-    periods = (1..3).map { |n| current_date - n.months }
     {
-      total_registrations: periods.index_with { |date| 40 + date.month },
-      period_info: periods.index_with do |date|
-        {
-          name: date.strftime("%b-%Y"),
-          ltfu_since_date: (date - 1.year).end_of_month.strftime("%d-%b-%Y"),
-          ltfu_end_date: date.end_of_month.strftime("%d-%b-%Y")
-        }
-      end,
+      total_registrations: {
+        period_june => 42,
+        period_july => 44,
+        period_august => 49
+      },
+      period_info: {
+        period_june => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023", ltfu_end_date: "30-Jun-2024"},
+        period_july => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023", ltfu_end_date: "31-Jul-2024"},
+        period_august => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023", ltfu_end_date: "31-Aug-2024"}
+      },
       region: region,
       assigned_patients: 100,
       diagnosis: "diabetes"
@@ -62,6 +64,6 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
 
   it "renders the Reports::ProgressTotalRegistrationsComponent" do
     expect(subject).to have_text(region.name)
-    expect(subject).to have_text("48")
+    expect(subject).to have_text("49")
   end
 end
