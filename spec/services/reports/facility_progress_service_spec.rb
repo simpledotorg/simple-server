@@ -112,53 +112,48 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
       end
     end
 
-    it "includes the region, assigned patients, total registration and period info" do
-      Timecop.freeze(Date.today.at_noon) do
-        facility = create(:facility, enable_diabetes_management: true)
-        dm_patient1 = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-        dm_patient2 = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-        undiagnosed_patient = create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
-        dm_patient3 = create(:patient, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+    it "includes the region, assigned patients, total registration, and period info" do
+      facility = create(:facility, enable_diabetes_management: true)
+      dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+      create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
 
-        create(:appointment, recorded_at: seven_days_ago, patient: dm_patient1, facility: facility, user: user)
-        create(:appointment, recorded_at: two_minutes_ago, patient: dm_patient1, facility: facility, user: user)
-        create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient2, facility: facility, user: user)
-        create(:blood_pressure, recorded_at: two_minutes_ago, patient: undiagnosed_patient, facility: facility, user: user)
-        create(:blood_sugar, recorded_at: two_minutes_ago, patient: dm_patient3, facility: facility, user: user)
-        create(:blood_pressure, recorded_at: two_minutes_ago, patient: dm_patient3, facility: facility, user: user)
+      refresh_views
+      service = described_class.new(facility, Period.current)
+      result = service.diabetes_reports_data
 
-        refresh_views
-        service = described_class.new(facility, Period.current)
-        result = service.diabetes_reports_data
-        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
-        expected_period_info = {
-          Period.new(type: :month, value: '2024-09-01') => {
-            :bp_control_end_date => "30-Sep-2024", 
-            :bp_control_registration_date => "30-Jun-2024", 
-            :bp_control_start_date => "1-Jul-2024", 
-            :ltfu_end_date => "30-Sep-2024", 
-            :ltfu_since_date => "30-Sep-2023", 
-            :name => "Sep-2024"
-          },
-          Period.new(type: :month, value: '2024-10-01') => {
-            :bp_control_end_date => "31-Oct-2024", 
-            :bp_control_registration_date => "31-Jul-2024", 
-            :bp_control_start_date => "1-Aug-2024", 
-            :ltfu_end_date => "31-Oct-2024", 
-            :ltfu_since_date => "31-Oct-2023", 
-            :name => "Oct-2024"
-          },
-          Period.new(type: :month, value: '2024-11-01') => {
-            :bp_control_end_date => "30-Nov-2024", 
-            :bp_control_registration_date => "31-Aug-2024", 
-            :bp_control_start_date => "1-Sep-2024", 
-            :ltfu_end_date => "30-Nov-2024", 
-            :ltfu_since_date => "30-Nov-2023", 
-            :name => "Nov-2024"
-          }
+      # Check if result includes the necessary keys
+      expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations)
+      expect(result[:assigned_patients]).to eq(dm_patients.count)
+
+      expected_period_info = {
+        Period.new(type: :month, value: "2024-09-01") => {
+          bp_control_end_date: "30-Sep-2024",
+          bp_control_registration_date: "30-Jun-2024",
+          bp_control_start_date: "1-Jul-2024",
+          ltfu_end_date: "30-Sep-2024",
+          ltfu_since_date: "30-Sep-2023",
+          name: "Sep-2024"
+        },
+        Period.new(type: :month, value: "2024-10-01") => {
+          bp_control_end_date: "31-Oct-2024",
+          bp_control_registration_date: "31-Jul-2024",
+          bp_control_start_date: "1-Aug-2024",
+          ltfu_end_date: "31-Oct-2024",
+          ltfu_since_date: "31-Oct-2023",
+          name: "Oct-2024"
+        },
+        Period.new(type: :month, value: "2024-11-01") => {
+          bp_control_end_date: "30-Nov-2024",
+          bp_control_registration_date: "31-Aug-2024",
+          bp_control_start_date: "1-Sep-2024",
+          ltfu_end_date: "30-Nov-2024",
+          ltfu_since_date: "30-Nov-2023",
+          name: "Nov-2024"
         }
-        expect(result[:period_info]).to eq(expected_period_info)
-      end
+      }
+
+      # Assert that the period_info matches the expected structure
+      expect(result[:period_info]).to eq(expected_period_info)
     end
   end
 end
