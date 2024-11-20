@@ -6,12 +6,12 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
 
   let(:period_info_data) do
     {
-      "2024-06-01" => { name: "Jun-2024", ltfu_since_date: "30-Jun-2023" },
-      "2024-07-01" => { name: "Jul-2024", ltfu_since_date: "31-Jul-2023" },
-      "2024-08-01" => { name: "Aug-2024", ltfu_since_date: "31-Aug-2023" },
-      "2024-09-01" => { name: "Sep-2024", ltfu_since_date: "30-Sep-2023" },
-      "2024-10-01" => { name: "Oct-2024", ltfu_since_date: "31-Oct-2023" },
-      "2024-11-01" => { name: "Nov-2024", ltfu_since_date: "30-Nov-2023" }
+      "2024-06-01" => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023"},
+      "2024-07-01" => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023"},
+      "2024-08-01" => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023"},
+      "2024-09-01" => {name: "Sep-2024", ltfu_since_date: "30-Sep-2023"},
+      "2024-10-01" => {name: "Oct-2024", ltfu_since_date: "31-Oct-2023"},
+      "2024-11-01" => {name: "Nov-2024", ltfu_since_date: "30-Nov-2023"}
     }
   end
 
