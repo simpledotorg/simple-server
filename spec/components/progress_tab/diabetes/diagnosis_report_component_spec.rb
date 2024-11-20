@@ -32,12 +32,25 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     end.to_h
   end
 
+  let(:monthly_follow_ups_data) do
+    {
+      "2024-06-01" => 20,
+      "2024-07-01" => 25,
+      "2024-08-01" => 30
+    }
+  end
+
+  let(:monthly_follow_ups) do
+    monthly_follow_ups_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
   let(:diabetes_reports_data) do
     {
       total_registrations: total_registrations,
       period_info: period_info,
       region: region,
       assigned_patients: 100,
+      monthly_follow_ups: monthly_follow_ups,
       diagnosis: "diabetes"
     }
   end
@@ -46,6 +59,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     allow(repository).to receive(:cumulative_diabetes_registrations).and_return(total_registrations)
     allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
     allow(repository).to receive(:period_info).and_return(period_info)
+    allow(repository).to receive(:monthly_follow_ups).and_return(monthly_follow_ups)
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
@@ -81,5 +95,11 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
   it "renders the Reports::ProgressTotalRegistrationsComponent" do
     expect(subject).to have_text(region.name)
     expect(subject).to have_text("49")
+  end
+
+  it "renders the Reports::ProgressMonthlyFollowUpsComponent" do
+    monthly_follow_ups.values.each do |value|
+      expect(subject).to have_text(value.to_s)
+    end
   end
 end

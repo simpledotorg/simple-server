@@ -31,4 +31,10 @@
     region: diabetes_reports_data[:region],
     diagnosis: "diabetes"
   )) %>
+  <%= render(Reports::ProgressMonthlyFollowUpsComponent.new(
+    monthly_follow_ups: diabetes_reports_data[:monthly_follow_ups],
+    period_info: diabetes_reports_data[:period_info],
+    region: diabetes_reports_data[:region],
+    diagnosis: "Diabetes"
+  )) %>
 </div>
