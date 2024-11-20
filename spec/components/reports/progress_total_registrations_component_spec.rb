@@ -53,6 +53,7 @@ RSpec.describe Reports::ProgressTotalRegistrationsComponent, type: :component do
 
   it "passes the correct data to the data bar graph partial" do
     expect(subject).to have_selector('div[data-graph-type="bar-chart"]')
+
     expectations = [
       "42", "44", "49", "56", "61", "62",
       "Jun-2024", "Jul-2024", "Aug-2024", "Sep-2024", "Oct-2024", "Nov-2024"
