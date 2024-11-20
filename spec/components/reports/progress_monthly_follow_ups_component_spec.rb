@@ -5,14 +5,13 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
   let(:diagnosis) { "Diabetes" }
 
   let(:period_info_data) do
-    {
-      "2024-06-01" => {name: "Jun-2024", ltfu_since_date: "30-Jun-2023"},
-      "2024-07-01" => {name: "Jul-2024", ltfu_since_date: "31-Jul-2023"},
-      "2024-08-01" => {name: "Aug-2024", ltfu_since_date: "31-Aug-2023"},
-      "2024-09-01" => {name: "Sep-2024", ltfu_since_date: "30-Sep-2023"},
-      "2024-10-01" => {name: "Oct-2024", ltfu_since_date: "31-Oct-2023"},
-      "2024-11-01" => {name: "Nov-2024", ltfu_since_date: "30-Nov-2023"}
-    }
+    (6..11).each_with_object({}) do |month, hash|
+      date = Date.new(2024, month, 1).beginning_of_month
+      date_str = date.to_s
+      ltfu_since_date = date.prev_month.end_of_month.strftime('%d-%b-%Y')
+      name = date.strftime('%b-%Y')
+      hash[date_str] = { name: name, ltfu_since_date: ltfu_since_date }
+    end
   end
 
   let(:period_info) do
