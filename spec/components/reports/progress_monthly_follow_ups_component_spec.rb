@@ -1,31 +1,42 @@
 require "rails_helper"
 
-RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
-  let(:region) { double("Region", name: "Region 1") }
-  let(:diagnosis) { "Diabetes" }
+RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component do
+  let(:region) { double("Region", slug: "region_slug", name: "Region 1") }
+  let(:repository) { double("Repository") }
+  let(:last_updated_at) { Time.current }
 
-  let(:period_info_data) do
-    (6..11).each_with_object({}) do |month, hash|
-      date = Date.new(2024, month, 1).beginning_of_month
-      date_str = date.to_s
-      ltfu_since_date = date.prev_month.end_of_month.strftime("%d-%b-%Y")
-      name = date.strftime("%b-%Y")
-      hash[date_str] = {name: name, ltfu_since_date: ltfu_since_date}
-    end
+  let(:data) do
+    {
+      "2024-06-01" => 42,
+      "2024-07-01" => 44,
+      "2024-08-01" => 49
+    }
+  end
+
+  let(:total_registrations) do
+    data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
   let(:period_info) do
-    period_info_data.map { |date_str, data| [Period.new(type: :month, value: date_str), data] }.to_h
+    data.keys.map do |date_str|
+      period = Period.new(type: :month, value: date_str)
+      date = Date.parse(date_str)
+      [
+        period,
+        {
+          name: date.strftime("%b-%Y"),
+          ltfu_since_date: (date - 1.year).end_of_month.strftime("%d-%b-%Y"),
+          ltfu_end_date: date.end_of_month.strftime("%d-%b-%Y")
+        }
+      ]
+    end.to_h
   end
 
   let(:monthly_follow_ups_data) do
     {
-      "2024-06-01" => 5,
-      "2024-07-01" => 4,
-      "2024-08-01" => 3,
-      "2024-09-01" => 4,
-      "2024-10-01" => 11,
-      "2024-11-01" => 2
+      "2024-06-01" => 20,
+      "2024-07-01" => 25,
+      "2024-08-01" => 30
     }
   end
 
@@ -33,69 +44,62 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
     monthly_follow_ups_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
-  let(:rendered_component) do
-    render_inline(described_class.new(
-      monthly_follow_ups: monthly_follow_ups,
+  let(:diabetes_reports_data) do
+    {
+      total_registrations: total_registrations,
       period_info: period_info,
       region: region,
-      diagnosis: diagnosis
+      assigned_patients: 100,
+      monthly_follow_ups: monthly_follow_ups,
+      diagnosis: "diabetes"
+    }
+  end
+
+  before do
+    allow(repository).to receive(:cumulative_diabetes_registrations).and_return(total_registrations)
+    allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
+    allow(repository).to receive(:period_info).and_return(period_info)
+    allow(repository).to receive(:monthly_follow_ups).and_return(monthly_follow_ups)
+    allow(region).to receive(:slug).and_return("region_slug")
+  end
+
+  subject do
+    render_inline(described_class.new(
+      diabetes_reports_data: diabetes_reports_data,
+      last_updated_at: last_updated_at
     ))
   end
 
-  describe "rendering the component" do
-    it "renders the title correctly" do
-      expect(rendered_component).to have_css("h2", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.title"))
-    end
-
-    it "renders the subtitle with correct facility name and diagnosis" do
-      expect(rendered_component).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle", facility_name: region.name, diagnosis: diagnosis))
-    end
-
-    it "displays the correct number of total registrations" do
-      monthly_follow_ups_data.values.each do |value|
-        expect(rendered_component).to have_text(value.to_s)
-      end
-    end
-
-    it "passes the correct data to the data bar graph partial" do
-      expect(rendered_component).to have_selector('div[data-graph-type="bar-chart"]')
-      monthly_follow_ups_data.keys.each do |date_str|
-        expect(rendered_component).to have_text(period_info_data[date_str][:name])
-      end
-      monthly_follow_ups_data.values.each { |value| expect(rendered_component).to have_text(value.to_s) }
-    end
+  it "renders the diabetes report section" do
+    expect(subject).to have_css("div#diabetes-report")
   end
 
-  describe "when diagnosis is not passed" do
-    let(:component_without_diagnosis) do
-      render_inline(described_class.new(
-        monthly_follow_ups: monthly_follow_ups,
-        period_info: period_info,
-        region: region
-      ))
-    end
-
-    it 'defaults to "Hypertension" as diagnosis' do
-      expect(component_without_diagnosis).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle", facility_name: region.name, diagnosis: "Hypertension"))
-    end
+  it "renders the back link with correct text and onclick behavior" do
+    expect(subject).to have_css(
+      'a[onclick="goToPage(id=\'diabetes-report\', \'home-page\'); return false;"]',
+      text: "back"
+    )
   end
 
-  describe "handling empty data" do
-    let(:empty_data) { {} }
+  it "renders the Reports::ProgressAssignedPatientsComponent with correct data" do
+    expect(subject).to have_text(region.name)
+    expect(subject.text).to include(diabetes_reports_data[:assigned_patients].to_s)
+    expect(subject).to have_text("diabetes")
+  end
 
-    shared_examples "renders nothing if empty" do |data_key|
-      it "renders nothing if #{data_key} is empty" do
-        component_with_empty_data = render_inline(described_class.new(
-          monthly_follow_ups: data_key == :monthly_follow_ups ? empty_data : monthly_follow_ups,
-          period_info: data_key == :period_info ? empty_data : period_info,
-          region: region,
-          diagnosis: diagnosis
-        ))
-        expect(component_with_empty_data).to have_no_text(data_key.to_s)
-      end
+  it "displays the last updated date and time" do
+    formatted_date_time = last_updated_at.strftime("%d-%b-%Y at %I:%M %p")
+    expect(subject).to have_text("Data last updated on #{formatted_date_time}")
+  end
+
+  it "renders the Reports::ProgressTotalRegistrationsComponent" do
+    expect(subject).to have_text(region.name)
+    expect(subject).to have_text("49")
+  end
+
+  it "renders the Reports::ProgressMonthlyFollowUpsComponent" do
+    monthly_follow_ups.values.each do |value|
+      expect(subject).to have_text(value.to_s)
     end
-
-    include_examples "renders nothing if empty", :monthly_follow_ups
-    include_examples "renders nothing if empty", :period_info
   end
 end
