@@ -42,10 +42,13 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     }
   end
 
+  let(:last_updated_at) { Time.current }
+
   before do
-    allow(repository).to receive(:cumulative_diabetes_registrations).and_return(total_registrations)
+    allow(repository).to receive(:cumulative_diabetes_registrations).and_return(diabetes_reports_data[:total_registrations])
     allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
-    allow(repository).to receive(:period_info).and_return(period_info)
+    allow(repository).to receive(:period_info).and_return(diabetes_reports_data[:period_info])
+    allow(repository).to receive(:monthly_follow_ups).and_return(diabetes_reports_data[:monthly_follow_ups])
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
