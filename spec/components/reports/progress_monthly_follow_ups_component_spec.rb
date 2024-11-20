@@ -8,9 +8,9 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
     (6..11).each_with_object({}) do |month, hash|
       date = Date.new(2024, month, 1).beginning_of_month
       date_str = date.to_s
-      ltfu_since_date = date.prev_month.end_of_month.strftime('%d-%b-%Y')
-      name = date.strftime('%b-%Y')
-      hash[date_str] = { name: name, ltfu_since_date: ltfu_since_date }
+      ltfu_since_date = date.prev_month.end_of_month.strftime("%d-%b-%Y")
+      name = date.strftime("%b-%Y")
+      hash[date_str] = {name: name, ltfu_since_date: ltfu_since_date}
     end
   end
 
