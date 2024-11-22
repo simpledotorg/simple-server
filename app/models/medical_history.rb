@@ -14,7 +14,7 @@ class MedicalHistory < ApplicationRecord
     :receiving_treatment_for_diabetes,
     :diabetes,
     :diagnosed_with_hypertension,
-    :smoking,
+    :smoking
   ].freeze
 
   MEDICAL_HISTORY_ANSWERS = {
