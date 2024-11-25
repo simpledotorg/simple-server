@@ -13,7 +13,8 @@ class MedicalHistory < ApplicationRecord
     :receiving_treatment_for_hypertension,
     :receiving_treatment_for_diabetes,
     :diabetes,
-    :diagnosed_with_hypertension
+    :diagnosed_with_hypertension,
+    :smoking
   ].freeze
 
   MEDICAL_HISTORY_ANSWERS = {
@@ -30,6 +31,7 @@ class MedicalHistory < ApplicationRecord
   enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
+  enum smoking: MEDICAL_HISTORY_ANSWERS, _prefix: true
 
   scope :for_sync, -> { with_discarded }
 

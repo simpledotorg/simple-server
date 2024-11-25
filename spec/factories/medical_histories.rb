@@ -10,6 +10,8 @@ FactoryBot.define do
     diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
+    smoking { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
+    cholesterol { 123 }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     user
@@ -23,6 +25,7 @@ FactoryBot.define do
       diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
+      smoking { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
     trait :hypertension_yes do
