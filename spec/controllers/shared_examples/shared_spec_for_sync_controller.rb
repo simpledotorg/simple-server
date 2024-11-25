@@ -99,6 +99,8 @@ RSpec.shared_examples "a sync controller that authenticates user requests" do
 end
 
 RSpec.shared_examples "a working sync controller creating records" do
+  let(:request_user) { create(:user) } unless defined?(request_user)
+  let(:invalid_record) { build_invalid_payload.call } unless defined?(invalid_record)
   let(:request_key) { model.to_s.underscore.pluralize }
   let(:empty_payload) { {request_key => []} }
 
