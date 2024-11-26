@@ -1,4 +1,4 @@
-class Api::V4::BloodSugarPayloadValidator < Api::V3::PayloadValidator
+class Api::V4::BloodSugarPayloadValidator < Api::V4::PayloadValidator
   attr_accessor(
     :id,
     :blood_sugar_type,
