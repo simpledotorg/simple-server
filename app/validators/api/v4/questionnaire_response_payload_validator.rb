@@ -1,4 +1,4 @@
-class Api::V4::QuestionnaireResponsePayloadValidator < Api::V3::PayloadValidator
+class Api::V4::QuestionnaireResponsePayloadValidator < Api::V4::PayloadValidator
   attr_accessor(
     :id,
     :questionnaire_id,

@@ -1,4 +1,4 @@
-class Api::V4::TeleconsultationPayloadValidator < Api::V3::PayloadValidator
+class Api::V4::TeleconsultationPayloadValidator < Api::V4::PayloadValidator
   attr_accessor(
     :id,
     :patient_id,
