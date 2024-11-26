@@ -58,8 +58,8 @@ Rails.application.routes.draw do
 
   concern :v4_sync_routes do
     scope :patient_attributes do
-      get "/sync", to: "patient_attributes#sync_to_user"
-      post "/sync", to: "patient_attributes#sync_from_user"
+      get "sync", to: "patient_attributes#sync_to_user"
+      post "sync", to: "patient_attributes#sync_from_user"
     end
   end
 
