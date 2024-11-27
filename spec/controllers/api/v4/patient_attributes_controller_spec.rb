@@ -7,6 +7,7 @@ describe Api::V4::PatientAttributesController, type: :controller do
   let(:model) { PatientAttribute }
   let(:build_payload) { -> { build_patient_attribute_payload } }
   let(:build_invalid_payload) { -> { build_invalid_patient_attribute_payload } }
+  let(:invalid_record) { build_invalid_payload.call }
   let(:number_of_schema_errors_in_invalid_payload) { 2 }
   let(:update_payload) { ->(patient_attribute) { updated_patient_attribute_payload patient_attribute } }
 
