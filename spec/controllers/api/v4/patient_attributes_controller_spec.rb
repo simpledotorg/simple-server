@@ -1,7 +1,6 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe Api::V4::PatientAttributesController, type: :controller do
-
   let(:request_user) { create(:user) }
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }

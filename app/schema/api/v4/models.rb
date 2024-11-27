@@ -99,7 +99,7 @@ class Api::V4::Models
          weight: {"$ref" => "#/definitions/non_empty_string"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
-         updated_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
        },
        required: %w[id patient_id height weight created_at updated_at]}
     end

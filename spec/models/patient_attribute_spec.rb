@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 describe PatientAttribute, type: :model do
   describe "Associations" do

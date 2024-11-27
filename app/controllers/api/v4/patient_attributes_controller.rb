@@ -8,7 +8,7 @@ class Api::V4::PatientAttributesController < Api::V4::SyncController
   end
 
   def metadata
-    { user_id: current_user.id }
+    {user_id: current_user.id}
   end
 
   private
@@ -17,13 +17,13 @@ class Api::V4::PatientAttributesController < Api::V4::SyncController
     validator = Api::V4::PatientAttributePayloadValidator.new(payload_attribute_params)
     logger.debug "BMI sync had errors: #{validator.errors_hash}" if validator.invalid?
     if validator.check_invalid?
-      { errors_hash: validator.errors_hash }
+      {errors_hash: validator.errors_hash}
     else
-      record_params = Api::V4::PatientAttributeTransformer.
-        from_request(payload_attribute_params).
-        merge(metadata)
+      record_params = Api::V4::PatientAttributeTransformer
+        .from_request(payload_attribute_params)
+        .merge(metadata)
 
-      { record: PatientAttribute.merge(record_params) }
+      {record: PatientAttribute.merge(record_params)}
     end
   end
 
