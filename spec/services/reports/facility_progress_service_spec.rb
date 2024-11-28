@@ -115,7 +115,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
     context "diabetes reports" do
       it "returns the correct diabetes report data" do
         facility = create(:facility, enable_diabetes_management: true)
-        dm_patients = create_list(:patient, 3, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
+        dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         dm_patients.each do |patient|
           create(:blood_sugar, patient: patient, facility: facility, recorded_at: 2.month.ago)
