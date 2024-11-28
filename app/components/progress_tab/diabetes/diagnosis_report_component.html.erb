@@ -37,4 +37,11 @@
     region: diabetes_reports_data[:region],
     diagnosis: "Diabetes"
   )) %>
+  <%= render(ProgressTab::Diabetes::MissedVisitsComponent.new(
+    missed_visits_rates: diabetes_reports_data[:missed_visits_rates],
+    missed_visits: diabetes_reports_data[:missed_visits],
+    adjusted_patients: diabetes_reports_data[:adjusted_patients],
+    period_info: diabetes_reports_data[:period_info],
+    region: diabetes_reports_data[:region]
+  )) %>
 </div>
