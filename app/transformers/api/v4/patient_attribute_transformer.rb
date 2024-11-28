@@ -8,7 +8,9 @@ class Api::V4::PatientAttributeTransformer < Api::V4::Transformer
       super(payload)
         .merge({
           "height" => payload["height"].to_f,
-          "weight" => payload["weight"].to_f
+          "weight" => payload["weight"].to_f,
+          "height_unit" => payload["height_unit"] ||= "cm",
+          "weight_unit" => payload["weight_unit"] ||= "kg"
         })
     end
   end

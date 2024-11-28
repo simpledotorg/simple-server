@@ -4,6 +4,8 @@ FactoryBot.define do
     patient
     height { 140.5 }
     weight { 65.5 }
+    height_unit { "cm" }
+    weight_unit { "kg" }
     device_created_at { Time.current }
     device_updated_at { Time.current }
     user

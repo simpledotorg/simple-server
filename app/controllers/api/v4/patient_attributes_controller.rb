@@ -38,6 +38,8 @@ class Api::V4::PatientAttributesController < Api::V4::SyncController
         :patient_id,
         :height,
         :weight,
+        :height_unit,
+        :weight_unit,
         :created_at,
         :updated_at
       )
