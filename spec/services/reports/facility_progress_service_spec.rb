@@ -118,6 +118,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         dm_patients = create_list(:patient, 2, :diabetes, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         create(:patient, :without_hypertension, registration_facility: facility, registration_user: user, recorded_at: 2.months.ago)
         dm_patients.each do |patient|
+          create(:blood_sugar, patient: patient, facility: facility, recorded_at: 2.month.ago)
           create(:blood_sugar, patient: patient, facility: facility, recorded_at: 1.month.ago)
           create(:blood_sugar, patient: patient, facility: facility, recorded_at: Date.current)
         end
@@ -145,7 +146,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
           Period.month(previous_month) => dm_patients.count,
           Period.month(current_month) => dm_patients.count
         }
-        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations, :monthly_follow_ups)
+        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations, :monthly_follow_ups, :missed_visits, :missed_visits_rates, :adjusted_patients)
         expect(result[:assigned_patients]).to eq(dm_patients.count)
         expect(result[:period_info]).to eq(expected_period_info)
         expect(result[:monthly_follow_ups]).to eq(expected_follow_ups)
