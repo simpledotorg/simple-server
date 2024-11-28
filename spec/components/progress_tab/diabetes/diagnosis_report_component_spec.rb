@@ -44,6 +44,42 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     monthly_follow_ups_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
+  let(:missed_visits_data) do
+    {
+      "2024-06-01" => 10,
+      "2024-07-01" => 12,
+      "2024-08-01" => 15
+    }
+  end
+
+  let(:missed_visits) do
+    missed_visits_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:missed_visits_rates_data) do
+    {
+      "2024-06-01" => 0.5,
+      "2024-07-01" => 0.55,
+      "2024-08-01" => 0.6
+    }
+  end
+
+  let(:missed_visits_rates) do
+    missed_visits_rates_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:adjusted_patients_data) do
+    {
+      "2024-06-01" => 120,
+      "2024-07-01" => 130,
+      "2024-08-01" => 140
+    }
+  end
+
+  let(:adjusted_patients) do
+    adjusted_patients_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
   let(:diabetes_reports_data) do
     {
       total_registrations: total_registrations,
@@ -51,6 +87,9 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
       region: region,
       assigned_patients: 100,
       monthly_follow_ups: monthly_follow_ups,
+      missed_visits: missed_visits,
+      missed_visits_rates: missed_visits_rates,
+      adjusted_patients: adjusted_patients,
       diagnosis: "diabetes"
     }
   end
@@ -60,6 +99,9 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     allow(repository).to receive(:cumulative_assigned_diabetic_patients).and_return(diabetes_reports_data[:assigned_patients])
     allow(repository).to receive(:period_info).and_return(period_info)
     allow(repository).to receive(:monthly_follow_ups).and_return(monthly_follow_ups)
+    allow(repository).to receive(:missed_visits).and_return(missed_visits)
+    allow(repository).to receive(:missed_visits_rates).and_return(missed_visits_rates)
+    allow(repository).to receive(:adjusted_patients).and_return(diabetes_reports_data[:adjusted_patients])
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
@@ -99,6 +141,12 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
 
   it "renders the Reports::ProgressMonthlyFollowUpsComponent" do
     monthly_follow_ups.values.each do |value|
+      expect(subject).to have_text(value.to_s)
+    end
+  end
+
+  it "renders the missed visits data correctly" do
+    missed_visits.values.each do |value|
       expect(subject).to have_text(value.to_s)
     end
   end
