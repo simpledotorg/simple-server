@@ -89,6 +89,23 @@ class Api::V4::Models
       )
     end
 
+    def patient_attribute
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         user_id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         height: {"$ref" => "#/definitions/non_empty_string"},
+         weight: {"$ref" => "#/definitions/non_empty_string"},
+         height_unit: {"$ref" => "#/definitions/non_empty_string"},
+         weight_unit: {"$ref" => "#/definitions/non_empty_string"},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id patient_id height weight created_at updated_at]}
+    end
+
     def patient_phone_number
       {
         type: :object,
@@ -424,6 +441,7 @@ class Api::V4::Models
         nullable_timestamp: Api::CommonDefinitions.nullable_timestamp,
         nullable_uuid: Api::CommonDefinitions.nullable_uuid,
         patient: patient,
+        patient_attribute: patient_attribute,
         patient_business_identifier: Api::V3::Models.patient_business_identifier,
         patient_business_identifiers: Api::CommonDefinitions.array_of("patient_business_identifier"),
         phone_number: Api::V3::Models.phone_number,
