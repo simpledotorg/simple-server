@@ -2,8 +2,6 @@
 
 class ProgressTab::Diabetes::MissedVisitsComponent < ApplicationComponent
   include AssetsHelper
-  # include ActionView::Helpers::NumberHelper
-
   attr_reader :missed_visits_rates, :missed_visits, :adjusted_patients, :period_info, :region
 
   def initialize(missed_visits_rates:, missed_visits:, adjusted_patients:, period_info:, region:)
