@@ -24,4 +24,6 @@ tasks.each do |task|
   task.enhance([:after_hook])
 end
 
-Rake::Task["db:schema:load"].enhance [:support_pg_extensions_in_heroku]
+if ENV["HEROKU_APP_NAME"].present?
+  Rake::Task["db:schema:load"].enhance [:support_pg_extensions_in_heroku]
+end
