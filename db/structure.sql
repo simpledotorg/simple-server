@@ -1719,9 +1719,7 @@ CREATE TABLE public.patient_attributes (
     deleted_at timestamp without time zone,
     device_created_at timestamp without time zone,
     device_updated_at timestamp without time zone,
-    user_id uuid NOT NULL,
-    height_unit character varying,
-    weight_unit character varying
+    user_id uuid NOT NULL
 );
 
 
@@ -7819,7 +7817,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241125151704'),
 ('20241125153335'),
 ('20241125155649'),
-('20241126111757'),
-('20241128204419');
+('20241126111757');
 
 
