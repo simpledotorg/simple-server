@@ -97,6 +97,12 @@ module Reports
         missed_visits_rates: repository.diabetes_missed_visits_rates[@region.slug],
         missed_visits: repository.diabetes_missed_visits[@region.slug],
         adjusted_patients: repository.adjusted_diabetes_patients[@region.slug],
+        controlled: repository.bs_below_200_patients[@region.slug],
+        controlled_rates: repository.bs_below_200_rates[@region.slug],
+        uncontrolled_bs_200_to_300: repository.bs_200_to_300_patients[@region.slug],
+        uncontrolled_rates_bs_200_to_300: repository.bs_200_to_300_rates[@region.slug],
+        uncontrolled_bs_300_and_above: repository.bs_over_300_patients[@region.slug],
+        uncontrolled_rates_bs_300_and_above: repository.bs_over_300_rates[@region.slug],
         region: @region
       }
     end
