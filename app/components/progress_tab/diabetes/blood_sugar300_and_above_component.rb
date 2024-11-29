@@ -15,7 +15,7 @@ class ProgressTab::Diabetes::BloodSugar300AndAboveComponent < ApplicationCompone
   end
 
   def uncontrolled_threshold_key
-    CountryConfig.current_country?("Sri Lanka") ? "lk_diabetes_very_uncontrolled" : "diabetes_very_uncontrolled"
+    CountryConfig.current_country?(LK_DIABETES_CONSTANT) ? "lk_diabetes_very_uncontrolled" : "diabetes_very_uncontrolled"
   end
 
   def uncontrolled_threshold_long

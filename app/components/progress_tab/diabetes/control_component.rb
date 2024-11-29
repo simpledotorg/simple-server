@@ -13,7 +13,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   end
 
   def controlled_threshold_key
-    CountryConfig.current_country?("Sri Lanka") ? "lk_diabetes_controlled" : "diabetes_controlled"
+    CountryConfig.current_country?(LK_DIABETES_CONSTANT) ? "lk_diabetes_controlled" : "diabetes_controlled"
   end
 
   def controlled_threshold_long
