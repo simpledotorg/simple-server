@@ -37,6 +37,32 @@
     region: diabetes_reports_data[:region],
     diagnosis: "Diabetes"
   )) %>
+  <div class="mt-48px mb-16px pr-16px pl-16px">
+    <h3 class="m-0px p-0px ta-left fw-bold fs-20px c-grey-dark">
+      <%= t("progress_tab.diagnosis_report.patient_treatment_outcomes.section_title") %>
+    </h3>
+  </div>
+  <%= render(ProgressTab::Diabetes::ControlComponent.new(
+    controlled_rates: diabetes_reports_data[:controlled_rates],
+    controlled: diabetes_reports_data[:controlled],
+    adjusted_patients: diabetes_reports_data[:adjusted_patients],
+    period_info: diabetes_reports_data[:period_info],
+    region: diabetes_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Diabetes::BloodSugar200To299Component.new(
+    uncontrolled_rates: diabetes_reports_data[:uncontrolled_rates_bs_200_to_300],
+    uncontrolled: diabetes_reports_data[:uncontrolled_bs_200_to_300],
+    adjusted_patients: diabetes_reports_data[:adjusted_patients],
+    period_info: diabetes_reports_data[:period_info],
+    region: diabetes_reports_data[:region]
+  )) %>
+  <%= render(ProgressTab::Diabetes::BloodSugar300AndAboveComponent.new(
+    uncontrolled_rates: diabetes_reports_data[:uncontrolled_rates_bs_300_and_above],
+    uncontrolled: diabetes_reports_data[:uncontrolled_bs_300_and_above],
+    adjusted_patients: diabetes_reports_data[:adjusted_patients],
+    period_info: diabetes_reports_data[:period_info],
+    region: diabetes_reports_data[:region]
+  )) %>
   <%= render(ProgressTab::Diabetes::MissedVisitsComponent.new(
     missed_visits_rates: diabetes_reports_data[:missed_visits_rates],
     missed_visits: diabetes_reports_data[:missed_visits],
