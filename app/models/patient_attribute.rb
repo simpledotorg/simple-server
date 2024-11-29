@@ -7,7 +7,4 @@ class PatientAttribute < ApplicationRecord
   validates :device_updated_at, presence: true
 
   scope :for_sync, -> { with_discarded }
-
-  enum :height_unit, [:cm, :in, :ft, :m]
-  enum :weight_unit, [:kg, :lb]
 end

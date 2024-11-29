@@ -97,8 +97,6 @@ class Api::V4::Models
          patient_id: {"$ref" => "#/definitions/uuid"},
          height: {"$ref" => "#/definitions/non_empty_string"},
          weight: {"$ref" => "#/definitions/non_empty_string"},
-         height_unit: {"$ref" => "#/definitions/non_empty_string"},
-         weight_unit: {"$ref" => "#/definitions/non_empty_string"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
