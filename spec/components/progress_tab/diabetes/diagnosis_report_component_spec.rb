@@ -80,6 +80,66 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     adjusted_patients_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
+  let(:controlled) do
+    {
+      "2024-06-01" => 5,
+      "2024-07-01" => 6,
+      "2024-08-01" => 7
+    }
+  end
+
+  let(:controlled_rates) do
+    controlled.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:uncontrolled_bs_200_to_300_data) do
+    {
+      "2024-06-01" => 15,
+      "2024-07-01" => 18,
+      "2024-08-01" => 20
+    }
+  end
+
+  let(:uncontrolled_bs_200_to_300) do
+    uncontrolled_bs_200_to_300_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:uncontrolled_rates_bs_200_to_300_data) do
+    {
+      "2024-06-01" => 0.15,
+      "2024-07-01" => 0.18,
+      "2024-08-01" => 0.20
+    }
+  end
+
+  let(:uncontrolled_rates_bs_200_to_300) do
+    uncontrolled_rates_bs_200_to_300_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:uncontrolled_bs_300_and_above_data) do
+    {
+      "2024-06-01" => 10,
+      "2024-07-01" => 12,
+      "2024-08-01" => 14
+    }
+  end
+
+  let(:uncontrolled_bs_300_and_above) do
+    uncontrolled_bs_300_and_above_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
+  let(:uncontrolled_rates_bs_300_and_above_data) do
+    {
+      "2024-06-01" => 0.1,
+      "2024-07-01" => 0.12,
+      "2024-08-01" => 0.14
+    }
+  end
+
+  let(:uncontrolled_rates_bs_300_and_above) do
+    uncontrolled_rates_bs_300_and_above_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
+  end
+
   let(:diabetes_reports_data) do
     {
       total_registrations: total_registrations,
@@ -90,6 +150,12 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
       missed_visits: missed_visits,
       missed_visits_rates: missed_visits_rates,
       adjusted_patients: adjusted_patients,
+      controlled: controlled,
+      controlled_rates: controlled_rates,
+      uncontrolled_bs_200_to_300: uncontrolled_bs_200_to_300,
+      uncontrolled_rates_bs_200_to_300: uncontrolled_rates_bs_200_to_300,
+      uncontrolled_bs_300_and_above: uncontrolled_bs_300_and_above,
+      uncontrolled_rates_bs_300_and_above: uncontrolled_rates_bs_300_and_above,
       diagnosis: "diabetes"
     }
   end
@@ -102,6 +168,12 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
     allow(repository).to receive(:missed_visits).and_return(missed_visits)
     allow(repository).to receive(:missed_visits_rates).and_return(missed_visits_rates)
     allow(repository).to receive(:adjusted_patients).and_return(diabetes_reports_data[:adjusted_patients])
+    allow(repository).to receive(:controlled).and_return(controlled)
+    allow(repository).to receive(:controlled_rates).and_return(controlled_rates)
+    allow(repository).to receive(:uncontrolled_bs_200_to_300).and_return(uncontrolled_bs_200_to_300)
+    allow(repository).to receive(:uncontrolled_rates_bs_200_to_300).and_return(uncontrolled_rates_bs_200_to_300)
+    allow(repository).to receive(:uncontrolled_bs_300_and_above).and_return(uncontrolled_bs_300_and_above)
+    allow(repository).to receive(:uncontrolled_rates_bs_300_and_above).and_return(uncontrolled_rates_bs_300_and_above)
     allow(region).to receive(:slug).and_return("region_slug")
   end
 
@@ -130,7 +202,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
   end
 
   it "displays the last updated date and time" do
-    formatted_date_time = last_updated_at.strftime("%d-%b-%Y at %I:%M %p")
+    formatted_date_time = last_updated_at.strftime("%-d-%b-%Y at %I:%M %p")
     expect(subject).to have_text("Data last updated on #{formatted_date_time}")
   end
 
@@ -147,6 +219,24 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
 
   it "renders the missed visits data correctly" do
     missed_visits.values.each do |value|
+      expect(subject).to have_text(value.to_s)
+    end
+  end
+
+  it "renders the controlled data correctly" do
+    controlled.values.each do |value|
+      expect(subject).to have_text(value.to_s)
+    end
+  end
+
+  it "renders the uncontrolled_bs_200_to_300 data correctly" do
+    uncontrolled_bs_200_to_300.values.each do |value|
+      expect(subject).to have_text(value.to_s)
+    end
+  end
+
+  it "renders the uncontrolled_bs_300_and_above data correctly" do
+    uncontrolled_bs_300_and_above.values.each do |value|
       expect(subject).to have_text(value.to_s)
     end
   end
