@@ -2,7 +2,6 @@
 
 class ProgressTab::Diabetes::BloodSugar300AndAboveComponent < ApplicationComponent
   include AssetsHelper
-  include ActionView::Helpers::NumberHelper
 
   attr_reader :uncontrolled_rates, :uncontrolled, :adjusted_patients, :period_info, :region
 
@@ -15,7 +14,7 @@ class ProgressTab::Diabetes::BloodSugar300AndAboveComponent < ApplicationCompone
   end
 
   def uncontrolled_threshold_key
-    CountryConfig.current_country?("Sri Lanka") ? "lk_diabetes_very_uncontrolled" : "diabetes_very_uncontrolled"
+    CountryConfig.current_country?(LK_DIABETES_CONSTANT) ? "lk_diabetes_very_uncontrolled" : "diabetes_very_uncontrolled"
   end
 
   def uncontrolled_threshold_long
@@ -28,6 +27,10 @@ class ProgressTab::Diabetes::BloodSugar300AndAboveComponent < ApplicationCompone
 
   def uncontrolled_threshold_short
     I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.#{uncontrolled_threshold_key}_short")
+  end
+
+  def uncontrolled_bar
+    t("progress_tab.diagnosis_report.diagnosis_thresholds.#{uncontrolled_threshold_key}_bar")
   end
 
   def subtitle_text
