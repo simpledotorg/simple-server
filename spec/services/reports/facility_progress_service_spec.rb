@@ -145,7 +145,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
           Period.month(previous_month) => dm_patients.count,
           Period.month(current_month) => dm_patients.count
         }
-        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations, :monthly_follow_ups, :missed_visits, :missed_visits_rates, :adjusted_patients)
+        expect(result).to include(:assigned_patients, :period_info, :region, :total_registrations, :monthly_follow_ups, :missed_visits, :missed_visits_rates, :adjusted_patients, :controlled_rates, :uncontrolled_bs_200_to_300, :uncontrolled_rates_bs_200_to_300, :uncontrolled_bs_300_and_above, :uncontrolled_rates_bs_300_and_above)
         expect(result[:assigned_patients]).to eq(dm_patients.count)
         expect(result[:period_info]).to eq(expected_period_info)
         expect(result[:monthly_follow_ups]).to eq(expected_follow_ups)
