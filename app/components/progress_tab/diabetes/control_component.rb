@@ -35,15 +35,4 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   def denominator_text
     t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: @region.name, diagnosis: "Diabetes")
   end
-
-  def control_summary
-    controlled_count = format(controlled[control_range.last])
-    registrations = format(adjusted_patients[control_range.last])
-    label = "patient".pluralize(registrations)
-    "#{controlled_count} of #{registrations} #{label}"
-  end
-
-  def format(number)
-    number_with_delimiter(number)
-  end
 end
