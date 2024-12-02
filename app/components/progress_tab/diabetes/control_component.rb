@@ -1,6 +1,5 @@
 class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   include AssetsHelper
-  include ActionView::Helpers::NumberHelper
 
   attr_reader :control_rates, :controlled, :adjusted_patients, :period_info, :region
 
@@ -13,7 +12,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   end
 
   def controlled_threshold_key
-    CountryConfig.current_country?("Sri Lanka") ? "lk_diabetes_controlled" : "diabetes_controlled"
+    CountryConfig.current_country?(LK_DIABETES_CONSTANT) ? "lk_diabetes_controlled" : "diabetes_controlled"
   end
 
   def controlled_threshold_long
@@ -22,6 +21,10 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
 
   def controlled_threshold_short
     t("progress_tab.diagnosis_report.diagnosis_thresholds.#{controlled_threshold_key}_short")
+  end
+
+  def controlled_bar
+    t("progress_tab.diagnosis_report.diagnosis_thresholds.#{controlled_threshold_key}_bar")
   end
 
   def subtitle_text
@@ -34,16 +37,5 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
 
   def denominator_text
     t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: @region.name, diagnosis: "Diabetes")
-  end
-
-  def control_summary
-    controlled_count = format(controlled[control_range.last])
-    registrations = format(adjusted_patients[control_range.last])
-    label = "patient".pluralize(registrations)
-    "#{controlled_count} of #{registrations} #{label}"
-  end
-
-  def format(number)
-    number_with_delimiter(number)
   end
 end
