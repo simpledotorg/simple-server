@@ -28,6 +28,10 @@ class ProgressTab::Diabetes::BloodSugar200To299Component < ApplicationComponent
     I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.#{uncontrolled_threshold_key}_short")
   end
 
+  def uncontrolled_bar
+    t("progress_tab.diagnosis_report.diagnosis_thresholds.#{uncontrolled_threshold_key}_bar")
+  end
+
   def subtitle_text
     I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle",
       facility_name: region.name, diagnosis: "Diabetes", uncontrolled_threshold: uncontrolled_threshold_long)

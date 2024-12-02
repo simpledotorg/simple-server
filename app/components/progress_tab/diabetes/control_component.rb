@@ -1,6 +1,5 @@
 class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   include AssetsHelper
-  include ActionView::Helpers::NumberHelper
 
   attr_reader :control_rates, :controlled, :adjusted_patients, :period_info, :region
 
@@ -22,6 +21,10 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
 
   def controlled_threshold_short
     t("progress_tab.diagnosis_report.diagnosis_thresholds.#{controlled_threshold_key}_short")
+  end
+
+  def controlled_bar
+    t("progress_tab.diagnosis_report.diagnosis_thresholds.#{controlled_threshold_key}_bar")
   end
 
   def subtitle_text
