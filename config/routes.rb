@@ -61,6 +61,11 @@ Rails.application.routes.draw do
       get "sync", to: "patient_attributes#sync_to_user"
       post "sync", to: "patient_attributes#sync_from_user"
     end
+
+    scope :cvd_risks do
+      get "sync", to: "cvd_risks#sync_to_user"
+      post "sync", to: "cvd_risks#sync_from_user"
+    end
   end
 
   namespace :webview do

@@ -22,10 +22,3 @@ end
 def build_invalid_patient_attribute_payload
   FactoryBot.build(:patient_attribute, :invalid)
 end
-
-def updated_patient_attribute_payload existing_patient_attribtute
-  update_time = 5.days.from_now
-  build_patient_attribute_payload(existing_patient_attribtute).merge({
-    updated_at: update_time
-  })
-end

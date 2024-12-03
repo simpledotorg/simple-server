@@ -17,6 +17,18 @@ class Api::V4::Models
        required: %w[id blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]}
     end
 
+    def cvd_risk
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         risk_score: {type: :number},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"},
+       },
+       required: %w[id risk_score created_at updated_at patient_id]}
+    end
+
     def login_patient
       {
         type: :object,
