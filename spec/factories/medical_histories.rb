@@ -64,6 +64,10 @@ FactoryBot.define do
       hypertension { "yes" }
       chronic_kidney_disease { "yes" }
     end
+
+    trait :without_smoking do
+      smoking { nil }
+    end
   end
 end
 

@@ -307,6 +307,7 @@ class Api::V3::Models
          diabetes: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          diagnosed_with_hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
+         smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
