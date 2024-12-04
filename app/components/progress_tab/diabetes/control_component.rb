@@ -10,7 +10,6 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
     @adjusted_patients = adjusted_patients
     @period_info = period_info
     @region = region
-    byebug
     @use_who_standard = resolve_use_who_standard(use_who_standard)
   end
 
