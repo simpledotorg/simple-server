@@ -24,7 +24,7 @@ class Api::V4::Models
          patient_id: {"$ref" => "#/definitions/uuid"},
          risk_score: {type: :number},
          created_at: {"$ref" => "#/definitions/timestamp"},
-         updated_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
        },
        required: %w[id risk_score created_at updated_at patient_id]}
     end
