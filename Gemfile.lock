@@ -109,8 +109,6 @@ GEM
       capistrano (~> 3.1)
     capistrano-db-tasks (0.6)
       capistrano (>= 3.0.0)
-    capistrano-multiconfig (3.1.0)
-      capistrano (>= 3.7.0)
     capistrano-passenger (0.2.1)
       capistrano (~> 3.0)
     capistrano-rails (1.6.2)
@@ -722,7 +720,6 @@ DEPENDENCIES
   byebug
   capistrano (~> 3.17)
   capistrano-db-tasks
-  capistrano-multiconfig
   capistrano-passenger (= 0.2.1)
   capistrano-rails
   capistrano-rails-console
