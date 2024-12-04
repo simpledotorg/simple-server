@@ -588,6 +588,22 @@ ALTER SEQUENCE public.cphc_migration_error_logs_id_seq OWNED BY public.cphc_migr
 
 
 --
+-- Name: cvd_risks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cvd_risks (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    risk_score integer,
+    patient_id uuid NOT NULL,
+    deleted_at timestamp without time zone,
+    device_created_at timestamp without time zone,
+    device_updated_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: data_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5573,6 +5589,14 @@ ALTER TABLE ONLY public.cphc_migration_error_logs
 
 
 --
+-- Name: cvd_risks cvd_risks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cvd_risks
+    ADD CONSTRAINT cvd_risks_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data_migrations data_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -6263,6 +6287,13 @@ CREATE UNIQUE INDEX index_cphc_migration_audit_logs_on_cphc_migratable ON public
 --
 
 CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.cphc_migration_configs USING btree (facility_group_id);
+
+
+--
+-- Name: index_cvd_risks_on_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (patient_id);
 
 
 --
@@ -7544,6 +7575,14 @@ ALTER TABLE ONLY public.drug_stocks
 
 
 --
+-- Name: cvd_risks fk_rails_90e3653e9a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cvd_risks
+    ADD CONSTRAINT fk_rails_90e3653e9a FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+
+
+--
 -- Name: clean_medicine_to_dosages fk_rails_96b1526de4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7817,6 +7856,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241125151704'),
 ('20241125153335'),
 ('20241125155649'),
-('20241126111757');
+('20241126111757'),
+('20241129212725');
 
 
