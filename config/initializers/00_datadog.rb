@@ -4,7 +4,7 @@ require "datadog/statsd"
 
 # Allow running via an ENV var (for development usage, for example) ...otherwise
 # exclude some envs by default
-DATADOG_ENABLED = ENV["DATADOG_ENABLED"] || !(Rails.env.development? || Rails.env.test? || Rails.env.profiling? || SimpleServer.env.review? || SimpleServer.env.android_review?)
+DATADOG_ENABLED = ActiveModel::Type::Boolean.new.cast(ENV["DATADOG_ENABLED"]) || !(Rails.env.development? || Rails.env.test? || Rails.env.profiling? || SimpleServer.env.review? || SimpleServer.env.android_review?)
 
 Datadog.configure do |c|
   c.tracing.enabled = DATADOG_ENABLED
