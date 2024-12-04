@@ -1,3 +1,3 @@
 class ApplicationComponent < ViewComponent::Base
-  LK_DIABETES_CONSTANT = "Sri Lanka"
+  use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator)
 end
