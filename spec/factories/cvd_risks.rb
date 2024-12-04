@@ -11,11 +11,3 @@ FactoryBot.define do
     end
   end
 end
-
-def updated_cvd_risk_payload existing_record = nil
-  existing_record ||= build(:cvd_risk)
-  existing_record.
-    attributes.
-    with_payload_keys.
-    merge(updated_at: 5.days.from_now)
-end
