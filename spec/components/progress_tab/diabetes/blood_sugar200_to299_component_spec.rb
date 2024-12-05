@@ -46,24 +46,28 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
+  def render_component_with(use_who_standard: nil)
+    render_inline(ProgressTab::Diabetes::BloodSugar200To299Component.new(
+      uncontrolled_rates: uncontrolled_rates,
+      uncontrolled: uncontrolled,
+      adjusted_patients: adjusted_patients,
+      period_info: period_info,
+      region: region,
+      use_who_standard: use_who_standard
+    ))
+  end
+
   context "when the country is Sri Lanka" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-      render_inline(ProgressTab::Diabetes::BloodSugar200To299Component.new(
-        uncontrolled_rates: uncontrolled_rates,
-        uncontrolled: uncontrolled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: true)
     end
 
     it "renders the correct uncontrolled threshold long text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_uncontrolled_long"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.reports_card_title_fbs"))
     end
 
     it "renders the correct uncontrolled threshold short text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_uncontrolled_short"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
     end
 
     it "renders the correct denominator text for Sri Lanka" do
@@ -76,28 +80,21 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     end
 
     it "renders the correct uncontrolled bar text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_uncontrolled_bar"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
     end
   end
 
   context "when the country is not Sri Lanka" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-      render_inline(ProgressTab::Diabetes::BloodSugar200To299Component.new(
-        uncontrolled_rates: uncontrolled_rates,
-        uncontrolled: uncontrolled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: false)
     end
 
     it "renders the correct uncontrolled threshold long text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_long"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.reports_card_title_dm"))
     end
 
     it "renders the correct uncontrolled threshold short text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_short"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title"))
     end
 
     it "renders the correct denominator text for non-Sri Lanka countries" do
@@ -110,7 +107,7 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     end
 
     it "renders the correct uncontrolled bar text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_uncontrolled_bar"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm"))
     end
   end
 end

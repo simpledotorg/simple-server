@@ -48,14 +48,7 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
 
   context "when the country is Sri Lanka" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-      render_inline(ProgressTab::Diabetes::BloodSugar300AndAboveComponent.new(
-        uncontrolled_rates: uncontrolled_rates,
-        uncontrolled: uncontrolled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: true)
     end
 
     it "renders the correct uncontrolled threshold long text for Sri Lanka" do
@@ -82,16 +75,8 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
 
   context "when the country is not Sri Lanka" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-      render_inline(ProgressTab::Diabetes::BloodSugar300AndAboveComponent.new(
-        uncontrolled_rates: uncontrolled_rates,
-        uncontrolled: uncontrolled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: false)
     end
-
     it "renders the correct uncontrolled threshold long text for non-Sri Lanka countries" do
       expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long"))
     end

@@ -44,97 +44,70 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
-  context "when the country is Sri Lanka" do
+  def render_component_with(use_who_standard: nil)
+    render_inline(ProgressTab::Diabetes::ControlComponent.new(
+      controlled_rates: controlled_rates,
+      controlled: controlled,
+      adjusted_patients: adjusted_patients,
+      period_info: period_info,
+      region: region,
+      use_who_standard: use_who_standard
+    ))
+  end
+
+  context "when WHO standard is used (Sri Lanka)" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-      render_inline(ProgressTab::Diabetes::ControlComponent.new(
-        controlled_rates: controlled_rates,
-        controlled: controlled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: true)
     end
 
-    it "renders the correct controlled threshold long text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_controlled_long"))
+    it "renders the controlled threshold long text for WHO standard" do
+      expect(rendered_component).to have_text("Numerator: Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months")
     end
 
-    it "renders the correct controlled threshold short text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_controlled_short"))
+    it "renders the controlled threshold short text for WHO standard" do
+      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_fbs"))
     end
 
-    it "renders the correct subtitle for Sri Lanka" do
+    it "renders the correct subtitle for WHO standard" do
       expect(rendered_component).to have_text(I18n.t(
-        "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle",
-        facility_name: "Region 1",
+        "bs_below_200_copy.reports_card_subtitle_dm_fbs",
+        region_name: "Region 1",
         diagnosis: "Diabetes",
-        controlled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_controlled_long")
+        controlled_threshold: I18n.t("bs_below_200_copy.numerator_fbs")
       ))
-    end
-
-    it "renders the correct numerator text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.numerator", controlled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_controlled_long")))
-    end
-
-    it "renders the correct denominator text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
     end
 
     it "renders the bar chart with correct data" do
       expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
       expect(rendered_component).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
     end
-
-    it "renders the correct controlled bar text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_controlled_bar"))
-    end
   end
 
-  context "when the country is not Sri Lanka" do
+  context "when WHO standard is not used (other countries)" do
     before do
-      allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-      render_inline(ProgressTab::Diabetes::ControlComponent.new(
-        controlled_rates: controlled_rates,
-        controlled: controlled,
-        adjusted_patients: adjusted_patients,
-        period_info: period_info,
-        region: region
-      ))
+      render_component_with(use_who_standard: false)
     end
 
-    it "renders the correct controlled threshold long text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long"))
+    it "renders the controlled threshold long text for non-WHO standard" do
+      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.numerator"))
     end
 
-    it "renders the correct controlled threshold short text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_short"))
+    it "renders the controlled threshold short text for non-WHO standard" do
+      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title"))
     end
 
-    it "renders the correct subtitle for non-Sri Lanka countries" do
+    it "renders the correct subtitle for non-WHO standard" do
       expect(rendered_component).to have_text(I18n.t(
-        "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle",
-        facility_name: "Region 1",
+        "bs_below_200_copy.reports_card_subtitle_dm",
+        region_name: "Region 1",
         diagnosis: "Diabetes",
-        controlled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long")
+        controlled_threshold: I18n.t("bs_below_200_copy.numerator")
       ))
     end
 
-    it "renders the correct numerator text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.numerator", controlled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_long")))
-    end
-
-    it "renders the correct denominator text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
-    end
-
-    it "renders the bar chart with correct data for non-Sri Lanka countries" do
+    it "renders the bar chart with correct data" do
       expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
       expect(rendered_component).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
-    end
-
-    it "renders the correct controlled bar text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_controlled_bar"))
     end
   end
 end

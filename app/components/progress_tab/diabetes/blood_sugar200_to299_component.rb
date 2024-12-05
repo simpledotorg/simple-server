@@ -33,7 +33,7 @@ class ProgressTab::Diabetes::BloodSugar200To299Component < ApplicationComponent
     else
       @uncontrolled_threshold_title = t("bs_over_200_copy.reports_card_title_dm")
       @uncontrolled_threshold_long = t("bs_over_200_copy.bs_200_to_299.numerator_dm")
-      @uncontrolled_threshold_short = t("bs_over_200_copy.bs_200_to_299.title_dm")
+      @uncontrolled_threshold_short = t("bs_over_200_copy.bs_200_to_299.title")
       @uncontrolled_threshold_bar = t("bs_over_200_copy.bs_200_to_299.title_dm")
       @subtitle_text = t(
         "bs_over_200_copy.bs_200_to_299.reports_card_subtitle",
