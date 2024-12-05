@@ -30,9 +30,9 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
 
   let(:period_info_data) do
     {
-      "2024-08-01" => {name: "Aug-2024"},
-      "2024-09-01" => {name: "Sep-2024"},
-      "2024-10-01" => {name: "Oct-2024"}
+      "2024-08-01" => { name: "Aug-2024" },
+      "2024-09-01" => { name: "Sep-2024" },
+      "2024-10-01" => { name: "Oct-2024" }
     }
   end
 
@@ -46,56 +46,70 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
     data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
-  context "when the country is Sri Lanka" do
-    before do
-      render_component_with(use_who_standard: true)
-    end
-
-    it "renders the correct uncontrolled threshold long text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_very_uncontrolled_long"))
-    end
-
-    it "renders the correct uncontrolled threshold short text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_very_uncontrolled_short"))
-    end
-
-    it "renders the correct denominator text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
-    end
-
-    it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
-    end
-
-    it "renders the correct uncontrolled bar text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.lk_diabetes_very_uncontrolled_bar"))
-    end
+  def render_component_with(use_who_standard: nil)
+    render_inline(ProgressTab::Diabetes::BloodSugar300AndAboveComponent.new(
+      uncontrolled_rates: uncontrolled_rates,
+      uncontrolled: uncontrolled,
+      adjusted_patients: adjusted_patients,
+      period_info: period_info,
+      region: region,
+      use_who_standard: use_who_standard
+    ))
   end
 
-  context "when the country is not Sri Lanka" do
-    before do
-      render_component_with(use_who_standard: false)
-    end
-    it "renders the correct uncontrolled threshold long text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_long"))
+  describe "Rendering based on country standard" do
+    context "when using WHO standard" do
+      before do
+        render_component_with(use_who_standard: true)
+      end
+
+      it "displays the correct uncontrolled threshold long text" do
+        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.numerator_dm_fbs"))
+      end
+
+      it "displays the correct uncontrolled threshold short text" do
+        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title_dm_fbs"))
+      end
+
+      it "displays the correct denominator text" do
+        expect(rendered_component).to have_text(
+          I18n.t(
+            "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator",
+            facility_name: region.name,
+            diagnosis: "Diabetes"
+          )
+        )
+      end
+
+      it "renders the bar chart with correct styling and tooltip enabled" do
+        expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+        expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
+      end
     end
 
-    it "renders the correct uncontrolled threshold short text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_short"))
-    end
+    context "when not using WHO standard" do
+      before do
+        render_component_with(use_who_standard: false)
+      end
 
-    it "renders the correct denominator text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.very_uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
-    end
+      it "displays the correct uncontrolled threshold short text" do
+        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title"))
+      end
 
-    it "renders the bar chart with correct data for non-Sri Lanka countries" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
-    end
+      it "displays the correct denominator text" do
+        expect(rendered_component).to have_text(
+          I18n.t(
+            "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator",
+            facility_name: region.name,
+            diagnosis: "Diabetes"
+          )
+        )
+      end
 
-    it "renders the correct uncontrolled bar text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.diabetes_very_uncontrolled_bar"))
+      it "renders the bar chart with correct styling and tooltip enabled" do
+        expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+        expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
+      end
     end
   end
 end
