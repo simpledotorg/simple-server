@@ -2481,6 +2481,14 @@
             "unknown"
           ]
         },
+        "smoking": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
