@@ -1959,6 +1959,14 @@
             "unknown"
           ]
         },
+        "smoking": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
@@ -2559,6 +2567,43 @@
           }
         }
       }
+    },
+    "patient_attribute": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "height": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "weight": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "height",
+        "weight",
+        "created_at",
+        "updated_at"
+      ]
     },
     "patient_business_identifier": {
       "type": "object",
