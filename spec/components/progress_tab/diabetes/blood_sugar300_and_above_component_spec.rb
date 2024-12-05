@@ -30,9 +30,9 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
 
   let(:period_info_data) do
     {
-      "2024-08-01" => { name: "Aug-2024" },
-      "2024-09-01" => { name: "Sep-2024" },
-      "2024-10-01" => { name: "Oct-2024" }
+      "2024-08-01" => {name: "Aug-2024"},
+      "2024-09-01" => {name: "Sep-2024"},
+      "2024-10-01" => {name: "Oct-2024"}
     }
   end
 
