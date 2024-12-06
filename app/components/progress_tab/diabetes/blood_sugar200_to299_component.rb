@@ -19,7 +19,7 @@ class ProgressTab::Diabetes::BloodSugar200To299Component < ApplicationComponent
 
   def set_locale_values
     if @use_who_standard
-      @uncontrolled_threshold_title = t("bs_over_200_copy.reports_card_title_fbs")
+      @uncontrolled_threshold_title = t("bs_over_200_copy.reports_card_title_dm_fbs")
       @uncontrolled_threshold_long = t("bs_over_200_copy.bs_200_to_299.numerator_dm_fbs")
       @uncontrolled_threshold_short = t("bs_over_200_copy.bs_200_to_299.title_dm_fbs")
       @uncontrolled_threshold_bar = t("bs_over_200_copy.bs_200_to_299.title_dm_fbs")

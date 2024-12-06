@@ -72,7 +72,7 @@ module Reports
 
     memoize def repository_presenter
       @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator)
-      presenter = Reports::RepositoryPresenter.create(facility, period: @period.previous, use_who_standard: @use_who_standard)
+      presenter = Reports::RepositoryPresenter.create(facility, period: @period, use_who_standard: @use_who_standard)
       presenter.call(facility.region)
     end
 

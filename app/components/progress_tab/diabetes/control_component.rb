@@ -20,7 +20,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
   def set_locale_values
     if @use_who_standard
       @controlled_threshold_long = t("bs_below_200_copy.numerator_fbs")
-      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title_fbs")
+      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title_dm_fbs")
       @controlled_threshold_bar = t("bs_below_200_copy.report_card_lower_bar_fbs")
       @subtitle_text = t(
         "bs_below_200_copy.reports_card_subtitle_dm_fbs",
@@ -31,7 +31,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
       @numerator_text = t("bs_below_200_copy.numerator_dm_fbs")
     else
       @controlled_threshold_long = t("bs_below_200_copy.numerator")
-      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title")
+      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title_dm")
       @controlled_threshold_bar = t("bs_below_200_copy.report_card_lower_bar")
       @subtitle_text = t(
         "bs_below_200_copy.reports_card_subtitle_dm",

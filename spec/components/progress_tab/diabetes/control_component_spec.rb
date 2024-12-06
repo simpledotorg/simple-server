@@ -65,7 +65,7 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the controlled threshold short text for WHO standard" do
-      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_fbs"))
+      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm_fbs"))
     end
 
     it "renders the correct subtitle for WHO standard" do
@@ -93,7 +93,7 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the controlled threshold short text for non-WHO standard" do
-      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title"))
+      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm"))
     end
 
     it "renders the correct subtitle for non-WHO standard" do
