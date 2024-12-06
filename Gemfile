@@ -102,7 +102,6 @@ group :development, :test do
   gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
   gem "capistrano", "~> 3.17"
   gem "capistrano-db-tasks", require: false
-  gem "capistrano-multiconfig", require: true
   gem "capistrano-passenger", "0.2.1"
   gem "capistrano-rails"
   gem "capistrano-rails-console", require: false
