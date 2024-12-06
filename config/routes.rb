@@ -256,6 +256,10 @@ Rails.application.routes.draw do
     get "/", to: "resources#index", as: "resources"
   end
 
+  scope :settings do
+    get "/", to: "settings#index", as: "settings"
+  end
+
   namespace :admin do
     resources :organizations
 
