@@ -52,6 +52,7 @@ en-LK:
   bs_below_200_copy:
     numerator: "Patients with RBS/PPBS <200, FBS<126, or Hba1c <7.0 at their last visit in the last 3 months"
     numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"
+    numerator_dm: "Patients with RBS/PPBS <200, FBS<126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
     reports_card_title: "Blood Sugar <200"
     reports_card_title_fbs: "Blood sugar controlled"
