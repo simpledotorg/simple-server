@@ -15,7 +15,7 @@ describe "CVD Risk V4 API", swagger_doc: "v4/swagger.json" do
       parameter name: "HTTP_X_FACILITY_ID", in: :header, type: :uuid
       parameter name: :cvd_risks, in: :body, schema: Api::V4::Schema.cvd_risk_sync_from_user_request
 
-      response "200", "cvd_risks created" do
+      response "200", "cvd risks received" do
         let(:cvd_risks) { {cvd_risks: (1..3).map { build(:cvd_risk).attributes.with_payload_keys }} }
         run_test!
       end
