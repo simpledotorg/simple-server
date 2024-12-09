@@ -381,7 +381,15 @@
         ],
         "responses": {
           "200": {
-            "description": "cvd_risks created"
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
           },
           "403": {
             "description": "user is not allowed to sync"
@@ -389,7 +397,7 @@
         }
       },
       "get": {
-        "summary": "Sync patient attribute data from server to device",
+        "summary": "Sync CVD risk data from server to device",
         "tags": [
           "CVD Risk"
         ],
@@ -693,6 +701,17 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
           "403": {
             "description": "user is not allowed to sync"
           }
@@ -3887,7 +3906,7 @@
             "id": "7c660864-b50a-4b3c-b019-c37a3fba3b8e",
             "type": "display",
             "view_type": "paragraph",
-            "text": "If you have more than 3 batches then add any additional batch stocks to batch 3 using the same date"
+            "text": "Enter the supplies left in stock at the end of every month"
           },
           {
             "id": "5f98dcc1-504b-473a-bff8-2f1576a85bca",
