@@ -435,6 +435,7 @@ class Api::V4::Models
         blood_sugars: Api::CommonDefinitions.array_of("blood_sugar"),
         call_result: call_result,
         call_results: Api::CommonDefinitions.array_of("call_result"),
+        cvd_risk: cvd_risk,
         drug_stock: drug_stock,
         facility_medical_officer: facility_medical_officer,
         facility_medical_officers: Api::CommonDefinitions.array_of("facility_medical_officer"),
