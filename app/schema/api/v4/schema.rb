@@ -222,6 +222,22 @@ class Api::V4::Schema
       sync_from_user_request(:call_results)
     end
 
+    def cvd_risk_sync_to_user_response
+      sync_to_user_response(:cvd_risks)
+    end
+
+    def cvd_risk_sync_from_user_request
+      sync_from_user_request(:cvd_risks)
+    end
+
+    def patient_attributes_sync_from_user_request
+      sync_from_user_request(:patient_attributes)
+    end
+
+    def patient_attributes_sync_to_user_response
+      sync_to_user_response(:patient_attributes)
+    end
+
     def states_response
       {type: :object,
        properties: {states: {type: :array,
