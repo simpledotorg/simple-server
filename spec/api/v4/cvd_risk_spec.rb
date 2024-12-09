@@ -29,7 +29,7 @@ describe "CVD Risk V4 API", swagger_doc: "v4/swagger.json" do
       include_examples "returns 403 for post requests for forbidden users", :cvd_risks
     end
 
-    get "Sync patient attribute data from server to device" do
+    get "Sync CVD risk data from server to device" do
       tags "CVD Risk"
       security [access_token: [], user_id: [], facility_id: []]
       parameter name: "HTTP_X_USER_ID", in: :header, type: :uuid
