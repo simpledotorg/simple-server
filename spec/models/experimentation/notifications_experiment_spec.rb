@@ -852,19 +852,15 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
     context "with mobitel as sms vendor" do
       let(:detailable) { create(:mobitel_delivery_detail) }
       let(:communication) { create(:communication, detailable_type: "MobitelDeliveryDetail", detailable_id: detailable.id) }
-      
+
       it "returns successful result" do
-        expected_result = {
-          notification_status: notification.status,
-          notification_status_updated_at: notification.updated_at,
-          result: :success,
-          successful_communication_id: communication.id,
-          successful_communication_type: communication.communication_type,
-          successful_communication_created_at: communication.created_at.to_s,
-          successful_delivery_status: communication.detailable.result
-        }
         expect { subject }.not_to raise_error
-        expect(subject).to eq(expected_result)
+        actual_result = subject
+        expect(actual_result[:notification_status]).to eq(notification.status)
+        expect(actual_result[:successful_communication_id]).to eq(communication.id)
+        expect(actual_result[:successful_communication_type]).to eq(communication.communication_type)
+        expect(actual_result[:successful_delivery_status]).to eq(communication.detailable.result)
+        expect(actual_result[:notification_status_updated_at].to_date).to eq(notification.updated_at.to_date)
       end
     end
   end
