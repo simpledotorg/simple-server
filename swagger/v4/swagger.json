@@ -333,6 +333,137 @@
         }
       }
     },
+    "/cvd_risks/sync": {
+      "post": {
+        "summary": "Syncs cvd_risks data from device to server.",
+        "tags": [
+          "CVD Risk"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "cvd_risks",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cvd_risks": {
+                  "$ref": "#/definitions/cvd_risks"
+                }
+              },
+              "required": [
+                "cvd_risks"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Sync CVD risk data from server to device",
+        "tags": [
+          "CVD Risk"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patient attribute received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "cvd_risks": {
+                  "$ref": "#/definitions/cvd_risks"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "cvd_risks",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      }
+    },
     "/drug_stocks": {
       "get": {
         "summary": "Request the drug stock report for a given month at your facility",
@@ -519,6 +650,137 @@
                 "process_token"
               ]
             }
+          }
+        }
+      }
+    },
+    "/patient_attributes/sync": {
+      "post": {
+        "summary": "Syncs patient_attributes data from device to server.",
+        "tags": [
+          "Patient Attribute"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "patient_attributes",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patient_attributes": {
+                  "$ref": "#/definitions/patient_attributes"
+                }
+              },
+              "required": [
+                "patient_attributes"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "some, or no errors were found",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "errors": {
+                  "$ref": "#/definitions/errors"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
+          }
+        }
+      },
+      "get": {
+        "summary": "Sync patient attribute data from server to device",
+        "tags": [
+          "Patient Attribute"
+        ],
+        "security": [
+          {
+            "access_token": [
+
+            ],
+            "user_id": [
+
+            ],
+            "facility_id": [
+
+            ]
+          }
+        ],
+        "parameters": [
+          {
+            "name": "HTTP_X_USER_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "HTTP_X_FACILITY_ID",
+            "in": "header",
+            "type": "uuid"
+          },
+          {
+            "name": "process_token",
+            "type": "string",
+            "format": "byte",
+            "description": "Token containing all the information needed to process batch requests from the user",
+            "in": "query"
+          },
+          {
+            "name": "limit",
+            "type": "integer",
+            "description": "Number of record to retrieve (a.k.a batch-size)",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "patient attribute received",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "patient_attributes": {
+                  "$ref": "#/definitions/patient_attributes"
+                },
+                "process_token": {
+                  "$ref": "#/definitions/process_token"
+                }
+              },
+              "required": [
+                "patient_attributes",
+                "process_token"
+              ]
+            }
+          },
+          "403": {
+            "description": "user is not allowed to sync"
           }
         }
       }
@@ -1626,6 +1888,42 @@
         "$ref": "#/definitions/call_result"
       }
     },
+    "cvd_risk": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "risk_score": {
+          "type": "number"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "risk_score",
+        "created_at",
+        "updated_at",
+        "patient_id"
+      ]
+    },
+    "cvd_risks": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/cvd_risk"
+      }
+    },
     "drug_stock": {
       "type": "object",
       "properties": {
@@ -1952,6 +2250,14 @@
           ]
         },
         "diagnosed_with_hypertension": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
+        "smoking": {
           "type": "string",
           "enum": [
             "yes",
@@ -2558,6 +2864,52 @@
             }
           }
         }
+      }
+    },
+    "patient_attribute": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "user_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "patient_id": {
+          "$ref": "#/definitions/uuid"
+        },
+        "height": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "weight": {
+          "$ref": "#/definitions/non_empty_string"
+        },
+        "deleted_at": {
+          "$ref": "#/definitions/nullable_timestamp"
+        },
+        "created_at": {
+          "$ref": "#/definitions/timestamp"
+        },
+        "updated_at": {
+          "$ref": "#/definitions/timestamp"
+        }
+      },
+      "required": [
+        "id",
+        "patient_id",
+        "height",
+        "weight",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "patient_attributes": {
+      "type": [
+        "null",
+        "array"
+      ],
+      "items": {
+        "$ref": "#/definitions/patient_attribute"
       }
     },
     "patient_business_identifier": {
@@ -3554,7 +3906,7 @@
             "id": "7c660864-b50a-4b3c-b019-c37a3fba3b8e",
             "type": "display",
             "view_type": "paragraph",
-            "text": "If you have more than 3 batches then add any additional batch stocks to batch 3 using the same date"
+            "text": "Enter the supplies left in stock at the end of every month"
           },
           {
             "id": "5f98dcc1-504b-473a-bff8-2f1576a85bca",

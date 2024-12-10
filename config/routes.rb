@@ -56,6 +56,18 @@ Rails.application.routes.draw do
     end
   end
 
+  concern :v4_sync_routes do
+    scope :patient_attributes do
+      get "sync", to: "patient_attributes#sync_to_user"
+      post "sync", to: "patient_attributes#sync_from_user"
+    end
+
+    scope :cvd_risks do
+      get "sync", to: "cvd_risks#sync_to_user"
+      post "sync", to: "cvd_risks#sync_from_user"
+    end
+  end
+
   namespace :webview do
     resources :drug_stocks, only: [:new, :create, :index]
   end
@@ -168,6 +180,8 @@ Rails.application.routes.draw do
       resources :drug_stocks, only: [:index]
 
       get "states", to: "states#index"
+
+      concerns :v4_sync_routes
     end
   end
 

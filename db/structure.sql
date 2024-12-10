@@ -588,6 +588,22 @@ ALTER SEQUENCE public.cphc_migration_error_logs_id_seq OWNED BY public.cphc_migr
 
 
 --
+-- Name: cvd_risks; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.cvd_risks (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    risk_score integer,
+    patient_id uuid NOT NULL,
+    deleted_at timestamp without time zone,
+    device_created_at timestamp without time zone,
+    device_updated_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: data_migrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1703,6 +1719,24 @@ CREATE SEQUENCE public.passport_authentications_id_seq
 --
 
 ALTER SEQUENCE public.passport_authentications_id_seq OWNED BY public.passport_authentications.id;
+
+
+--
+-- Name: patient_attributes; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.patient_attributes (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    height numeric,
+    weight numeric,
+    patient_id uuid NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    deleted_at timestamp without time zone,
+    device_created_at timestamp without time zone,
+    device_updated_at timestamp without time zone,
+    user_id uuid NOT NULL
+);
 
 
 --
@@ -5555,6 +5589,14 @@ ALTER TABLE ONLY public.cphc_migration_error_logs
 
 
 --
+-- Name: cvd_risks cvd_risks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cvd_risks
+    ADD CONSTRAINT cvd_risks_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: data_migrations data_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -5736,6 +5778,14 @@ ALTER TABLE ONLY public.organizations
 
 ALTER TABLE ONLY public.passport_authentications
     ADD CONSTRAINT passport_authentications_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: patient_attributes patient_attributes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_attributes
+    ADD CONSTRAINT patient_attributes_pkey PRIMARY KEY (id);
 
 
 --
@@ -6240,6 +6290,13 @@ CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.
 
 
 --
+-- Name: index_cvd_risks_on_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (patient_id);
+
+
+--
 -- Name: index_deduplication_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -6727,6 +6784,20 @@ CREATE INDEX index_overdue_calls_appointment_facility ON public.reporting_overdu
 --
 
 CREATE INDEX index_overdue_calls_call_result_created_at ON public.reporting_overdue_calls USING btree (call_result_created_at);
+
+
+--
+-- Name: index_patient_attributes_on_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_attributes_on_patient_id ON public.patient_attributes USING btree (patient_id);
+
+
+--
+-- Name: index_patient_attributes_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_attributes_on_user_id ON public.patient_attributes USING btree (user_id);
 
 
 --
@@ -7408,6 +7479,14 @@ ALTER TABLE ONLY public.drug_stocks
 
 
 --
+-- Name: patient_attributes fk_rails_565c8c1260; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_attributes
+    ADD CONSTRAINT fk_rails_565c8c1260 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: estimated_populations fk_rails_58af12b1a9; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7493,6 +7572,14 @@ ALTER TABLE ONLY public.blood_sugars
 
 ALTER TABLE ONLY public.drug_stocks
     ADD CONSTRAINT fk_rails_8eb7cdedd2 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: cvd_risks fk_rails_90e3653e9a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cvd_risks
+    ADD CONSTRAINT fk_rails_90e3653e9a FOREIGN KEY (patient_id) REFERENCES public.patients(id);
 
 
 --
@@ -7605,6 +7692,14 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.machine_users(id);
+
+
+--
+-- Name: patient_attributes fk_rails_fc46ae3757; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_attributes
+    ADD CONSTRAINT fk_rails_fc46ae3757 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
 
 
 --
@@ -7757,6 +7852,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240522054839'),
 ('20240716132001'),
 ('20240719202605'),
-('20241121141537');
+('20241121141537'),
+('20241125151704'),
+('20241125153335'),
+('20241125155649'),
+('20241126111757'),
+('20241129212725'),
+('20241204155510');
 
 
