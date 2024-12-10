@@ -1900,6 +1900,9 @@
         "risk_score": {
           "type": "number"
         },
+        "deleted_at": {
+          "$ref": "#/definitions/timestamp"
+        },
         "created_at": {
           "$ref": "#/definitions/timestamp"
         },

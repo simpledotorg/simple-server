@@ -23,6 +23,7 @@ class Api::V4::Models
          id: {"$ref" => "#/definitions/uuid"},
          patient_id: {"$ref" => "#/definitions/uuid"},
          risk_score: {type: :number},
+         deleted_at: {"$ref" => "#/definitions/timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
        },
