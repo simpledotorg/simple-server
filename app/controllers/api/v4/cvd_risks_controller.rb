@@ -32,6 +32,7 @@ class Api::V4::CvdRisksController < Api::V4::SyncController
         :id,
         :patient_id,
         :risk_score,
+        :deleted_at,
         :created_at,
         :updated_at
       )
