@@ -593,7 +593,7 @@ ALTER SEQUENCE public.cphc_migration_error_logs_id_seq OWNED BY public.cphc_migr
 
 CREATE TABLE public.cvd_risks (
     id uuid DEFAULT gen_random_uuid() NOT NULL,
-    risk_score integer,
+    risk_score character varying,
     patient_id uuid NOT NULL,
     deleted_at timestamp without time zone,
     device_created_at timestamp without time zone,
@@ -7858,6 +7858,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241125155649'),
 ('20241126111757'),
 ('20241129212725'),
-('20241204155510');
+('20241204155510'),
+('20241210092449');
 
 
