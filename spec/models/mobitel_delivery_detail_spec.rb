@@ -36,4 +36,10 @@ RSpec.describe MobitelDeliveryDetail, type: :model do
       expect(communication.detailable.message).to eq message
     end
   end
+
+  describe "#result" do
+    it "returns successful state because messages are either successful or fails at API validation" do
+      expect(described_class.new.result).to eq("sent")
+    end
+  end
 end
