@@ -1898,10 +1898,10 @@
           "$ref": "#/definitions/uuid"
         },
         "risk_score": {
-          "type": "number"
+          "$ref": "#/definitions/non_empty_string"
         },
         "deleted_at": {
-          "$ref": "#/definitions/timestamp"
+          "$ref": "#/definitions/nullable_timestamp"
         },
         "created_at": {
           "$ref": "#/definitions/timestamp"
