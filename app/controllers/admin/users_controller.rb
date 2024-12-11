@@ -6,26 +6,19 @@ class Admin::UsersController < AdminController
   around_action :set_reporting_time_zone, only: [:show]
   before_action :set_district, only: [:index]
 
+  before_action :set_facility_service, only: [:index]
+
   def index
     authorize { current_admin.accessible_users(:manage).any? }
 
-    facilities = if @district == "All"
-      current_admin.accessible_facilities(:manage)
-    else
-      current_admin.accessible_facilities(:manage).where(district: @district)
-    end
+    facilities = @facility_service.facilities_by_district(@district)
 
     users = current_admin.accessible_users(:manage)
-      .joins(phone_number_authentications: :facility)
-      .where(phone_number_authentications: {registration_facility_id: facilities})
+      .joins(phone_number_authentications: facility)
+      .where(phone_number_authentications: { registration_facility_id: facilities })
       .order("users.full_name", "facilities.name", "users.device_created_at")
 
-    @users =
-      if searching?
-        paginate(users.search_by_name_or_phone(search_query))
-      else
-        paginate(users)
-      end
+      @users = paginate(searching? ? users.search_by_name_or_phone(search_query) : users)
   end
 
   def teleconsult_search
@@ -94,6 +87,10 @@ class Admin::UsersController < AdminController
   end
 
   private
+
+  def set_facility_service
+    @facility_service = FacilityService.new(current_admin)
+  end
 
   def ordered_sync_approval_statuses
     {requested: 0, denied: 1, allowed: 2}.with_indifferent_access
