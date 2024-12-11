@@ -847,11 +847,58 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
 
   describe "#notification_result" do
     let(:notification) { create(:notification, status: "sent", communications: [communication]) }
+    let(:communication) { create(:communication, detailable_type: detailable_type, detailable_id: detailable.id) }
 
     subject { described_class.new.send(:notification_result, notification.id) }
-    context "with mobitel as sms vendor" do
+
+    context "with Mobitel as sms vendor" do
       let(:detailable) { create(:mobitel_delivery_detail) }
-      let(:communication) { create(:communication, detailable_type: "MobitelDeliveryDetail", detailable_id: detailable.id) }
+      let(:detailable_type) { "MobitelDeliveryDetail" }
+
+      it "returns successful result" do
+        expect { subject }.not_to raise_error
+        actual_result = subject
+        expect(actual_result[:notification_status]).to eq(notification.status)
+        expect(actual_result[:successful_communication_id]).to eq(communication.id)
+        expect(actual_result[:successful_communication_type]).to eq(communication.communication_type)
+        expect(actual_result[:successful_delivery_status]).to eq(communication.detailable.result)
+        expect(actual_result[:notification_status_updated_at].to_date).to eq(notification.updated_at.to_date)
+      end
+    end
+
+    context "with AlphaSMS as vendor" do
+      let(:detailable) { create(:alpha_sms_delivery_detail, request_status: "Sent") }
+      let(:detailable_type) { "AlphaSmsDeliveryDetail" }
+
+      it "returns successful result" do
+        expect { subject }.not_to raise_error
+        actual_result = subject
+        expect(actual_result[:notification_status]).to eq(notification.status)
+        expect(actual_result[:successful_communication_id]).to eq(communication.id)
+        expect(actual_result[:successful_communication_type]).to eq(communication.communication_type)
+        expect(actual_result[:successful_delivery_status]).to eq(communication.detailable.result)
+        expect(actual_result[:notification_status_updated_at].to_date).to eq(notification.updated_at.to_date)
+      end
+    end
+
+    context "with BSNL as vendor" do
+      let(:detailable) { create(:bsnl_delivery_detail, message_status: "7") }
+      let(:detailable_type) { "BsnlDeliveryDetail" }
+
+      it "returns successful result" do
+        expect { subject }.not_to raise_error
+        actual_result = subject
+        expect(actual_result[:notification_status]).to eq(notification.status)
+        expect(actual_result[:successful_communication_id]).to eq(communication.id)
+        expect(actual_result[:successful_communication_type]).to eq(communication.communication_type)
+        expect(actual_result[:successful_delivery_status]).to eq(communication.detailable.result)
+        expect(actual_result[:notification_status_updated_at].to_date).to eq(notification.updated_at.to_date)
+      end
+    end
+
+   context "with Twilio as vendor" do
+      let(:detailable) { create(:twilio_sms_delivery_detail, result: "sent") }
+      let(:detailable_type) { "TwilioSmsDeliveryDetail" }
 
       it "returns successful result" do
         expect { subject }.not_to raise_error
