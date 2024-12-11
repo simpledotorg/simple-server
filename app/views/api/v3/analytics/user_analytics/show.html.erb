@@ -72,7 +72,7 @@
               <%= t("progress_tab.hypertension_report_title") %>
             </p>
           </a>
-          <% if Flipper.enabled?(:diabetes_progress_report_tab)%>
+          <% if Flipper.enabled?(:diabetes_progress_report_tab, current_user)%>
             <a
               class=" f-1 d-flex fd-column ai-center jc-center h-96px ml-8px p-12px td-none bgc-purple-light bs-purple-light-button br-8px"
               href="#"
