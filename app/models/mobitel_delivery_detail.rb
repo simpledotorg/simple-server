@@ -13,6 +13,10 @@ class MobitelDeliveryDetail < DeliveryDetail
     false
   end
 
+  def result
+    "sent"
+  end
+
   def self.create_with_communication!(message:, recipient_number:)
     ActiveRecord::Base.transaction do
       delivery_detail = create!(
