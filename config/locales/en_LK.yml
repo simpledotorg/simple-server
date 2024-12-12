@@ -50,11 +50,11 @@ en-LK:
         national_hospital: "National Hospitals"
         teaching_hospital: "Teaching Hospitals"
   bs_below_200_copy:
-    numerator: "Patients with RBS/PPBS <200, FBS<126, or Hba1c <7.0 at their last visit in the last 3 months"
+    numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"
-    numerator_dm: "Patients with RBS/PPBS <200, FBS<126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
     reports_card_title: "Blood Sugar <200"
+    reports_card_title_dm_bs: "Blood sugar <200"
     reports_card_title_fbs: "Blood sugar controlled"
     reports_card_title_dm: "Blood Sugar <200"
     reports_card_title_dm_fbs: "Blood sugar controlled"
@@ -75,6 +75,7 @@ en-LK:
     reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS ≥126mg/dL or HbA1c ≥7% at their last visit in the last 3 months"
     bs_200_to_299:
       title: "Blood Sugar 200-299"
+      title_dm_bs: "Blood sugar 200-299"
       title_fbs: "Blood Sugar 126-199"
       title_dm: "blood sugar 200-299"
       title_dm_fbs: "FBS 126-199mg/dL or HbA1c 7%-8.9%"

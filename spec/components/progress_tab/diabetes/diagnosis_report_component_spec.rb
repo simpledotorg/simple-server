@@ -191,7 +191,7 @@ RSpec.describe ProgressTab::Diabetes::DiagnosisReportComponent, type: :component
   it "renders the back link with correct text and onclick behavior" do
     expect(subject).to have_css(
       'a[onclick="goToPage(id=\'diabetes-report\', \'home-page\'); return false;"]',
-      text: "back"
+      text: I18n.t("back")
     )
   end
 

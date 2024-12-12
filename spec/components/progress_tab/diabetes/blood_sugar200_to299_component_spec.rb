@@ -94,7 +94,7 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     end
 
     it "renders the correct uncontrolled threshold short text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title"))
+      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_bs"))
     end
 
     it "renders the correct denominator text for non-Sri Lanka countries" do

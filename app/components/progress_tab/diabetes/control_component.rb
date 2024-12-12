@@ -31,7 +31,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
       @numerator_text = t("bs_below_200_copy.numerator_dm_fbs")
     else
       @controlled_threshold_long = t("bs_below_200_copy.numerator")
-      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title_dm")
+      @controlled_threshold_short = t("bs_below_200_copy.reports_card_title_dm_bs")
       @controlled_threshold_bar = t("bs_below_200_copy.report_card_lower_bar")
       @subtitle_text = t(
         "bs_below_200_copy.reports_card_subtitle_dm",
@@ -39,7 +39,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
         diagnosis: "Diabetes",
         controlled_threshold: @controlled_threshold_long
       )
-      @numerator_text = t("bs_below_200_copy.numerator_dm")
+      @numerator_text = t("bs_below_200_copy.numerator")
     end
 
     @denominator_text = t(
