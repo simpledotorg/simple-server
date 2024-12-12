@@ -39,7 +39,7 @@ class ProgressTab::Diabetes::ControlComponent < ApplicationComponent
         diagnosis: "Diabetes",
         controlled_threshold: @controlled_threshold_long
       )
-      @numerator_text = t("bs_below_200_copy.numerator_dm")
+      @numerator_text = t("bs_below_200_copy.numerator")
     end
 
     @denominator_text = t(
