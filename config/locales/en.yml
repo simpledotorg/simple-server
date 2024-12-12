@@ -23,6 +23,7 @@ en:
     facility: facility
   name: "Name"
   phone_number: "Phone Number"
+  back: "back"
   registration_approval_email:
     accessible_facilities: "User will have access to data from"
     organization: "Organization"
@@ -71,7 +72,7 @@ en:
     reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS <126 mg/dL or HbA1c <7% at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"
-    numerator_dm: "Patients with RBS/PPBS <200, FBS<126, or HbA1c <7.0 at their last visit in the last 3 months"
+    numerator_dm: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
     report_card_lower_bar: "blood sugar <200"
     report_card_lower_bar_fbs:  "FBS <126mg/dL or HbA1c <7%"
