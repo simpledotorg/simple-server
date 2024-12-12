@@ -896,7 +896,7 @@ RSpec.describe Experimentation::NotificationsExperiment, type: :model do
       end
     end
 
-   context "with Twilio as vendor" do
+    context "with Twilio as vendor" do
       let(:detailable) { create(:twilio_sms_delivery_detail, result: "sent") }
       let(:detailable_type) { "TwilioSmsDeliveryDetail" }
 
