@@ -1,7 +1,6 @@
-# spec/components/progress_tab/diabetes/missed_visits_component_spec.rb
 require "rails_helper"
 
-RSpec.describe ProgressTab::Diabetes::MissedVisitsComponent, type: :component do
+RSpec.describe ProgressTab::Hypertension::MissedVisitsComponent, type: :component do
   let(:region) { double("Region", name: "Region 1") }
   let(:missed_visits_data) do
     {
@@ -73,11 +72,11 @@ RSpec.describe ProgressTab::Diabetes::MissedVisitsComponent, type: :component do
   end
 
   it "renders the title correctly" do
-    expect(subject).to have_text("Diabetes")
+    expect(subject).to have_text("Missed visits")
   end
 
   it "renders the title correctly" do
-    expect(subject).to have_text("Missed visits")
+    expect(subject).to have_text("Hypertension")
   end
 
   it "displays the region name" do
