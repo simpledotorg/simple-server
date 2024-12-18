@@ -16,7 +16,7 @@ RSpec.describe ProgressTab::Hypertension::DiagnosisReportComponent, type: :compo
   let(:total_registrations) do
     data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
-  
+
   let(:period_info) do
     data.keys.map do |date_str|
       period = Period.new(type: :month, value: date_str)
@@ -118,10 +118,10 @@ RSpec.describe ProgressTab::Hypertension::DiagnosisReportComponent, type: :compo
 
   let(:cohort_data) do
     [
-      { "controlled" => 1, "no_bp" => 3, "missed_visits" => 1, "uncontrolled" => 2, "controlled_rate" => 14, "no_bp_rate" => 43, "missed_visits_rate" => 14, "uncontrolled_rate" => 29, "period" => Period.new(type: :quarter, value: "Q3-2024"), "registration_period" => "Q2-2024", "registered" => 7, "results_in" => "Q3-2024" },
-      { "controlled" => 1, "no_bp" => 4, "missed_visits" => 7, "uncontrolled" => 3, "controlled_rate" => 7, "no_bp_rate" => 27, "missed_visits_rate" => 46, "uncontrolled_rate" => 20, "period" => Period.new(type: :quarter, value: "Q2-2024"), "registration_period" => "Q1-2024", "registered" => 15, "results_in" => "Q2-2024" },
-      { "controlled" => 1, "no_bp" => 1, "missed_visits" => 1, "uncontrolled" => 1, "controlled_rate" => 25, "no_bp_rate" => 25, "missed_visits_rate" => 25, "uncontrolled_rate" => 25, "period" => Period.new(type: :quarter, value: "Q1-2024"), "registration_period" => "Q4-2023", "registered" => 4, "results_in" => "Q1-2024" },
-      { "controlled" => 0, "no_bp" => 2, "missed_visits" => 6, "uncontrolled" => 1, "controlled_rate" => 0, "no_bp_rate" => 22, "missed_visits_rate" => 67, "uncontrolled_rate" => 11, "period" => Period.new(type: :quarter, value: "Q4-2023"), "registration_period" => "Q3-2023", "registered" => 9, "results_in" => "Q4-2023" }
+      {"controlled" => 1, "no_bp" => 3, "missed_visits" => 1, "uncontrolled" => 2, "controlled_rate" => 14, "no_bp_rate" => 43, "missed_visits_rate" => 14, "uncontrolled_rate" => 29, "period" => Period.new(type: :quarter, value: "Q3-2024"), "registration_period" => "Q2-2024", "registered" => 7, "results_in" => "Q3-2024"},
+      {"controlled" => 1, "no_bp" => 4, "missed_visits" => 7, "uncontrolled" => 3, "controlled_rate" => 7, "no_bp_rate" => 27, "missed_visits_rate" => 46, "uncontrolled_rate" => 20, "period" => Period.new(type: :quarter, value: "Q2-2024"), "registration_period" => "Q1-2024", "registered" => 15, "results_in" => "Q2-2024"},
+      {"controlled" => 1, "no_bp" => 1, "missed_visits" => 1, "uncontrolled" => 1, "controlled_rate" => 25, "no_bp_rate" => 25, "missed_visits_rate" => 25, "uncontrolled_rate" => 25, "period" => Period.new(type: :quarter, value: "Q1-2024"), "registration_period" => "Q4-2023", "registered" => 4, "results_in" => "Q1-2024"},
+      {"controlled" => 0, "no_bp" => 2, "missed_visits" => 6, "uncontrolled" => 1, "controlled_rate" => 0, "no_bp_rate" => 22, "missed_visits_rate" => 67, "uncontrolled_rate" => 11, "period" => Period.new(type: :quarter, value: "Q4-2023"), "registration_period" => "Q3-2023", "registered" => 9, "results_in" => "Q4-2023"}
     ]
   end
 
@@ -219,13 +219,11 @@ RSpec.describe ProgressTab::Hypertension::DiagnosisReportComponent, type: :compo
 
   it "renders cohort data correctly" do
     cohort_data.each do |cohort|
-      expect(subject).to have_text("#{cohort['registered']}")
-      expect(subject).to have_text("#{cohort['controlled']}")
-      expect(subject).to have_text("#{cohort['uncontrolled']}")
-      expect(subject).to have_text("#{cohort['no_bp']}")
-      expect(subject).to have_text("#{cohort['uncontrolled']}")
-      
+      expect(subject).to have_text((cohort["registered"]).to_s)
+      expect(subject).to have_text((cohort["controlled"]).to_s)
+      expect(subject).to have_text((cohort["uncontrolled"]).to_s)
+      expect(subject).to have_text((cohort["no_bp"]).to_s)
+      expect(subject).to have_text((cohort["uncontrolled"]).to_s)
     end
   end
-
 end
