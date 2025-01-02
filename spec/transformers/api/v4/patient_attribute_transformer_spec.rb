@@ -5,8 +5,8 @@ describe Api::V4::PatientAttributeTransformer do
     {
       id: SecureRandom.uuid,
       patient_id: SecureRandom.uuid,
-      height: "123.4",
-      weight: "67.8"
+      height: 123.4,
+      weight: 67.8
     }
   end
 
