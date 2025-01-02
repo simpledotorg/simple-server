@@ -2882,10 +2882,10 @@
           "$ref": "#/definitions/uuid"
         },
         "height": {
-          "$ref": "#/definitions/non_empty_string"
+          "type": "number"
         },
         "weight": {
-          "$ref": "#/definitions/non_empty_string"
+          "type": "number"
         },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"

@@ -16,9 +16,19 @@ FactoryBot.define do
 end
 
 def build_patient_attribute_payload(patient_attribute = FactoryBot.build(:patient_attribute))
-  patient_attribute.attributes.with_payload_keys
+  Api::V4::PatientAttributeTransformer.to_response(patient_attribute).with_indifferent_access
 end
 
 def build_invalid_patient_attribute_payload
-  FactoryBot.build(:patient_attribute, :invalid)
+  build_patient_attribute_payload.merge(
+    "created_at" => nil,
+    "height" => "invalid"
+  )
+end
+
+def updated_patient_attributes_payload(payload)
+  update_time = 5.days.from_now
+  build_patient_attribute_payload(payload).merge(
+    "updated_at" => update_time
+  )
 end
