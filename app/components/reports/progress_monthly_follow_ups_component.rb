@@ -24,4 +24,3 @@ class Reports::ProgressMonthlyFollowUpsComponent < ViewComponent::Base
     end
   end
 end
-
