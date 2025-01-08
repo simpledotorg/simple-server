@@ -48,7 +48,7 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
     end
 
     it "renders the subtitle with correct facility name and diagnosis" do
-      expect(rendered_component).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle", facility_name: region.name, diagnosis: diagnosis))
+      expect(rendered_component).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle_dm", facility_name: region.name, diagnosis: diagnosis))
     end
 
     it "displays the correct number of total registrations" do
