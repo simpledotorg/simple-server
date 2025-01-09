@@ -67,7 +67,7 @@ class CountryConfig
     LK: {
       abbreviation: "LK",
       name: "Sri Lanka",
-      extended_region_reports: false,
+      extended_region_reports: true,
       states: COUNTRYWISE_STATES["Sri Lanka"],
       dashboard_locale: ENV["DEFAULT_PREFERRED_DASHBOARD_LOCALE"] || "en-LK",
       faker_locale: "en-IND",
