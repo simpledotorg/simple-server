@@ -7,7 +7,6 @@ class RegionsSearchController < AdminController
     regions = []
     benchmark("retrieving all accessible regions for search") do
       authorize do
-        regions.concat current_admin.user_access.accessible_organization_regions(:view_reports)
         regions.concat current_admin.user_access.accessible_state_regions(:view_reports)
         regions.concat current_admin.user_access.accessible_district_regions(:view_reports)
         regions.concat current_admin.user_access.accessible_block_regions(:view_reports)
