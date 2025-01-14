@@ -1071,20 +1071,58 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
  WITH latest_bp_passport AS (
          SELECT DISTINCT ON (patient_business_identifiers.patient_id) patient_business_identifiers.id,
             patient_business_identifiers.identifier,
-            patient_business_identifiers.patient_id
+            patient_business_identifiers.identifier_type,
+            patient_business_identifiers.patient_id,
+            patient_business_identifiers.metadata_version,
+            patient_business_identifiers.metadata,
+            patient_business_identifiers.device_created_at,
+            patient_business_identifiers.device_updated_at,
+            patient_business_identifiers.deleted_at,
+            patient_business_identifiers.created_at,
+            patient_business_identifiers.updated_at
            FROM public.patient_business_identifiers
           WHERE (((patient_business_identifiers.identifier_type)::text = 'simple_bp_passport'::text) AND (patient_business_identifiers.deleted_at IS NULL))
           ORDER BY patient_business_identifiers.patient_id, patient_business_identifiers.device_created_at DESC
         ), latest_phone_number AS (
-         SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.patient_id,
-            patient_phone_numbers.number
+         SELECT DISTINCT ON (patient_phone_numbers.patient_id) patient_phone_numbers.id,
+            patient_phone_numbers.number,
+            patient_phone_numbers.phone_type,
+            patient_phone_numbers.active,
+            patient_phone_numbers.created_at,
+            patient_phone_numbers.updated_at,
+            patient_phone_numbers.patient_id,
+            patient_phone_numbers.device_created_at,
+            patient_phone_numbers.device_updated_at,
+            patient_phone_numbers.deleted_at,
+            patient_phone_numbers.dnd_status
            FROM public.patient_phone_numbers
           WHERE (patient_phone_numbers.deleted_at IS NULL)
           ORDER BY patient_phone_numbers.patient_id, patient_phone_numbers.device_created_at DESC
         ), latest_medical_history AS (
-         SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.patient_id,
+         SELECT DISTINCT ON (medical_histories.patient_id) medical_histories.id,
+            medical_histories.patient_id,
+            medical_histories.prior_heart_attack_boolean,
+            medical_histories.prior_stroke_boolean,
+            medical_histories.chronic_kidney_disease_boolean,
+            medical_histories.receiving_treatment_for_hypertension_boolean,
+            medical_histories.diabetes_boolean,
+            medical_histories.device_created_at,
+            medical_histories.device_updated_at,
+            medical_histories.created_at,
+            medical_histories.updated_at,
+            medical_histories.diagnosed_with_hypertension_boolean,
+            medical_histories.prior_heart_attack,
+            medical_histories.prior_stroke,
+            medical_histories.chronic_kidney_disease,
+            medical_histories.receiving_treatment_for_hypertension,
+            medical_histories.diabetes,
+            medical_histories.diagnosed_with_hypertension,
+            medical_histories.deleted_at,
+            medical_histories.user_id,
             medical_histories.hypertension,
-            medical_histories.diabetes
+            medical_histories.receiving_treatment_for_diabetes,
+            medical_histories.smoking,
+            medical_histories.cholesterol
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)
         ), ranked_prescription_drugs AS (
@@ -1097,19 +1135,43 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
           GROUP BY bp.id
         ), blood_pressure_follow_up AS (
          SELECT DISTINCT ON (bp.patient_id, (date(bp.recorded_at))) bp.id AS bp_id,
-            appointments.scheduled_date,
-            appointments.device_created_at,
+            appointments.id,
+            appointments.patient_id,
             appointments.facility_id,
-            appointments.deleted_at
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id
            FROM (public.blood_pressures bp
              JOIN public.appointments ON (((appointments.patient_id = bp.patient_id) AND (date(appointments.device_created_at) = date(bp.recorded_at)))))
           ORDER BY bp.patient_id, (date(bp.recorded_at)), appointments.device_created_at DESC
         ), blood_sugar_follow_up AS (
          SELECT DISTINCT ON (bs.patient_id, (date(bs.recorded_at))) bs.id AS bs_id,
-            appointments.scheduled_date,
-            appointments.device_created_at,
+            appointments.id,
+            appointments.patient_id,
             appointments.facility_id,
-            appointments.deleted_at
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id
            FROM (public.blood_sugars bs
              JOIN public.appointments ON (((appointments.patient_id = bs.patient_id) AND (date(appointments.device_created_at) = date(bs.recorded_at)))))
           ORDER BY bs.patient_id, (date(bs.recorded_at)), appointments.device_created_at DESC
@@ -1172,358 +1234,85 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             rbp.prescription_drug_5_dosage,
             rbp.other_prescription_drugs,
             rbp.all_prescription_drugs,
-                CASE
-                    WHEN ((rbp.rank = 2) AND (rbp.all_prescription_drugs <> lag(rbp.all_prescription_drugs) OVER (PARTITION BY rbp.patient_id ORDER BY rbp.rank))) THEN 1
-                    ELSE NULL::integer
-                END AS the_medication_1_updated,
-                CASE
-                    WHEN ((rbp.rank = 3) AND (rbp.all_prescription_drugs <> lag(rbp.all_prescription_drugs) OVER (PARTITION BY rbp.patient_id ORDER BY rbp.rank))) THEN 1
-                    ELSE NULL::integer
-                END AS the_medication_2_updated,
-                CASE
-                    WHEN ((rbp.rank = 4) AND (rbp.all_prescription_drugs <> lag(rbp.all_prescription_drugs) OVER (PARTITION BY rbp.patient_id ORDER BY rbp.rank))) THEN 1
-                    ELSE NULL::integer
-                END AS the_medication_3_updated,
             rbp.rank
            FROM ranked_blood_pressures rbp
           WHERE (rbp.rank <= 4)
         ), latest_blood_pressures AS (
-         SELECT filtered_ranked_blood_pressures.patient_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN (filtered_ranked_blood_pressures.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_1_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_pressure_1_recorded_at,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.systolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_1_systolic,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.diastolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_1_diastolic,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_pressure_1_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_1_follow_up_days,
-            filtered_ranked_blood_pressures.the_medication_1_updated AS latest_blood_pressure_1_medication_updated,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_1_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_1_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_1_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_1_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_2_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_2_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_2_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_2_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_3_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_3_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_3_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_3_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_4_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_4_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_4_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_4_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_5_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_5_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.prescription_drug_5_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_1_prescription_drug_5_dosage,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 1) THEN filtered_ranked_blood_pressures.other_prescription_drugs
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_1_other_prescription_drugs,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN (filtered_ranked_blood_pressures.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_2_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_pressure_2_recorded_at,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.systolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_2_systolic,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.diastolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_2_diastolic,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_pressure_2_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_2_follow_up_days,
-            filtered_ranked_blood_pressures.the_medication_2_updated AS latest_blood_pressure_2_medication_updated,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_1_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_1_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_1_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_1_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_2_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_2_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_2_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_2_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_3_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_3_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_3_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_3_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_4_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_4_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_4_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_4_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_5_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_5_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.prescription_drug_5_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_2_prescription_drug_5_dosage,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 2) THEN filtered_ranked_blood_pressures.other_prescription_drugs
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_2_other_prescription_drugs,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN (filtered_ranked_blood_pressures.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_3_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_pressure_3_recorded_at,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.systolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_3_systolic,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.diastolic
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_3_diastolic,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_pressure_3_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_pressure_3_follow_up_days,
-            filtered_ranked_blood_pressures.the_medication_3_updated AS latest_blood_pressure_3_medication_updated,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_1_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_1_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_1_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_1_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_2_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_2_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_2_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_2_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_3_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_3_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_3_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_3_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_4_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_4_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_4_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_4_dosage,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_5_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_5_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.prescription_drug_5_dosage
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_pressure_3_prescription_drug_5_dosage,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_pressures.rank = 3) THEN filtered_ranked_blood_pressures.other_prescription_drugs
-                    ELSE NULL::text
-                END) AS latest_blood_pressure_3_other_prescription_drugs
-           FROM filtered_ranked_blood_pressures
-          GROUP BY filtered_ranked_blood_pressures.patient_id, filtered_ranked_blood_pressures.the_medication_1_updated, filtered_ranked_blood_pressures.the_medication_2_updated, filtered_ranked_blood_pressures.the_medication_3_updated
+         SELECT latest_blood_pressure_1.patient_id,
+            latest_blood_pressure_1.id AS latest_blood_pressure_1_id,
+            latest_blood_pressure_1.recorded_at AS latest_blood_pressure_1_recorded_at,
+            latest_blood_pressure_1.systolic AS latest_blood_pressure_1_systolic,
+            latest_blood_pressure_1.diastolic AS latest_blood_pressure_1_diastolic,
+            latest_blood_pressure_1.facility_name AS latest_blood_pressure_1_facility_name,
+            latest_blood_pressure_1.facility_type AS latest_blood_pressure_1_facility_type,
+            latest_blood_pressure_1.district AS latest_blood_pressure_1_district,
+            latest_blood_pressure_1.state AS latest_blood_pressure_1_state,
+            latest_blood_pressure_1.follow_up_facility_name AS latest_blood_pressure_1_follow_up_facility_name,
+            latest_blood_pressure_1.follow_up_date AS latest_blood_pressure_1_follow_up_date,
+            latest_blood_pressure_1.follow_up_days AS latest_blood_pressure_1_follow_up_days,
+            (latest_blood_pressure_1.all_prescription_drugs <> latest_blood_pressure_2.all_prescription_drugs) AS latest_blood_pressure_1_medication_updated,
+            latest_blood_pressure_1.prescription_drug_1_name AS latest_blood_pressure_1_prescription_drug_1_name,
+            latest_blood_pressure_1.prescription_drug_1_dosage AS latest_blood_pressure_1_prescription_drug_1_dosage,
+            latest_blood_pressure_1.prescription_drug_2_name AS latest_blood_pressure_1_prescription_drug_2_name,
+            latest_blood_pressure_1.prescription_drug_2_dosage AS latest_blood_pressure_1_prescription_drug_2_dosage,
+            latest_blood_pressure_1.prescription_drug_3_name AS latest_blood_pressure_1_prescription_drug_3_name,
+            latest_blood_pressure_1.prescription_drug_3_dosage AS latest_blood_pressure_1_prescription_drug_3_dosage,
+            latest_blood_pressure_1.prescription_drug_4_name AS latest_blood_pressure_1_prescription_drug_4_name,
+            latest_blood_pressure_1.prescription_drug_4_dosage AS latest_blood_pressure_1_prescription_drug_4_dosage,
+            latest_blood_pressure_1.prescription_drug_5_name AS latest_blood_pressure_1_prescription_drug_5_name,
+            latest_blood_pressure_1.prescription_drug_5_dosage AS latest_blood_pressure_1_prescription_drug_5_dosage,
+            latest_blood_pressure_1.other_prescription_drugs AS latest_blood_pressure_1_other_prescription_drugs,
+            latest_blood_pressure_2.id AS latest_blood_pressure_2_id,
+            latest_blood_pressure_2.recorded_at AS latest_blood_pressure_2_recorded_at,
+            latest_blood_pressure_2.systolic AS latest_blood_pressure_2_systolic,
+            latest_blood_pressure_2.diastolic AS latest_blood_pressure_2_diastolic,
+            latest_blood_pressure_2.facility_name AS latest_blood_pressure_2_facility_name,
+            latest_blood_pressure_2.facility_type AS latest_blood_pressure_2_facility_type,
+            latest_blood_pressure_2.district AS latest_blood_pressure_2_district,
+            latest_blood_pressure_2.state AS latest_blood_pressure_2_state,
+            latest_blood_pressure_2.follow_up_facility_name AS latest_blood_pressure_2_follow_up_facility_name,
+            latest_blood_pressure_2.follow_up_date AS latest_blood_pressure_2_follow_up_date,
+            latest_blood_pressure_2.follow_up_days AS latest_blood_pressure_2_follow_up_days,
+            (latest_blood_pressure_2.all_prescription_drugs <> latest_blood_pressure_3.all_prescription_drugs) AS latest_blood_pressure_2_medication_updated,
+            latest_blood_pressure_2.prescription_drug_1_name AS latest_blood_pressure_2_prescription_drug_1_name,
+            latest_blood_pressure_2.prescription_drug_1_dosage AS latest_blood_pressure_2_prescription_drug_1_dosage,
+            latest_blood_pressure_2.prescription_drug_2_name AS latest_blood_pressure_2_prescription_drug_2_name,
+            latest_blood_pressure_2.prescription_drug_2_dosage AS latest_blood_pressure_2_prescription_drug_2_dosage,
+            latest_blood_pressure_2.prescription_drug_3_name AS latest_blood_pressure_2_prescription_drug_3_name,
+            latest_blood_pressure_2.prescription_drug_3_dosage AS latest_blood_pressure_2_prescription_drug_3_dosage,
+            latest_blood_pressure_2.prescription_drug_4_name AS latest_blood_pressure_2_prescription_drug_4_name,
+            latest_blood_pressure_2.prescription_drug_4_dosage AS latest_blood_pressure_2_prescription_drug_4_dosage,
+            latest_blood_pressure_2.prescription_drug_5_name AS latest_blood_pressure_2_prescription_drug_5_name,
+            latest_blood_pressure_2.prescription_drug_5_dosage AS latest_blood_pressure_2_prescription_drug_5_dosage,
+            latest_blood_pressure_2.other_prescription_drugs AS latest_blood_pressure_2_other_prescription_drugs,
+            latest_blood_pressure_3.id AS latest_blood_pressure_3_id,
+            latest_blood_pressure_3.recorded_at AS latest_blood_pressure_3_recorded_at,
+            latest_blood_pressure_3.systolic AS latest_blood_pressure_3_systolic,
+            latest_blood_pressure_3.diastolic AS latest_blood_pressure_3_diastolic,
+            latest_blood_pressure_3.facility_name AS latest_blood_pressure_3_facility_name,
+            latest_blood_pressure_3.facility_type AS latest_blood_pressure_3_facility_type,
+            latest_blood_pressure_3.district AS latest_blood_pressure_3_district,
+            latest_blood_pressure_3.state AS latest_blood_pressure_3_state,
+            latest_blood_pressure_3.follow_up_facility_name AS latest_blood_pressure_3_follow_up_facility_name,
+            latest_blood_pressure_3.follow_up_date AS latest_blood_pressure_3_follow_up_date,
+            latest_blood_pressure_3.follow_up_days AS latest_blood_pressure_3_follow_up_days,
+            (latest_blood_pressure_3.all_prescription_drugs <> latest_blood_pressure_4.all_prescription_drugs) AS latest_blood_pressure_3_medication_updated,
+            latest_blood_pressure_3.prescription_drug_1_name AS latest_blood_pressure_3_prescription_drug_1_name,
+            latest_blood_pressure_3.prescription_drug_1_dosage AS latest_blood_pressure_3_prescription_drug_1_dosage,
+            latest_blood_pressure_3.prescription_drug_2_name AS latest_blood_pressure_3_prescription_drug_2_name,
+            latest_blood_pressure_3.prescription_drug_2_dosage AS latest_blood_pressure_3_prescription_drug_2_dosage,
+            latest_blood_pressure_3.prescription_drug_3_name AS latest_blood_pressure_3_prescription_drug_3_name,
+            latest_blood_pressure_3.prescription_drug_3_dosage AS latest_blood_pressure_3_prescription_drug_3_dosage,
+            latest_blood_pressure_3.prescription_drug_4_name AS latest_blood_pressure_3_prescription_drug_4_name,
+            latest_blood_pressure_3.prescription_drug_4_dosage AS latest_blood_pressure_3_prescription_drug_4_dosage,
+            latest_blood_pressure_3.prescription_drug_5_name AS latest_blood_pressure_3_prescription_drug_5_name,
+            latest_blood_pressure_3.prescription_drug_5_dosage AS latest_blood_pressure_3_prescription_drug_5_dosage,
+            latest_blood_pressure_3.other_prescription_drugs AS latest_blood_pressure_3_other_prescription_drugs
+           FROM (((filtered_ranked_blood_pressures latest_blood_pressure_1
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_2 ON (((latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_2.rank = 2))))
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_3 ON (((latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_3.rank = 3))))
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_4 ON (((latest_blood_pressure_4.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_4.rank = 4))))
+          WHERE (latest_blood_pressure_1.rank = 1)
         ), ranked_blood_sugars AS (
          SELECT bs.id,
             bs.patient_id,
@@ -1560,181 +1349,61 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
            FROM ranked_blood_sugars rbs
           WHERE (rbs.rank <= 3)
         ), latest_blood_sugars AS (
-         SELECT filtered_ranked_blood_sugars.patient_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN (filtered_ranked_blood_sugars.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_sugar_1_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_sugar_1_recorded_at,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.blood_sugar_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_blood_sugar_type,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.blood_sugar_value
-                    ELSE NULL::numeric
-                END) AS latest_blood_sugar_1_blood_sugar_value,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_1_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_sugar_1_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 1) THEN filtered_ranked_blood_sugars.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_sugar_1_follow_up_days,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN (filtered_ranked_blood_sugars.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_sugar_2_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_sugar_2_recorded_at,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.blood_sugar_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_blood_sugar_type,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.blood_sugar_value
-                    ELSE NULL::numeric
-                END) AS latest_blood_sugar_2_blood_sugar_value,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_2_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_sugar_2_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 2) THEN filtered_ranked_blood_sugars.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_sugar_2_follow_up_days,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN (filtered_ranked_blood_sugars.id)::text
-                    ELSE NULL::text
-                END) AS latest_blood_sugar_3_id,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.recorded_at
-                    ELSE NULL::timestamp without time zone
-                END) AS latest_blood_sugar_3_recorded_at,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.blood_sugar_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_blood_sugar_type,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.blood_sugar_value
-                    ELSE NULL::numeric
-                END) AS latest_blood_sugar_3_blood_sugar_value,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_facility_name,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.facility_type
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_facility_type,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.district
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_district,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.state
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_state,
-            max((
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.follow_up_facility_name
-                    ELSE NULL::character varying
-                END)::text) AS latest_blood_sugar_3_follow_up_facility_name,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.follow_up_date
-                    ELSE NULL::date
-                END) AS latest_blood_sugar_3_follow_up_date,
-            max(
-                CASE
-                    WHEN (filtered_ranked_blood_sugars.rank = 3) THEN filtered_ranked_blood_sugars.follow_up_days
-                    ELSE NULL::integer
-                END) AS latest_blood_sugar_3_follow_up_days
-           FROM filtered_ranked_blood_sugars
-          GROUP BY filtered_ranked_blood_sugars.patient_id
-          ORDER BY filtered_ranked_blood_sugars.patient_id
+         SELECT latest_blood_sugar_1.patient_id,
+            latest_blood_sugar_1.id AS latest_blood_sugar_1_id,
+            latest_blood_sugar_1.recorded_at AS latest_blood_sugar_1_recorded_at,
+            latest_blood_sugar_1.blood_sugar_type AS latest_blood_sugar_1_blood_sugar_type,
+            latest_blood_sugar_1.blood_sugar_value AS latest_blood_sugar_1_blood_sugar_value,
+            latest_blood_sugar_1.facility_name AS latest_blood_sugar_1_facility_name,
+            latest_blood_sugar_1.facility_type AS latest_blood_sugar_1_facility_type,
+            latest_blood_sugar_1.district AS latest_blood_sugar_1_district,
+            latest_blood_sugar_1.state AS latest_blood_sugar_1_state,
+            latest_blood_sugar_1.follow_up_facility_name AS latest_blood_sugar_1_follow_up_facility_name,
+            latest_blood_sugar_1.follow_up_date AS latest_blood_sugar_1_follow_up_date,
+            latest_blood_sugar_1.follow_up_days AS latest_blood_sugar_1_follow_up_days,
+            latest_blood_sugar_2.id AS latest_blood_sugar_2_id,
+            latest_blood_sugar_2.recorded_at AS latest_blood_sugar_2_recorded_at,
+            latest_blood_sugar_2.blood_sugar_type AS latest_blood_sugar_2_blood_sugar_type,
+            latest_blood_sugar_2.blood_sugar_value AS latest_blood_sugar_2_blood_sugar_value,
+            latest_blood_sugar_2.facility_name AS latest_blood_sugar_2_facility_name,
+            latest_blood_sugar_2.facility_type AS latest_blood_sugar_2_facility_type,
+            latest_blood_sugar_2.district AS latest_blood_sugar_2_district,
+            latest_blood_sugar_2.state AS latest_blood_sugar_2_state,
+            latest_blood_sugar_2.follow_up_facility_name AS latest_blood_sugar_2_follow_up_facility_name,
+            latest_blood_sugar_2.follow_up_date AS latest_blood_sugar_2_follow_up_date,
+            latest_blood_sugar_2.follow_up_days AS latest_blood_sugar_2_follow_up_days,
+            latest_blood_sugar_3.id AS latest_blood_sugar_3_id,
+            latest_blood_sugar_3.recorded_at AS latest_blood_sugar_3_recorded_at,
+            latest_blood_sugar_3.blood_sugar_type AS latest_blood_sugar_3_blood_sugar_type,
+            latest_blood_sugar_3.blood_sugar_value AS latest_blood_sugar_3_blood_sugar_value,
+            latest_blood_sugar_3.facility_name AS latest_blood_sugar_3_facility_name,
+            latest_blood_sugar_3.facility_type AS latest_blood_sugar_3_facility_type,
+            latest_blood_sugar_3.district AS latest_blood_sugar_3_district,
+            latest_blood_sugar_3.state AS latest_blood_sugar_3_state,
+            latest_blood_sugar_3.follow_up_facility_name AS latest_blood_sugar_3_follow_up_facility_name,
+            latest_blood_sugar_3.follow_up_date AS latest_blood_sugar_3_follow_up_date,
+            latest_blood_sugar_3.follow_up_days AS latest_blood_sugar_3_follow_up_days
+           FROM ((filtered_ranked_blood_sugars latest_blood_sugar_1
+             LEFT JOIN filtered_ranked_blood_sugars latest_blood_sugar_2 ON (((latest_blood_sugar_2.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_2.rank = 2))))
+             LEFT JOIN filtered_ranked_blood_sugars latest_blood_sugar_3 ON (((latest_blood_sugar_3.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_3.rank = 3))))
+          WHERE (latest_blood_sugar_1.rank = 1)
         ), next_scheduled_appointment AS (
          SELECT DISTINCT ON (appointments.patient_id) appointments.id,
+            appointments.patient_id,
+            appointments.facility_id,
             appointments.scheduled_date,
             appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
             appointments.remind_on,
-            appointments.patient_id,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id,
             f.id AS appointment_facility_id,
             f.name AS appointment_facility_name,
             f.facility_type AS appointment_facility_type,
