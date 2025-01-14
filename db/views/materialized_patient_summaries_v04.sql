@@ -1,30 +1,15 @@
 with latest_bp_passport as (
-    select
-        distinct on (patient_id)
-        id,
-        identifier,
-        patient_id
+    select distinct on (patient_id) *
     from patient_business_identifiers
     where identifier_type = 'simple_bp_passport' and deleted_at is null
     order by patient_id, device_created_at desc
 ), latest_phone_number as (
-    select
-        distinct on (patient_id)
-        patient_phone_numbers.patient_id,
-        patient_phone_numbers.number
+    select distinct on (patient_id) *
     from patient_phone_numbers
     where deleted_at is null
     order by patient_id, device_created_at desc
 ), latest_medical_history as (
-    SELECT 
-        DISTINCT ON (patient_id)
-        patient_id,
-        hypertension,
-        diabetes
-    FROM
-        medical_histories
-    WHERE
-        deleted_at IS NULL
+    SELECT DISTINCT ON (patient_id) * FROM medical_histories WHERE deleted_at IS NULL
 ),ranked_prescription_drugs as (
     select
         bp.id as bp_id,
@@ -38,24 +23,12 @@ with latest_bp_passport as (
     where bp.deleted_at is null and prescription_drugs.deleted_at is null
     group by bp.id
 ), blood_pressure_follow_up as (
-    select
-        distinct on (bp.patient_id, date(bp.recorded_at))
-        bp.id bp_id,
-        appointments.scheduled_date,
-        appointments.device_created_at,
-        appointments.facility_id, 
-        appointments.deleted_at
+    select distinct on (bp.patient_id, date(bp.recorded_at)) bp.id bp_id, appointments.*
     from blood_pressures bp
     join appointments on appointments.patient_id = bp.patient_id and date(appointments.device_created_at) = date(bp.recorded_at)
     order by bp.patient_id, date(bp.recorded_at), appointments.device_created_at desc
 ), blood_sugar_follow_up as (
-    select
-        distinct on (bs.patient_id, date(bs.recorded_at))
-        bs.id bs_id,
-        appointments.scheduled_date,
-        appointments.device_created_at,
-        appointments.facility_id, 
-        appointments.deleted_at
+    select distinct on (bs.patient_id, date(bs.recorded_at)) bs.id bs_id, appointments.*
     from blood_sugars bs
     join appointments on appointments.patient_id = bs.patient_id and date(appointments.device_created_at) = date(bs.recorded_at)
     order by bs.patient_id, date(bs.recorded_at), appointments.device_created_at desc
@@ -128,95 +101,94 @@ with latest_bp_passport as (
         rbp.other_prescription_drugs,
         rbp.all_prescription_drugs,
 
-        case when rank = 2 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then 1 else null end as the_medication_1_updated,
-        case when rank = 3 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then 1 else null end as the_medication_2_updated,
-        case when rank = 4 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then 1 else null end as the_medication_3_updated,
+        -- case when rank = 2 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then true else false end as the_medication_1_updated,
+        -- case when rank = 3 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then true else false end as the_medication_2_updated,
+        -- case when rank = 4 and all_prescription_drugs != lag(all_prescription_drugs) over (partition by patient_id order by rank) then true else false end as the_medication_3_updated,
 
         rbp.rank
     from ranked_blood_pressures rbp
     where rank <= 4
 ), latest_blood_pressures as (
     select
-        patient_id,
+        latest_blood_pressure_1.patient_id as patient_id,
 
-        max(case when rank = 1 then id::text end) as latest_blood_pressure_1_id,
-        max(case when rank = 1 then recorded_at end) as latest_blood_pressure_1_recorded_at,
-        max(case when rank = 1 then systolic end) as latest_blood_pressure_1_systolic,
-        max(case when rank = 1 then diastolic end) as latest_blood_pressure_1_diastolic,
-        max(case when rank = 1 then facility_name end) as latest_blood_pressure_1_facility_name,
-        max(case when rank = 1 then facility_type end) as latest_blood_pressure_1_facility_type,
-        max(case when rank = 1 then district end) as latest_blood_pressure_1_district,
-        max(case when rank = 1 then state end) as latest_blood_pressure_1_state,
-        max(case when rank = 1 then follow_up_facility_name end) as latest_blood_pressure_1_follow_up_facility_name,
-        max(case when rank = 1 then follow_up_date end) as latest_blood_pressure_1_follow_up_date,
-        max(case when rank = 1 then follow_up_days end) as latest_blood_pressure_1_follow_up_days,
-        the_medication_1_updated as latest_blood_pressure_1_medication_updated,
-        max(case when rank = 1 then prescription_drug_1_name end) as latest_blood_pressure_1_prescription_drug_1_name,
-        max(case when rank = 1 then prescription_drug_1_dosage end) as latest_blood_pressure_1_prescription_drug_1_dosage,
-        max(case when rank = 1 then prescription_drug_2_name end) as latest_blood_pressure_1_prescription_drug_2_name,
-        max(case when rank = 1 then prescription_drug_2_dosage end) as latest_blood_pressure_1_prescription_drug_2_dosage,
-        max(case when rank = 1 then prescription_drug_3_name end) as latest_blood_pressure_1_prescription_drug_3_name,
-        max(case when rank = 1 then prescription_drug_3_dosage end) as latest_blood_pressure_1_prescription_drug_3_dosage,
-        max(case when rank = 1 then prescription_drug_4_name end) as latest_blood_pressure_1_prescription_drug_4_name,
-        max(case when rank = 1 then prescription_drug_4_dosage end) as latest_blood_pressure_1_prescription_drug_4_dosage,
-        max(case when rank = 1 then prescription_drug_5_name end) as latest_blood_pressure_1_prescription_drug_5_name,
-        max(case when rank = 1 then prescription_drug_5_dosage end) as latest_blood_pressure_1_prescription_drug_5_dosage,
-        max(case when rank = 1 then other_prescription_drugs end) as latest_blood_pressure_1_other_prescription_drugs,
+        latest_blood_pressure_1.id as latest_blood_pressure_1_id,
+        latest_blood_pressure_1.recorded_at as latest_blood_pressure_1_recorded_at,
+        latest_blood_pressure_1.systolic as latest_blood_pressure_1_systolic,
+        latest_blood_pressure_1.diastolic as latest_blood_pressure_1_diastolic,
+        latest_blood_pressure_1.facility_name as latest_blood_pressure_1_facility_name,
+        latest_blood_pressure_1.facility_type as latest_blood_pressure_1_facility_type,
+        latest_blood_pressure_1.district as latest_blood_pressure_1_district,
+        latest_blood_pressure_1.state as latest_blood_pressure_1_state,
+        latest_blood_pressure_1.follow_up_facility_name as latest_blood_pressure_1_follow_up_facility_name,
+        latest_blood_pressure_1.follow_up_date as latest_blood_pressure_1_follow_up_date,
+        latest_blood_pressure_1.follow_up_days as latest_blood_pressure_1_follow_up_days,
+        latest_blood_pressure_1.all_prescription_drugs != latest_blood_pressure_2.all_prescription_drugs as latest_blood_pressure_1_medication_updated,
+        latest_blood_pressure_1.prescription_drug_1_name as latest_blood_pressure_1_prescription_drug_1_name,
+        latest_blood_pressure_1.prescription_drug_1_dosage as latest_blood_pressure_1_prescription_drug_1_dosage,
+        latest_blood_pressure_1.prescription_drug_2_name as latest_blood_pressure_1_prescription_drug_2_name,
+        latest_blood_pressure_1.prescription_drug_2_dosage as latest_blood_pressure_1_prescription_drug_2_dosage,
+        latest_blood_pressure_1.prescription_drug_3_name as latest_blood_pressure_1_prescription_drug_3_name,
+        latest_blood_pressure_1.prescription_drug_3_dosage as latest_blood_pressure_1_prescription_drug_3_dosage,
+        latest_blood_pressure_1.prescription_drug_4_name as latest_blood_pressure_1_prescription_drug_4_name,
+        latest_blood_pressure_1.prescription_drug_4_dosage as latest_blood_pressure_1_prescription_drug_4_dosage,
+        latest_blood_pressure_1.prescription_drug_5_name as latest_blood_pressure_1_prescription_drug_5_name,
+        latest_blood_pressure_1.prescription_drug_5_dosage as latest_blood_pressure_1_prescription_drug_5_dosage,
+        latest_blood_pressure_1.other_prescription_drugs as latest_blood_pressure_1_other_prescription_drugs,
 
-        max(case when rank = 2 then id::text end) as latest_blood_pressure_2_id,
-        max(case when rank = 2 then recorded_at end) as latest_blood_pressure_2_recorded_at,
-        max(case when rank = 2 then systolic end) as latest_blood_pressure_2_systolic,
-        max(case when rank = 2 then diastolic end) as latest_blood_pressure_2_diastolic,
-        max(case when rank = 2 then facility_name end) as latest_blood_pressure_2_facility_name,
-        max(case when rank = 2 then facility_type end) as latest_blood_pressure_2_facility_type,
-        max(case when rank = 2 then district end) as latest_blood_pressure_2_district,
-        max(case when rank = 2 then state end) as latest_blood_pressure_2_state,
-        max(case when rank = 2 then follow_up_facility_name end) as latest_blood_pressure_2_follow_up_facility_name,
-        max(case when rank = 2 then follow_up_date end) as latest_blood_pressure_2_follow_up_date,
-        max(case when rank = 2 then follow_up_days end) as latest_blood_pressure_2_follow_up_days,
-        the_medication_2_updated as latest_blood_pressure_2_medication_updated,
-        max(case when rank = 2 then prescription_drug_1_name end) as latest_blood_pressure_2_prescription_drug_1_name,
-        max(case when rank = 2 then prescription_drug_1_dosage end) as latest_blood_pressure_2_prescription_drug_1_dosage,
-        max(case when rank = 2 then prescription_drug_2_name end) as latest_blood_pressure_2_prescription_drug_2_name,
-        max(case when rank = 2 then prescription_drug_2_dosage end) as latest_blood_pressure_2_prescription_drug_2_dosage,
-        max(case when rank = 2 then prescription_drug_3_name end) as latest_blood_pressure_2_prescription_drug_3_name,
-        max(case when rank = 2 then prescription_drug_3_dosage end) as latest_blood_pressure_2_prescription_drug_3_dosage,
-        max(case when rank = 2 then prescription_drug_4_name end) as latest_blood_pressure_2_prescription_drug_4_name,
-        max(case when rank = 2 then prescription_drug_4_dosage end) as latest_blood_pressure_2_prescription_drug_4_dosage,
-        max(case when rank = 2 then prescription_drug_5_name end) as latest_blood_pressure_2_prescription_drug_5_name,
-        max(case when rank = 2 then prescription_drug_5_dosage end) as latest_blood_pressure_2_prescription_drug_5_dosage,
-        max(case when rank = 2 then other_prescription_drugs end) as latest_blood_pressure_2_other_prescription_drugs,
+        latest_blood_pressure_2.id as latest_blood_pressure_2_id,
+        latest_blood_pressure_2.recorded_at as latest_blood_pressure_2_recorded_at,
+        latest_blood_pressure_2.systolic as latest_blood_pressure_2_systolic,
+        latest_blood_pressure_2.diastolic as latest_blood_pressure_2_diastolic,
+        latest_blood_pressure_2.facility_name as latest_blood_pressure_2_facility_name,
+        latest_blood_pressure_2.facility_type as latest_blood_pressure_2_facility_type,
+        latest_blood_pressure_2.district as latest_blood_pressure_2_district,
+        latest_blood_pressure_2.state as latest_blood_pressure_2_state,
+        latest_blood_pressure_2.follow_up_facility_name as latest_blood_pressure_2_follow_up_facility_name,
+        latest_blood_pressure_2.follow_up_date as latest_blood_pressure_2_follow_up_date,
+        latest_blood_pressure_2.follow_up_days as latest_blood_pressure_2_follow_up_days,
+        latest_blood_pressure_2.all_prescription_drugs != latest_blood_pressure_3.all_prescription_drugs as latest_blood_pressure_2_medication_updated,
+        latest_blood_pressure_2.prescription_drug_1_name as latest_blood_pressure_2_prescription_drug_1_name,
+        latest_blood_pressure_2.prescription_drug_1_dosage as latest_blood_pressure_2_prescription_drug_1_dosage,
+        latest_blood_pressure_2.prescription_drug_2_name as latest_blood_pressure_2_prescription_drug_2_name,
+        latest_blood_pressure_2.prescription_drug_2_dosage as latest_blood_pressure_2_prescription_drug_2_dosage,
+        latest_blood_pressure_2.prescription_drug_3_name as latest_blood_pressure_2_prescription_drug_3_name,
+        latest_blood_pressure_2.prescription_drug_3_dosage as latest_blood_pressure_2_prescription_drug_3_dosage,
+        latest_blood_pressure_2.prescription_drug_4_name as latest_blood_pressure_2_prescription_drug_4_name,
+        latest_blood_pressure_2.prescription_drug_4_dosage as latest_blood_pressure_2_prescription_drug_4_dosage,
+        latest_blood_pressure_2.prescription_drug_5_name as latest_blood_pressure_2_prescription_drug_5_name,
+        latest_blood_pressure_2.prescription_drug_5_dosage as latest_blood_pressure_2_prescription_drug_5_dosage,
+        latest_blood_pressure_2.other_prescription_drugs as latest_blood_pressure_2_other_prescription_drugs,
 
-        max(case when rank = 3 then id::text end) as latest_blood_pressure_3_id,
-        max(case when rank = 3 then recorded_at end) as latest_blood_pressure_3_recorded_at,
-        max(case when rank = 3 then systolic end) as latest_blood_pressure_3_systolic,
-        max(case when rank = 3 then diastolic end) as latest_blood_pressure_3_diastolic,
-        max(case when rank = 3 then facility_name end) as latest_blood_pressure_3_facility_name,
-        max(case when rank = 3 then facility_type end) as latest_blood_pressure_3_facility_type,
-        max(case when rank = 3 then district end) as latest_blood_pressure_3_district,
-        max(case when rank = 3 then state end) as latest_blood_pressure_3_state,
-        max(case when rank = 3 then follow_up_facility_name end) as latest_blood_pressure_3_follow_up_facility_name,
-        max(case when rank = 3 then follow_up_date end) as latest_blood_pressure_3_follow_up_date,
-        max(case when rank = 3 then follow_up_days end) as latest_blood_pressure_3_follow_up_days,
-        the_medication_3_updated as latest_blood_pressure_3_medication_updated,
-        max(case when rank = 3 then prescription_drug_1_name end) as latest_blood_pressure_3_prescription_drug_1_name,
-        max(case when rank = 3 then prescription_drug_1_dosage end) as latest_blood_pressure_3_prescription_drug_1_dosage,
-        max(case when rank = 3 then prescription_drug_2_name end) as latest_blood_pressure_3_prescription_drug_2_name,
-        max(case when rank = 3 then prescription_drug_2_dosage end) as latest_blood_pressure_3_prescription_drug_2_dosage,
-        max(case when rank = 3 then prescription_drug_3_name end) as latest_blood_pressure_3_prescription_drug_3_name,
-        max(case when rank = 3 then prescription_drug_3_dosage end) as latest_blood_pressure_3_prescription_drug_3_dosage,
-        max(case when rank = 3 then prescription_drug_4_name end) as latest_blood_pressure_3_prescription_drug_4_name,
-        max(case when rank = 3 then prescription_drug_4_dosage end) as latest_blood_pressure_3_prescription_drug_4_dosage,
-        max(case when rank = 3 then prescription_drug_5_name end) as latest_blood_pressure_3_prescription_drug_5_name,
-        max(case when rank = 3 then prescription_drug_5_dosage end) as latest_blood_pressure_3_prescription_drug_5_dosage,
-        max(case when rank = 3 then other_prescription_drugs end) as latest_blood_pressure_3_other_prescription_drugs
+        latest_blood_pressure_3.id as latest_blood_pressure_3_id,
+        latest_blood_pressure_3.recorded_at as latest_blood_pressure_3_recorded_at,
+        latest_blood_pressure_3.systolic as latest_blood_pressure_3_systolic,
+        latest_blood_pressure_3.diastolic as latest_blood_pressure_3_diastolic,
+        latest_blood_pressure_3.facility_name as latest_blood_pressure_3_facility_name,
+        latest_blood_pressure_3.facility_type as latest_blood_pressure_3_facility_type,
+        latest_blood_pressure_3.district as latest_blood_pressure_3_district,
+        latest_blood_pressure_3.state as latest_blood_pressure_3_state,
+        latest_blood_pressure_3.follow_up_facility_name as latest_blood_pressure_3_follow_up_facility_name,
+        latest_blood_pressure_3.follow_up_date as latest_blood_pressure_3_follow_up_date,
+        latest_blood_pressure_3.follow_up_days as latest_blood_pressure_3_follow_up_days,
+        latest_blood_pressure_3.all_prescription_drugs != latest_blood_pressure_4.all_prescription_drugs as latest_blood_pressure_3_medication_updated,
+        latest_blood_pressure_3.prescription_drug_1_name as latest_blood_pressure_3_prescription_drug_1_name,
+        latest_blood_pressure_3.prescription_drug_1_dosage as latest_blood_pressure_3_prescription_drug_1_dosage,
+        latest_blood_pressure_3.prescription_drug_2_name as latest_blood_pressure_3_prescription_drug_2_name,
+        latest_blood_pressure_3.prescription_drug_2_dosage as latest_blood_pressure_3_prescription_drug_2_dosage,
+        latest_blood_pressure_3.prescription_drug_3_name as latest_blood_pressure_3_prescription_drug_3_name,
+        latest_blood_pressure_3.prescription_drug_3_dosage as latest_blood_pressure_3_prescription_drug_3_dosage,
+        latest_blood_pressure_3.prescription_drug_4_name as latest_blood_pressure_3_prescription_drug_4_name,
+        latest_blood_pressure_3.prescription_drug_4_dosage as latest_blood_pressure_3_prescription_drug_4_dosage,
+        latest_blood_pressure_3.prescription_drug_5_name as latest_blood_pressure_3_prescription_drug_5_name,
+        latest_blood_pressure_3.prescription_drug_5_dosage as latest_blood_pressure_3_prescription_drug_5_dosage,
+        latest_blood_pressure_3.other_prescription_drugs as latest_blood_pressure_3_other_prescription_drugs
 
-    from filtered_ranked_blood_pressures
-    group by
-      patient_id,
-      the_medication_1_updated,
-      the_medication_2_updated,
-      the_medication_3_updated
+    from filtered_ranked_blood_pressures latest_blood_pressure_1
+    left outer join filtered_ranked_blood_pressures latest_blood_pressure_2 on latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id and latest_blood_pressure_2.rank = 2
+    left outer join filtered_ranked_blood_pressures latest_blood_pressure_3 on latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id and latest_blood_pressure_3.rank = 3
+    left outer join filtered_ranked_blood_pressures latest_blood_pressure_4 on latest_blood_pressure_4.patient_id = latest_blood_pressure_1.patient_id and latest_blood_pressure_4.rank = 4
+    where latest_blood_pressure_1.rank = 1
 ), ranked_blood_sugars as (
     select
         bs.id,
@@ -256,50 +228,51 @@ with latest_bp_passport as (
     where rank <= 3
 ), latest_blood_sugars as (
     select
-        patient_id,
-        MAX(CASE WHEN rank = 1 THEN id::text END) AS latest_blood_sugar_1_id,
-        MAX(CASE WHEN rank = 1 THEN recorded_at END) AS latest_blood_sugar_1_recorded_at,
-        MAX(CASE WHEN rank = 1 THEN blood_sugar_type END) AS latest_blood_sugar_1_blood_sugar_type,
-        MAX(CASE WHEN rank = 1 THEN blood_sugar_value END) AS latest_blood_sugar_1_blood_sugar_value,
-        MAX(CASE WHEN rank = 1 THEN facility_name END) AS latest_blood_sugar_1_facility_name,
-        MAX(CASE WHEN rank = 1 THEN facility_type END) AS latest_blood_sugar_1_facility_type,
-        MAX(CASE WHEN rank = 1 THEN district END) AS latest_blood_sugar_1_district,
-        MAX(CASE WHEN rank = 1 THEN state END) AS latest_blood_sugar_1_state,
-        MAX(CASE WHEN rank = 1 THEN follow_up_facility_name END) AS latest_blood_sugar_1_follow_up_facility_name,
-        MAX(CASE WHEN rank = 1 THEN follow_up_date END) AS latest_blood_sugar_1_follow_up_date,
-        MAX(CASE WHEN rank = 1 THEN follow_up_days END) AS latest_blood_sugar_1_follow_up_days,
-        MAX(CASE WHEN rank = 2 THEN id::text END) AS latest_blood_sugar_2_id,
-        MAX(CASE WHEN rank = 2 THEN recorded_at END) AS latest_blood_sugar_2_recorded_at,
-        MAX(CASE WHEN rank = 2 THEN blood_sugar_type END) AS latest_blood_sugar_2_blood_sugar_type,
-        MAX(CASE WHEN rank = 2 THEN blood_sugar_value END) AS latest_blood_sugar_2_blood_sugar_value,
-        MAX(CASE WHEN rank = 2 THEN facility_name END) AS latest_blood_sugar_2_facility_name,
-        MAX(CASE WHEN rank = 2 THEN facility_type END) AS latest_blood_sugar_2_facility_type,
-        MAX(CASE WHEN rank = 2 THEN district END) AS latest_blood_sugar_2_district,
-        MAX(CASE WHEN rank = 2 THEN state END) AS latest_blood_sugar_2_state,
-        MAX(CASE WHEN rank = 2 THEN follow_up_facility_name END) AS latest_blood_sugar_2_follow_up_facility_name,
-        MAX(CASE WHEN rank = 2 THEN follow_up_date END) AS latest_blood_sugar_2_follow_up_date,
-        MAX(CASE WHEN rank = 2 THEN follow_up_days END) AS latest_blood_sugar_2_follow_up_days,
-        MAX(CASE WHEN rank = 3 THEN id::text END) AS latest_blood_sugar_3_id,
-        MAX(CASE WHEN rank = 3 THEN recorded_at END) AS latest_blood_sugar_3_recorded_at,
-        MAX(CASE WHEN rank = 3 THEN blood_sugar_type END) AS latest_blood_sugar_3_blood_sugar_type,
-        MAX(CASE WHEN rank = 3 THEN blood_sugar_value END) AS latest_blood_sugar_3_blood_sugar_value,
-        MAX(CASE WHEN rank = 3 THEN facility_name END) AS latest_blood_sugar_3_facility_name,
-        MAX(CASE WHEN rank = 3 THEN facility_type END) AS latest_blood_sugar_3_facility_type,
-        MAX(CASE WHEN rank = 3 THEN district END) AS latest_blood_sugar_3_district,
-        MAX(CASE WHEN rank = 3 THEN state END) AS latest_blood_sugar_3_state,
-        MAX(CASE WHEN rank = 3 THEN follow_up_facility_name END) AS latest_blood_sugar_3_follow_up_facility_name,
-        MAX(CASE WHEN rank = 3 THEN follow_up_date END) AS latest_blood_sugar_3_follow_up_date,
-        MAX(CASE WHEN rank = 3 THEN follow_up_days END) AS latest_blood_sugar_3_follow_up_days
-    from filtered_ranked_blood_sugars
-    group by patient_id
-    order by patient_id
+        latest_blood_sugar_1.patient_id as patient_id,
+
+        latest_blood_sugar_1.id as latest_blood_sugar_1_id,
+        latest_blood_sugar_1.recorded_at as latest_blood_sugar_1_recorded_at,
+        latest_blood_sugar_1.blood_sugar_type as latest_blood_sugar_1_blood_sugar_type,
+        latest_blood_sugar_1.blood_sugar_value as latest_blood_sugar_1_blood_sugar_value,
+        latest_blood_sugar_1.facility_name as latest_blood_sugar_1_facility_name,
+        latest_blood_sugar_1.facility_type as latest_blood_sugar_1_facility_type,
+        latest_blood_sugar_1.district as latest_blood_sugar_1_district,
+        latest_blood_sugar_1.state as latest_blood_sugar_1_state,
+        latest_blood_sugar_1.follow_up_facility_name as latest_blood_sugar_1_follow_up_facility_name,
+        latest_blood_sugar_1.follow_up_date as latest_blood_sugar_1_follow_up_date,
+        latest_blood_sugar_1.follow_up_days as latest_blood_sugar_1_follow_up_days,
+
+        latest_blood_sugar_2.id as latest_blood_sugar_2_id,
+        latest_blood_sugar_2.recorded_at as latest_blood_sugar_2_recorded_at,
+        latest_blood_sugar_2.blood_sugar_type as latest_blood_sugar_2_blood_sugar_type,
+        latest_blood_sugar_2.blood_sugar_value as latest_blood_sugar_2_blood_sugar_value,
+        latest_blood_sugar_2.facility_name as latest_blood_sugar_2_facility_name,
+        latest_blood_sugar_2.facility_type as latest_blood_sugar_2_facility_type,
+        latest_blood_sugar_2.district as latest_blood_sugar_2_district,
+        latest_blood_sugar_2.state as latest_blood_sugar_2_state,
+        latest_blood_sugar_2.follow_up_facility_name as latest_blood_sugar_2_follow_up_facility_name,
+        latest_blood_sugar_2.follow_up_date as latest_blood_sugar_2_follow_up_date,
+        latest_blood_sugar_2.follow_up_days as latest_blood_sugar_2_follow_up_days,
+
+        latest_blood_sugar_3.id as latest_blood_sugar_3_id,
+        latest_blood_sugar_3.recorded_at as latest_blood_sugar_3_recorded_at,
+        latest_blood_sugar_3.blood_sugar_type as latest_blood_sugar_3_blood_sugar_type,
+        latest_blood_sugar_3.blood_sugar_value as latest_blood_sugar_3_blood_sugar_value,
+        latest_blood_sugar_3.facility_name as latest_blood_sugar_3_facility_name,
+        latest_blood_sugar_3.facility_type as latest_blood_sugar_3_facility_type,
+        latest_blood_sugar_3.district as latest_blood_sugar_3_district,
+        latest_blood_sugar_3.state as latest_blood_sugar_3_state,
+        latest_blood_sugar_3.follow_up_facility_name as latest_blood_sugar_3_follow_up_facility_name,
+        latest_blood_sugar_3.follow_up_date as latest_blood_sugar_3_follow_up_date,
+        latest_blood_sugar_3.follow_up_days as latest_blood_sugar_3_follow_up_days
+
+    from filtered_ranked_blood_sugars latest_blood_sugar_1
+    left outer join filtered_ranked_blood_sugars latest_blood_sugar_2 on latest_blood_sugar_2.patient_id = latest_blood_sugar_1.patient_id and latest_blood_sugar_2.rank = 2
+    left outer join filtered_ranked_blood_sugars latest_blood_sugar_3 on latest_blood_sugar_3.patient_id = latest_blood_sugar_1.patient_id and latest_blood_sugar_3.rank = 3
+    where latest_blood_sugar_1.rank = 1
 ), next_scheduled_appointment as (
     select distinct on (patient_id)
-        appointments.id,
-        appointments.scheduled_date,
-        appointments.status,
-        appointments.remind_on,
-        appointments.patient_id,
+        appointments.*,
         f.id as appointment_facility_id,
         f.name as appointment_facility_name,
         f.facility_type appointment_facility_type,
