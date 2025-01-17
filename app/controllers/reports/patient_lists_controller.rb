@@ -6,6 +6,8 @@ class Reports::PatientListsController < AdminController
   before_action :set_region, only: [:show, :diabetes]
   before_action :set_download_params, only: [:show, :diabetes]
 
+  rescue_from Exception, with: :show_error
+
   def show
     case region_class
     when "facility"
@@ -27,6 +29,11 @@ class Reports::PatientListsController < AdminController
         end
       end
     end
+  end
+
+  def show_error e
+    logger.error (["#{self.class} - #{e.class}: #{e.message}"]+e.backtrace).join("\n")
+    raise e
   end
 
   private
