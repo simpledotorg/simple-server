@@ -1120,7 +1120,9 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.deleted_at,
             medical_histories.user_id,
             medical_histories.hypertension,
-            medical_histories.receiving_treatment_for_diabetes
+            medical_histories.receiving_treatment_for_diabetes,
+            medical_histories.smoking,
+            medical_histories.cholesterol
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)
         ), ranked_prescription_drugs AS (
@@ -1207,6 +1209,34 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
              LEFT JOIN blood_pressure_follow_up a ON ((a.bp_id = bp.id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
           WHERE ((bp.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+        ), filtered_ranked_blood_pressures AS (
+         SELECT rbp.id,
+            rbp.patient_id,
+            rbp.recorded_at,
+            rbp.systolic,
+            rbp.diastolic,
+            rbp.facility_name,
+            rbp.facility_type,
+            rbp.district,
+            rbp.state,
+            rbp.follow_up_facility_name,
+            rbp.follow_up_date,
+            rbp.follow_up_days,
+            rbp.prescription_drug_1_name,
+            rbp.prescription_drug_1_dosage,
+            rbp.prescription_drug_2_name,
+            rbp.prescription_drug_2_dosage,
+            rbp.prescription_drug_3_name,
+            rbp.prescription_drug_3_dosage,
+            rbp.prescription_drug_4_name,
+            rbp.prescription_drug_4_dosage,
+            rbp.prescription_drug_5_name,
+            rbp.prescription_drug_5_dosage,
+            rbp.other_prescription_drugs,
+            rbp.all_prescription_drugs,
+            rbp.rank
+           FROM ranked_blood_pressures rbp
+          WHERE (rbp.rank <= 4)
         ), latest_blood_pressures AS (
          SELECT latest_blood_pressure_1.patient_id,
             latest_blood_pressure_1.id AS latest_blood_pressure_1_id,
@@ -1278,10 +1308,10 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_pressure_3.prescription_drug_5_name AS latest_blood_pressure_3_prescription_drug_5_name,
             latest_blood_pressure_3.prescription_drug_5_dosage AS latest_blood_pressure_3_prescription_drug_5_dosage,
             latest_blood_pressure_3.other_prescription_drugs AS latest_blood_pressure_3_other_prescription_drugs
-           FROM (((ranked_blood_pressures latest_blood_pressure_1
-             LEFT JOIN ranked_blood_pressures latest_blood_pressure_2 ON (((latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_2.rank = 2))))
-             LEFT JOIN ranked_blood_pressures latest_blood_pressure_3 ON (((latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_3.rank = 3))))
-             LEFT JOIN ranked_blood_pressures latest_blood_pressure_4 ON (((latest_blood_pressure_4.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_4.rank = 4))))
+           FROM (((filtered_ranked_blood_pressures latest_blood_pressure_1
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_2 ON (((latest_blood_pressure_2.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_2.rank = 2))))
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_3 ON (((latest_blood_pressure_3.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_3.rank = 3))))
+             LEFT JOIN filtered_ranked_blood_pressures latest_blood_pressure_4 ON (((latest_blood_pressure_4.patient_id = latest_blood_pressure_1.patient_id) AND (latest_blood_pressure_4.rank = 4))))
           WHERE (latest_blood_pressure_1.rank = 1)
         ), ranked_blood_sugars AS (
          SELECT bs.id,
@@ -1302,6 +1332,22 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
              LEFT JOIN blood_sugar_follow_up a ON ((a.bs_id = bs.id)))
              LEFT JOIN public.facilities follow_up_facility ON ((follow_up_facility.id = a.facility_id)))
           WHERE ((bs.deleted_at IS NULL) AND (a.deleted_at IS NULL))
+        ), filtered_ranked_blood_sugars AS (
+         SELECT rbs.id,
+            rbs.patient_id,
+            rbs.recorded_at,
+            rbs.blood_sugar_type,
+            rbs.blood_sugar_value,
+            rbs.facility_name,
+            rbs.facility_type,
+            rbs.district,
+            rbs.state,
+            rbs.follow_up_facility_name,
+            rbs.follow_up_date,
+            rbs.follow_up_days,
+            rbs.rank
+           FROM ranked_blood_sugars rbs
+          WHERE (rbs.rank <= 3)
         ), latest_blood_sugars AS (
          SELECT latest_blood_sugar_1.patient_id,
             latest_blood_sugar_1.id AS latest_blood_sugar_1_id,
@@ -1337,9 +1383,9 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             latest_blood_sugar_3.follow_up_facility_name AS latest_blood_sugar_3_follow_up_facility_name,
             latest_blood_sugar_3.follow_up_date AS latest_blood_sugar_3_follow_up_date,
             latest_blood_sugar_3.follow_up_days AS latest_blood_sugar_3_follow_up_days
-           FROM ((ranked_blood_sugars latest_blood_sugar_1
-             LEFT JOIN ranked_blood_sugars latest_blood_sugar_2 ON (((latest_blood_sugar_2.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_2.rank = 2))))
-             LEFT JOIN ranked_blood_sugars latest_blood_sugar_3 ON (((latest_blood_sugar_3.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_3.rank = 3))))
+           FROM ((filtered_ranked_blood_sugars latest_blood_sugar_1
+             LEFT JOIN filtered_ranked_blood_sugars latest_blood_sugar_2 ON (((latest_blood_sugar_2.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_2.rank = 2))))
+             LEFT JOIN filtered_ranked_blood_sugars latest_blood_sugar_3 ON (((latest_blood_sugar_3.patient_id = latest_blood_sugar_1.patient_id) AND (latest_blood_sugar_3.rank = 3))))
           WHERE (latest_blood_sugar_1.rank = 1)
         ), next_scheduled_appointment AS (
          SELECT DISTINCT ON (appointments.patient_id) appointments.id,
@@ -7859,6 +7905,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241126111757'),
 ('20241129212725'),
 ('20241204155510'),
-('20241210092449');
+('20241210092449'),
+('20250108140806'),
+('20250120104431');
 
 
