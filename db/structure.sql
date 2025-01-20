@@ -1120,7 +1120,9 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.deleted_at,
             medical_histories.user_id,
             medical_histories.hypertension,
-            medical_histories.receiving_treatment_for_diabetes
+            medical_histories.receiving_treatment_for_diabetes,
+            medical_histories.smoking,
+            medical_histories.cholesterol
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)
         ), ranked_prescription_drugs AS (
@@ -7859,6 +7861,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241126111757'),
 ('20241129212725'),
 ('20241204155510'),
-('20241210092449');
+('20241210092449'),
+('20250120104431');
 
 
