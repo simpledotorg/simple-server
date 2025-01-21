@@ -12,10 +12,6 @@ class SetupBdh12025SmsSchedule < ActiveRecord::Migration[6.1]
 
   MAX_PATIENTS_PER_DAY = 5000
 
-  EXCLUDED_FACILITIES = [
-    'UHC Daganbhuiya'
-  ]
-
   INCLUDED_FACILITY_SLUG = Facility
     .where(facility_type: "UHC", district: DISTRICTS)
     .where.not(slug: [
@@ -24,6 +20,10 @@ class SetupBdh12025SmsSchedule < ActiveRecord::Migration[6.1]
       "uhc-daganbhuiya"
     ])
     .pluck(:slug)
+
+  REGION_FILTERS = {
+    "facilities" => {"include" => INCLUDED_FACILITY_SLUG}
+  }.freeze
 
   def up
     return unless CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
