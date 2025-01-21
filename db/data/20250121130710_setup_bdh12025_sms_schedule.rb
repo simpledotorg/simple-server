@@ -13,7 +13,7 @@ class SetupBdh12025SmsSchedule < ActiveRecord::Migration[6.1]
   MAX_PATIENTS_PER_DAY = 5000
 
   INCLUDED_FACILITY_SLUG = Facility
-    .where(facility_type: "UHC", district: DISTRICTS)
+    .where(facility_type: "UHC")
     .where.not(slug: [
       "uhc-fatikchori",
       "uhc-parsuram",
