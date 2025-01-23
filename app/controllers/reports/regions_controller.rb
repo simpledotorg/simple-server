@@ -430,8 +430,8 @@ class Reports::RegionsController < AdminController
     @region ||= authorize {
       case report_scope
       when "organization"
-        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by!(slug: report_params[:id])
-        organization.region
+        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by(slug: report_params[:id]) || find_organization_slug(report_params[:id])
+        organization&.region || (raise ActiveRecord::RecordNotFound, "Organization not found for slug: #{report_params[:id]}")
       when "state"
         current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
       when "district"
@@ -444,6 +444,13 @@ class Reports::RegionsController < AdminController
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
       end
     }
+  end
+
+  def find_organization_slug(slug)
+    region = Region.find_by(slug: slug, region_type: "organization")
+    return unless region&.source_type == "Organization"
+
+    current_admin.user_access.accessible_organizations(:view_reports).find_by(id: region.source_id)
   end
 
   def report_params
