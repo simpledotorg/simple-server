@@ -18,6 +18,29 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility_region = @facility.region
     end
 
+    context "when report_scope is organization" do
+      let(:organization) { create(:organization, slug: "valid-org-slug") }
+      it "finds the organization by its slug when accessible" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: organization.slug, report_scope: "organization"}
+        expect(assigns(:region)).to eq(organization.region)
+      end
+
+      it "finds the organization using its region slug as a fallback" do
+        sign_in(cvho.email_authentication)
+        organization.region.update(slug: "valid-org-slug-organization")
+        get :show, params: {id: organization.region.slug, report_scope: "organization"}
+        expect(assigns(:region).slug).to eq(organization.region.slug)
+      end
+
+      it "redirects with an alert if the region slug does not match any accessible organization" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: "unknown-region-slug", report_scope: "organization"}
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+        expect(response).to be_redirect
+      end
+    end
+
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
       get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
