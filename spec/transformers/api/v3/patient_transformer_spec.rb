@@ -41,5 +41,12 @@ RSpec.describe Api::V3::PatientTransformer do
       transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
       expect(transformed_nested_patient["registration_facility_id"]).to eq(patient.registration_facility.id)
     end
+
+    context "for patients without addresses" do
+      it "should be successful" do
+        patient_without_address = create(:patient, :without_address)
+        expect { Api::V3::PatientTransformer.to_nested_response(patient_without_address) }.not_to raise_error
+      end
+    end
   end
 end
