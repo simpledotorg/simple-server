@@ -29,8 +29,8 @@ FactoryBot.define do
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
 
-    trait(:without_address) do
-      association :address, strategy: :null
+    trait :without_address do
+      address { nil }
     end
 
     trait(:with_dob) do
