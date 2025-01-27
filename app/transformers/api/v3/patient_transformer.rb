@@ -71,9 +71,11 @@ class Api::V3::PatientTransformer
             Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
           end
         )
-      response.merge(
-        "address" => Api::V3::Transformer.to_response(patient.address),
-      ) unless patient.address.nil?
+      unless patient.address.nil?
+        response.merge(
+          "address" => Api::V3::Transformer.to_response(patient.address)
+        )
+      end
       response
     end
   end
