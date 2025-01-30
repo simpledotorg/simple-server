@@ -29,6 +29,10 @@ FactoryBot.define do
     reminder_consent { Patient.reminder_consents[:granted] }
     medical_history { build(:medical_history, :hypertension_yes, patient_id: id, user: registration_user) }
 
+    trait :without_address do
+      address { nil }
+    end
+
     trait(:with_dob) do
       date_of_birth { rand(18..80).years.ago }
       age { nil }

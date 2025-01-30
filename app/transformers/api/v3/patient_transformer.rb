@@ -64,7 +64,7 @@ class Api::V3::PatientTransformer
           "test_data",
           "deleted_by_user_id")
         .merge(
-          "address" => Api::V3::Transformer.to_response(patient.address),
+          "address" => mergeable_patient_address(patient),
           "phone_numbers" => patient.phone_numbers.map do |phone_number|
             Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
           end,
@@ -72,6 +72,13 @@ class Api::V3::PatientTransformer
             Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
           end
         )
+    end
+
+    private
+
+    def mergeable_patient_address(patient)
+      return {} if patient.address.nil?
+      Api::V3::Transformer.to_response(patient.address)
     end
   end
 end
