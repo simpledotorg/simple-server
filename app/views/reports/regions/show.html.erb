@@ -2,6 +2,15 @@
  <%= @region.name %> | Hypertension
 <% end %>
 
+<% if @region.facility_region? && Flipper.enabled?(:quick_link_for_metabase, current_admin) && @is_desktop %>
+  <div class="float-right desktop">
+    <h4 class="mb-0px">Quick links</h4>
+    <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %>">Drug stock report</a></div>
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>">Metabase: Titration report</a></div>
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>">Metabase: BP fudging report</a></div>
+  </div>
+<% end %>
+
 <%= render "header" %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
