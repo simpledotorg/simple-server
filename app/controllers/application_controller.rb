@@ -3,8 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   around_action :switch_locale
-  before_action :detect_device
-
+  
   def switch_locale(&action)
     locale = http_accept_language.language_region_compatible_from(I18n.available_locales) || I18n.default_locale
     I18n.with_locale(locale, &action)
@@ -32,9 +31,6 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:invite, keys: [:email, :role])
   end
 
-  def detect_device
-    @is_desktop = (DeviceDetector.new(request.user_agent).device_type == "desktop")
-  end
 
   # Use Prosopite to avoid adding n+1 active record queries
   unless Rails.env.production?

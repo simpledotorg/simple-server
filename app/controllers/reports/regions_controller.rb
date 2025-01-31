@@ -10,6 +10,7 @@ class Reports::RegionsController < AdminController
   before_action :show_region_search
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
+  before_action :detect_device, only: [:show]
   delegate :cache, to: Rails
 
   INDEX_CACHE_KEY = "v3"
@@ -401,6 +402,10 @@ class Reports::RegionsController < AdminController
     time = Time.current.to_s(:number)
     region_name = @region.name.tr(" ", "-")
     "#{@region.region_type.to_s.underscore}-#{@period.adjective.downcase}-cohort-report_#{region_name}_#{time}.csv"
+  end
+
+  def detect_device
+    @is_desktop = (DeviceDetector.new(request.user_agent).device_type == "desktop")
   end
 
   def set_facility_keys
