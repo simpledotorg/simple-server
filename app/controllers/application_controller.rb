@@ -25,6 +25,11 @@ class ApplicationController < ActionController::Base
     admins_path
   end
 
+  # Used to detect whether the device is mobile/desktop
+  def detect_device
+    @is_desktop = DeviceDetector.new(request.user_agent).device_type == "desktop"
+  end
+
   # Customize which fields Devise allows for Admins
   # See https://github.com/plataformatec/devise/tree/v3.5.2#strong-parameters
   def configure_permitted_parameters
