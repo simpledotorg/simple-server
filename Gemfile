@@ -96,6 +96,7 @@ gem "table_print"
 gem "doorkeeper", "~> 5.6"
 gem "prometheus_exporter"
 gem "zip_kit"
+gem 'device_detector'
 
 group :development, :test do
   gem "active_record_query_trace", require: false
