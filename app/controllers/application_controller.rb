@@ -3,7 +3,7 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   around_action :switch_locale
-
+  
   def switch_locale(&action)
     locale = http_accept_language.language_region_compatible_from(I18n.available_locales) || I18n.default_locale
     I18n.with_locale(locale, &action)
@@ -30,6 +30,7 @@ class ApplicationController < ActionController::Base
   def configure_permitted_parameters
     devise_parameter_sanitizer.permit(:invite, keys: [:email, :role])
   end
+
 
   # Use Prosopite to avoid adding n+1 active record queries
   unless Rails.env.production?
