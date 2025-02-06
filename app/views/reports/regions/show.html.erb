@@ -2,14 +2,27 @@
  <%= @region.name %> | Hypertension
 <% end %>
 
-<% if @region.facility_region? && Flipper.enabled?(:quick_link_for_metabase, current_admin) && @is_desktop %>
+<% if @is_desktop && @region.facility_region? && Flipper.enabled?(:quick_link_for_metabase, current_admin) %>
   <div class="float-right desktop">
     <h4 class="mb-0px">Quick links</h4>
-    <div>⚡ <a href="/my_facilities/drug_stocks">Drug stock report</a></div>
-    <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>">Metabase: Titration report</a></div>
-    <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>">Metabase: BP fudging report</a></div>
+    <% district = @region.source.facility_group.slug %>
+    <% size = @region.source.facility_size %>
+    <% zone = @region.source.zone %>
+    <% last_month = Date.today.last_month.strftime("%b-%Y") %>
+    <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %> ">
+      Drug stock report
+    </a></div>
+
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>">
+      Metabase: Titration report
+    </a></div>
+
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>">
+      Metabase: BP fudging report
+    </a></div>
   </div>
 <% end %>
+
 
 <%= render "header" %>
 
