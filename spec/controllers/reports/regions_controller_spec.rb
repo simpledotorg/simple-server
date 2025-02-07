@@ -41,6 +41,40 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
+    context "when the region is a facility region" do
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:facility) { create(:facility, facility_group: facility_group) }
+      let(:region) { facility.region }
+      before do
+        allow(region).to receive(:facility_region?).and_return(true)
+        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      end
+      context "and the feature flag is enabled" do
+        before { Flipper.enable(:quick_link_for_metabase, cvho) }
+        it "displays the quick links section with the correct URLs" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).to include("Quick links")
+          expect(response.body).to include("Drug stock report")
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
+          expect(response.body).to include("href=\"https://metabase.example.com/titration?region=#{region.name}\"")
+          expect(response.body).to include("href=\"https://metabase.example.com/bp_fudging?region=#{region.name}\"")
+        end
+      end
+      context "and the feature flag is disabled" do
+        it "does not display the quick links section" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).to_not include("Quick links")
+          expect(response.body).to_not include("Drug stock report")
+          expect(response.body).to_not include("Metabase: Titration report")
+          expect(response.body).to_not include("Metabase: BP fudging report")
+        end
+      end
+    end
+
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
       get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
