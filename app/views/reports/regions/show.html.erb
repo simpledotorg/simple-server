@@ -6,7 +6,7 @@
   <div class="float-right desktop">
     <h4 class="mb-0px">Quick links</h4>
     <% district = @region.source.facility_group.slug %>
-    <% size = @region.source.facility_size %>
+    <% size = @region.source.facility_size.present? ? @region.source.facility_size : '' %>
     <% zone = @region.source.zone %>
     <% last_month = Date.today.last_month.strftime("%b-%Y") %>
     <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %> ">
