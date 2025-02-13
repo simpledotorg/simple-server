@@ -2268,6 +2268,9 @@
             "unknown"
           ]
         },
+        "cholesterol_value": {
+          "type": "number"
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
@@ -2592,6 +2595,17 @@
         "medical_history": {
           "type": "object",
           "properties": {
+            "cholesterol_value": {
+              "type": "number"
+            },
+            "smoking": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "unknown"
+              ]
+            },
             "chronic_kidney_disease": {
               "type": "string",
               "enum": [
