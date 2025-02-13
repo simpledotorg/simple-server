@@ -2489,6 +2489,9 @@
             "unknown"
           ]
         },
+        "cholesterol_value": {
+          "type": "number"
+        },
         "deleted_at": {
           "$ref": "#/definitions/nullable_timestamp"
         },
