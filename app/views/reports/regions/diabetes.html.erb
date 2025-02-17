@@ -5,7 +5,7 @@
 <%= render "header" %>
 
 <% args = { data: @data, region: @region, period: @period } %>
-<% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu } %>
+<% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu, use_who_standard: @use_who_standard } %>
 
 <div class="d-lg-flex flex-lg-wrap">
   <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(args_with_ltfu) %>
@@ -56,10 +56,10 @@
   ) %>
 
   <%= render Dashboard::Diabetes::RecentMeasurementsComponent.new(
-    region: @region,
-    recent_blood_sugars: @recent_blood_sugars,
-    display_model: :facility,
-    page: @page
+      region: @region,
+      recent_blood_sugars: @recent_blood_sugars,
+      display_model: :facility,
+      page: @page
   ) %>
 <% else %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent.new(

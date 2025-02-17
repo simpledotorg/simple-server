@@ -50,6 +50,12 @@ every :day, at: local("02:00 pm"), roles: [:cron] do
   end
 end
 
+every :day, at: local("02:00 pm"), roles: [:cron] do
+  if CountryConfig.current_country?("Bangladesh") && SimpleServer.env.production?
+    rake "alpha_sms:check_balance"
+  end
+end
+
 every :day, at: local("05:30 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
@@ -106,13 +112,14 @@ end
 
 every 1.month, at: local("04:00 am"), roles: [:cron] do
   if Flipper.enabled?(:dhis2_export)
-    rake "dhis2:export"
+    rake "dhis2:bangladesh_export"
   end
 end
 
 every 1.month, at: local("04:15 am"), roles: [:cron] do
   if Flipper.enabled?(:bangladesh_disaggregated_dhis2_export)
-    rake "dhis2:bangladesh_disaggregated_export"
+    rake "dhis2:bangladesh_disaggregated_hypertension_export"
+    rake "dhis2:bangladesh_disaggregated_diabetes_export"
   end
 end
 

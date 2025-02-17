@@ -1,6 +1,7 @@
+require "benchmark"
+
 class RefreshReportingViews
   prepend SentryHandler
-  include ActiveSupport::Benchmarkable
   REPORTING_VIEW_REFRESH_TIME_KEY = "last_reporting_view_refresh_time".freeze
   REPORTING_VIEW_DAILY_REFRESH_KEY = "last_reporting_view_daily_refresh_time".freeze
 
@@ -108,18 +109,16 @@ class RefreshReportingViews
         klass = name.constantize
         klass.refresh
       end
-      Statsd.instance.flush
     end
   end
 
   def benchmark_and_statsd(operation)
-    name = "refresh_reporting_views.#{operation}"
-    benchmark(name) do
-      Datadog::Tracing.trace("refresh_matview", resource: operation) do |span|
-        Statsd.instance.time(name) do
-          yield
-        end
-      end
+    view = operation == "all" ? "all" : operation.constantize.table_name
+    name = "reporting_views_refresh_duration_seconds"
+    result = nil
+    Metrics.benchmark_and_gauge(name, {view: view}) do
+      result = yield
     end
+    result
   end
 end

@@ -18,7 +18,8 @@ class Api::V3::Models
          registration_facility_id: {"$ref" => "#/definitions/nullable_uuid"},
          assigned_facility_id: {"$ref" => "#/definitions/nullable_uuid"},
          reminder_consent: {type: :string, enum: Patient.reminder_consents.keys},
-         deleted_reason: {type: ["null", :string], enum: Patient::DELETED_REASONS + [nil]}
+         deleted_reason: {type: ["null", :string], enum: Patient::DELETED_REASONS + [nil]},
+         eligible_for_reassignment: {type: :string, enum: Patient::REASSIGNMENT_ELIGIBILITY}
        },
        required: %w[id gender full_name created_at updated_at status]}
     end
@@ -306,6 +307,8 @@ class Api::V3::Models
          diabetes: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          diagnosed_with_hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
+         smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
+         cholesterol_value: {type: :number},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}

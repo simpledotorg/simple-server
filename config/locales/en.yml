@@ -23,6 +23,7 @@ en:
     facility: facility
   name: "Name"
   phone_number: "Phone Number"
+  back: "back"
   registration_approval_email:
     accessible_facilities: "User will have access to data from"
     organization: "Organization"
@@ -49,15 +50,34 @@ en:
     requested: "As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}."
     confidential: "Please note that this information is confidential and should be kept private."
     unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+  patients_protected_copy:
+    title: Patients protected from heart attacks & strokes in %{region_name}
   bp_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP <140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP <140/90 at their last visit in the last 3 months"
   bp_not_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
+  htn_cascade_copy: 
+    title: Hypertension treatment cascade
+    reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled till %{period}"
   bs_below_200_copy:
+    reports_card_title: "Blood sugar < 200"
+    reports_card_title_fbs: "Blood sugar < 126"
+    reports_card_title_dm: "Blood Sugar <200"
+    reports_card_title_dm_bs: "Blood sugar <200"
+    reports_card_title_dm_fbs: "Blood sugar controlled"
+    summary: "patients with a blood sugar <200 from"
+    summary_fbs: "patients with a blood sugar <126mg/dL from"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar <200 at their last visit in the last 3 months"
+    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS <126 mg/dL or HbA1c <7% at their last visit in the last 3 months"
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
+    numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"
+    numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
+    report_card_lower_bar: "blood sugar <200"
+    report_card_lower_bar_fbs:  "FBS <126mg/dL or HbA1c <7%"
+    reports_card_subtitle_dm: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar <200 at their last visit in the last 3 months."
+    reports_card_subtitle_dm_fbs: "Diabetes patients at %{region_name} registered >3 months ago with FBS <126 mg/dL or HbA1c <7% at their last visit in the last 3 months."
     rbs_ppbs:
       numerator: "Patients with RBS/PPBS <200 at their last visit in the last 3 months"
     fasting:
@@ -65,9 +85,27 @@ en:
     hba1c:
       numerator: "Patients with HbA1c <7.0 at their last visit in the last 3 months"
   bs_over_200_copy:
+    reports_card_title: "Blood sugar 200-299 or ≥300"
+    reports_card_title_fbs: "Blood sugar 126-199 or ≥200"
+    reports_card_title_dm: "Blood sugar ≥200"
+    reports_card_title_dm_bs: "Blood sugar <200"
+    reports_card_title_dm_fbs: "Blood sugar uncontrolled"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
+    reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS ≥126mg/dL or HbA1c ≥7% at their last visit in the last 3 months"
     bs_200_to_299:
+      title: "Blood Sugar 200-299"
+      title_dm_bs: "Blood sugar 200-299"
+      title_fbs: "Blood Sugar 126-199"
+      title_dm: "blood sugar 200-299"
+      title_dm_fbs: "FBS 126-199mg/dL or HbA1c 7%-8.9%"
+      reports_card_subtitle: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar 200-299 at their last visit in the last 3 months."
+      reports_card_subtitle_fbs: "Diabetes patients at %{region_name} registered >3 months ago with FBS 126-199mg/dL or HbA1c 7%-8.9% at their last visit in the last 3 months."
+      summary: "patients with a blood sugar 200-299 from"
+      summary_fbs: "patients with FBS 126-199mg/dL or HbA1c 7%-8.9% from"
       numerator: "Patients with RBS/PPBS 200-299, FBS 126-199, or HbA1c 7.0-8.9 at their last visit in the last 3 months"
+      numerator_fbs: "Patients with FBS 126-199mg/dL, or HbA1c 7%-8.9% at their last visit in the last 3 months"
+      numerator_dm: "Patients with RBS/PPBS 200-299, FBS 126-199 or HbA1c 7.0-8.9 at their last visit in the last 3 months"
+      numerator_dm_fbs: "Patients with FBS 126-199mg/dL or HbA1c 7%-8.9% at their last visit in the last 3 months"
       rbs_ppbs:
         numerator: "Patients with RBS/PPBS 200-299 at their last visit in the last 3 months"
       fasting:
@@ -75,7 +113,17 @@ en:
       hba1c:
         numerator: "Patients with HbA1c 7.0-8.9 at their last visit in the last 3 months"
     bs_over_300:
+      title: "Blood sugar ≥300"
+      title_fbs: "Blood sugar ≥200"
+      title_dm_fbs: "FBS ≥200mg/dL or HbA1c ≥9%"
       numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
+      numerator_fbs: "Patients with FBS ≥200mg/dL, or HbA1c ≥9% at their last visit in the last 3 months"
+      numerator_dm_fbs: "Patients with FBS 126-199mg/dL or HbA1c 7%-8.9% at their last visit in the last 3 months"
+      reports_card_subtitle: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar ≥300 at their last visit in the last 3 months."
+      reports_card_subtitle_fbs: "Diabetes patients at %{region_name} registered >3 months ago with FBS ≥200mg/dL or HbA1c ≥9% at their last visit in the last 3 months."
+      report_card_lower_bar:  "blood sugar ≥300"
+      summary: "patients with a blood sugar ≥300 from"
+      summary_fbs: "patients with FBS ≥200mg/dL or HbA1c ≥9% from"
       rbs_ppbs:
         numerator: "Patients with RBS/PPBS ≥300 at their last visit in the last 3 months"
       fasting:
@@ -123,7 +171,8 @@ en:
     total_registered_patients: "Total diabetes patients registered in %{region_name}"
     monthly_followup_patients: "Diabetes patients with a BP measure taken, a blood sugar measure taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   assigned_patients_copy:
-    total_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
+    total_assigned_patients: "Hypertension patients assigned to a facility in %{region_name}. Dead patients are excluded."
+    facility_assigned_patients: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_assigned_patients_copy:
     total_assigned_patients: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   call_results_copy:
@@ -136,14 +185,15 @@ en:
   diabetes_ltfu_denominator_copy: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   follow_up_patients_copy: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   diabetes_follow_up_patients_copy: "Diabetes patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
-  patients_under_care_copy: "Hypertension patients with a visit in the last 12 months"
+  patients_under_care_copy: "Hypertension patients with a visit in the last 12 months."
+  patients_bp_controlled_copy: "Hypertension patients with BP <140/90 at their last visit in the last 3 months (from patients enrolled more than 3 months ago)."
   diabetes_patients_under_care_copy: "Diabetes patients with a visit in the last 12 months"
   bp_measures_taken_copy: "All BP measures taken in a month by healthcare workers at %{region_name}"
   bs_measures_taken_copy: "All blood sugar measurements taken in a month by healthcare workers at %{region_name}"
   hypertension_patient_coverage_copy: "Total registered patients diagnosed with hypertension divided by the region's estimated hypertensive population"
   diabetes_patient_coverage_copy: "Total registered patients diagnosed with diabetes divided by the region's estimated diabetic population"
   total_estimated_hypertensive_population:
-    district_copy: "The approximate number of people in %{region_name} with hypertension"
+    district_copy: "The approximate number of people in %{region_name} with hypertension (usually derived from a STEPS survey)."
     state_copy: "The sum of %{region_name}'s %{child_region_type} populations entered on the Dashboard. This number is only displayed if all %{child_region_type_plural} have a population."
   total_estimated_diabetic_population:
     district_copy: "The approximate number of people in %{region_name} with diabetes"

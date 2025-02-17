@@ -18,6 +18,63 @@ RSpec.describe Reports::RegionsController, type: :controller do
       @facility_region = @facility.region
     end
 
+    context "when report_scope is organization" do
+      let(:organization) { create(:organization, slug: "valid-org-slug") }
+      it "finds the organization by its slug when accessible" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: organization.slug, report_scope: "organization"}
+        expect(assigns(:region)).to eq(organization.region)
+      end
+
+      it "finds the organization using its region slug as a fallback" do
+        sign_in(cvho.email_authentication)
+        organization.region.update(slug: "valid-org-slug-organization")
+        get :show, params: {id: organization.region.slug, report_scope: "organization"}
+        expect(assigns(:region).slug).to eq(organization.region.slug)
+      end
+
+      it "redirects with an alert if the region slug does not match any accessible organization" do
+        sign_in(cvho.email_authentication)
+        get :show, params: {id: "unknown-region-slug", report_scope: "organization"}
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+        expect(response).to be_redirect
+      end
+    end
+
+    context "when the region is a facility region" do
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:facility) { create(:facility, facility_group: facility_group) }
+      let(:region) { facility.region }
+      before do
+        allow(region).to receive(:facility_region?).and_return(true)
+        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      end
+      context "and the feature flag is enabled" do
+        before { Flipper.enable(:quick_link_for_metabase, cvho) }
+        it "displays the quick links section with the correct URLs" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).to include("Quick links")
+          expect(response.body).to include("Drug stock report")
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
+          expect(response.body).to include("href=\"https://metabase.example.com/titration?region=#{region.name}\"")
+          expect(response.body).to include("href=\"https://metabase.example.com/bp_fudging?region=#{region.name}\"")
+        end
+      end
+      context "and the feature flag is disabled" do
+        it "does not display the quick links section" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).to_not include("Quick links")
+          expect(response.body).to_not include("Drug stock report")
+          expect(response.body).to_not include("Metabase: Titration report")
+          expect(response.body).to_not include("Metabase: BP fudging report")
+        end
+      end
+    end
+
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
       get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
@@ -88,6 +145,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         name: "Dec-2019",
         bp_control_start_date: "1-Oct-2019",
         bp_control_end_date: "31-Dec-2019",
+        ltfu_end_date: "31-Dec-2019",
         ltfu_since_date: "31-Dec-2018",
         bp_control_registration_date: "30-Sep-2019"
       }

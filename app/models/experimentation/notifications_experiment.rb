@@ -84,13 +84,13 @@ module Experimentation
       end
     end
 
-    def self.filter_facilities(patients, facilities)
-      return patients unless facilities
+    def self.filter_facilities(patients, facility_slugs)
+      return patients unless facility_slugs
 
-      if facilities["include"]
-        patients.where('"patients"."assigned_facility_id" IN (?)', facilities["include"])
-      elsif facilities["exclude"]
-        patients.where('"patients"."assigned_facility_id" NOT IN (?)', facilities["exclude"])
+      if facility_slugs["include"]
+        patients.where('"facilities"."slug" IN (?)', facility_slugs["include"])
+      elsif facility_slugs["exclude"]
+        patients.where('"facilities"."slug" NOT IN (?)', facility_slugs["exclude"])
       else
         patients
       end
@@ -215,15 +215,12 @@ module Experimentation
     def self.time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      label = "#{name}.#{method_name}"
-
-      benchmark(label) do
-        Statsd.instance.time(label) do
+      event = "notification_experiments_tasks_duration_seconds"
+      benchmark(event) do
+        Metrics.benchmark_and_gauge(event, {task: method_name}) do
           yield(block)
         end
       end
-
-      Statsd.instance.flush # The metric is not sent to datadog until the buffer is full, hence we explicitly flush.
     end
 
     delegate :time, to: self

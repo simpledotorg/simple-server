@@ -10,9 +10,10 @@ describe PatientStates::Hypertension::DeadPatientsQuery do
 
   context "dead patients" do
     it "returns only dead patients in a facility as of the given period" do
-      facility_1_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
-      facility_1_dead_patients = create(:patient, :dead, assigned_facility: regions[:facility_1])
-      facility_2_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
+      facility_1_living_patients = create_list(:patient, 2, :hypertension, assigned_facility: regions[:facility_1])
+      facility_1_dead_patients = create(:patient, :dead, :hypertension, assigned_facility: regions[:facility_1])
+      facility_1_dead_non_htn_patients = create(:patient, :dead, :without_hypertension, assigned_facility: regions[:facility_1])
+      facility_2_living_patients = create_list(:patient, 2, :hypertension, assigned_facility: regions[:facility_2])
 
       refresh_views
 
@@ -22,7 +23,7 @@ describe PatientStates::Hypertension::DeadPatientsQuery do
 
       expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_1].region, period)
                                              .call.map(&:patient_id))
-        .not_to include(*facility_1_living_patients.map(&:id))
+        .not_to include(*facility_1_living_patients.map(&:id), facility_1_dead_non_htn_patients.id)
 
       expect(PatientStates::Hypertension::DeadPatientsQuery.new(regions[:facility_2].region, period)
                                              .call.map(&:patient_id).count)
@@ -36,6 +37,7 @@ describe PatientStates::Hypertension::DeadPatientsQuery do
     it "returns the same number of dead patients as in reporting facility states" do
       _facility_1_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_1])
       _facility_1_dead_patients = create(:patient, :dead, assigned_facility: regions[:facility_1])
+      _facility_1_dead_non_htn_patients = create(:patient, :dead, :without_hypertension, assigned_facility: regions[:facility_1])
       _facility_2_living_patients = create_list(:patient, 2, assigned_facility: regions[:facility_2])
 
       refresh_views

@@ -75,6 +75,10 @@ class UserAccess
       .includes(facility_groups: :facilities)
   end
 
+  def accessible_organization_regions(action)
+    accessible_organizations(action)
+  end
+
   # Users can view reports for a state if they can manage any district within the state.
   # Any other access requests (ie manage, view_pii, etc) for a state receive an error and are not supported.
   #

@@ -10,7 +10,8 @@ class PatientStates::Hypertension::DeadPatientsQuery
     Reports::PatientState
       .where(
         assigned_facility_id: region.facility_ids,
-        month_date: period
+        month_date: period,
+        hypertension: "yes"
       )
       .where(htn_care_state: "dead")
   end

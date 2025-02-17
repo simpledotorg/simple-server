@@ -10,6 +10,7 @@ class Reports::RegionsController < AdminController
   before_action :show_region_search
   around_action :set_reporting_time_zone
   after_action :log_cache_metrics
+  before_action :detect_device, only: [:show]
   delegate :cache, to: Rails
 
   INDEX_CACHE_KEY = "v3"
@@ -101,9 +102,15 @@ class Reports::RegionsController < AdminController
     }
 
     if @region.facility_region?
-      @recent_blood_pressures = paginate(
-        @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
-      )
+      @recent_blood_pressures = if Flipper.enabled?(:fast_bp_log)
+        paginate(
+          BloodPressure.where(facility_id: @region.source_id).for_recent_bp_log.includes(:patient, :facility)
+        )
+      else
+        paginate(
+          @region.source.blood_pressures.for_recent_bp_log.includes(:patient, :facility)
+        )
+      end
     end
 
     # ======================
@@ -159,9 +166,10 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
+    @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
     start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range)
+    @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @with_ltfu = with_ltfu?
@@ -170,7 +178,7 @@ class Reports::RegionsController < AdminController
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
     @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
-    repo = Reports::Repository.new(@child_regions, periods: @period)
+    repo = Reports::Repository.new(@child_regions, periods: @period, use_who_standard: @use_who_standard)
 
     @children_data = @child_regions.map { |region|
       slug = region.slug
@@ -190,9 +198,9 @@ class Reports::RegionsController < AdminController
 
     months = -(Reports::MAX_MONTHS_OF_DATA - 1)
     @details_period_range = Range.new(@period.advance(months: -5), @period)
-    @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
+    @details_repository = Reports::Repository.new(regions, periods: @details_period_range, use_who_standard: @use_who_standard)
     chart_range = (@period.advance(months: months)..@period)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
+    chart_repo = Reports::Repository.new(@region, periods: chart_range, use_who_standard: @use_who_standard)
     @details_chart_data = {
       ltfu_trend: diabetes_ltfu_chart_data(chart_repo, chart_range),
       **medications_dispensation_data(region: @region, period: @period, diagnosis: :diabetes)
@@ -423,8 +431,8 @@ class Reports::RegionsController < AdminController
     @region ||= authorize {
       case report_scope
       when "organization"
-        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by!(slug: report_params[:id])
-        organization.region
+        organization = current_admin.user_access.accessible_organizations(:view_reports).find_by(slug: report_params[:id]) || find_organization_slug(report_params[:id])
+        organization&.region || (raise ActiveRecord::RecordNotFound, "Organization not found for slug: #{report_params[:id]}")
       when "state"
         current_admin.user_access.accessible_state_regions(:view_reports).find_by!(slug: report_params[:id])
       when "district"
@@ -437,6 +445,13 @@ class Reports::RegionsController < AdminController
         raise ActiveRecord::RecordNotFound, "unknown report_scope #{report_scope}"
       end
     }
+  end
+
+  def find_organization_slug(slug)
+    region = Region.find_by(slug: slug, region_type: "organization")
+    return unless region&.source_type == "Organization"
+
+    current_admin.user_access.accessible_organizations(:view_reports).find_by(id: region.source_id)
   end
 
   def report_params

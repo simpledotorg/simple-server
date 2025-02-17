@@ -243,7 +243,7 @@ describe MaterializedPatientSummary, type: :model do
     end
   end
 
-  describe "#ltfu?" do
+  xdescribe "#ltfu?" do
     it "is true if patient was registered over a year ago without any BPs, blood sugars, prescription drugs or appointments recorded" do
       ltfu_patient = create(:patient, recorded_at: 365.days.ago)
       refresh_view

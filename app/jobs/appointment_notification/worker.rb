@@ -11,6 +11,7 @@ class AppointmentNotification::Worker
     return unless flipper_enabled?
 
     notification = Notification.find(notification_id)
+
     NotificationDispatchService.call(notification) if scheduled?(notification)
   end
 
@@ -20,15 +21,15 @@ class AppointmentNotification::Worker
     return true if notification.status_scheduled?
 
     Rails.logger.info "skipping notification #{notification.id}, scheduled already"
-    Statsd.instance.increment("notifications.skipped.not_scheduled")
+    Metrics.increment("notifications_skipped", {reason: "not_scheduled"})
   end
 
   def flipper_enabled?
-    Statsd.instance.increment("notifications.attempts")
+    Metrics.increment("notifications_attempts")
     return true if Flipper.enabled?(:notifications) || Flipper.enabled?(:experiment)
 
     Rails.logger.warn "notifications or experiment feature flag are disabled"
-    Statsd.instance.increment("notifications.skipped.feature_disabled")
+    Metrics.increment("notifications_skipped", {reason: "feature_disabled"})
     false
   end
 end

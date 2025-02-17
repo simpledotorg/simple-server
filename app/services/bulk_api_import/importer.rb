@@ -1,6 +1,7 @@
 class BulkApiImport::Importer
-  def initialize(resource_list:)
+  def initialize(resource_list:, organization_id:)
     @resources = resource_list
+    @organization_id = organization_id
   end
 
   IMPORTERS = {
@@ -13,13 +14,13 @@ class BulkApiImport::Importer
 
   def import
     @resources.each do |resource|
-      resource_importer(resource).import
+      resource_importer(resource, @organization_id).import
     end
   end
 
-  def resource_importer(resource)
+  def resource_importer(resource, organization_id)
     importer = IMPORTERS[resource[:resourceType]]
     raise NotImplementedError unless importer.present?
-    importer.new(resource)
+    importer.new(resource: resource, organization_id: organization_id)
   end
 end

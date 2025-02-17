@@ -1,4 +1,4 @@
-class Api::V4::CallResultPayloadValidator < Api::V3::PayloadValidator
+class Api::V4::CallResultPayloadValidator < Api::V4::PayloadValidator
   attr_accessor(
     :id,
     :user_id,

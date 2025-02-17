@@ -124,6 +124,9 @@
     "RAILS_SERVE_STATIC_FILES": {
       "value": "enabled"
     },
+    "REPORT_ENUMERATOR_BATCH_SIZE": {
+      "value": 1000
+    },
     "SEED_GENERATED_ACTIVE_USER_ROLE": {
       "value": "Seed User | Active"
     },

@@ -2,22 +2,22 @@ class Api::V4::ImportsController < ApplicationController
   skip_before_action :verify_authenticity_token
   before_action :doorkeeper_authorize!
   before_action :validate_token_organization
-
-  rescue_from ActionController::ParameterMissing do |error|
-    render json: {error: "Unable to find key in payload: \"#{error.param}\""}, status: :bad_request
-  end
+  before_action :validate_resources_key, only: %i[import]
 
   def import
     return head :not_found unless Flipper.enabled?(:imports_api)
 
-    errors = BulkApiImport::Validator.new(organization: header_organization_id, resources: import_params).validate
+    errors = BulkApiImport::Validator.new(organization: organization_id, resources: import_params).validate
 
     unless Flipper.enabled?(:mock_imports_api)
-      BulkApiImportJob.perform_later(resources: import_params) unless errors.present?
+      BulkApiImportJob.perform_later(resources: import_params, organization_id: organization_id) unless errors.present?
     end
 
     response = {errors: errors}
-    return render json: response, status: :bad_request if errors.present?
+    if errors.present?
+      log_failure(errors)
+      return render json: response, status: :bad_request
+    end
 
     render json: response, status: :accepted
   end
@@ -49,13 +49,13 @@ class Api::V4::ImportsController < ApplicationController
       :birthDate,
       :deceasedBoolean,
       :telecom,
-      :name,
       :active,
+      name: [:text],
       meta: [:lastUpdated, :createdAt],
       identifier: [:value],
       managingOrganization: [:value],
       registrationOrganization: [:value],
-      address: [:line, :district, :city, :postalCode]
+      address: [:district, :city, :postalCode, line: []]
     )
   end
 
@@ -67,6 +67,7 @@ class Api::V4::ImportsController < ApplicationController
       meta: [:lastUpdated, :createdAt],
       identifier: [:value],
       appointmentOrganization: [:identifier],
+      appointmentCreationOrganization: [:identifier],
       participant: [
         actor: [:identifier]
       ]
@@ -101,7 +102,7 @@ class Api::V4::ImportsController < ApplicationController
       dosageInstruction: [
         [
           {
-            timing: {code: []},
+            timing: [:code],
             doseAndRate: [{
               doseQuantity: [:value, :unit, :system, :code]
             }]
@@ -113,6 +114,7 @@ class Api::V4::ImportsController < ApplicationController
         [
           :resourceType,
           :id,
+          :status,
           {code: {coding: [:system, :code, :display]}}
         ]
       ]
@@ -131,12 +133,38 @@ class Api::V4::ImportsController < ApplicationController
 
   def validate_token_organization
     token_organization = MachineUser.find_by(id: doorkeeper_token.application&.owner_id)&.organization_id
-    unless token_organization.present? && token_organization == header_organization_id
+    unless token_organization.present? && token_organization == organization_id
+      log_failure(error: "invalid organization in token")
       head :forbidden
     end
   end
 
-  def header_organization_id
+  def validate_resources_key
+    resources = params[:resources]
+    unless resources.present?
+      error_msg = 'Unable to find key in payload: "resources"'
+      log_failure(error_msg)
+      return render json: {error: error_msg}, status: :bad_request
+    end
+
+    unless resources.is_a?(Array)
+      error_msg = '"resources" must be an array'
+      log_failure(error_msg)
+      render json: {error: error_msg}, status: :bad_request
+    end
+  end
+
+  def organization_id
     request.headers["HTTP_X_ORGANIZATION_ID"]
+  end
+
+  def log_failure(errors)
+    Rails.logger.info(
+      msg: "import_api_error",
+      controller: self.class.name,
+      action: action_name,
+      organization_id: organization_id,
+      errors: errors
+    )
   end
 end

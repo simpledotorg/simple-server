@@ -70,6 +70,12 @@ module Reports
       Reports::Repository.new(facility, periods: @range)
     end
 
+    memoize def repository_presenter
+      @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator)
+      presenter = Reports::RepositoryPresenter.create(facility, period: @period, use_who_standard: @use_who_standard)
+      presenter.call(facility.region)
+    end
+
     def hypertension_reports_data
       {
         monthly_follow_ups: repository.hypertension_follow_ups[@region.slug],
@@ -83,6 +89,26 @@ module Reports
         controlled: repository.controlled[@region.slug],
         adjusted_patients: repository.adjusted_patients[@region.slug],
         period_info: repository.period_info(@region),
+        region: @region,
+        current_user: @current_user
+      }
+    end
+
+    def diabetes_reports_data
+      {
+        monthly_follow_ups: repository.diabetes_follow_ups[@region.slug],
+        total_registrations: repository.cumulative_diabetes_registrations[@region.slug],
+        assigned_patients: repository.cumulative_assigned_diabetic_patients[@region.slug][@period],
+        period_info: repository.period_info(@region),
+        missed_visits_rates: repository.diabetes_missed_visits_rates[@region.slug],
+        missed_visits: repository.diabetes_missed_visits[@region.slug],
+        adjusted_patients: repository.adjusted_diabetes_patients[@region.slug],
+        controlled: repository_presenter[:bs_below_200_patients],
+        controlled_rates: repository_presenter[:bs_below_200_rates],
+        uncontrolled_bs_200_to_300: repository_presenter[:bs_200_to_300_patients],
+        uncontrolled_rates_bs_200_to_300: repository_presenter[:bs_200_to_300_rates],
+        uncontrolled_bs_300_and_above: repository_presenter[:bs_over_300_patients],
+        uncontrolled_rates_bs_300_and_above: repository_presenter[:bs_over_300_rates],
         region: @region,
         current_user: @current_user
       }

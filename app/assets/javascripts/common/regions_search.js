@@ -1,6 +1,7 @@
 RegionsSearch = function () {
+
   this.resultToRow = (searchQuery, result) => {
-    const name = result["name"]
+    const name = this.sanitizeInput(result["name"])
     const regex = new RegExp(searchQuery, "ig")
     const highlightedName = name.replace(regex, "<strong class='bg-yellow-light'>$&</strong>")
 
@@ -9,15 +10,19 @@ RegionsSearch = function () {
 
     let link = $html.find("a")
     link.prepend(highlightedName)
-    $html.find(".subtitle").append(result["subtitle"])
+    $html.find(".subtitle").append(this.sanitizeInput(result["subtitle"]))
     link.attr("href", result["link"])
     return $html
+  }
+
+  this.sanitizeInput = (input) => {
+    return $("<div/>").text(input).html()
   }
 
   this.noResultsFound = (searchQuery) => {
     let html = $("template.no-results-found").html();
     let $html = $(html);
-    $html.find(".search-query").html(searchQuery);
+    $html.find(".search-query").text(searchQuery);
 
     return $html;
   }

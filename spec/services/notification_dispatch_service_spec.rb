@@ -63,6 +63,20 @@ RSpec.describe NotificationDispatchService do
     described_class.call(notification)
   end
 
+  it "calls send_message for Mobitel with the right args supplied" do
+    messaging_channel = Messaging::Mobitel::Sms
+    allow(CountryConfig.current).to receive(:[]).and_call_original
+    allow(CountryConfig.current).to receive(:[]).with(:appointment_reminders_channel).and_return(messaging_channel.to_s)
+
+    notification = create(:notification)
+    expect(messaging_channel).to receive(:send_message).with(
+      recipient_number: notification.patient.latest_mobile_number,
+      message: notification.localized_message
+    )
+
+    described_class.call(notification)
+  end
+
   it "accepts a messaging_channel as an override to the country config" do
     mock = mock_messaging_channel
     messaging_channel = Messaging::Bsnl::Sms
@@ -78,7 +92,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     notification.patient.phone_numbers.update_all(phone_type: :invalid)
     expect(mock_messaging_channel).not_to receive(:send_message)
-    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.no_mobile_number")
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "no_mobile_number"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
@@ -88,7 +102,7 @@ RSpec.describe NotificationDispatchService do
     notification = create(:notification)
     messaging_channel = mock_messaging_channel
     allow(messaging_channel).to receive(:send_message).and_raise(Messaging::Twilio::Error.new("An error", 21211))
-    expect(Statsd.instance).to receive(:increment).with("notifications.skipped.invalid_phone_number")
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "invalid_phone_number"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")
@@ -97,6 +111,16 @@ RSpec.describe NotificationDispatchService do
   it "cancels notifications if the phone number is missing and does not raise an error" do
     notification = create(:notification)
     notification.patient.phone_numbers.destroy_all
+
+    described_class.call(notification)
+    expect(notification.reload.status).to eq("cancelled")
+  end
+
+  it "silently cancels notification if the patient or facility on the notification is deleted" do
+    notification = create(:notification)
+    messaging_channel = mock_messaging_channel
+    allow(messaging_channel).to receive(:send_message).and_raise(Messaging::MissingReferenceError.new("Patient missing/deleted"))
+    expect(Metrics).to receive(:increment).with("notifications_skipped", {reason: "no_reference"})
 
     described_class.call(notification)
     expect(notification.reload.status).to eq("cancelled")

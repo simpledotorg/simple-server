@@ -17,6 +17,19 @@ class Api::V4::Models
        required: %w[id blood_sugar_type blood_sugar_value created_at updated_at patient_id facility_id user_id]}
     end
 
+    def cvd_risk
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         risk_score: {"$ref" => "#/definitions/non_empty_string"},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id risk_score created_at updated_at patient_id]}
+    end
+
     def login_patient
       {
         type: :object,
@@ -89,6 +102,21 @@ class Api::V4::Models
       )
     end
 
+    def patient_attribute
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         user_id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         height: {type: :number},
+         weight: {type: :number},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id patient_id height weight created_at updated_at]}
+    end
+
     def patient_phone_number
       {
         type: :object,
@@ -135,6 +163,8 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
+          cholesterol_value: {type: :number},
+          smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           chronic_kidney_disease: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           diabetes: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
@@ -408,6 +438,8 @@ class Api::V4::Models
         blood_sugars: Api::CommonDefinitions.array_of("blood_sugar"),
         call_result: call_result,
         call_results: Api::CommonDefinitions.array_of("call_result"),
+        cvd_risk: cvd_risk,
+        cvd_risks: Api::CommonDefinitions.array_of("cvd_risk"),
         drug_stock: drug_stock,
         facility_medical_officer: facility_medical_officer,
         facility_medical_officers: Api::CommonDefinitions.array_of("facility_medical_officer"),
@@ -424,6 +456,8 @@ class Api::V4::Models
         nullable_timestamp: Api::CommonDefinitions.nullable_timestamp,
         nullable_uuid: Api::CommonDefinitions.nullable_uuid,
         patient: patient,
+        patient_attribute: patient_attribute,
+        patient_attributes: Api::CommonDefinitions.array_of("patient_attribute"),
         patient_business_identifier: Api::V3::Models.patient_business_identifier,
         patient_business_identifiers: Api::CommonDefinitions.array_of("patient_business_identifier"),
         phone_number: Api::V3::Models.phone_number,

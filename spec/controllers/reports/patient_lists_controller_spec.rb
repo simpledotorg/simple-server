@@ -17,23 +17,19 @@ RSpec.describe Reports::PatientListsController, type: :controller do
         create(:blood_pressure, :under_control, facility: facility, patient: patient, recorded_at: Time.current, user: user)
       end
     end
+    ENV["REPORT_ENUMERATOR_BATCH_SIZE"] = "1000"
   end
 
   context "show" do
     it "works for facility groups the admin has access to" do
-      expect(PatientListDownloadJob).to receive(:perform_async).with(
-        admin_with_pii.email,
-        "facility_group",
-        {id: facility_group.id}
-      )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
-      expect(response).to redirect_to(reports_region_path(facility_group.slug, report_scope: "district"))
+      expect(response.status).to eq(200)
+      expect(response["Content-Type"]).to eq("application/zip")
     end
 
     it "rejects attempts for facility groups admin does not have access to" do
-      expect(PatientListDownloadJob).to_not receive(:perform_async)
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       expect {
@@ -42,7 +38,6 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "rejects attempts for users w/o proper access" do
-      expect(PatientListDownloadJob).to_not receive(:perform_async)
       admin_without_pii.accesses.create!(resource: facility_group)
       sign_in(admin_without_pii.email_authentication)
       expect {
@@ -51,25 +46,28 @@ RSpec.describe Reports::PatientListsController, type: :controller do
     end
 
     it "should queue line list with medication history" do
-      expect(PatientListDownloadJob).to receive(:perform_async).with(
-        admin_with_pii.email,
-        "facility_group",
-        {id: facility_group.id}
-      )
       admin_with_pii.accesses.create!(resource: facility_group)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility_group.slug, report_scope: "district"}
+      expect(response.status).to eq(200)
     end
 
     it "works for facilities where the region slug does not match the facility slug" do
       facility = create(:facility)
       facility.update(slug: "a-facility-slug")
       facility.region.update(slug: "a-facility-region-slug")
-      expect(PatientListDownloadJob).to receive(:perform_async)
       admin_with_pii.accesses.create!(resource: facility)
       sign_in(admin_with_pii.email_authentication)
       get :show, params: {id: facility.region.slug, report_scope: "facility"}
-      expect(response).to redirect_to(reports_region_path(facility.region.slug, report_scope: "facility"))
+      expect(response.status).to eq(200)
+    end
+
+    it "falls back to a default batch size when 'REPORT_ENUMERATOR_BATCH_SIZE' is not set" do
+      ENV.delete("REPORT_ENUMERATOR_BATCH_SIZE")
+      admin_with_pii.accesses.create!(resource: facility_group)
+      sign_in(admin_with_pii.email_authentication)
+      get :show, params: {id: facility_group.slug, report_scope: "district"}
+      expect { response.body }.not_to raise_error(KeyError)
     end
   end
 end

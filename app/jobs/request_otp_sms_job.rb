@@ -22,7 +22,7 @@ class RequestOtpSmsJob < ApplicationJob
   rescue Messaging::Twilio::Error => error
     if error.reason == :invalid_phone_number
       Rails.logger.warn("OTP to #{user.id} failed because of an invalid phone number")
-      Statsd.instance.increment("twilio.errors.invalid_phone_number")
+      Metrics.increment("twilio_invalid_phone_number_errors")
       false
     else
       raise error

@@ -4,27 +4,19 @@ blocks:
   - name: Deploy to Sri Lanka Demo
     task:
       secrets:
-        - name: semaphore-deploy-key
         - name: sentry-release-auth-token
+        - name: argocd
       jobs:
         - name: Deploy to Sri Lanka Demo
           commands:
             - checkout
-            - deploy_target=sri-lanka:demo script/semaphore_deploy
-      prologue:
-        commands:
-          - chmod 600 ~/.ssh/semaphore_id_rsa
-          - ssh-add ~/.ssh/semaphore_id_rsa
+            - script/argocd_deployment.sh $LK_STAGING_ARGOCD_ENDPOINT $ARGOCD_USERNAME $LK_STAGING_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
 agent:
   machine:
-    type: e1-standard-2
-    os_image: ubuntu1804
+    type: e2-standard-2
+    os_image: ubuntu2204
 promotions:
   - name: Sri Lanka Production Deployment
     pipeline_file: sri_lanka_production_deployment.yml
-    auto_promote:
-      when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')
-  - name: Sri Lanka Production Deployment AWS
-    pipeline_file: sri_lanka_production_deployment_aws.yml
     auto_promote:
       when: (branch = 'master' AND result = 'passed') OR (tag =~ '^release-.*' AND result = 'passed')

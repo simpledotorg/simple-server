@@ -56,6 +56,28 @@ describe Notification, type: :model do
         expect(notification.message_data[:locale]).to eq(notification.patient.assigned_facility.locale)
       end
     end
+
+    context "when patient or facility is not present" do
+      it "raises an error if patient is deleted" do
+        notification = create(:notification)
+        notification.patient.discard!
+        notification.reload
+        expect {
+          notification.message_data
+        }.to raise_error(Messaging::MissingReferenceError, "Patient missing/deleted")
+      end
+
+      it "raises an error if both subject facility and patient facility are deleted" do
+        notification = create(:notification)
+        notification.patient.assigned_facility.discard!
+        notification.subject.facility.discard!
+        notification.patient.reload
+        notification.subject.reload
+        expect {
+          notification.message_data
+        }.to raise_error(Messaging::MissingReferenceError, "Facility missing/deleted")
+      end
+    end
   end
 
   describe "#localized_message" do
