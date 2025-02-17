@@ -163,6 +163,8 @@ class Api::V4::Models
       {
         type: :object,
         properties: {
+          cholesterol_value: {type: :number},
+          smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           chronic_kidney_disease: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           diabetes: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
           hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
