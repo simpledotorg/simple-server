@@ -33,11 +33,11 @@ jobs:
       - name: Create manifest.json file from production.json
         run: cp public/manifest/production.json public/manifest/manifest.json
       - name: Setup Pages
-        uses: actions/configure-pages@v3
+        uses: actions/configure-pages@v4
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: 'public/manifest'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
