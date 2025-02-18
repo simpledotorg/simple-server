@@ -9,19 +9,21 @@
     <% size = @region.source.facility_size.present? ? @region.source.facility_size : '' %>
     <% zone = @region.source.zone %>
     <% last_month = Date.today.last_month.strftime("%b-%Y") %>
-    <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %> ">
+    
+    <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %> " target="_blank">
       Drug stock report
     </a></div>
 
-    <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>">
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
       Metabase: Titration report
     </a></div>
 
-    <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>">
+    <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>" target="_blank">
       Metabase: BP fudging report
     </a></div>
   </div>
 <% end %>
+
 
 
 <%= render "header" %>
