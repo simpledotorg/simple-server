@@ -1,39 +1,45 @@
 require "faker"
+require "yaml"
 
-OPENSRP_ORG_MAP = {
-  "9109ba30-b89b-4a27-877c-c9ac420a2e0b" => {
-    name: "Gonaduwa Health Facility",
-    practitioner_id: "0c375fe8-b38f-484e-aa64-c02750ee183b",
-    organization_id: "d3363aea-66ad-4370-809a-8e4436a4218f",
-    care_team_id: "1c8100b5-222b-4815-ba4d-3ebde537c6ce",
-    location_id: "PKT0010397"
-  }
-}
+# facilities_to_export = {
+#   "d1dbd3c6-26bb-48e7-aa89-bc8a0b2bf75b" => {
+#     name: "Test Health Center",
+#     practitioner_id: "0c375fe8-b38f-484e-aa64-c02750ee183b",
+#     organization_id: "d3363aea-66ad-4370-809a-8e4436a4218f",
+#     care_team_id: "1c8100b5-222b-4815-ba4d-3ebde537c6ce",
+#     location_id: "PKT0010397"
+#   }
+# }
 
 namespace :opensrp do
   desc "Export simple patient-related data as opensrp fhir resources"
-  task :export, [:file_path] => :environment do |_task, args|
+  task :export, [:config_file, :output_file] => :environment do |_task, args|
     # For now we are leaving in the PII.
     # patients = remove_pii(patients)
-    file_path = args[:file_path]
+    output_file = args[:output_file]
+    config_file = args[:config_file]
+
+    config = YAML.load_file(config_file)
+
+    facilities_to_export = config['facilities']
 
     resources = []
     encounters = []
-    patients = Patient.where(assigned_facility_id: OPENSRP_ORG_MAP.keys)
+    patients = Patient.where(assigned_facility_id: facilities_to_export.keys)
     patients.each do |patient|
-      patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, OPENSRP_ORG_MAP)
+      patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
       resources << patient_exporter.export
       resources << patient_exporter.export_registration_questionnaire_response
       encounters << patient_exporter.export_registration_encounter
 
       patient.blood_pressures.each do |bp|
-        bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, OPENSRP_ORG_MAP)
+        bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, facilities_to_export)
         resources << bp_exporter.export
         encounters << bp_exporter.export_encounter
       end
 
       patient.blood_sugars.each do |bs|
-        bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, OPENSRP_ORG_MAP)
+        bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, facilities_to_export)
         if patient.medical_history.diabetes_no?
           resources << bs_exporter.export_no_diabetes_observation
         end
@@ -42,17 +48,17 @@ namespace :opensrp do
       end
 
       patient.prescription_drugs.each do |drug|
-        drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, OPENSRP_ORG_MAP)
+        drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, facilities_to_export)
         resources << drug_exporter.export_dosage_flag
         encounters << drug_exporter.export_encounter
       end
-      OneOff::Opensrp::MedicalHistoryExporter.new(patient.medical_history, OPENSRP_ORG_MAP).then do |medical_history_exporter|
+      OneOff::Opensrp::MedicalHistoryExporter.new(patient.medical_history, facilities_to_export).then do |medical_history_exporter|
         resources << medical_history_exporter.export
         encounters << medical_history_exporter.export_encounter
       end
       patient.appointments.each do |appointment|
         next unless appointment.status_scheduled?
-        appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, OPENSRP_ORG_MAP)
+        appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
         resources << appointment_exporter.export
         if appointment.call_results.present?
           resources << appointment_exporter.export_call_outcome_task
@@ -64,20 +70,22 @@ namespace :opensrp do
     resources << OneOff::Opensrp::EncounterGenerator.new(encounters).generate
 
     CSV.open("audit_trail.csv", "w") do |csv|
-      csv << create_audit_record(patients.first).keys
+      csv << create_audit_record(facilities_to_export, patients.first).keys
       patients.each do |patient|
-        csv << create_audit_record(patient).values
+        csv << create_audit_record(facilities_to_export, patient).values
       end
     end
 
-    File.open(file_path, "w+") do |f|
+    File.open(output_file, "w+") do |f|
       resources.flatten.each do |resource|
         f.puts(resource.as_json.to_json)
       end
     end
   end
 
-  def create_audit_record(patient)
+  def create_audit_record(facilities, patient)
+    return {} if patient.nil?
+
     {
       patient_id: patient.id,
       sri_lanka_personal_health_number: patient.business_identifiers.where(identifier_type: "sri_lanka_personal_health_number")&.first&.identifier,
@@ -87,7 +95,7 @@ namespace :opensrp do
       patient_date_of_birth: patient.date_of_birth || patient.age_updated_at - patient.age.years,
       patient_address: patient.address.street_address,
       patient_telephone: patient.phone_numbers.pluck(:number).join(";"),
-      patient_facility: OPENSRP_ORG_MAP[patient.assigned_facility_id][:name],
+      patient_facility: facilities[patient.assigned_facility_id][:name],
       patient_preferred_language: "Sinhala",
       patient_active: patient.status_active?,
       patient_deceased: patient.status_dead?,
