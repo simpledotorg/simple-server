@@ -1,24 +1,17 @@
 require "faker"
 require "yaml"
 
-# facilities_to_export = {
-#   "d1dbd3c6-26bb-48e7-aa89-bc8a0b2bf75b" => {
-#     name: "Test Health Center",
-#     practitioner_id: "0c375fe8-b38f-484e-aa64-c02750ee183b",
-#     organization_id: "d3363aea-66ad-4370-809a-8e4436a4218f",
-#     care_team_id: "1c8100b5-222b-4815-ba4d-3ebde537c6ce",
-#     location_id: "PKT0010397"
-#   }
-# }
-
 namespace :opensrp do
   desc "Export simple patient-related data as opensrp fhir resources"
   task :export, [:config_file, :output_file] => :environment do |_task, args|
+    raise "Usage: ./bin/rake 'opensrp:export[path/to/config.yml, name-of-output.json]'" unless args.to_a.size == 2
     # For now we are leaving in the PII.
     # patients = remove_pii(patients)
     output_file = args[:output_file]
     config_file = args[:config_file]
 
+    raise "Config file should be YAML" unless %w[ yaml yml ].include?(config_file.split('.').last)
+    raise "Output file should be JSON" unless output_file.split('.').last == 'json'
     config = YAML.load_file(config_file)
 
     facilities_to_export = config['facilities']
