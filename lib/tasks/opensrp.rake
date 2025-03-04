@@ -10,11 +10,11 @@ namespace :opensrp do
     output_file = args[:output_file]
     config_file = args[:config_file]
 
-    raise "Config file should be YAML" unless %w[ yaml yml ].include?(config_file.split('.').last)
-    raise "Output file should be JSON" unless output_file.split('.').last == 'json'
+    raise "Config file should be YAML" unless %w[yaml yml].include?(config_file.split(".").last)
+    raise "Output file should be JSON" unless output_file.split(".").last == "json"
     config = YAML.load_file(config_file)
 
-    facilities_to_export = config['facilities']
+    facilities_to_export = config["facilities"]
 
     resources = []
     encounters = []
