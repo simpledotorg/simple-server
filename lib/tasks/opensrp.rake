@@ -14,7 +14,7 @@ namespace :opensrp do
     raise "Output file should be JSON" unless output_file.split(".").last == "json"
     config = YAML.load_file(config_file)
 
-    report_start = DateTime.parse('2020-01-01')
+    report_start = DateTime.parse("2020-01-01")
     report_end = DateTime.now
     facilities_to_export = config["facilities"]
     time_boundaries = config["time_boundaries"]
