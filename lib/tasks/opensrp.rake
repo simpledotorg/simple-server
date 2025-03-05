@@ -33,7 +33,7 @@ namespace :opensrp do
       encounters << patient_exporter.export_registration_encounter
 
       blood_pressures = patient.blood_pressures
-      blood_pressures = blood_pressures.where(recorded_at: time_window) if using_time_boundaries
+      blood_pressures = blood_pressures.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
       blood_pressures.each do |bp|
         bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, facilities_to_export)
         resources << bp_exporter.export
@@ -41,7 +41,7 @@ namespace :opensrp do
       end
 
       blood_sugars = patient.blood_sugars
-      blood_sugars = blood_sugars.where(recorded_at: time_window) if using_time_boundaries
+      blood_sugars = blood_sugars.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
       blood_sugars.each do |bp|
         bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, facilities_to_export)
         if patient.medical_history.diabetes_no?
