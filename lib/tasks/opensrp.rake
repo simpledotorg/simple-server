@@ -21,6 +21,7 @@ namespace :opensrp do
     using_time_boundaries = using_time_boundaries? config
     report_start = DateTime.parse(time_boundaries["report_start"]) if has_report_start?(config)
     report_end = DateTime.parse(time_boundaries["report_end"]) if has_report_end?(config)
+    time_window = report_start..report_end
 
     resources = []
     encounters = []
@@ -32,7 +33,7 @@ namespace :opensrp do
       encounters << patient_exporter.export_registration_encounter
 
       blood_pressures = patient.blood_pressures
-      blood_pressures = blood_pressures.where(recorded_at: report_start..report_end) if using_time_boundaries
+      blood_pressures = blood_pressures.where(recorded_at: time_window) if using_time_boundaries
       blood_pressures.each do |bp|
         bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, facilities_to_export)
         resources << bp_exporter.export
@@ -40,7 +41,7 @@ namespace :opensrp do
       end
 
       blood_sugars = patient.blood_sugars
-      blood_sugars = blood_sugars.where(recorded_at: report_start..report_end) if using_time_boundaries
+      blood_sugars = blood_sugars.where(recorded_at: time_window) if using_time_boundaries
       blood_sugars.each do |bp|
         bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, facilities_to_export)
         if patient.medical_history.diabetes_no?
@@ -51,7 +52,7 @@ namespace :opensrp do
       end
 
       prescription_drugs = patient.prescription_drugs
-      prescription_drugs = prescription_drugs.where(created_at: report_start..report_end) if using_time_boundaries
+      prescription_drugs = prescription_drugs.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
       prescription_drugs.each do |bp|
         drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, facilities_to_export)
         resources << drug_exporter.export_dosage_flag
@@ -64,7 +65,7 @@ namespace :opensrp do
       end
 
       appointments = patient.appointments
-      appointments = appointments.where(created_at: report_start..report_end) if using_time_boundaries
+      appointments = appointments.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
       appointments.each do |bp|
         next unless appointment.status_scheduled?
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
