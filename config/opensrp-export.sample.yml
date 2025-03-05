@@ -1,3 +1,6 @@
+time_boundaries:
+  report_start: 2001-01-01
+  report_end: 2002-02-02
 facilities:
   d1dbd3c6-26bb-48e7-aa89-bc8a0b2bf75b:
     name: Health Facility 1
