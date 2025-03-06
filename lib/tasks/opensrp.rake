@@ -2,8 +2,8 @@ require "faker"
 require "yaml"
 
 logfile = Rails.root.join("log", "#{Rails.env}.log")
-logger = ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new(logfile))
-logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::TaggedLogging.new(ActiveSupport::Logger.new(STDOUT))))
+logger = ActiveSupport::Logger.new(logfile)
+logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::Logger.new(STDOUT)))
 
 namespace :opensrp do
   desc "Export simple patient-related data as opensrp fhir resources"
@@ -18,7 +18,7 @@ namespace :opensrp do
     raise "Output file should be JSON" unless output_file.split(".").last == "json"
     config = YAML.load_file(config_file)
 
-    logger.tagged("opensrp:export") { logger.info "Exporting data using config at #{config_file}" }
+    logger.info "Exporting data using config at #{config_file}"
 
     report_start = DateTime.parse("2020-01-01")
     report_end = DateTime.now
@@ -28,15 +28,15 @@ namespace :opensrp do
     report_start = DateTime.parse(time_boundaries["report_start"]) if has_report_start?(config)
     report_end = DateTime.parse(time_boundaries["report_end"]) if has_report_end?(config)
 
-    logger.tagged("opensrp:export") { logger.info "Time Boundaries: [#{report_start}..#{report_end}]" }
+    logger.info "Time Boundaries: [#{report_start}..#{report_end}]"
 
     resources = []
     encounters = []
     patients = Patient.where(assigned_facility_id: facilities_to_export.keys)
 
-    logger.tagged("opensrp:export") { logger.info "Preparing data for #{patients.size} patients" }
+    logger.info "Preparing data for #{patients.size} patients"
     patients.each do |patient|
-      logger.tagged("opensrp:export") { logger.debug "Preparing data for Patient[##{patient.id}]" }
+      logger.debug "Preparing data for Patient[##{patient.id}]"
       patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
       resources << patient_exporter.export
       resources << patient_exporter.export_registration_questionnaire_response
@@ -44,7 +44,7 @@ namespace :opensrp do
 
       blood_pressures = patient.blood_pressures
       blood_pressures = blood_pressures.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
-      logger.tagged("opensrp:export") { logger.debug "Patient[##{patient.id}] has #{blood_pressures.size} blood pressure readings." }
+      logger.debug "Patient[##{patient.id}] has #{blood_pressures.size} blood pressure readings."
       blood_pressures.each do |bp|
         resources << bp_exporter.export
         encounters << bp_exporter.export_encounter
@@ -52,7 +52,7 @@ namespace :opensrp do
 
       blood_sugars = patient.blood_sugars
       blood_sugars = blood_sugars.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
-      logger.tagged("opensrp:export") { logger.debug "Patient[##{patient.id}] has #{blood_sugars.size} blood sugar readings." }
+      logger.debug "Patient[##{patient.id}] has #{blood_sugars.size} blood sugar readings."
       blood_sugars.each do |bp|
         if patient.medical_history.diabetes_no?
           resources << bs_exporter.export_no_diabetes_observation
@@ -63,7 +63,7 @@ namespace :opensrp do
 
       prescription_drugs = patient.prescription_drugs
       prescription_drugs = prescription_drugs.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
-      logger.tagged("opensrp:export") { logger.debug "Patient[##{patient.id}] has #{prescription_drugs.size} drugs prescribed." }
+      logger.debug "Patient[##{patient.id}] has #{prescription_drugs.size} drugs prescribed."
       prescription_drugs.each do |bp|
         resources << drug_exporter.export_dosage_flag
         encounters << drug_exporter.export_encounter
@@ -76,7 +76,7 @@ namespace :opensrp do
 
       appointments = patient.appointments
       appointments = appointments.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
-      logger.tagged("opensrp:export") { logger.debug "Patient[##{patient.id}] has #{appointments.size} appointments." }
+      logger.debug "Patient[##{patient.id}] has #{appointments.size} appointments."
       appointments.each do |bp|
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
         resources << appointment_exporter.export
