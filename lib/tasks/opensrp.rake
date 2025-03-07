@@ -44,17 +44,19 @@ namespace :opensrp do
       encounters << patient_exporter.export_registration_encounter
 
       blood_pressures = patient.blood_pressures
-      blood_pressures = blood_pressures.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
+      blood_pressures = blood_pressures.where(recorded_at: time_window).or(blood_pressures.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{blood_pressures.size} blood pressure readings."
       blood_pressures.each do |bp|
+        bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, facilities_to_export)
         resources << bp_exporter.export
         encounters << bp_exporter.export_encounter
       end
 
       blood_sugars = patient.blood_sugars
-      blood_sugars = blood_sugars.where(recorded_at: time_window).or(updated_at: time_window) if using_time_boundaries
+      blood_sugars = blood_sugars.where(recorded_at: time_window).or(blood_sugars.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{blood_sugars.size} blood sugar readings."
-      blood_sugars.each do |bp|
+      blood_sugars.each do |bs|
+        bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, facilities_to_export)
         if patient.medical_history.diabetes_no?
           resources << bs_exporter.export_no_diabetes_observation
         end
@@ -63,9 +65,10 @@ namespace :opensrp do
       end
 
       prescription_drugs = patient.prescription_drugs
-      prescription_drugs = prescription_drugs.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
+      prescription_drugs = prescription_drugs.where(created_at: time_window).or(prescription_drugs.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{prescription_drugs.size} drugs prescribed."
-      prescription_drugs.each do |bp|
+      prescription_drugs.each do |drug|
+        drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, facilities_to_export)
         resources << drug_exporter.export_dosage_flag
         encounters << drug_exporter.export_encounter
       end
@@ -76,9 +79,9 @@ namespace :opensrp do
       end
 
       appointments = patient.appointments
-      appointments = appointments.where(created_at: time_window).or(updated_at: time_window) if using_time_boundaries
+      appointments = appointments.where(created_at: time_window).or(appointments.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{appointments.size} appointments."
-      appointments.each do |bp|
+      appointments.each do |appointment|
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
         resources << appointment_exporter.export
         if appointment.call_results.present?
