@@ -113,11 +113,11 @@ namespace :opensrp do
   end
 
   def has_report_start?(config)
-    using_time_boundaries?(config) && time_boundaries.has_key?("report_start")
+    using_time_boundaries?(config) && config["time_boundaries"].has_key?("report_start")
   end
 
   def has_report_end?(config)
-    using_time_boundaries?(config) && time_boundaries.has_key?("report_end")
+    using_time_boundaries?(config) && config["time_boundaries"].has_key?("report_end")
   end
 
   def create_audit_record(facilities, patient)
