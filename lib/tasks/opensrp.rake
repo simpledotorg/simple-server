@@ -3,7 +3,7 @@ require "yaml"
 
 logfile = Rails.root.join("log", "#{Rails.env}.log")
 logger = ActiveSupport::Logger.new(logfile)
-logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::Logger.new(STDOUT)))
+logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::Logger.new($stdout)))
 
 namespace :opensrp do
   desc "Export simple patient-related data as opensrp fhir resources"
