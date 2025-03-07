@@ -38,10 +38,12 @@ namespace :opensrp do
     logger.info "Preparing data for #{patients.size} patients"
     patients.each do |patient|
       logger.debug "Preparing data for Patient[##{patient.id}]"
-      patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
-      resources << patient_exporter.export
-      resources << patient_exporter.export_registration_questionnaire_response
-      encounters << patient_exporter.export_registration_encounter
+      if time_window.cover?(patient.recorded_at)
+        patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
+        resources << patient_exporter.export
+        resources << patient_exporter.export_registration_questionnaire_response
+        encounters << patient_exporter.export_registration_encounter
+      end
 
       blood_pressures = patient.blood_pressures
       blood_pressures = blood_pressures.where(recorded_at: time_window).or(blood_pressures.where(updated_at: time_window)) if using_time_boundaries
