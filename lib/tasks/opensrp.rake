@@ -27,6 +27,7 @@ namespace :opensrp do
     using_time_boundaries = using_time_boundaries? config
     report_start = time_boundaries["report_start"] if has_report_start?(config)
     report_end = time_boundaries["report_end"] if has_report_end?(config)
+    time_window = report_start..report_end
 
     logger.info "Time Boundaries: [#{report_start}..#{report_end}]"
 
