@@ -19,7 +19,7 @@ module OneOff
           service_provider = first_child_encounter.serviceProvider
           child_encounters.pluck(:child_encounter).append(
             FHIR::Encounter.new(
-              meta: meta(opensrp_ids),
+              meta: meta(opensrp_ids.symbolize_keys),
               status: "finished",
               id: parent_id,
               identifier: [
