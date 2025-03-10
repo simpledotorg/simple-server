@@ -4,13 +4,7 @@ time_boundaries:
 facilities:
   d1dbd3c6-26bb-48e7-aa89-bc8a0b2bf75b:
     name: Health Facility 1
-    opensrp_practitioner_id: 0c375fe8-b38f-484e-aa64-c02750ee183b
-    opensrp_organization_id: d3363aea-66ad-4370-809a-8e4436a4218f
-    opensrp_care_team_id: 1c8100b5-222b-4815-ba4d-3ebde537c6ce
-    opensrp_location_id: ABC01230123
-  b100eb1a-18b3-424f-a2bf-c2e6b1655b1b:
-    name: Health Facility 2
-    opensrp_practitioner_id: 34a9da76-e18c-4fd6-a696-dee7a8454fb4
-    opensrp_organization_id: 5466dfd9-b10b-4bd8-8692-5732340de7f1
-    opensrp_care_team_id: f91c89c9-6790-4a94-b877-5feb578e0af8
-    opensrp_location_id: DEF01230123
+    practitioner_id: 0c375fe8-b38f-484e-aa64-c02750ee183b
+    organization_id: d3363aea-66ad-4370-809a-8e4436a4218f
+    care_team_id: 1c8100b5-222b-4815-ba4d-3ebde537c6ce
+    location_id: ABC01230123
