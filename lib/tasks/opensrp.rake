@@ -16,7 +16,7 @@ namespace :opensrp do
 
     raise "Config file should be YAML" unless %w[yaml yml].include?(config_file.split(".").last)
     raise "Output file should be JSON" unless output_file.split(".").last == "json"
-    config = YAML.load_file(config_file)
+    config = YAML.load_file(config_file).deep_symbolize_keys.with_indifferent_access
 
     logger.info "Exporting data using config at #{config_file}"
 
