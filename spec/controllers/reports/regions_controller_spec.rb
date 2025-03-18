@@ -75,6 +75,38 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
+    context "when the region is a facility region" do
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:district) { create(:facility, facility_group: facility_group) }
+      let(:region) { district.region }
+      before do
+        allow(region).to receive(:district_region?).and_return(true)
+        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      end
+      context "and the feature flag is enabled" do
+        before { Flipper.enable(:quick_link_for_metabase, cvho) }
+        it "displays the quick links section with the correct URLs" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).to include("District facility trend report")
+          expect(response.body).to include("District Drug stock report")
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
+          expect(response.body).to include("https://api.example.com/my_facilities/bp_controlled?facility_group=")
+          expect(response.body).to include("https://metabase.example.com/titration?district_name=")
+        end
+      end
+      context "and the feature flag is disabled" do
+        it "does not display the quick links section" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).to_not include("District facility trend report")
+          expect(response.body).to_not include("District Drug sto_notck report")
+          expect(response.body).to_not include("Metabase: Titration report")
+        end
+      end
+    end
+
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
       get :show, params: {id: "String-unknown", report_scope: "bad-report_scope"}
