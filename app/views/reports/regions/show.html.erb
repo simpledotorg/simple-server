@@ -28,7 +28,7 @@
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_FACILITY_TREND_REPORT_URL', '') %><%= @region.slug %>&for_end_of_month=" target="_blank">
         District facility trend report
       </a></div>
-      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_DRUG_STOCK_REPORT_URL', '') %><%= @region.name %>&for_end_of_month=<%= last_month %>" target="_blank">
+      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_DRUG_STOCK_REPORT_URL', '') %><%= @region.slug %>&for_end_of_month=<%= last_month %>" target="_blank">
         District Drug stock report
       </a></div>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
