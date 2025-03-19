@@ -3,15 +3,15 @@
 <% end %>
 <% if @is_desktop && Flipper.enabled?(:quick_link_for_metabase, current_admin) %>
   <% last_month = Date.today.last_month.strftime("%b-%Y") %>
-  <div class="float-right desktop">
-    <h4 class="mb-0px">Quick links</h4>
 
-    <% if @region.facility_region? %>
+  <% if @region.facility_region? %>
+    <div class="float-right desktop">
+      <h4 class="mb-0px">Quick links</h4>
       <% district = @region.source.facility_group.slug %>
       <% size = @region.source.facility_size.presence || '' %>
       <% zone = @region.source.zone %>
 
-      <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %> " target="_blank">
+      <div>⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %>" target="_blank">
         Drug stock report
       </a></div>
       <div>⚡ <a href="<%= ENV.fetch('METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
@@ -20,19 +20,24 @@
       <div>⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>" target="_blank">
         Metabase: BP fudging report
       </a></div>
-    <% elsif @region.district_region? %>
+    </div>
+
+  <% elsif @region.district_region? %>
+    <div class="float-right desktop">
+      <h4 class="mb-0px">Quick links</h4>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_FACILITY_TREND_REPORT_URL', '') %><%= @region.slug %>&for_end_of_month=" target="_blank">
         District facility trend report
       </a></div>
-      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_DRUG_STOCK_REPORT_URL', '') %><%= @region.slug %>&for_end_of_month=<%= last_month %>" target="_blank">
+      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_DRUG_STOCK_REPORT_URL', '') %><%= @region.name %>&for_end_of_month=<%= last_month %>" target="_blank">
         District Drug stock report
       </a></div>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
         Metabase: Titration report
       </a></div>
-    <% end %>
-  </div>
+    </div>
+  <% end %>
 <% end %>
+
 
 
 <%= render "header" %>
