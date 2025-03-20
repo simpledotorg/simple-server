@@ -26,10 +26,10 @@
     <div class="float-right desktop">
       <h4 class="mb-0px">Quick links</h4>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_FACILITY_TREND_REPORT_URL', '') %><%= @region.source.slug %>&for_end_of_month=" target="_blank">
-        District facility trend report
+        Facility trends
       </a></div>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_DRUG_STOCK_REPORT_URL', '') %><%= @region.source.slug %>&for_end_of_month=<%= last_month %>" target="_blank">
-        District Drug stock report
+        Drug stock
       </a></div>
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
         Metabase: Titration report
