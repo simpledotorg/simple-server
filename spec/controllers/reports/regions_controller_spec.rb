@@ -88,8 +88,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
         it "displays the quick links section with the correct URLs" do
           sign_in(cvho.email_authentication)
           get :show, params: {id: facility_group.slug, report_scope: "district"}
-          expect(response.body).to include("District facility trend report")
-          expect(response.body).to include("District Drug stock report")
+          expect(response.body).to include("Facility trends")
+          expect(response.body).to include("Drug stock")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
           expect(response.body).to include("https://api.example.com/my_facilities/bp_controlled?facility_group=")
