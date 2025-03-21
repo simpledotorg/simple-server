@@ -106,6 +106,10 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to_not include("District Drug sto_notck report")
           expect(response.body).to_not include("Metabase: Titration report")
           expect(response.body).to_not include("Metabase: BP fudging report")
+          expect(response.body).to_not include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
+          expect(response.body).to_not include("https://api.example.com/my_facilities/bp_controlled?facility_group=")
+          expect(response.body).to_not include("https://metabase.example.com/titration?district_name=")
+          expect(response.body).to_not include("https://metabase.example.com/bp_fudging?state_name=")
         end
       end
     end
