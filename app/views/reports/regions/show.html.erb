@@ -34,7 +34,7 @@
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_TITRATION_URL', '') %><%= @region.name %>" target="_blank">
         Metabase: Titration report
       </a></div>
-      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_BP_FUDGING_URL', '') %><%= @region.parent.name %>&district_name= <%= @region.source.slug %>" target="_blank">
+      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_BP_FUDGING_URL', '') %><%= @region.parent.name %>&district_name= <%= @region.name %>" target="_blank">
         Metabase: BP fudging report
       </a></div>
     </div>
