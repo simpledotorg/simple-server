@@ -37,6 +37,9 @@
       <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_BP_FUDGING_URL', '') %><%= @region.parent.name %>&district_name=<%= @region.name %>" target="_blank">
         Metabase: BP fudging report
       </a></div>
+      <div>⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_SYSTOLIC_BP_URL', '') %><%= @region.name %>" target="_blank">
+        Metabase: Systolic BP reading report
+      </a></div>
     </div>
   <% end %>
 <% end %>
