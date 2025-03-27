@@ -122,14 +122,14 @@ namespace :opensrp do
         tally[:appointments] = appointments.size
       end
       if tally.has_key? :tasks
-        tally[:tasks] += appointments.includes(:call_results).where.not(call_results: { id: nil }).size
+        tally[:tasks] += appointments.includes(:call_results).where.not(call_results: {id: nil}).size
       else
-        tally[:tasks] = appointments.includes(:call_results).where.not(call_results: { id: nil }).size
+        tally[:tasks] = appointments.includes(:call_results).where.not(call_results: {id: nil}).size
       end
       if tally.has_key? :flags
-        tally[:flags] += appointments.includes(:call_results).where.not(call_results: { id: nil }).size
+        tally[:flags] += appointments.includes(:call_results).where.not(call_results: {id: nil}).size
       else
-        tally[:flags] = appointments.includes(:call_results).where.not(call_results: { id: nil }).size
+        tally[:flags] = appointments.includes(:call_results).where.not(call_results: {id: nil}).size
       end
       appointments.each do |appointment|
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
