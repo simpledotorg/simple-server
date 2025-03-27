@@ -162,7 +162,7 @@ namespace :opensrp do
       end
     end
 
-    logger.info tally.inspect
+    logger.info "OpenSRP Export details: #{tally.inspect}"
   end
 
   def using_time_boundaries?(config)
