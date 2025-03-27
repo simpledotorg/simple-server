@@ -6,7 +6,7 @@ logger = ActiveSupport::Logger.new(logfile)
 logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::Logger.new($stdout)))
 
 namespace :opensrp do
-  desc "Export simple patient-related data as opensrp fhir resources"
+  desc "Export simple patient-related data as OpenSRP FHIR resources"
   task :export, [:config_file, :output_file] => :environment do |_task, args|
     raise "Usage: ./bin/rake 'opensrp:export[path/to/config.yml, name-of-output.json]'" unless args.to_a.size == 2
     # For now we are leaving in the PII.
@@ -33,6 +33,7 @@ namespace :opensrp do
 
     resources = []
     encounters = []
+    tally = {}
     patients = Patient.where(assigned_facility_id: facilities_to_export.keys)
 
     logger.info "Preparing data for #{patients.size} patients"
@@ -41,14 +42,30 @@ namespace :opensrp do
       if time_window.cover?(patient.recorded_at)
         patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
         resources << patient_exporter.export
+        if tally.has_key? :patients
+          tally[:patients] += 1
+        else
+          tally[:patients] = 1
+        end
         resources << patient_exporter.export_registration_questionnaire_response
+        if tally.has_key? :questionnaire_response
+          tally[:questionnaire_response] += 1
+        else
+          tally[:questionnaire_response] = 1
+        end
         encounters << patient_exporter.export_registration_encounter
       end
 
       blood_pressures = patient.blood_pressures
       blood_pressures = blood_pressures.where(recorded_at: time_window).or(blood_pressures.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{blood_pressures.size} blood pressure readings."
+      if tally.has_key? :observation
+        tally[:observation] += blood_pressures.size
+      else
+        tally[:observation] = blood_pressures.size
+      end
       blood_pressures.each do |bp|
+        # This is technically an FHIR::Observation, with code set to a blood pressure code
         bp_exporter = OneOff::Opensrp::BloodPressureExporter.new(bp, facilities_to_export)
         resources << bp_exporter.export
         encounters << bp_exporter.export_encounter
@@ -57,7 +74,13 @@ namespace :opensrp do
       blood_sugars = patient.blood_sugars
       blood_sugars = blood_sugars.where(recorded_at: time_window).or(blood_sugars.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{blood_sugars.size} blood sugar readings."
+      if tally.has_key? :observation
+        tally[:observation] += blood_sugars.size
+      else
+        tally[:observation] = blood_sugars.size
+      end
       blood_sugars.each do |bs|
+        # This is technically an FHIR::Observation, with code set to a blood sugar code
         bs_exporter = OneOff::Opensrp::BloodSugarExporter.new(bs, facilities_to_export)
         if patient.medical_history.diabetes_no?
           resources << bs_exporter.export_no_diabetes_observation
@@ -69,6 +92,11 @@ namespace :opensrp do
       prescription_drugs = patient.prescription_drugs
       prescription_drugs = prescription_drugs.where(created_at: time_window).or(prescription_drugs.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{prescription_drugs.size} drugs prescribed."
+      if tally.has_key? :flags
+        tally[:flags] += prescription_drugs.size
+      else
+        tally[:flags] = prescription_drugs.size
+      end
       prescription_drugs.each do |drug|
         drug_exporter = OneOff::Opensrp::PrescriptionDrugExporter.new(drug, facilities_to_export)
         resources << drug_exporter.export_dosage_flag
@@ -79,10 +107,30 @@ namespace :opensrp do
         resources << medical_history_exporter.export
         encounters << medical_history_exporter.export_encounter
       end
+      if tally.has_key? :conditions
+        tally[:conditions] += 1
+      else
+        tally[:conditions] = 1
+      end
 
       appointments = patient.appointments
       appointments = appointments.where(created_at: time_window).or(appointments.where(updated_at: time_window)) if using_time_boundaries
       logger.debug "Patient[##{patient.id}] has #{appointments.size} appointments."
+      if tally.has_key? :appointments
+        tally[:appointments] += appointments.size
+      else
+        tally[:appointments] = appointments.size
+      end
+      if tally.has_key? :tasks
+        tally[:tasks] += appointments.includes(:call_results).where.not(call_results: {id: nil}).size
+      else
+        tally[:tasks] = appointments.includes(:call_results).where.not(call_results: {id: nil}).size
+      end
+      if tally.has_key? :flags
+        tally[:flags] += appointments.includes(:call_results).where.not(call_results: {id: nil}).size
+      else
+        tally[:flags] = appointments.includes(:call_results).where.not(call_results: {id: nil}).size
+      end
       appointments.each do |appointment|
         appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, facilities_to_export)
         resources << appointment_exporter.export
@@ -94,6 +142,11 @@ namespace :opensrp do
       end
     end
 
+    if tally.has_key? :encounters
+      tally[:encounters] += encounters.size
+    else
+      tally[:encounters] = encounters.size
+    end
     resources << OneOff::Opensrp::EncounterGenerator.new(encounters).generate
 
     CSV.open("audit_trail.csv", "w") do |csv|
@@ -108,6 +161,8 @@ namespace :opensrp do
         f.puts(resource.as_json.to_json)
       end
     end
+
+    logger.info "OpenSRP Export details: #{tally.inspect}"
   end
 
   def using_time_boundaries?(config)
