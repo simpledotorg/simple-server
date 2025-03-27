@@ -6299,6 +6299,13 @@ CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (pati
 
 
 --
+-- Name: index_cvd_risks_on_risk_score; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cvd_risks_on_risk_score ON public.cvd_risks USING btree (risk_score);
+
+
+--
 -- Name: index_deduplication_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7862,6 +7869,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241129212725'),
 ('20241204155510'),
 ('20241210092449'),
-('20250120104431');
+('20250120104431'),
+('20250327172921');
 
 
