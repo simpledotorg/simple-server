@@ -118,30 +118,28 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
-  context "when the region is a division region" do
-    let(:facility_group) { create(:facility_group, organization: organization) }
-    let(:state) { create(:facility, facility_group: facility_group) }
-    let(:region) { state.region }
-    before do
-      state.region.update(region_type: "state")
-      allow(region).to receive(:state_region?).and_return(true)
-      allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
-    end
+    context "when the region is a division region" do
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:state) { create(:facility, facility_group: facility_group) }
+      let(:region) { state.region }
+      before do
+        state.region.update(region_type: "state")
+        allow(region).to receive(:state_region?).and_return(true)
+        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      end
 
-    context "and the feature flag is disabled" do
-      it "does not display the quick links section" do
-        sign_in(cvho.email_authentication)
-        get :show, params: { id: facility_group.slug, report_scope: "state" }
+      context "and the feature flag is disabled" do
+        it "does not display the quick links section" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: facility_group.slug, report_scope: "state"}
 
-        expect(response.body).to_not include("Metabase: Titration report")
-        expect(response.body).to_not include("Metabase: Systolic BP reading report")
-        expect(response.body).to_not include("https://metabase.example.com/titration?state_name=")
-        expect(response.body).to_not include("https://metabase.example.com/systolic?state_name=")
+          expect(response.body).to_not include("Metabase: Titration report")
+          expect(response.body).to_not include("Metabase: Systolic BP reading report")
+          expect(response.body).to_not include("https://metabase.example.com/titration?state_name=")
+          expect(response.body).to_not include("https://metabase.example.com/systolic?state_name=")
+        end
       end
     end
-  end
-
-
 
     it "redirects if matching region slug not found" do
       sign_in(cvho.email_authentication)
