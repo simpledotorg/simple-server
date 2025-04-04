@@ -10,7 +10,11 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+<<<<<<< Updated upstream
       time: "12:30" # check for updates at 12:30 PM UTC / 6:00 PM IST to avoid main working hours
+=======
+      time: "07:30" # check for updates at 07:30 UTC / 1 PM IST to avoid main working hours
+>>>>>>> Stashed changes
     # Only create pull requests to update lockfiles. Ignore any new versions that would require package manifest changes.
     versioning-strategy: "lockfile-only"
 
