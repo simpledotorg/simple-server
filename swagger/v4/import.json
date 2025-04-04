@@ -14,6 +14,9 @@
     "description": "# API spec for Simple Server\nThis API spec documents the Import API for partner organizations that want to send their data to Simple. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.\n\n## Authorization\nAuthorization is done via OAuth 2.0, using the [Client Credential flow](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/). At the end of this flow, clients will receive an access token which is attached to all the requests to import data.\n\nWe recommend using popular open source [OAuth client libraries](https://oauth.net/code/) that will perform the flow in order to obtain the access token.\n",
     "version": "import",
     "title": "Simple Server",
+    "contact": {
+      "email": "engineering@simple.org"
+    },
     "license": {
       "name": "MIT",
       "url": "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
