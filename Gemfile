@@ -80,7 +80,7 @@ gem "sentry-sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
 gem "sidekiq"
-gem "sidekiq-unique-jobs"
+gem "sidekiq-unique-jobs", "~> 7.1", ">= 7.1.33"
 gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
