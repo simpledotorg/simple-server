@@ -39,7 +39,7 @@ gem "flipper-ui"
 gem "flipper"
 gem "friendly_id", "~> 5.4.2"
 gem "github-ds"
-gem "google-protobuf", "~> 3.19"
+gem 'google-protobuf', '~> 3.25', '>= 3.25.5'
 gem "groupdate"
 gem "http_accept_language"
 gem "http"
