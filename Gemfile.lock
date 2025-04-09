@@ -276,8 +276,8 @@ GEM
       ffi (~> 1.0)
     github-ds (0.5.2)
       activerecord (>= 3.2)
-    globalid (1.0.0)
-      activesupport (>= 5.0)
+    globalid (1.2.1)
+      activesupport (>= 6.1)
     google-protobuf (3.25.6)
     google-protobuf (3.25.6-x86_64-darwin)
     google-protobuf (3.25.6-x86_64-linux)
@@ -757,6 +757,7 @@ DEPENDENCIES
   friendly_id (~> 5.4.2)
   generator_spec
   github-ds
+  globalid (~> 1.0, >= 1.0.1)
   google-protobuf (~> 3.25, >= 3.25.5)
   groupdate
   guard-rspec
