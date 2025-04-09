@@ -80,7 +80,7 @@ gem "sentry-sidekiq"
 gem "sidekiq-statsd"
 gem "sidekiq-throttled"
 gem "sidekiq"
-gem "sidekiq-unique-jobs"
+gem "sidekiq-unique-jobs", "~> 7.1", ">= 7.1.33"
 gem "slack-notifier"
 gem "squid"
 gem "stackprof", require: false
@@ -97,6 +97,7 @@ gem "doorkeeper", "~> 5.6"
 gem "prometheus_exporter"
 gem "zip_kit"
 gem "device_detector"
+gem 'sanitize', '~> 6.0', '>= 6.0.2'
 
 group :development, :test do
   gem "active_record_query_trace", require: false
