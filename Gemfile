@@ -97,6 +97,7 @@ gem "doorkeeper", "~> 5.6"
 gem "prometheus_exporter"
 gem "zip_kit"
 gem "device_detector"
+gem 'sanitize', '~> 6.0', '>= 6.0.2'
 
 group :development, :test do
   gem "active_record_query_trace", require: false
