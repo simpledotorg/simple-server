@@ -107,10 +107,12 @@ Duplicate patient entries can also be managed manually via the dashboard:
 
 - **Dashboard View:**  
   The "Merge Duplicate Patients" tab in the left navigation panel displays potential duplicates.
-  
+  <img width="277" alt="Screenshot 2025-04-15 at 10 39 25 AM" src="https://github.com/user-attachments/assets/79427b65-8442-4903-a181-f277e2229821" />
+
 - **Access Control:**
   - **Organization Managers:** Search across all patients (no facility filter).
   - **Facility Managers:** Search is limited to patients within the facilities they manage.
+
 
 - **Limit:**  
   The dashboard displays a hard-coded maximum of **250 duplicate records**.
@@ -119,8 +121,11 @@ Duplicate patient entries can also be managed manually via the dashboard:
   - Patients with the same BP passport but different full names are flagged as duplicates.
   - Users can select/deselect records to merge.
   - Alternatively, users can skip to the next set of records.
+    
+<img width="1377" alt="Screenshot 2025-04-15 at 10 18 00 AM" src="https://github.com/user-attachments/assets/83e2b52e-7f4e-493b-9bf2-66ca0a727df8" />
 
 - **Class Responsible:**  
+
   The class `PatientDeduplication::Strategies` handles identifying potential duplicates.
 
 ---
