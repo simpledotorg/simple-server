@@ -842,7 +842,7 @@ DEPENDENCIES
   zip_kit
 
 RUBY VERSION
-   ruby 2.7.4p191
+   ruby 2.7.8p225
 
 BUNDLED WITH
    2.3.22
