@@ -91,7 +91,6 @@ gem "uuidtools", require: false
 gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
 gem "whenever", require: false
-gem "wkhtmltoimage-binary"
 gem "table_print"
 gem "doorkeeper", "~> 5.6"
 gem "prometheus_exporter"
