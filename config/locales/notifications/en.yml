@@ -47,7 +47,7 @@ en:
       short_medicines: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP and medicines %{patient_name}. - IHCI"
       you_must: "You must come as soon as possible for a BP at %{facility_name} %{patient_name}. - IHCI"
       no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}. - IHCI"
-      official_short: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name} . Your doctor wishes for your good health. - IHCI"
+      official_short: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP %{patient_name} . Your doctor wishes for your good health."
       official_short_medicines: "You are late for your BP. Visit %{facility_name} as soon as possible for your BP and medicines %{patient_name}. Your doctor wishes for your good health. - IHCI"
       official_you_must: "You must come as soon as possible for a BP at %{facility_name} %{patient_name}. Your doctor wishes for your good health. - IHCI"
       official_no_date: "Come today to %{facility_name} for a BP measure, %{patient_name}. Your doctor wishes for your good health. - IHCI"
