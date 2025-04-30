@@ -35,6 +35,26 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
           .to eq(model.all.pluck(:id).to_set)
       end
 
+      it "omits discarded facilities" do
+
+        discarded_id = nil
+
+        Timecop.travel(3.minutes.ago) do
+          # add a discarded facility to the mix
+          f = create(:facility, facility_group: request_user.facility.facility_group)
+          discarded_id = f.id
+          f.discard!
+        end
+
+        get :sync_to_user
+        response_body = JSON(response.body)
+
+        # ensure we do not have the discarded facility as part of the sync response
+        expect(response_body[response_key].count).to eq model.count
+        synced_ids = response_body[response_key].map { |record| record["id"] }.to_set
+        expect(synced_ids.none? { |id| id == discarded_id }).to be_truthy
+      end
+
       it "Returns new records added since last sync" do
         expected_records = create_record_list(2, updated_at: 5.minutes.ago)
         get :sync_to_user, params: {process_token: make_process_token(other_facilities_processed_since: 10.minutes.ago)}
