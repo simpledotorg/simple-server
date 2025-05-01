@@ -12,6 +12,7 @@ require "sprockets/railtie"
 
 require_relative "../lib/extensions/logging_extensions"
 require_relative "../lib/env_helper"
+require_relative "./initializers/env_defaults"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
