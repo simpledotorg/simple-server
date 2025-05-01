@@ -50,7 +50,7 @@ ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] ||= 'https://youtu.be/MC_45DoRw2g'
 ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL']    ||= 'https://youtu.be/nHsQ06tiLzw'
 ENV['SIMPLE_APP_SIGNATURE'] ||= "test_signature"
 
-ENV['SECRET_KEY_BASE'] ||= '6e3a553d989615581dfdfcfcb0670b002e5d9d27c38a284a5020107e8ba516789117630f9c7e0ade1d0d7b0b68aeb50df88d8b15ea55dc423246db2984f6e5ef'
+ENV['SECRET_KEY_BASE'] ||= 'b90c991f1987f5be558af41e1fdc73741adbef2285f30a5bd500dcd7804b2ef1b49e8b07e03bd7154dcecd5050102f0f59cd182c8b40e48a66d416228dbd33fe'
 ENV['TWILIO_ACCOUNT_SID'] ||= '<redacted>'
 ENV['TWILIO_AUTH_TOKEN'] ||= '<redacted>'
 ENV['TWILIO_PHONE_NUMBER'] ||= '<redacted>'
@@ -58,21 +58,3 @@ ENV['TWILIO_REMINDERS_ACCOUNT_SID'] ||= '<redacted>'
 ENV['TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN'] ||= '<redacted>'
 ENV['TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER'] ||= '<redacted>'
 ENV['EXOTEL_TOKEN'] ||= '<redacted>'
-
-# Check for critical secrets (warn if missing)
-# critical_vars = %w[
-#   SECRET_KEY_BASE
-#   TWILIO_ACCOUNT_SID
-#   TWILIO_AUTH_TOKEN
-#   TWILIO_PHONE_NUMBER
-#   TWILIO_REMINDERS_ACCOUNT_SID
-#   TWILIO_REMINDERS_ACCOUNT_AUTH_TOKEN
-#   TWILIO_REMINDERS_ACCOUNT_PHONE_NUMBER
-#   EXOTEL_TOKEN
-# ]
-
-# critical_vars.each do |var|
-#   unless ENV[var].present?
-#     Rails.logger.warn("⚠️  Critical environment variable #{var} is missing!")
-#   end
-# end
