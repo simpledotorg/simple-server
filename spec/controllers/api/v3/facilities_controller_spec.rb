@@ -36,7 +36,6 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
       end
 
       it "omits discarded facilities" do
-
         discarded_id = nil
 
         Timecop.travel(3.minutes.ago) do
