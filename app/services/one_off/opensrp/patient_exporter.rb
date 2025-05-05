@@ -113,8 +113,8 @@ module OneOff
               coding: [
                 FHIR::Coding.new(
                   system: "https://smartregister.org/",
-                  code: "PHN",
-                  display: "PHN"
+                  code: "clinic_number",
+                  display: "Simple Clinic Number"
                 )
               ]
             )
