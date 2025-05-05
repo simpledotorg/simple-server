@@ -9,6 +9,7 @@ require "action_controller/railtie"
 require "action_mailer/railtie"
 require "action_view/railtie"
 require "sprockets/railtie"
+require_relative "../config/env_defaults"
 
 require_relative "../lib/extensions/logging_extensions"
 require_relative "../lib/env_helper"

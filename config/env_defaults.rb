@@ -1,5 +1,3 @@
-# config/initializers/env_defaults.rb
-
 # Database configuration
 ENV['SIMPLE_SERVER_DATABASE_HOST']     ||= 'localhost'
 ENV['SIMPLE_SERVER_DATABASE_USERNAME'] ||= 'postgres'
@@ -16,7 +14,7 @@ ENV['RAILS_ENV']                   ||= 'production'
 ENV['CALL_SESSION_REDIS_HOST']      ||= 'redis'
 ENV['CALL_SESSION_REDIS_POOL_SIZE'] ||= '12'
 ENV['CALL_SESSION_REDIS_TIMEOUT_SEC'] ||= '1'
-ENV['RAILS_CACHE_REDIS_URL']        ||= 'redis://'
+ENV['RAILS_CACHE_REDIS_URL'] ||= 'redis://localhost:6379/0'
 ENV['RAILS_CACHE_REDIS_PASSWORD']   ||= 'NONE'
 ENV['SIDEKIQ_REDIS_HOST']           ||= 'redis'
 ENV['SIDEKIQ_CONCURRENCY']          ||= '5'
