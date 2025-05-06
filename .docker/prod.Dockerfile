@@ -42,11 +42,13 @@ COPY --chown=app:app ./ ./
 ENV RAILS_ENV production
 ENV RAILS_SERVE_STATIC_FILES true
 
+ENV DOCKERIZED true
+
 # Build
 RUN gem install bundler -v "$(grep -A 1 "BUNDLED WITH" Gemfile.lock | tail -n 1)"
 RUN bundle config --delete without && bundle install
 RUN yarn install
-RUN set -a && source .env.development && set +a && bundle exec rake assets:precompile
+RUN set -a && source .env.docker-prod && set +a && bundle exec rake assets:precompile
 RUN chown -R app:app /home/app
 
 ENTRYPOINT ["/home/app/bin/docker-entrypoint"]
