@@ -1,5 +1,5 @@
 # Dockerfile development version
-FROM ruby:2.7.4
+FROM ruby:2.7.8
 
 ENV BUNDLE_VERSION 2.3.22
 ENV EDITOR vim
