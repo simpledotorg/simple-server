@@ -793,7 +793,7 @@ DEPENDENCIES
   puma
   rack-attack
   rack-mini-profiler
-  rails (~> 6.1, >= 6.1.7.10)
+  rails (= 6.1.7.10)
   rails-controller-testing
   rails-erd
   rb-readline
