@@ -7,7 +7,7 @@
         <li> <%= error %> </li>
       <% end %>
     </ul>
-    <p>You can also contact team@simple.org for assistance</p>
+    <p>You can also contact <%= Rails.application.config.team_email_id %> for assistance</p>
   </div>
 <% end %>
 <h3>Instructions:</h3>

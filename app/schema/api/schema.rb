@@ -2,15 +2,15 @@ class Api::Schema
   class << self
     def swagger_info(version)
       {
-        :description => I18n.t("api.documentation.description"),
+        :description => I18n.t("api.documentation.description", app_brand_name: Rails.application.config.application_brand_name),
         :version => version.to_s,
-        :title => I18n.t("api.documentation.title"),
+        :title => I18n.t("api.documentation.title", app_brand_name: Rails.application.config.application_brand_name),
         "x-logo" => {
           url: ActionController::Base.helpers.image_path(I18n.t("api.documentation.logo.image")),
           backgroundColor: I18n.t("api.documentation.logo.background_color")
         },
         :contact => {
-          email: I18n.t("api.documentation.contact.email")
+          email: I18n.t("api.documentation.contact.email", eng_email_id: Rails.application.config.eng_email_id)
         },
         :license => {
           name: I18n.t("api.documentation.license.name"),
@@ -76,7 +76,7 @@ class Api::Schema
         consumes: ["application/json"],
         schemes: ["https"],
         info: swagger_info(:import)
-          .merge(description: I18n.t("api.documentation.import_description")),
+          .merge(description: I18n.t("api.documentation.import_description", app_brand_name: Rails.application.config.application_brand_name)),
         paths: {},
         definitions: Api::V4::Imports.all_definitions,
         securityDefinitions: import_api_security_definitions
