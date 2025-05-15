@@ -97,7 +97,7 @@ om-ET:
       heading_html: Suursagalee leenjii
       class:
         heading_html: Daree fudhu
-        contents_html: Fayyadama Simple baruudhaaf daree ilaaluun bari.
+        contents_html: Fayyadama %{app_brand_name} baruudhaaf daree ilaaluun bari.
         training_videos_link_html: "Leenjii: Boqonnaa Hunda"
         training_videos_subtitle_html: "Engiliffa barreeffama xiqqoo Hiunduutin 36:15"
       chapters:
@@ -111,11 +111,11 @@ om-ET:
         chapter_7_html: "7. Amala barbaachisa"
         chapter_8_html: "8: FAQ"
         chapter_9_html: "9: Akkamiin gargaarsa argatta"
-        chapter_10_html: "10: Simple fayyadamuu jalqabi"
+        chapter_10_html: "10: %{app_brand_name} fayyadamuu jalqabi"
       teleconsultation:
         heading_html: Leenjii teleconsult
-        contents_html: "Hositaallii kee Simple teleconsultation fayyadama taanan, leenjiin kuni siifi."
-        english_video_link_html: Tele-consultation Simpledhaan
+        contents_html: "Hositaallii kee %{app_brand_name} teleconsultation fayyadama taanan, leenjiin kuni siifi."
+        english_video_link_html: Tele-consultation %{app_brand_name}dhaan
         english_video_link_language_html: English
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
@@ -125,16 +125,16 @@ om-ET:
         video_link_html: BP Passport akkamiin fayyadami
         video_link_subtitle_html: Hindi barreeffama English tiin
       film:
-        heading_html: "Fiilmii Simple "
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> fiilmii gabaabaa akkaataa Punjab, India keessatti narsiin dhukkubsataa dhiibbaa dhiigaa yaaluf Simple itti fayyadamu agarsiisa.'
+        heading_html: "Fiilmii %{app_brand_name} "
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of %{app_brand_name}"</a> fiilmii gabaabaa akkaataa Punjab, India keessatti narsiin dhukkubsataa dhiibbaa dhiigaa yaaluf %{app_brand_name} itti fayyadamu agarsiisa.'
     start:
       heading_html: Jalqabuu
       getting_started_video:
         heading_html: Viidiyoo daawwadhu
-        contents_html: Bu'uura Simple daqiiqaawwan 5 keessatti baradhu.
+        contents_html: Bu'uura %{app_brand_name} daqiiqaawwan 5 keessatti baradhu.
       who_to_record:
-        heading_html: "Eenyutu Simple keessatti galmeeffama?"
-        contents_1_html: Dhukkubsattoota dhiibbaa dhiigaa qabanu <i>ykn nama dhiibbaa dhiiigaa ol&rsquo;aanaa qabu  galmeessuu</i> Simple fayyadami.
+        heading_html: "Eenyutu %{app_brand_name} keessatti galmeeffama?"
+        contents_1_html: Dhukkubsattoota dhiibbaa dhiigaa qabanu <i>ykn nama dhiibbaa dhiiigaa ol&rsquo;aanaa qabu  galmeessuu</i> %{app_brand_name} fayyadami.
         contents_2_html: "Yammuu dhukkubsataan hordoffiidhaaf deebi&rsquo;u,maqaa isaa barbaadii dhiibbaa dhiiga isaa haaraa galmeessi."
       step_1:
         label_html: Tarkaanfii 1
@@ -143,14 +143,14 @@ om-ET:
       step_2:
         label_html: Tarkaanfii 2
         heading_html: BP Passport keessatti barreessi
-        contents_html: "Paaspoortii BP yoo qabaatte, maqaa dhukkubsataa galchi. Itti aansii, mosaajii Simple fayyadamuun Iskaan godhaa."
+        contents_html: "Paaspoortii BP yoo qabaatte, maqaa dhukkubsataa galchi. Itti aansii, mosaajii %{app_brand_name} fayyadamuun Iskaan godhaa."
       step_3:
         label_html: Tarkaanfii 3
         heading_html: Dhukkubsataa galmeessi
         contents_html: "Yoo haaraadha ta&rsquo;an, dhukkubsataa galmeessi."
       step_4:
         label_html: Tarkaanfii 4
-        heading_html: BP Simple keessatti galchi
+        heading_html: BP %{app_brand_name} keessatti galchi
         contents_html: <i> Dubbisa dhiibbaa dhiigaa </i>hin siqsin.
       step_5:
         label_html: Tarknaafii 5
@@ -163,7 +163,7 @@ om-ET:
       missed_visit:
         label_html: Daawwannaa darbe
         heading_html: "Maaltu itti aanee ta'a?"
-        contents_html: "Yoo dhukkubsataan kee beellama isaaniirraa hafan, Simple ergaa barreeffamaa akka deebi&rsquo;anii dhufaniif yaadachiisu ergaaf."
+        contents_html: "Yoo dhukkubsataan kee beellama isaaniirraa hafan, %{app_brand_name} ergaa barreeffamaa akka deebi&rsquo;anii dhufaniif yaadachiisu ergaaf."
       tip:
         heading_html: Qica
         contents_html: "Yeroo hundumaa dhukkubsataa mijuu sirrii keessatti galmeessuukee mirkaneessi. Argii duraa irratti, yeroo hundumaa mijuu harka olii gara bitaarra jiru mirkaneessi."
@@ -211,7 +211,7 @@ om-ET:
         contents_2_html: "Yoo dhukkubsataan barbaacha kee keessaa dhukkubsataa kamiin illee walsimuudhaa baate, maaloo akka dhukkubsataa haaraatti galmeessaa."
       tip:
         heading_html: Qica
-        contents_html: "Yoo Paaspoortii Dhiibbaa Dhiigaa kaasuun hojjetaa hin jiru ta&rsquo;e, Lakkoofas Paaspoortii Dhiibbaa Dhiigaa Simple keessatti argiidhuma walfakkaataa irratti kaasaa turte keessatti barreessuu dandeessa."
+        contents_html: "Yoo Paaspoortii Dhiibbaa Dhiigaa kaasuun hojjetaa hin jiru ta&rsquo;e, Lakkoofas Paaspoortii Dhiibbaa Dhiigaa %{app_brand_name} keessatti argiidhuma walfakkaataa irratti kaasaa turte keessatti barreessuu dandeessa."
     record:
       heading_html: Guyyaa dhufaatii dhukkubsataa galmeessi.
       find_patient:
@@ -264,11 +264,11 @@ om-ET:
     faq:
       heading_html: Gaaffiiwwan baraman
       app_crash_question_html: "Appiin kiyya yoo cabe maalan godha?"
-      app_crash_answer_html: "Jalaqaba meeshaakee lamkaasuuf yaali. Yoo Simple cabaa jira ta&rsquo;eefi sirreessuu hin dandeenye ta&rsquo;e, gara fuula <span class=\"help\">Gargaarsaa</span> deemiitii to&rsquo;ataakee ykn tuuta keenya quunnami."
+      app_crash_answer_html: "Jalaqaba meeshaakee lamkaasuuf yaali. Yoo %{app_brand_name} cabaa jira ta&rsquo;eefi sirreessuu hin dandeenye ta&rsquo;e, gara fuula <span class=\"help\">Gargaarsaa</span> deemiitii to&rsquo;ataakee ykn tuuta keenya quunnami."
       scan_not_working_question_html: "Scan'n hin hojjatu, maalan godha?"
       scan_not_working_answer_html: "Fuula argii gara jalaa irratti lakkoofsa Paaspoortii Dhiibbaa dhiigaa galchi. Yoo rakkoon kun itti fufe, bilbilakee lamkaasi. Amma shin hojjetu yoo ta&rsquo;e, to&rsquo;ataakee quunnami."
       udpate_app_question_html: "Appicha akkamiin haaromsa?"
-      udpate_app_answer_html: "Fayyadamakee sajoo qindeessituu cuqaasuudhaan <span class=\"code\">Foyyeessuu</span> isa jedhu tuqii ammayoomsi. Simple dhiyeenya ammayyoomee meeshaakee irratti qabaachuun baay&rsquo;ee barbaachisaadha."
+      udpate_app_answer_html: "Fayyadamakee sajoo qindeessituu cuqaasuudhaan <span class=\"code\">Foyyeessuu</span> isa jedhu tuqii ammayoomsi. %{app_brand_name} dhiyeenya ammayyoomee meeshaakee irratti qabaachuun baay&rsquo;ee barbaachisaadha."
       cant_find_followup_question_html: Dhukkubsataa hordofamu hin agarre
       cant_find_followup_answer_html: "Si&rsquo;a tokko tokko, dhukkubsattoota hordoffii irra jiran,yammuu jarri Paaspoortii Dhiibbaa dhiigaa hin qabne, barbaaduun ni cima. Daqiiqaa 5 booda, dhukkubsataa argachuu yoo dadhabde, akka dhukkubsataa haaraatti galmeessi. Gara fuulduraatti galmee dhukkubsataa qindeessuun ni danda&rsquo;ama."
       two_bp_passports_question_html: "Dhukkubsataan Paaspoortiiwwwan BP 2 qabaachuu ni danda'aa?"
@@ -277,10 +277,10 @@ om-ET:
       no_more_bp_passports_answer_html: "Utuu hin fixin dura, Paaspoortii Dhiibbaa dhiigaa dabalataa akka ajajuuf to&rsquo;ataakee gaafadhu. Yaadadhu, osoodhuma Paaspoortii Dhiibbaa dhiigaa hin qabaatin, dhukkubsattoota galmeessitee boodarra Paaspoortii kennuufi dandeessa."
       what_is_sync_question_html: "\"Mirk\" maali?"
       what_is_sync_answer_html: "&ldquo;Wal-simni&rdquo;/&rdquo; sync&rdquo; deetaa kee kaadima giddu-galeessaa irra siif kaa&rsquo;a. Galmeen kee yoo xiqqaate guyyaatti al-tokko ol-ka&rsquo;aamuu isaa mirkaneessi. Yoo quunnamtii interneetii gaarii hin qabdu ta&rsquo;e, wal-simiinsi deetaa kee yeroo muraasa fudhachuu danda&rsquo;a."
-      data_usage_question_html: "Simple ragaalee hangamii fayyadama?"
-      data_usage_answer_html: Simple&rsquo;n deetaa baay&rsquo;ee xiqqoo fayyadama Gidu-galeessaan ji&rsquo;a hundumatti 20MB faayidaa irra ni oola.
-      access_my_info_question_html: "Simple odeeffannoo kiyya argachuu ni danda'aa?"
-      access_my_info_answer_html: Simple&rsquo;n odeeffannoo dhuunfaa bibilbila ykn taabileetiikee irra jiru hin argu.
+      data_usage_question_html: "%{app_brand_name} ragaalee hangamii fayyadama?"
+      data_usage_answer_html: "%{app_brand_name}&rsquo;n deetaa baay&rsquo;ee xiqqoo fayyadama Gidu-galeessaan ji&rsquo;a hundumatti 20MB faayidaa irra ni oola."
+      access_my_info_question_html: "%{app_brand_name} odeeffannoo kiyya argachuu ni danda'aa?"
+      access_my_info_answer_html: "%{app_brand_name}&rsquo;n odeeffannoo dhuunfaa bibilbila ykn taabileetiikee irra jiru hin argu."
     bp_passport_app:
       heading_html: "Appii BP Passport "
       features:
@@ -379,7 +379,7 @@ om-ET:
         subtitle: "Beellamawwan hordoffii %{facility_name} tti galmaa'an. Beellama hordoffii jechuun yoo dhukkubsataan kan BPn isaa fudhatamu, sukkaarri isaa fudhatamu, beellamni kan kennamuuf ta'edha."
       patients_initiated_on_treatment_card:
         title: 'Gaafa "dhukkusataan dawaa itti jalqabe" eessa jira?'
-        main_text: '"Dhukkubsatoota Galmaa''an" fayyadami, dhukkubsatoota Simple irratti galmaa''aniif "dhukkusataan dawaa itti jalqabe" wajiin wal qixa'
+        main_text: '"Dhukkubsatoota Galmaa''an" fayyadami, dhukkubsatoota %{app_brand_name} irratti galmaa''aniif "dhukkusataan dawaa itti jalqabe" wajiin wal qixa'
       more_patient_data_coming_soon_card:
         title: "Guyyaa dhukkubsataan heddu dhufu"
         main_text: "Gabaasni galmee fi hordoffii akkaataa dhukkubaa fi saalaa irratti hundaa'e dhiyootti ni dabalama."

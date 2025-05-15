@@ -4,7 +4,7 @@ module ApplicationHelper
   STANDARD_TIME_DISPLAY_FORMAT = Time::DATE_FORMATS[:time]
 
   def page_title
-    title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title")
+    title = content_for?(:title) ? content_for(:title) : I18n.t("admin.dashboard_title", app_brand_name: Rails.application.config.application_brand_name)
     [env_prefix, title].compact.join(" ")
   end
 

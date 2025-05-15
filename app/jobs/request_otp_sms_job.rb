@@ -14,7 +14,7 @@ class RequestOtpSmsJob < ApplicationJob
 
   def otp_message(user)
     app_signature = ENV["SIMPLE_APP_SIGNATURE"]
-    I18n.t("communications.request_otp", otp: user.otp, app_signature: app_signature)
+    I18n.t("communications.request_otp", otp: user.otp, app_signature: app_signature, app_brand_name: Rails.application.config.application_brand_name)
   end
 
   def handle_twilio_errors(user, &block)

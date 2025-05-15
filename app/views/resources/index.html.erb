@@ -25,7 +25,7 @@
             Training videos
           </a>
           <a href="#card-1pager" class="nav-link">
-            1-pager about Simple
+            1-pager about <%= Rails.application.config.application_brand_name %>
           </a>
           <a href="#card-print" class="nav-link">
             Print material
@@ -92,7 +92,7 @@
             <a href="<%= ExternalLinksHelper::DEPLOYMENT_CHECKLIST_LINK %>" class="resource-url">
               Deployment checklist
               <span>
-                Print and use this checklist when deploying Simple in a new district or region.
+                Print and use this checklist when deploying <%= Rails.application.config.application_brand_name %> in a new district or region.
               </span>
               <i class="far fa-file-alt"></i>
             </a>
@@ -451,7 +451,7 @@
             <div class="col-sm-3 col-video mb-3">
               <%= image_tag 'resources/video-chapter-10.jpg', style: 'width: 100%;' %>
               <strong>
-                10: Start using Simple
+                10: Start using <%= Rails.application.config.application_brand_name %>
               </strong>
               <span>
                 2 min
@@ -512,7 +512,7 @@
             <div class="col-sm-3 col-video">
               <%= image_tag 'resources/video-how.jpg', style: 'width: 100%;' %>
               <strong>
-                Quick Simple Training
+                Quick <%= Rails.application.config.application_brand_name %> Training
               </strong>
               <span>
                 5 min
@@ -541,7 +541,7 @@
             <div class="col-sm-3 col-video">
               <%= image_tag 'resources/video-doc.jpg', style: 'width: 100%;' %>
               <strong>
-                Simple Documentary
+                <%= Rails.application.config.application_brand_name %> Documentary
               </strong>
               <span>
                 3 min / 5 min 30 sec
@@ -557,7 +557,7 @@
         </div>
         <div class="card" id="card-1pager">
           <h2>
-            1-pagers about Simple
+            1-pagers about <%= Rails.application.config.application_brand_name %>
           </h2>
           <% if CountryConfig.current[:name] == "India" %>
             <%= render "shared/one_pager_india" %>
@@ -694,7 +694,7 @@
             <h6 class="question">
               Duplicate patients at a facility
             </h6>
-            Contact the Simple team. We will provide a spreadsheet of all patients registered at a facility. If you indicate the duplicate patients, we will remove the duplicates.
+            Contact the <%= Rails.application.config.application_brand_name %> team. We will provide a spreadsheet of all patients registered at a facility. If you indicate the duplicate patients, we will remove the duplicates.
           </div>
           <div class="question">
             <h6 class="question">
@@ -705,7 +705,7 @@
                 Make sure that the users have currently selected correct facility from the home screen of the app.
               </li>
               <li>
-                Make a note of the patient that is recorded at the wrong facility and report it to the Simple team.
+                Make a note of the patient that is recorded at the wrong facility and report it to the <%= Rails.application.config.application_brand_name %> team.
               </li>
             </ol>
           </div>
@@ -772,7 +772,7 @@
             </h6>
             <ol type="a">
               <li>
-                Type <span class="badge badge-info">Simple Resolve</span> in the Google Play app search to download the app.
+                Type <span class="badge badge-info"><%= Rails.application.config.application_brand_name %></span> in the Google Play app search to download the app.
               </li>
               <li>
                 User must be using a modern Android phone or tablet, version 5 or above. Ask them to check their Android phone version: Go to Settings, scroll all the way down, look for ‘About Phone’. Tap on it to check the phone version.
@@ -787,7 +787,7 @@
           </div>
           <div class="question">
             <h6 class="question">
-              What is a High BP in Simple?
+              What is a High BP in <%= Rails.application.config.application_brand_name %>?
             </h6>
             BP &ge; 140/90 mmHg
           </div>
@@ -809,7 +809,7 @@
                 In case they do not have BP passports, they can still continue to register and update patients using 'SEARCH'.
               </li>
               <li>
-                Contact the Simple team to place a new request for BP passports.
+                Contact the <%= Rails.application.config.application_brand_name %> team to place a new request for BP passports.
               </li>
               <li>
                 It takes about a month for the passports to arrive after placing a request.
@@ -824,17 +824,17 @@
           </div>
           <div class="question">
             <h6 class="question">
-              "I want to change my handset, but continue to use Simple with same mobile number. How can I do it?"
+              "I want to change my handset, but continue to use <%= Rails.application.config.application_brand_name %> with same mobile number. How can I do it?"
             </h6>
             <ol type="a">
               <li>
-                Download the Simple app on the new handset from Google Play store.
+                Download the <%= Rails.application.config.application_brand_name %> app on the new handset from Google Play store.
               </li>
               <li>
-                Ensure that user's new handset has the same SIM card as their registered mobile number with Simple.
+                Ensure that user's new handset has the same SIM card as their registered mobile number with <%= Rails.application.config.application_brand_name %>.
               </li>
               <li>
-                Ask them to open the Simple app and tap on <span class="badge badge-info">Get started</span>.
+                Ask them to open the <%= Rails.application.config.application_brand_name %> app and tap on <span class="badge badge-info">Get started</span>.
               </li>
               <li>
                 Enter the mobile number and then their 4-digit security PIN
@@ -843,7 +843,7 @@
                 After successfully entering the correct PIN, they will see the following message...
               </li>
               <li>
-                Ask them to tap on <span class="badge badge-info">GOT IT</span> and they can start using Simple as they normally do.
+                Ask them to tap on <span class="badge badge-info">GOT IT</span> and they can start using <%= Rails.application.config.application_brand_name %> as they normally do.
               </li>
               <li>
                 They will be logged out of their old device.
@@ -852,21 +852,21 @@
           </div>
           <div class="question">
             <h6 class="question">
-              Using two handsets with the Simple app
+              Using two handsets with the <%= Rails.application.config.application_brand_name %> app
             </h6>
-            Sorry, users cannot use two handsets with the same phone number to use Simple. Users can only be logged in on one device at a time.
+            Sorry, users cannot use two handsets with the same phone number to use <%= Rails.application.config.application_brand_name %>. Users can only be logged in on one device at a time.
           </div>
           <div class="question">
             <h6 class="question">
               Wrong facility selected during registration
             </h6>
-            The CVHO is requested to immediately get in touch with the Simple team and share the user's details to get the facility corrected.
+            The CVHO is requested to immediately get in touch with the <%= Rails.application.config.application_brand_name %> team and share the user's details to get the facility corrected.
           </div>
           <div class="question">
             <h6 class="question">
               User transferred to a new facility
             </h6>
-            If the user transferred within the district, they can change it in the app themselves. Tap on the icon next to current facility name on the home screen , and select another facility. If users are not able find the facility name, then their CVHO is requested to immediately get in touch with the Simple team and share user's details to get the facility changed.
+            If the user transferred within the district, they can change it in the app themselves. Tap on the icon next to current facility name on the home screen , and select another facility. If users are not able find the facility name, then their CVHO is requested to immediately get in touch with the <%= Rails.application.config.application_brand_name %> team and share user's details to get the facility changed.
           </div>
           <div class="question">
             <h6 class="question">
@@ -882,7 +882,7 @@
             Contact
           </h2>
           <p>
-            Suggest new resources by emailing: <a href="mailto:team@simple.org">team@simple.org</a>
+            Suggest new resources by emailing: <a href="mailto:<%= Rails.application.config.team_email_id %>"><%= Rails.application.config.team_email_id %></a>
           </p>
         </div>
       </div>
