@@ -1159,4 +1159,17 @@ RSpec.describe UserAccess, type: :model do
       end
     end
   end
+
+  describe "#LEVELS" do
+    context "with customised app name" do
+      before do
+        allow(Rails.application.config).to receive(:application_brand_name).and_return("Test Brand")
+        load Rails.root.join("app/models/user_access.rb")
+      end
+
+      it "should have the brand name in description" do
+        expect(UserAccess::LEVELS[:power_user][:description]).to eq "Power user: Can manage the entire Test Brand deployment"
+      end
+    end
+  end
 end
