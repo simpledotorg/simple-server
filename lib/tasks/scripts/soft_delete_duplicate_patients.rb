@@ -11,13 +11,13 @@ module SoftDeleteDuplicatePatients
     patient_headers = patients.headers
 
     unless patient_headers.include?("Duplicate?") &&
-        patient_headers.include?("#{APPLICATION_BRAND_NAME} Patient ID")
-      abort "Duplicate? and #{APPLICATION_BRAND_NAME} Patient ID columns must both be present."
+        patient_headers.include?("#{Rails.application.config.application_brand_name} Patient ID")
+      abort "Duplicate? and #{Rails.application.config.application_brand_name} Patient ID columns must both be present."
     end
 
     patients
       .select { |patient| patient["Duplicate?"] == "DELETE" }
-      .map { |patient| patient["#{APPLICATION_BRAND_NAME} Patient ID"] }
+      .map { |patient| patient["#{Rails.application.config.application_brand_name} Patient ID"] }
   end
 
   def self.discard_patients(patient_ids)
