@@ -1,22 +1,5 @@
 This document provides a guide on how to whitelabel your application
 
-Set a value for these env variables as per you requirement
-
-APPLICATION_BRAND_NAME - This will be the new brand name which will be reflected at all places in the application.
-TEAM_EMAIL_ID - Your team email address.
-HELP_EMAIL_ID - Your help center email address.
-CVHO_EMAIL_ID - Your CVHO email address.
-ENG_EMAIL_ID - Your engineering team email address.
-
-Example
-APPLICATION_BRAND_NAME="Demo"
-TEAM_EMAIL_ID="team_email@test.org"
-HELP_EMAIL_ID="help_email@test.org"
-CVHO_EMAIL_ID="cvho_email@test.org"
-ENG_EMAIL_ID="eng-backend@test.org"# Whitelabeling Guide
-
-This document provides a guide on how to whitelabel your application by customizing brand-specific values through environment variables.
-
 ## Environment Variables
 
 Set the following environment variables according to your desired branding:
