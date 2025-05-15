@@ -13,7 +13,7 @@ es:
       invalid_password: "Su contraseña no concuerda. Intente de nuevo."
       account_locked: "Su cuenta ha sido bloqueada por los próximos %{minutes} minutos. Por favor espere e inténte de nuevo."
   communications:
-    request_otp: "<#> %{otp}es su código de verificación de Simple\n%{app_signature}"
+    request_otp: "<#> %{otp}es su código de verificación de %{app_brand_name}\n%{app_signature}"
     appointment_reminders:
       sms: "Nuestro equipo en %{facility_name}está pensando en su salud. Por favor continúe tomando sus medicamentos para la presión arterial y recoja su medicina en el centro de distribución mas cercano."
       whatsapp: "Nuestro equipo en %{facility_name}está pensando en su salud. Por favor continúe tomando sus medicamentos para la presión arterial y recoja su medicina en el centro de distribución mas cercano."
@@ -98,7 +98,7 @@ es:
       heading_html: Videos de capacitación
       class:
         heading_html: Tome la clase
-        contents_html: Tome una clase para aprender a usar Simple.
+        contents_html: Tome una clase para aprender a usar %{app_brand_name}.
         training_videos_link_html: "Capacitación: Todos los capítulos"
         training_videos_subtitle_html: "Inglés con subtítulos en Hindi 36:15"
       chapters:
@@ -112,11 +112,11 @@ es:
         chapter_7_html: "7: Herramientas importantes"
         chapter_8_html: "8: Preguntas frecuentes"
         chapter_9_html: "9: Cómo obtener ayuda"
-        chapter_10_html: "10: Empieze a usar Simple"
+        chapter_10_html: "10: Empieze a usar %{app_brand_name}"
       teleconsultation:
         heading_html: Capacitación para teleconsultas
-        contents_html: "Si su hospital usa Simple para teleconsultas, esta capacitación es para usted."
-        english_video_link_html: Teleconsultas con Simple
+        contents_html: "Si su hospital usa %{app_brand_name} para teleconsultas, esta capacitación es para usted."
+        english_video_link_html: Teleconsultas con %{app_brand_name}
         english_video_link_language_html: Inglés
         hindi_video_link_html: Telemedicina por Simple
         hindi_video_link_language_html: Hindi
@@ -126,16 +126,16 @@ es:
         video_link_html: Cómo usar un BP Passport
         video_link_subtitle_html: Hindi con subtítulos en inglés
       film:
-        heading_html: Película de Simple
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Un día en la vida de Simple"</a> es un cortometraje que muestra cómo una enfermera en Punjab, India, usa Simple para tratar pacientes con hipertensión.'
+        heading_html: Película de %{app_brand_name}
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Un día en la vida de %{app_brand_name}"</a> es un cortometraje que muestra cómo una enfermera en Punjab, India, usa %{app_brand_name} para tratar pacientes con hipertensión.'
     start:
       heading_html: Empezando
       getting_started_video:
         heading_html: Mire un video
-        contents_html: Aprenda lo básico de Simple en 5 minutos.
+        contents_html: Aprenda lo básico de %{app_brand_name} en 5 minutos.
       who_to_record:
-        heading_html: "¿A quién registrar en Simple?"
-        contents_1_html: Use Simple para registrar a <i>cada paciente con hipertensión</i> o que toma medicinas para PA alta.
+        heading_html: "¿A quién registrar en %{app_brand_name}?"
+        contents_1_html: Use %{app_brand_name} para registrar a <i>cada paciente con hipertensión</i> o que toma medicinas para PA alta.
         contents_2_html: "Cuando el paciente regrese para seguimiento, busque al mismo paciente e ingrese una nueva PA."
       step_1:
         label_html: Paso 1
@@ -144,14 +144,14 @@ es:
       step_2:
         label_html: Paso 2
         heading_html: Escriba en BP Passport
-        contents_html: "Si tiene BP Passports, escriba el nombre del paciente. Después, escanéelo usando la aplicación Simple."
+        contents_html: "Si tiene BP Passports, escriba el nombre del paciente. Después, escanéelo usando la aplicación %{app_brand_name}."
       step_3:
         label_html: Paso 3
         heading_html: Registre al paciente
         contents_html: "Si el paciente es nuevo, regístrelo."
       step_4:
         label_html: Paso 4
-        heading_html: Ingrese la PA en Simple
+        heading_html: Ingrese la PA en %{app_brand_name}
         contents_html: <i>No redondee</i> la lectura de PA.
       step_5:
         label_html: Paso 5
@@ -164,7 +164,7 @@ es:
       missed_visit:
         label_html: Visita perdida
         heading_html: "¿Qué sucede después?"
-        contents_html: "Si su paciente no acude a su visita, Simple les enviará un mensaje de texto recordándoles que regresen."
+        contents_html: "Si su paciente no acude a su visita, %{app_brand_name} les enviará un mensaje de texto recordándoles que regresen."
       tip:
         heading_html: Tip
         contents_html: Asegúrese de grabar pacientes en la unidad correcta. Revise el nombre de la unidad en la parte de arriba en la página de inicio.
@@ -212,7 +212,7 @@ es:
         contents_2_html: "Si el paciente no concuerda con ninguno de los pacientes en la búsqueda, por favor regístrelos como un paciente nuevo."
       tip:
         heading_html: Tip
-        contents_html: "Si el escaneo de BP Passport no funciona, puede escribir el número de BP Passport en Simple, usando la misma pantalla donde escanea."
+        contents_html: "Si el escaneo de BP Passport no funciona, puede escribir el número de BP Passport en %{app_brand_name}, usando la misma pantalla donde escanea."
     record:
       heading_html: Registrar la visita de un paciente.
       find_patient:
@@ -265,11 +265,11 @@ es:
     faq:
       heading_html: Preguntas comunes
       app_crash_question_html: "¿Qué debo hacer si mi aplicación falla?"
-      app_crash_answer_html: "Primero intente reiniciar su dispositivo. Si Simple sigue fallando y no puede arreglarlo, por favor vaya a la pantalla de <span class=\"help\">Ayuda</span> y contacte a su supervisor o a nuestro equipo."
+      app_crash_answer_html: "Primero intente reiniciar su dispositivo. Si %{app_brand_name} sigue fallando y no puede arreglarlo, por favor vaya a la pantalla de <span class=\"help\">Ayuda</span> y contacte a su supervisor o a nuestro equipo."
       scan_not_working_question_html: "No es posible escanear. ¿Qué debo hacer?"
       scan_not_working_answer_html: "Ingrese el número de BP Passport en la parte inferior de su pantalla. Si el problema persiste, reinicie su teléfono. Si aún así no funciona, contacte a su supervisor."
       udpate_app_question_html: "¿Cómo actualizo la aplicación?"
-      udpate_app_answer_html: "Actualice la aplicación pulsando el icono de ajustes y pulsando <span class=\"code\">Actualizar</span>. Es importante siempre tener la versión más reciente de Simple en su dispositivo."
+      udpate_app_answer_html: "Actualice la aplicación pulsando el icono de ajustes y pulsando <span class=\"code\">Actualizar</span>. Es importante siempre tener la versión más reciente de %{app_brand_name} en su dispositivo."
       cant_find_followup_question_html: No puedo encontrar a un paciente de seguimiento
       cant_find_followup_answer_html: "A veces es difícil encontrar a un paciente de seguimiento si no tienen un BP Passport. Si después de 5 minutos no puede encontrar al paciente, regístrelos como un nuevo paciente. Es posible combinar los registros de paciente en un futuro."
       two_bp_passports_question_html: "¿Un paciente puede tener 2 BP Passports?"
@@ -278,10 +278,10 @@ es:
       no_more_bp_passports_answer_html: Por favor pida a su supervisor que ordene más BP Passports antes de que se le acaben. Recuerde que usted puede seguir registrando pacientes incluso si no tiene BP Passport &#8212; podrá asignarles uno después.
       what_is_sync_question_html: "¿Qué es \"sincronización\"?"
       what_is_sync_answer_html: "Una \"sincronización\" guarda sus datos en un servidor central. Por favor asegúrese de que sus datos se hayan guardado por lo menos una vez al día. Si su conexión a internet no es buena, sus datos puede tomar algo de tiempo para sincronizar."
-      data_usage_question_html: "¿Cuántos datos usa Simple?"
-      data_usage_answer_html: Simple usa muy pocos datos. En promedio utiliza 20 MB cada mes.
-      access_my_info_question_html: "¿Simple puede acceder a mi información?"
-      access_my_info_answer_html: Simple no accede a ninguna de su información personal en su teléfono o tableta.
+      data_usage_question_html: "¿Cuántos datos usa %{app_brand_name}?"
+      data_usage_answer_html: "%{app_brand_name} usa muy pocos datos. En promedio utiliza 20 MB cada mes."
+      access_my_info_question_html: "¿%{app_brand_name} puede acceder a mi información?"
+      access_my_info_answer_html: "%{app_brand_name} no accede a ninguna de su información personal en su teléfono o tableta."
     bp_passport_app:
       heading_html: Aplicación BP Passport
       features:
@@ -383,7 +383,7 @@ es:
         subtitle: "Visitas de seguimiento registradas en %{facility_name}. Una visita de seguimiento es cuando a un paciente se le midió PA o azúcar en sangre, se le agendó una cita o se le actualizaron medicamentos."
       patients_initiated_on_treatment_card:
         title: '¿Dónde están los datos de los "Pacientes en tratamiento"?'
-        main_text: 'Use "Pacientes registrados", siempre equivale al número de "Pacientes en tratamiento" registrados en Simple.'
+        main_text: 'Use "Pacientes registrados", siempre equivale al número de "Pacientes en tratamiento" registrados en %{app_brand_name}.'
       more_patient_data_coming_soon_card:
         title: "Pronto serán disponibles más datos de pacientes."
         main_text: "Pronto se agregará registro diario e información de seguimiento segmentada por enfermedad y sexo."

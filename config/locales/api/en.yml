@@ -13,7 +13,7 @@ en:
       invalid_password: "Your password does not match. Try again?"
       account_locked: "Your account has been locked for the next %{minutes} minutes. Please wait and try again."
   communications:
-    request_otp: "<#> %{otp} is your Simple verification code\n%{app_signature}"
+    request_otp: "<#> %{otp} is your %{app_brand_name} verification code\n%{app_signature}"
     appointment_reminders:
       sms: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
       whatsapp: "Our staff at %{facility_name} are thinking of you and your heart health. Please continue your blood pressure medicines. Collect your medicine from the nearest sub centre."
@@ -97,7 +97,7 @@ en:
       heading_html: Training videos
       class:
         heading_html: Take the class
-        contents_html: Watch a class to learn to use Simple.
+        contents_html: Watch a class to learn to use %{app_brand_name}.
         training_videos_link_html: "Training: All Chapters"
         training_videos_subtitle_html: "English with Hindi subtitles 36:15"
       chapters:
@@ -111,11 +111,11 @@ en:
         chapter_7_html: "7: Important features"
         chapter_8_html: "8: FAQ"
         chapter_9_html: "9: How to get help"
-        chapter_10_html: "10: Start using Simple"
+        chapter_10_html: "10: Start using %{app_brand_name}"
       teleconsultation:
         heading_html: Tele-consultation training
-        contents_html: If your hospital is using Simple for tele-consultation, this training is for you.
-        english_video_link_html: Tele-consultation with Simple
+        contents_html: If your hospital is using %{app_brand_name} for tele-consultation, this training is for you.
+        english_video_link_html: Tele-consultation with %{app_brand_name}
         english_video_link_language_html: English
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
@@ -125,16 +125,16 @@ en:
         video_link_html: How to use a BP Passport
         video_link_subtitle_html: Hindi with English subtitles
       film:
-        heading_html: Simple film
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of Simple"</a> is a short film that shows how a nurse in Punjab, India, uses Simple to treat patients with hypertension.'
+        heading_html: "%{app_brand_name} film"
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"A day in the life of %{app_brand_name}"</a> is a short film that shows how a nurse in Punjab, India, uses %{app_brand_name} to treat patients with hypertension.'
     start:
       heading_html: Getting started
       getting_started_video:
         heading_html: Watch a video
-        contents_html: Learn the basics of Simple in 5 minutes.
+        contents_html: Learn the basics of %{app_brand_name} in 5 minutes.
       who_to_record:
-        heading_html: Who to record in Simple?
-        contents_1_html: Use Simple to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.
+        heading_html: Who to record in %{app_brand_name}?
+        contents_1_html: Use %{app_brand_name} to record <i>every patient who has hypertension</i> or who is taking medicines for high BP.
         contents_2_html: When the patient returns for follow-up, search for the same patient and enter a new BP.
       step_1:
         label_html: Step 1
@@ -143,14 +143,14 @@ en:
       step_2:
         label_html: Step 2
         heading_html: Write in BP Passport
-        contents_html: If you have BP Passports, write the patient's name. Then, scan it using the Simple app.
+        contents_html: If you have BP Passports, write the patient's name. Then, scan it using the %{app_brand_name} app.
       step_3:
         label_html: Step 3
         heading_html: Register patient
         contents_html: If they are new, register the patient.
       step_4:
         label_html: Step 4
-        heading_html: Enter BP in Simple
+        heading_html: Enter BP in %{app_brand_name}
         contents_html: <i>Do not round</i> the BP reading.
       step_5:
         label_html: Step 5
@@ -163,7 +163,7 @@ en:
       missed_visit:
         label_html: Missed visit
         heading_html: What happens next?
-        contents_html: If your patient misses their visit, Simple will send a text message reminding them to come back.
+        contents_html: If your patient misses their visit, %{app_brand_name} will send a text message reminding them to come back.
       tip:
         heading_html: Tip
         contents_html: Always make sure to record the patients at the correct facility. On the home screen, always check the facility in the top left.
@@ -211,7 +211,7 @@ en:
         contents_2_html: If the patient does not match any of the patients in the search, please register them as a new patient.
       tip:
         heading_html: Tip
-        contents_html: If BP Passport scanning is not working, you can still type the BP Passport number into Simple on the same screen where you scan.
+        contents_html: If BP Passport scanning is not working, you can still type the BP Passport number into %{app_brand_name} on the same screen where you scan.
     record:
       heading_html: Record a patient's visit
       find_patient:
@@ -264,11 +264,11 @@ en:
     faq:
       heading_html: Common questions
       app_crash_question_html: What should I do if my app crashes?
-      app_crash_answer_html: First try restarting your device. If Simple is crashing and you cannot fix it, please go to the <span class="help">Help</span> screen and contact your supervisor or our team.
+      app_crash_answer_html: First try restarting your device. If %{app_brand_name} is crashing and you cannot fix it, please go to the <span class="help">Help</span> screen and contact your supervisor or our team.
       scan_not_working_question_html: Scan isn't working. What should I do?
       scan_not_working_answer_html: Enter the BP Passport number at the bottom of the screen. If the problem persists, restart your phone. If it still does not work, contact your supervisor.
       udpate_app_question_html: How do I update the app?
-      udpate_app_answer_html: "Update the app by pressing the settings icon and pressing <span class=\"code\">Update</span>. It is important to have the latest version of Simple on your device."
+      udpate_app_answer_html: "Update the app by pressing the settings icon and pressing <span class=\"code\">Update</span>. It is important to have the latest version of %{app_brand_name} on your device."
       cant_find_followup_question_html: I cannot find a follow-up patient
       cant_find_followup_answer_html: Sometimes it is difficult to find a follow-up patient when they do not have a BP Passport. If, after 5 minutes, you cannot find the patient, register them as a new patient. It is possible to combine the patient records in the future.
       two_bp_passports_question_html: Can a patient have 2 BP Passports?
@@ -277,10 +277,10 @@ en:
       no_more_bp_passports_answer_html: Please ask your supervisor to order more BP Passports, before you run out. Remember, you can still record patients even if you do not have any BP Passports &#8212; you can assign BP Passports later.
       what_is_sync_question_html: What is a "sync"?
       what_is_sync_answer_html: A "sync" saves your data to a central server. Please make sure that your data gets saved at least once per day. If you do not have a good internet connection, your data might take some time to sync.
-      data_usage_question_html: How much data does Simple use?
-      data_usage_answer_html: Simple uses very little data. On average about 20 MB is used each month.
-      access_my_info_question_html: Can Simple access my information?
-      access_my_info_answer_html: Simple does not access any of the personal information on your phone or tablet.
+      data_usage_question_html: How much data does %{app_brand_name} use?
+      data_usage_answer_html: "%{app_brand_name} uses very little data. On average about 20 MB is used each month."
+      access_my_info_question_html: Can %{app_brand_name} access my information?
+      access_my_info_answer_html: "%{app_brand_name} does not access any of the personal information on your phone or tablet."
     bp_passport_app:
       heading_html: BP Passport app
       features:
@@ -379,7 +379,7 @@ en:
         subtitle: "Follow-up visits recorded at %{facility_name}. A follow-up is a visit when a patient had a BP taken, a blood sugar taken, an appointment scheduled, or medications were updated."
       patients_initiated_on_treatment_card:
         title: 'Where is the "Patients initiated on treatment" data?'
-        main_text: 'Use "Registered patients", it will always equal "Patients initiated on treatment" for patients registered on Simple.'
+        main_text: 'Use "Registered patients", it will always equal "Patients initiated on treatment" for patients registered on %{app_brand_name}.'
       more_patient_data_coming_soon_card:
         title: "More patient data coming soon"
         main_text: "Daily registration and follow-up data broken down by disease and gender will be added soon."

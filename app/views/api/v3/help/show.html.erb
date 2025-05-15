@@ -81,7 +81,7 @@
         <h2><%= t("help.videos.heading_html") %></h2>
         <div class="card">
           <h3><%= t("help.videos.class.heading_html") %></h3>
-          <p><%= t("help.videos.class.contents_html") %></p>
+          <p><%= t("help.videos.class.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>" class="video">
           <%= inline_svg('thumb_training.svg') %>
           </a>
@@ -121,14 +121,14 @@
             <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9_html") %></a>
           </div>
           <div class="video-small">
-            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10_html") %></a>
+            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10_html", app_brand_name: Rails.application.config.application_brand_name) %></a>
           </div>
         </div>
         <div class="card">
           <h3><%= t("help.videos.teleconsultation.heading_html") %></h3>
-          <p><%= t("help.videos.teleconsultation.contents_html") %></p>
+          <p><%= t("help.videos.teleconsultation.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link_html") %><span><%= t("help.videos.teleconsultation.english_video_link_language_html") %></span></a>
+            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link_html", app_brand_name: Rails.application.config.application_brand_name) %><span><%= t("help.videos.teleconsultation.english_video_link_language_html") %></span></a>
           </div>
           <div class="video-small">
             <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link_html") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language_html") %></span></a>
@@ -142,12 +142,12 @@
           </div>
         </div>
         <div class="card">
-          <h3><%= t("help.videos.film.heading_html") %></h3>
+          <h3><%= t("help.videos.film.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
           <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
           <%= inline_svg('thumb_documentary.svg') %>
           </a>
           <p>
-            <%= t("help.videos.film.link_html") %>
+            <%= t("help.videos.film.link_html", app_brand_name: Rails.application.config.application_brand_name) %>
           </p>
         </div>
       </div>
@@ -166,11 +166,11 @@
           <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
             <%= inline_svg('thumb_demo.svg') %>
           </a>
-          <p><%= t("help.start.getting_started_video.contents_html") %></p>
+          <p><%= t("help.start.getting_started_video.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
         </div>
         <div class="card">
-          <h3><%= t("help.start.who_to_record.heading_html") %></h3>
-          <p><%= t("help.start.who_to_record.contents_1_html") %></p>
+          <h3><%= t("help.start.who_to_record.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
+          <p><%= t("help.start.who_to_record.contents_1_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           <p><%= t("help.start.who_to_record.contents_2_html") %></p>
         </div>
         <div class="card">
@@ -179,14 +179,14 @@
         </div>
         <div class="card">
           <h3><span class="header-label"><span><%= t("help.start.step_2.label_html") %></span></span><%= t("help.start.step_2.heading_html") %></h3>
-          <p><%= t("help.start.step_2.contents_html") %></p>
+          <p><%= t("help.start.step_2.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
         </div>
         <div class="card">
           <h3><span class="header-label"><span><%= t("help.start.step_3.label_html") %></span></span><%= t("help.start.step_3.heading_html") %></h3>
           <p><%= t("help.start.step_3.contents_html") %></p>
         </div>
         <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_4.label_html") %></span></span><%= t("help.start.step_4.heading_html") %></h3>
+          <h3><span class="header-label"><span><%= t("help.start.step_4.label_html") %></span></span><%= t("help.start.step_4.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
           <p><%= t("help.start.step_4.contents_html") %></p>
         </div>
         <div class="card">
@@ -200,7 +200,7 @@
         <hr>
         <div class="card">
           <h3><span class="header-label"><span><%= t("help.start.missed_visit.label_html") %></span></span><%= t("help.start.missed_visit.heading_html") %></h3>
-          <p><%= t("help.start.missed_visit.contents_html") %></p>
+          <p><%= t("help.start.missed_visit.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
         </div>
         <hr>
         <div class="card card-tip">
@@ -293,7 +293,7 @@
         <div class="card card-tip">
           <%= inline_svg('help/tip.svg') %>
           <h3><%= t("help.search.tip.heading_html") %></h3>
-          <p><%= t("help.search.tip.contents_html") %></p>
+          <p><%= t("help.search.tip.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
         </div>
       </div>
     </div>
@@ -421,7 +421,7 @@
         <div class="card">
           <a class="faq"><%= t("help.faq.app_crash_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.app_crash_answer_html") %></p>
+            <p><%= t("help.faq.app_crash_answer_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           </div>
         </div>
         <div class="card">
@@ -433,7 +433,7 @@
         <div class="card">
           <a class="faq"><%= t("help.faq.udpate_app_question_html") %></a>
           <div class="answer">
-            <p><%= t("help.faq.udpate_app_answer_html") %></p>
+            <p><%= t("help.faq.udpate_app_answer_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
             <div class="help-example"><%= inline_svg('icon_settings.svg') %></div>
           </div>
         </div>
@@ -463,15 +463,15 @@
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.data_usage_question_html") %></a>
+          <a class="faq"><%= t("help.faq.data_usage_question_html", app_brand_name: Rails.application.config.application_brand_name) %></a>
           <div class="answer">
-            <p><%= t("help.faq.data_usage_answer_html") %></p>
+            <p><%= t("help.faq.data_usage_answer_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           </div>
         </div>
         <div class="card">
-          <a class="faq"><%= t("help.faq.access_my_info_question_html") %></a>
+          <a class="faq"><%= t("help.faq.access_my_info_question_html", app_brand_name: Rails.application.config.application_brand_name) %></a>
           <div class="answer">
-            <p><%= t("help.faq.access_my_info_answer_html") %></p>
+            <p><%= t("help.faq.access_my_info_answer_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
           </div>
         </div>
       </div>

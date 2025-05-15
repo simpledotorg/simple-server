@@ -49,7 +49,7 @@ en:
     patient_list: "Patient list"
     requested: "As you requested, please find the patient list for %{model_type} %{model_name} attached. It contains patient details for every patient registered in the %{model_type}."
     confidential: "Please note that this information is confidential and should be kept private."
-    unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:help@simple.org">help@simple.org</a>'
+    unrequested_html: 'If you did not request this or have questions, please immediately reply to <a href="mailto:%{help_email_id}">%{help_email_id}</a>'
   patients_protected_copy:
     title: Patients protected from heart attacks & strokes in %{region_name}
   bp_controlled_copy:
@@ -237,7 +237,7 @@ en:
     enable_access_alert: "Are you sure you want to enable the access for user?"
     allowed_access_to_user: "%{admin_name} allowed access"
     denied_access_to_user: "%{admin_name} denied access"
-    dashboard_title: "Simple Dashboard"
+    dashboard_title: "%{app_brand_name} Dashboard"
     phi_download_alert: "You are about to download confidental patient data. Are you sure you want to proceed?"
     phi_anonymized_download_alert: "You are about to download confidential (anonymized) patient data. Are you sure you want to proceed?"
 
@@ -278,7 +278,7 @@ en:
       invitation_instructions:
         subject: "Access the Simple Dashboard"
         app: "Simple Dashboard"
-        someone_invited_you: "You are invited as an admin to the Simple Dashboard"
+        someone_invited_you: "You are invited as an admin to the %{app_brand_name} Dashboard"
         accept: "Accept invite"
         accept_until: "This invitation will expire on %{due_date}."
         ignore: "If you do not want to accept the invitation, please ignore this email."
@@ -331,8 +331,8 @@ en:
   api:
     documentation:
       import_description: |
-        # API spec for Simple Server
-        This API spec documents the Import API for partner organizations that want to send their data to Simple. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.
+        # API spec for %{app_brand_name} Server
+        This API spec documents the Import API for partner organizations that want to send their data to %{app_brand_name}. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.
         
         ## Authorization
         Authorization is done via OAuth 2.0, using the [Client Credential flow](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/). At the end of this flow, clients will receive an access token which is attached to all the requests to import data.
@@ -340,7 +340,7 @@ en:
         We recommend using popular open source [OAuth client libraries](https://oauth.net/code/) that will perform the flow in order to obtain the access token.
 
       description: |
-        # API spec for Simple Server
+        # API spec for %{app_brand_name} Server
         ## Sync APIs
         This API spec documents the endpoints that the devices (that are offline to varying levels) will use to sync data. The sync end points will send and receive bulk (a list of) entities. Both sending and receiving can be batched with configurable batch-sizes to accommodate low network bandwidth situations.
 
@@ -351,20 +351,20 @@ en:
         Refer to the [related ADR](https://github.com/simpledotorg/simple-server/blob/master/doc/arch/001-synchronization.md).
 
         ## API Authentication
-        There are two types of authentication available to access different parts of the Simple API.
-        - User Authentication - For medical professionals using the Simple App. Grants access to most of the Simple API
+        There are two types of authentication available to access different parts of the %{app_brand_name} API.
+        - User Authentication - For medical professionals using the %{app_brand_name} App. Grants access to most of the %{app_brand_name} API
           to read and write data for communities of patients.
         - Patient authentication - For individual patients. Grants access to read a patient's own data.
 
         ### User Authentication
 
-        A Simple client can make authenticated requests to the Simple API on behalf of a medical professional with the
+        A %{app_brand_name} client can make authenticated requests to the %{app_brand_name} API on behalf of a medical professional with the
         following three required credentials:
         - API Access Token
         - User ID
         - Facility ID
 
-        In order to obtain these credentials, a Simple client can authenticate a user with the following steps. The
+        In order to obtain these credentials, a %{app_brand_name} client can authenticate a user with the following steps. The
         client will need the user's registered phone number to perform the authentication.
         1. Submit the users phone number to the [`POST /v4/users/find` endpoint](#tag/User/paths/~1users~1find/post). If
         a user exists with this phone number, the response will return their id.
@@ -385,12 +385,12 @@ en:
         facility in their facility group.
 
         ### Patient Authentication
-        A Simple client can make authenticated requests to the Simple API on behalf of a patient with the following
+        A %{app_brand_name} client can make authenticated requests to the %{app_brand_name} API on behalf of a patient with the following
         credentials:
         - API Access Token
         - Patient ID
 
-        In order to obtain these credentials, a Simple client can authenticate a patient with the following steps. The
+        In order to obtain these credentials, a %{app_brand_name} client can authenticate a patient with the following steps. The
         client will need the patient's BP Passport UUID to perform the authentication.
         1. Submit the patient's BP Passport UUID to the [`POST /v4/patients/activate` endpoint](#tag/Patient/paths/~1patient~1activate/post).
            This will trigger an OTP message to be sent to the patient's registered phone number.
@@ -405,12 +405,12 @@ en:
 
         The comprehensive list of authentication mechanisms used is provided below. It lists the specific details of
         using access tokens and other request headers to authenticate with the API.
-      title: "Simple Server"
+      title: "%{app_brand_name} Server"
       logo:
         image: "rtsl_logo.png"
         background_color: "#FFFFFF"
       contact:
-        email: "eng-backend@resolvetosavelives.org"
+        email: "%{eng_email_id}"
       license:
         name: "MIT"
         url: "https://github.com/simpledotorg/simple-server/blob/master/LICENSE"
