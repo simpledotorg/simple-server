@@ -388,6 +388,16 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
         expect(subject.csv(Patient.all).to_s.strip).to eq((timestamp.to_csv + measurement_headers.to_csv + headers.to_csv + fields.to_csv).to_s.strip)
       end
     end
+
+    context "with customised app name" do
+      before do
+        allow(Rails.application.config).to receive(:application_brand_name).and_return("Test Brand")
+      end
+
+      it "generates the headers with the new brand name" do
+        expect(subject.csv(Patient.all)).to include("Test Brand Patient ID")
+      end
+    end
   end
 
   describe "#csv_enumerator" do

@@ -1,7 +1,7 @@
 <div class="col-md-6 mx-auto">
     <div class="card">
         <h1>Forgot your password?</h1>
-        <p>Simple will send you an email with instructions to choose a new password</p>
+        <p><%= Rails.application.config.application_brand_name %> will send you an email with instructions to choose a new password</p>
             <%= bootstrap_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }, label_errors: true) do |f| %>
               <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
 

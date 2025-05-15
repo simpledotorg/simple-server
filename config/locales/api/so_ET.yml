@@ -97,7 +97,7 @@ so-ET:
       heading_html: Fiidyawyo tobobar ah
       class:
         heading_html: Qaado fasalka
-        contents_html: Daawo fasalka si aad u barato isticmaalka Simple.
+        contents_html: Daawo fasalka si aad u barato isticmaalka %{app_brand_name}.
         training_videos_link_html: "Tobobar: Dhamaan Cutubyada"
         training_videos_subtitle_html: "Qoraalka hoose ee Ingiriisiga Hindiga lagu turjubay 36:15"
       chapters:
@@ -111,11 +111,11 @@ so-ET:
         chapter_7_html: "7: Waxyaabo muhiim ah oo uu leeyahay"
         chapter_8_html: "8: Su'aalaha badanaa la iska waydiiyo (FAQ)"
         chapter_9_html: "9: Sida loo heleyo kaalmo"
-        chapter_10_html: "10: Bilawga isticmaalka Simple"
+        chapter_10_html: "10: Bilawga isticmaalka %{app_brand_name}"
       teleconsultation:
         heading_html: Tobobarka wada tashiga taleefanka
-        contents_html: "Hadii uu isticmaalkaagu u isticmaalo wada tashiga taleefanka Simple, tobobarkan adiga ayaa markaa laguugu talo geley."
-        english_video_link_html: Wada tashiga taleefanka iyada oo la isticmaalayao Simple
+        contents_html: "Hadii uu isticmaalkaagu u isticmaalo wada tashiga taleefanka %{app_brand_name}, tobobarkan adiga ayaa markaa laguugu talo geley."
+        english_video_link_html: Wada tashiga taleefanka iyada oo la isticmaalayao %{app_brand_name}
         english_video_link_language_html: Ingiriisi
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: Hindi
@@ -125,16 +125,16 @@ so-ET:
         video_link_html: Sida loo isticmaalo BP Passports
         video_link_subtitle_html: Qoraalka hoose ee Ingiriisiga Hindiga lagu turjubay
       film:
-        heading_html: Fillinka Simple
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Nolosha maalin ee Simple"</a> waxaa weeye filin gaaban oo muujinaya sida kaaliya caafimaad ee Bunjaab, Hindiya, ee isticmaala Simple si uu ugu daweeyo bukaanka qaba dhiikarka.'
+        heading_html: Fillinka %{app_brand_name}
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"Nolosha maalin ee %{app_brand_name}"</a> waxaa weeye filin gaaban oo muujinaya sida kaaliya caafimaad ee Bunjaab, Hindiya, ee isticmaala %{app_brand_name} si uu ugu daweeyo bukaanka qaba dhiikarka.'
     start:
       heading_html: Bilaabida
       getting_started_video:
         heading_html: Daawo fiidyaw
-        contents_html: Ku baro waxyaabaha aas aasiga ah ee Simple 5 daqiiqo gudaheed.
+        contents_html: Ku baro waxyaabaha aas aasiga ah ee %{app_brand_name} 5 daqiiqo gudaheed.
       who_to_record:
-        heading_html: "Yaa ku duwaan geliya Simple?"
-        contents_1_html: Isticmaal Simple si aad u duwaan geliso <i>qof kasta oo qaba dhiikar</i> ama qaadanaya dawooyinka BP kacsan.
+        heading_html: "Yaa ku duwaan geliya %{app_brand_name}?"
+        contents_1_html: Isticmaal %{app_brand_name} si aad u duwaan geliso <i>qof kasta oo qaba dhiikar</i> ama qaadanaya dawooyinka BP kacsan.
         contents_2_html: Marka uu bukaanku kusoo laabto baadhitaanka la socodka ee isla bukaanka oo BP-ga cusub geli.
       step_1:
         label_html: Talaabada 1
@@ -143,14 +143,14 @@ so-ET:
       step_2:
         label_html: Talaabada 2
         heading_html: Ku qor BP Passports
-        contents_html: "Hadii aad leedahay BP Passports, ku qor magaca bukaanka. Kadibna, sawir adiga oo isticmaalaya app-ka Simple."
+        contents_html: "Hadii aad leedahay BP Passports, ku qor magaca bukaanka. Kadibna, sawir adiga oo isticmaalaya app-ka %{app_brand_name}."
       step_3:
         label_html: Talaabada 3
         heading_html: Bukaanka duwaanka gashan
         contents_html: "Hadii uu cusub yahay, duwaan geli bukaanka."
       step_4:
         label_html: Talaabada 4
-        heading_html: Geli BP-ga Simple
+        heading_html: Geli BP-ga %{app_brand_name}
         contents_html: <i>Lambarka ugu dhaw ha ku qorin</i> akhriska BP.
       step_5:
         label_html: Talaabada 5
@@ -163,7 +163,7 @@ so-ET:
       missed_visit:
         label_html: Booqashada laga maqnaaday
         heading_html: "Maxaa xiga?"
-        contents_html: "Hadii uu bukaanku ka maqnaado booqashadiisa, Simple waxay uu u diri doonaa fariin qoraal ah oo uu ku xasuusinayo intii soo laabto."
+        contents_html: "Hadii uu bukaanku ka maqnaado booqashadiisa, %{app_brand_name} waxay uu u diri doonaa fariin qoraal ah oo uu ku xasuusinayo intii soo laabto."
       tip:
         heading_html: Tilmaamo
         contents_html: "Mar kasta waa inaad ku duwaan geliso bukaanada xarunta saxda ah. Shaashada hore, mar kasta waxa aad ka eegtaa xarunta xaga sare."
@@ -211,7 +211,7 @@ so-ET:
         contents_2_html: "Hadii bukaanka aan laga helin liiska bukaanada marka la baadho, fadlan u duwaan geli bukaan cusub ahaan."
       tip:
         heading_html: Tilmaamo
-        contents_html: "Hadii iskaanarka BP Passport aanu shaqaynaynin, waxa aad weli ku qori kartaa lambarka BP Passport Simple isla shaashada aad ku sawirto."
+        contents_html: "Hadii iskaanarka BP Passport aanu shaqaynaynin, waxa aad weli ku qori kartaa lambarka BP Passport %{app_brand_name} isla shaashada aad ku sawirto."
     record:
       heading_html: Duwaanka booqashada bukaanka
       find_patient:
@@ -264,11 +264,11 @@ so-ET:
     faq:
       heading_html: Su'aalaha caamka ah
       app_crash_question_html: "Maxaan samaynayaa hadii uu shaqayn waayo app-kaygu?"
-      app_crash_answer_html: "Marka hore waxa aad isku daydaa inaad dib u shido aaladaada. Hadii Simple uu shaqayn waayo oo aad hagaajina kari waydi, fadlan waxa aad qabataa shaashada <span class=\"help\">Help</span> oo la xidhiidh horjoogaha kooxda ama kooxdeena."
+      app_crash_answer_html: "Marka hore waxa aad isku daydaa inaad dib u shido aaladaada. Hadii %{app_brand_name} uu shaqayn waayo oo aad hagaajina kari waydi, fadlan waxa aad qabataa shaashada <span class=\"help\">Help</span> oo la xidhiidh horjoogaha kooxda ama kooxdeena."
       scan_not_working_question_html: "Iskaankii ayaan shaqaynaynin. Maxaan samaynayaa?"
       scan_not_working_answer_html: "Geli lambarka BP Passport xaga hoose ee shaashada. Hadii mushkiladu ay sii jirto, dib u shid taleefanka. Hadii aanu weli shaqaynin, la xidhiidh horjoogahaaga."
       udpate_app_question_html: "Sidee ayaan u cusboonaysiinayaa app-ka?"
-      udpate_app_answer_html: "Cusboonaysii app-ka adiga oo riixaya astaanka buuxinta oo kadibna gujinaya<span class=\"code\">Update</span>. Waa muhiim inuu kuugu jiro noocii ugu danbeeyay ee Simple aaladaada."
+      udpate_app_answer_html: "Cusboonaysii app-ka adiga oo riixaya astaanka buuxinta oo kadibna gujinaya<span class=\"code\">Update</span>. Waa muhiim inuu kuugu jiro noocii ugu danbeeyay ee %{app_brand_name} aaladaada."
       cant_find_followup_question_html: Waan waayay la socodka bukaanka
       cant_find_followup_answer_html: "Mararka qaar way adag tahay in la helo la socodka bukaanka marka ayna lahayn BP Passport. Hadii, 5 daqiiqo kadib, aad waydo bukaanka, waxa aad u duwaan gelisaa bukaan cusub ahaan. Waa macquul in la isku daro duwaanka bukaanka mardanbe."
       two_bp_passports_question_html: "Miyuu bukaanku yeelan karaa 2 BP Passport?"
@@ -277,10 +277,10 @@ so-ET:
       no_more_bp_passports_answer_html: "Fadlan u sheeg horjoogahaaga inuu dalbado BP Passport, kahor inta ayna idinka dhamaan. Xasuusnaw, waxa aad ku duwaan gelin kartaa bukaanka xataa hadii aanay haysan BP Passport &#8212; waxa aad ku qori kartaa BP Passport mar danbe."
       what_is_sync_question_html: "Waa maxay \"sync\"?"
       what_is_sync_answer_html: "\"Sync\" waxa uu ku kaydiyaa macluumaadka serferka dhexe. Fadlan waxa aad xaqiijisaa in macluumaadkaagu uu ugu yaraan hal mar maalintii kaydsanto. Hadii aanad haysan internet wanaagsan, macluumaadkaagu waxay qaadan kartaa mudo inay sync garaysanto."
-      data_usage_question_html: "Internet intee le'eg ayuu isticmaalaa Simple?"
-      data_usage_answer_html: Simple waxa uu isticmaalaa internet yar. Celcelis ahaan 20 MB ayuu isticmaalaa bishii.
-      access_my_info_question_html: "Simple ma geli karaa macluumaadkayga?"
-      access_my_info_answer_html: Simple ma galo wax macluumaadka shakhsi ahaaneed ee taleefanka ama taableetkaaga ku jira.
+      data_usage_question_html: "Internet intee le'eg ayuu isticmaalaa %{app_brand_name}?"
+      data_usage_answer_html: "%{app_brand_name} waxa uu isticmaalaa internet yar. Celcelis ahaan 20 MB ayuu isticmaalaa bishii."
+      access_my_info_question_html: "%{app_brand_name} ma geli karaa macluumaadkayga?"
+      access_my_info_answer_html: "%{app_brand_name} ma galo wax macluumaadka shakhsi ahaaneed ee taleefanka ama taableetkaaga ku jira."
     bp_passport_app:
       heading_html: BP Passport app
       features:
@@ -379,7 +379,7 @@ so-ET:
         subtitle: "Booqashooyinka la socodka waxaa lagu duubaa %{facility_name}. Booqashada la socodka ee bukaanka laga qaaday BP, laga qaaday sonkorta dhiiga, loo qabtay balan, ama wada qaatay dawooyinka."
       patients_initiated_on_treatment_card:
         title: 'Halkee ayay taalaa xogta "daawaynta hore ee bukaanadu"?'
-        main_text: 'Isticmaal "Bukaanada duwaan gashan", waxay markasta lamid tahay "Bukaanka bilaabay daawaynta" bukaanada ka duwaan gashan Simple.'
+        main_text: 'Isticmaal "Bukaanada duwaan gashan", waxay markasta lamid tahay "Bukaanka bilaabay daawaynta" bukaanada ka duwaan gashan %{app_brand_name}.'
       more_patient_data_coming_soon_card:
         title: "Xog dheeraad ah oo bukaanka ah ayaa soo socda"
         main_text: "Xogta Duwaan gelinta iyo la socodka maalin walba waxaa oo loo jajabiyaa xanuunada iyo jinsiga dhawaan ayaa lagu darayaa"

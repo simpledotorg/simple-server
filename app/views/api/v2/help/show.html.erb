@@ -27,7 +27,7 @@
   <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video" style="display: block; margin: 8px 0 4px 0;">
     <%= inline_svg('thumb_demo.svg') %>
   </a>
-  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use Simple: हिन्दी</a></div>
+  <div><a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" style="text-align: center; display: block; font-weight: bold; font-size: 110%;">How to use <%= Rails.application.config.application_brand_name %>: हिन्दी</a></div>
 
   <a href="<%= ENV['HELP_SCREEN_YOUTUBE_PASSPORT_URL'] %>" class="video" style="display: block; margin: 32px 0 4px 0;">
     <%= inline_svg('thumb_passport.svg') %>
@@ -40,7 +40,7 @@
   <h3>Instructions</h3>
 
   <h6>Getting started</h6>
-  <p>Each person in your facility who will be recording patient’s BPs should install the Simple app on their own Android phone.</p>
+  <p>Each person in your facility who will be recording patient’s BPs should install the <%= Rails.application.config.application_brand_name %> app on their own Android phone.</p>
 
   <h6>Which patients should you record?</h6>
   <p>Use the app to record every patient who has hypertension or who is taking medicines for high BP. The next time that the patient comes back to your facility, search for that patient and enter a new BP.</p>

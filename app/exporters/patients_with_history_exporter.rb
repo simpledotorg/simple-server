@@ -86,7 +86,7 @@ class PatientsWithHistoryExporter
     [
       "Registration Date",
       "Registration Quarter",
-      "Simple Patient ID",
+      "#{Rails.application.config.application_brand_name} Patient ID",
       "BP Passport ID",
       "Patient Name",
       "Patient Age",
