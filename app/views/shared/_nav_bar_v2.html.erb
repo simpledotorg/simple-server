@@ -4,7 +4,7 @@
     <%= link_to root_path do %>
       <%= image_tag "simple_logo.svg", :width => '32', :class => 'mr-1 md:mr-4' %>
       <p class="block font-sans font-semibold text-lg text-grey-500 md:hidden">
-        Simple Dashboard
+        <%= Rails.application.config.application_brand_name %> Dashboard
       </p>
     <% end %>
     <div class="hidden md:flex">
@@ -40,7 +40,7 @@
   <div class="hidden md:block md:relative md:cursor-pointer">
     <div data-js="account-button" class="flex">
       <p class="mr-2 font-sans font-medium text-base text-grey-500">
-        cvho@simple.org
+        <%= Rails.application.config.cvho_email_id %>
       </p>
       <div class="relative top-4">
         <svg class="stroke-current text-grey-300" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -242,7 +242,7 @@
       <p class="font-sans font-medium text-sm text-grey-400">
         Signed in as
         <span class="font-semibold">
-          cvho@simple.org
+          <%= Rails.application.config.cvho_email_id %>
         </span>
       </p>
     </div>

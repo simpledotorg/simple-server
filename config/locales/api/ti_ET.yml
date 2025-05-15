@@ -97,7 +97,7 @@ ti-ET:
       heading_html: ናይ ስልጠና ቪዲዮታት
       class:
         heading_html: ነቲ ክፍሊ ይውሰዱ
-        contents_html: Simple ንምጥቃም ንምምሃር ክላስ ተመልከት።
+        contents_html: "%{app_brand_name} ንምጥቃም ንምምሃር ክላስ ተመልከት።"
         training_videos_link_html: "ስልጠና: ኩሎም ምዕራፋት"
         training_videos_subtitle_html: "ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ 36:15"
       chapters:
@@ -111,11 +111,11 @@ ti-ET:
         chapter_7_html: "7: ኣገደስቲ ባህሪያት"
         chapter_8_html: "8: ብተደጋጋሚ ዝሕተቱ ሕቶታት"
         chapter_9_html: "9: ሓገዝ ብኸመይ ክትረክብ ትኽእል"
-        chapter_10_html: "10: Simple ምጥቃም ጀምር"
+        chapter_10_html: "10: %{app_brand_name} ምጥቃም ጀምር"
       teleconsultation:
         heading_html: ቴሌ-ኮንሳልት ስልጠና
-        contents_html: እቲ ናትካ ሆስፒታል Simple ን ቴሌ-ኮንሳልት ዕላማ ይጥቀም እኝተድኣ ኾይኑ፣ እዚ ስልጠና ንዓኻ እዩ።
-        english_video_link_html: ቴሌ-ኮንሳልት ምስ Simple
+        contents_html: እቲ ናትካ ሆስፒታል %{app_brand_name} ን ቴሌ-ኮንሳልት ዕላማ ይጥቀም እኝተድኣ ኾይኑ፣ እዚ ስልጠና ንዓኻ እዩ።
+        english_video_link_html: ቴሌ-ኮንሳልት ምስ %{app_brand_name}
         english_video_link_language_html: ኢንግሊሽ
         hindi_video_link_html: सिम्पल द्वारा टेली-मेडिसिन
         hindi_video_link_language_html: ህንዲ
@@ -125,16 +125,16 @@ ti-ET:
         video_link_html: ናይ BP ፓስፖርት ብኸመይ ትጥቀም
         video_link_subtitle_html: ብኢልግሊሽ ኮይኑ ብህንዲ ትርጉም ዘለዎ
       film:
-        heading_html: Simple ፊልሚ
-        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"ሓደ መዓልቲ ኣብ ህይወት Simple"</a> እትብል ሓጻር ፊልሚ፣ ኣብ ፑንጃብ፣ ህንዲ እትነብር ነርስ፣ Simple ተጠቒማ ሃይፐርቴንሽን ዘለዎም ተሓከምቲ ብኸመይ ከም እትሕክም እተርኢ እያ።'
+        heading_html: "%{app_brand_name} ፊልሚ"
+        link_html: '<a href="https://www.youtube.com/watch?v=C26CoyeExmU">"ሓደ መዓልቲ ኣብ ህይወት %{app_brand_name}"</a> እትብል ሓጻር ፊልሚ፣ ኣብ ፑንጃብ፣ ህንዲ እትነብር ነርስ፣ %{app_brand_name} ተጠቒማ ሃይፐርቴንሽን ዘለዎም ተሓከምቲ ብኸመይ ከም እትሕክም እተርኢ እያ።'
     start:
       heading_html: ኣብ ምጅማር
       getting_started_video:
         heading_html: ቪድዮ ተመልከት
-        contents_html: መሰረታዊ ናይ Simple ኣካይዳ ኣብ ውሽጢ 5 ደቒቓ ይማሃሩ።
+        contents_html: መሰረታዊ ናይ %{app_brand_name} ኣካይዳ ኣብ ውሽጢ 5 ደቒቓ ይማሃሩ።
       who_to_record:
-        heading_html: "ኣብ Simple መን ይመዝገብ?"
-        contents_1_html: ሕድሕድ ጸቕጢ ደም ዘለዎ ሰብ<i>ወይ ድማ ናይ ከቢድ BP(ጸቕቲ ደም) መድሓኒት ዝወስድ ሰብ ን ምምዝጋብ Simple ይጠቐሙ</i> ።
+        heading_html: "ኣብ %{app_brand_name} መን ይመዝገብ?"
+        contents_1_html: ሕድሕድ ጸቕጢ ደም ዘለዎ ሰብ<i>ወይ ድማ ናይ ከቢድ BP(ጸቕቲ ደም) መድሓኒት ዝወስድ ሰብ ን ምምዝጋብ %{app_brand_name} ይጠቐሙ</i> ።
         contents_2_html: ተሓካሚ ናብ ቖጾራ እንትምለስ ነቲ ተሓካሚ ብምድላይ ሓድሽ BP የእትዉ።
       step_1:
         label_html: ደረጃ 1
@@ -143,19 +143,19 @@ ti-ET:
       step_2:
         label_html: ደረጃ 2
         heading_html: ናይ BP ፓስፖርት ጸሓፍ
-        contents_html: BP ፓስፖርት እንተሃልዩኩም ናይ ተሓካሚ ሽም ይጽሓፉ ካብኡ ናይ Simple መተግበሪ ብምጥቃም ስካን ይግበሩ።
+        contents_html: BP ፓስፖርት እንተሃልዩኩም ናይ ተሓካሚ ሽም ይጽሓፉ ካብኡ ናይ %{app_brand_name} መተግበሪ ብምጥቃም ስካን ይግበሩ።
       step_3:
         label_html: ደረጃ 3
         heading_html: ተሓካሚ መዝግብ
         contents_html: ሓደሽቲ ተሓከምቲ እንተሃልዮም ምምዝጋብ።
       step_4:
         label_html: ደረጃ 4
-        heading_html: "ኣብ Simple ነቲ BP የእትዎ "
+        heading_html: "ኣብ %{app_brand_name} ነቲ BP የእትዎ "
         contents_html: ነቲ ናይ BP ንባብ <i>ኣይተጸጋግዕ</i>።
       step_5:
         label_html: ደረጃ 5
         heading_html: መድሃኒታት የእቱ
-        contents_html: ናይ ተሓካሚ ስም ኣብ Simple/ሲምፕል ኣእቱ
+        contents_html: ናይ ተሓካሚ ስም ኣብ %{app_brand_name}/ሲምፕል ኣእቱ
       step_6:
         label_html: ደረጃ 6
         heading_html: ነቲ ተሓካሚ ኣድሕኖ
@@ -163,7 +163,7 @@ ti-ET:
       missed_visit:
         label_html: ዝተዘለለ ምብጻሕ
         heading_html: "ቀጺሉ እንታይ የጋጥም?"
-        contents_html: ተሓካማይ ኣብ ቆፆሮኡ ተዘይተረኺቡ simple ናይ መዘኻኸሪ ፅሑፍ መልእኽቲ ይሰድድ።
+        contents_html: ተሓካማይ ኣብ ቆፆሮኡ ተዘይተረኺቡ %{app_brand_name} ናይ መዘኻኸሪ ፅሑፍ መልእኽቲ ይሰድድ።
       tip:
         heading_html: ምኽሪ
         contents_html: ንተሓከምቲ ኣብቲ ቅኑዕ መሳለጥያ ትምዝግብ ምህላውካ ኩሉግዜ ኣረጋግጽ። ኩሉ ጊዜ ኣብቲ ዋና ገፅ ላዕለዋይ ፀጋም ዝርከብ መሳለጥያ ምርግጋፅ የድሊ
@@ -211,7 +211,7 @@ ti-ET:
         contents_2_html: እቲ ተሓካማይ ኣብ ምንዳይ ዉፅኢት ምስዝተረኽቡ ዉፅኢታት ዘይሰማማዕ እንተኾይኑ ከም ሓድሽ ተሓካማይ ምምዝጋብ የድሊ።
       tip:
         heading_html: ምኽሪ
-        contents_html: BP ፓስፖርት ስካን ምግባር ተዘይተኻኢሉ ስካን ኣብዝገበርናሉ ገፅ እቲ BP ፓስፖርት ቁፅሪ ናብ Simple ምሕፃፍ ይከኣል እዩ።
+        contents_html: BP ፓስፖርት ስካን ምግባር ተዘይተኻኢሉ ስካን ኣብዝገበርናሉ ገፅ እቲ BP ፓስፖርት ቁፅሪ ናብ %{app_brand_name} ምሕፃፍ ይከኣል እዩ።
     record:
       heading_html: ናይ ተሓካማይ ምብፃሕ ምምዝጋብ
       find_patient:
@@ -264,11 +264,11 @@ ti-ET:
     faq:
       heading_html: ብኣብዝሓ ዝሕተቱ ሕቶታት
       app_crash_question_html: መተግበሪ ተተበላሺዩኒ እንታይ ክገብር
-      app_crash_answer_html: ፈለማ እቲ መሳርሒ ኣጥፊእካ ምዉላዕ Simple ተተበላሽዩ ምዕራይ እንተዘይተኻኢሉ ናብ <span class="help">ሓገዝ</span>  ስክሪን ብምኻድ ምስ ተቖጻጸርካ  ወይ ድማ ናትና ጉጅለ ምርኻብ።
+      app_crash_answer_html: ፈለማ እቲ መሳርሒ ኣጥፊእካ ምዉላዕ %{app_brand_name} ተተበላሽዩ ምዕራይ እንተዘይተኻኢሉ ናብ <span class="help">ሓገዝ</span>  ስክሪን ብምኻድ ምስ ተቖጻጸርካ  ወይ ድማ ናትና ጉጅለ ምርኻብ።
       scan_not_working_question_html: "ስካን ምግባር ኣይሰርሕን ዘሎ። እንታይ ክገብር?"
       scan_not_working_answer_html: ኣብ ታሕቲ እቲ ገፅ ኣብ ዝርከብ ቦታ ናይ BP ፓስፖርት ቁፅሪ ምእታው እቲ ፀገም ቀፃሊ እንተኾይኑ ስልክኻ ኣጥፊእካ ምዉላዕ ሕዚዉን ዘይሰርሕ እንተኾይኑ ምስ ተቖፃፃሪኻ ምርኻብ
       udpate_app_question_html: እቲ መተግበሪ ከመይ ጌረ የመሓይሾ
-      udpate_app_answer_html: "እቲ መተግበሪ መዐረዪ ድሕሪ ምንካእ <span class=\"code\">ኣምሓይሽ</span> ዝብል ጠውቕካ ኣመሓይሽ። ኣብ መሳርሒና ናይ ቀረባ ጊዜ Simple ምህላዉ ኣገዳሲ እዩ"
+      udpate_app_answer_html: "እቲ መተግበሪ መዐረዪ ድሕሪ ምንካእ <span class=\"code\">ኣምሓይሽ</span> ዝብል ጠውቕካ ኣመሓይሽ። ኣብ መሳርሒና ናይ ቀረባ ጊዜ %{app_brand_name} ምህላዉ ኣገዳሲ እዩ"
       cant_find_followup_question_html: ከመይ ገይርካ ተኸታታሊ/ሰዓቢ ተሓካሚ ትረክብ
       cant_find_followup_answer_html: BP ፓስፖርት ዘይብሎም ታሓከምቲ ንምርካብ ከቢድ ክኸዉን ይኽእል እዩ ድሕሪ 5 ደቒቓ እቲ ትሓካማይ ምርካብ ተዘይተኻኢሉ ከም ሓድሽ ታሓካማይ ምምዝጋብ የድሊ ኣብ ቀፃሊ ናይቲ ታሓካማይ መዝገብ ምጥማር ይከኣል
       two_bp_passports_question_html: "ሓደ ታሓካማይ 2 BP ፓስፖርት ክህልዎ ይኽእል ዶ?"
@@ -277,10 +277,10 @@ ti-ET:
       no_more_bp_passports_answer_html: ቅድሚ ምዉዳኡ ተወሳኺ BP ፓስፖርት ንክእዘዘልካ ንተቖፃፃሪኻ ምንጋር ኣይትረስዕ፣ ዋላ BP ፓስፖርት ተዘይሃሊዩካ ታሕከምቲ ምምዝጋብ ይከኣል እዩ&mdash; BP ፓስፖርት ፀኒሕካ  ምምዳብ ይከኣል እዩ
       what_is_sync_question_html: "\"ሲንክ/ኣስተኻኽል\" እንታይ እዩ?"
       what_is_sync_answer_html: "&lsquo;&rsquo;ሲንክ&rsquo;&rsquo; ብምባል ዳታ ናብ ማእኸላይ ሰርቨር ሴቭ ምግባር ይከኣል ተነኣሰ ኣብ ማዓልቲ ሓደ ሻዕ ዳታ ሴቭ ምግባርና ክነረጋግፅ ይግባእ ፅቡቕ ናይ ኢንተርኔት ኮኔክሽን ተዘይሃሊዩ ሲንክ ንምግባር ጊዜ ክወስድ ይኽእል እዩ"
-      data_usage_question_html: Simple ክንደየናይ ዝኣክል ዳታ ይጥቀም
-      data_usage_answer_html: Simple ብጣዕሚ ንእሽተይ ዳታ እዩ ዝጥቀም ብገምጋም ንወርሒ ኣስታት 20 ሜጋ-ባይት ኣብ ጠቕሚ ይውዕል።
-      access_my_info_question_html: "Simple መረዳእታይ ክጥቀም ይኽእል ዶ?"
-      access_my_info_answer_html: Simple  ኣብ ስልኪ ወይድማ ታብሌት ዝርከብ ናይ ዉልቀ መረዳእታ ኣይጥቀምን
+      data_usage_question_html: "%{app_brand_name} ክንደየናይ ዝኣክል ዳታ ይጥቀም"
+      data_usage_answer_html: "%{app_brand_name} ብጣዕሚ ንእሽተይ ዳታ እዩ ዝጥቀም ብገምጋም ንወርሒ ኣስታት 20 ሜጋ-ባይት ኣብ ጠቕሚ ይውዕል።"
+      access_my_info_question_html: "%{app_brand_name} መረዳእታይ ክጥቀም ይኽእል ዶ?"
+      access_my_info_answer_html: "%{app_brand_name}  ኣብ ስልኪ ወይድማ ታብሌት ዝርከብ ናይ ዉልቀ መረዳእታ ኣይጥቀምን"
     bp_passport_app:
       heading_html: ናይ BP ፓስፖርት ኣፕሊኬሽን
       features:

@@ -76,7 +76,7 @@
         <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.title") %>
       </h1>
       <p class="m-0px p-0px ta-left fw-normal fs-16px lh-165 c-black">
-        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text") %>
+        <%= t("progress_tab.period_report.patients_initiated_on_treatment_card.main_text", app_brand_name: Rails.application.config.application_brand_name) %>
       </p>
       <div class="p-absolute t-8px r-8px w-48px h-48px">
         <%= inline_svg("exclamation-mark.svg") %>

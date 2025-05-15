@@ -1,6 +1,6 @@
 <%= t("devise.mailer.invitation_instructions.hello", email: @resource.email) %>
 
-<%= t("devise.mailer.invitation_instructions.someone_invited_you") %>
+<%= t("devise.mailer.invitation_instructions.someone_invited_you", app_brand_name: Rails.application.config.application_brand_name) %>
 
 <%= t("devise.mailer.invitation_instructions.click_button") %>
 

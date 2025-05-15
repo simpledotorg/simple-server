@@ -25,7 +25,7 @@ module SimpleServerEnvHelper
   def alt_for_environment
     env = ENV.fetch("SIMPLE_SERVER_ENV")
 
-    CUSTOMIZED_ENVS.include?(env) ? "Simple Dashboard #{env.capitalize} Logo" : "Simple Dashboard Logo"
+    CUSTOMIZED_ENVS.include?(env) ? "#{Rails.application.config.application_brand_name} Dashboard #{env.capitalize} Logo" : "#{Rails.application.config.application_brand_name} Dashboard Logo"
   end
 
   def mailer_logo_for_environment

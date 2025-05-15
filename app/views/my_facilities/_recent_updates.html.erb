@@ -4,9 +4,9 @@
   </h2>
   <p class="c-grey-dark">
     <% if CountryConfig.current[:name] == "Bangladesh" %>
-      Last updated 26-Mar-2024. For feedback, email us: help@simple.org
+      Last updated 26-Mar-2024. For feedback, email us: <%= Rails.application.config.help_email_id %>
     <% else %>
-      Last updated 12-Dec-2023. For feedback, email us: help@simple.org
+      Last updated 12-Dec-2023. For feedback, email us: <%= Rails.application.config.help_email_id %>
     <% end %>
   </p>
   <% if CountryConfig.current[:name] == "Bangladesh" %>
@@ -15,10 +15,10 @@
         Mar <b class="d-block">2024</b>
       </div>
       <p>
-        <b>External partnerships</b>: Other hypertension programs in Bangladesh are now sending their data into Simple.
+        <b>External partnerships</b>: Other hypertension programs in Bangladesh are now sending their data into <%= Rails.application.config.application_brand_name %>.
       </p>
       <p>
-        <b>Data dissaggregation</b>: Simple is now exporting hypertension data dissaggregated by age and gender into DHIS2.
+        <b>Data dissaggregation</b>: <%= Rails.application.config.application_brand_name %> is now exporting hypertension data dissaggregated by age and gender into DHIS2.
       </p>
     </section>
   <% end %>
@@ -28,11 +28,11 @@
     </div>
     <p>
       <b>Patient data protection agreement:</b>
-      A new user agreement requiring users to protect patient data is being rolled out in the Simple app. Please ask healthcare workers who use Simple to read the data protection agreement in full before accepting. If you have any questions please speak to your manager.
+      A new user agreement requiring users to protect patient data is being rolled out in the <%= Rails.application.config.application_brand_name %> app. Please ask healthcare workers who use <%= Rails.application.config.application_brand_name %> to read the data protection agreement in full before accepting. If you have any questions please speak to your manager.
     </p>
     <p>
-      <b>Improved security in Simple app:</b>
-      The Simple app has an increased level of security through encryption, if you experience any issues while using the app please contact us.
+      <b>Improved security in <%= Rails.application.config.application_brand_name %> app:</b>
+      The <%= Rails.application.config.application_brand_name %> app has an increased level of security through encryption, if you experience any issues while using the app please contact us.
     </p>
     <% if CountryConfig.current[:name] == "Ethiopia" || CountryConfig.current[:name] == "Sri Lanka"  %>
       <p>
@@ -91,8 +91,8 @@
       May <b class="d-block">2023</b>
     </div>
     <p>
-      <b>Simple app:</b>
-      Simple has the ability to report and track clinical supplies such as BP passports and glucometer strips to help ensure services can run effectively. Please reach out to the Simple team for a demo and how it could be used in your state or country.
+      <b><%= Rails.application.config.application_brand_name %> app:</b>
+      <%= Rails.application.config.application_brand_name %> has the ability to report and track clinical supplies such as BP passports and glucometer strips to help ensure services can run effectively. Please reach out to the <%= Rails.application.config.application_brand_name %> team for a demo and how it could be used in your state or country.
     </p>
   </section>
   <section class="update">
@@ -100,15 +100,15 @@
       Apr <b class="d-block">2023</b>
     </div>
     <p>
-      <b>Simple app:</b>
-      Simple now has the ability to report aggregate monthly screening data for hypertension, diabetes, and cancers. Please reach out to the Simple team for a demo and how it could be used in your state or country.
+      <b><%= Rails.application.config.application_brand_name %> app:</b>
+      <%= Rails.application.config.application_brand_name %> now has the ability to report aggregate monthly screening data for hypertension, diabetes, and cancers. Please reach out to the <%= Rails.application.config.application_brand_name %> team for a demo and how it could be used in your state or country.
     </p>
     <a href="https://docs.google.com/presentation/d/1_qJX90VlkjWOyDZ20ggFfQL2eUUCP0T-s9pXTJK0AnA/edit#slide=id.p" class="d-flex align-center p-3 fs-16px br-8px bg-blue-light" style="border: 0px rgba(0, 117, 235, 0.5) solid; grid-gap: 20px; margin-top:8px;">
       <span style="max-width: 40px; padding: 4px; width: 100%; margin-left:12px; margin-top:4px; fill: #0075eb;">
         <i class="fa-light fa-file" style="font-size: 36px; display: block; text-align: center;" title="Document link"></i>
       </span>
       <span>
-        Tracking HTN, DM & cancer screening with Simple
+        Tracking HTN, DM & cancer screening with <%= Rails.application.config.application_brand_name %>
         <span class="d-block tt-uppercase tt-bold fw-bold" style="font-size: 10px; margin-top:4px;">
           Google docs <i class="fa-solid fa-up-right-from-square" style="margin-left:4px;"></i>
         </span>
@@ -121,7 +121,7 @@
         Feb <b class="d-block">2023</b>
       </div>
       <p>
-        <b>Simple dashboard:</b>
+        <b><%= Rails.application.config.application_brand_name %> dashboard:</b>
         Estimated hypertension population coverage has been added to the dashboard. Viewable inside 'Hypertension indicators' table.
       </p>
     </section>
