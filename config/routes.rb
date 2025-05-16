@@ -14,7 +14,9 @@ Rails.application.routes.draw do
   use_doorkeeper
 
   mount Rswag::Ui::Engine => "/api-docs"
-  mount Rswag::Api::Engine => "/api-docs"
+
+  get "/api-docs/:version/swagger.json", to: "custom_swagger#show"
+  get "/api-docs/:version/import.json", to: "custom_swagger#show_import"
 
   concern :sync_routes do
     scope "/patients" do
