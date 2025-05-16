@@ -11,11 +11,11 @@
     "https"
   ],
   "info": {
-    "description": "# API spec for Simple Server\nThis API spec documents the Import API for partner organizations that want to send their data to Simple. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.\n\n## Authorization\nAuthorization is done via OAuth 2.0, using the [Client Credential flow](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/). At the end of this flow, clients will receive an access token which is attached to all the requests to import data.\n\nWe recommend using popular open source [OAuth client libraries](https://oauth.net/code/) that will perform the flow in order to obtain the access token.\n",
+    "description": "",
     "version": "import",
-    "title": "Simple Server",
+    "title": "",
     "contact": {
-      "email": "engineering@simple.org"
+      "email": ""
     },
     "license": {
       "name": "MIT",
@@ -25,7 +25,7 @@
   "paths": {
     "/import": {
       "put": {
-        "summary": "Send bulk resources to Simple",
+        "summary": "",
         "tags": [
           "import"
         ],
@@ -163,7 +163,7 @@
               ]
             }
           },
-          "description": "Full name of the patient. Client can send anonymised names.                           If name is unset, Simple will generate a random name.",
+          "description": "",
           "required": [
             "text"
           ]
@@ -185,7 +185,7 @@
             "female",
             "other"
           ],
-          "description": "FHIR does not have a code for transgender, but Simple does.                    To accomodate this use case, we are considering 'other' to mean transgender."
+          "description": ""
         },
         "birthDate": {
           "type": "string",
@@ -316,7 +316,7 @@
             "old",
             "mobile"
           ],
-          "description": "Phone number type of the patient. \\\n                  Everything else other than \"mobile\" and \"old\", is marked as landline in Simple. \\\n                  \"old\" would mark the phone number as inactive."
+          "description": ""
         }
       },
       "required": [
@@ -380,13 +380,13 @@
             "fulfilled",
             "cancelled"
           ],
-          "description": "Status of appointment. Translation to simple statuses:\n- pending: scheduled\n- fulfilled: visited\n- cancelled: cancelled\nThis is a subset of all valid status codes in the FHIR standard.\n"
+          "description": ""
         },
         "start": {
           "type": "string",
           "format": "date-time",
           "nullable": false,
-          "description": "Start datetime of appointment. Simple will truncate it to a date granularity."
+          "description": ""
         },
         "participant": {
           "type": "array",
@@ -1312,7 +1312,7 @@
                       "QID"
                     ],
                     "nullable": false,
-                    "description": "Mapping to Simple representation\nQD: OD (Once a day)\nBID: BD (Twice a day)\nTID: TDS (Thrice a day)\nQID: QDS (Four times a day)"
+                    "description": ""
                   }
                 }
               },

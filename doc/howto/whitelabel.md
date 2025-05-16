@@ -9,6 +9,7 @@ Set the following environment variables according to your desired branding:
 - `HELP_EMAIL_ID` – Help center support email.
 - `CVHO_EMAIL_ID` – Email address for your CVHO team.
 - `ENG_EMAIL_ID` – Contact email for the engineering team.
+- `FAVICON_URL` - Public URL for accessing the favicon.
 
 ### Example Configuration
 
@@ -18,6 +19,7 @@ TEAM_EMAIL_ID="team_email@test.org"
 HELP_EMAIL_ID="help_email@test.org"
 CVHO_EMAIL_ID="cvho_email@test.org"
 ENG_EMAIL_ID="eng-backend@test.org"
+FAVICON_URL="https://www.google.com/favicon.ico"
 ```
 
 Make sure these environment variables are set in your environment, `.env` file, or your deployment configuration system.
