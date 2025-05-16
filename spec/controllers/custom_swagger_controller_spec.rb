@@ -60,10 +60,10 @@ RSpec.describe "CustomSwaggerController", type: :request do
         expect(json["paths"]["/import"]["put"]["summary"]).to include("TestBrand")
         expect(json["definitions"]["patient"]["properties"]["name"]["description"]).to include("TestBrand")
         expect(json["info"]["contact"]["email"]).to eq("eng@example.com")
-        expect(json['definitions']['contact_point']['properties']['use']['description']).to include("TestBrand")
-        expect(json['definitions']['appointment']['properties']['status']['description']).to include("TestBrand")
-        expect(json['definitions']['medication_request']['properties']['dosageInstruction']['items']['properties']['timing']['properties']['code']['description']).to include("TestBrand")
-        expect(json['definitions']['appointment']['properties']['start']['description']).to include("TestBrand")
+        expect(json["definitions"]["contact_point"]["properties"]["use"]["description"]).to include("TestBrand")
+        expect(json["definitions"]["appointment"]["properties"]["status"]["description"]).to include("TestBrand")
+        expect(json["definitions"]["medication_request"]["properties"]["dosageInstruction"]["items"]["properties"]["timing"]["properties"]["code"]["description"]).to include("TestBrand")
+        expect(json["definitions"]["appointment"]["properties"]["start"]["description"]).to include("TestBrand")
       end
     end
 
