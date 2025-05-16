@@ -7,9 +7,9 @@
 <div>&nbsp;</div>
 
 <% if @resource.try(:unconfirmed_email?) %>
-  <div style="font-size:110%;">Your email for the Simple Dashboard is being changed to <%= @resource.unconfirmed_email %>.</div>
+  <div style="font-size:110%;">Your email for the <%= Rails.application.config.application_brand_name %> Dashboard is being changed to <%= @resource.unconfirmed_email %>.</div>
 <% else %>
-  <div style="font-size:110%;">Your email for the Simple Dashboard has being changed to <%= @resource.email %>.</div>
+  <div style="font-size:110%;">Your email for the <%= Rails.application.config.application_brand_name %> Dashboard has being changed to <%= @resource.email %>.</div>
 <% end %>
 
 <div>&nbsp;</div>
@@ -22,5 +22,5 @@
 <div>&nbsp;</div>
 
 <div style="font-size: 110%;">
-  If this is unexpected, please contact <a href="mailto:help@simple.org">help@simple.org</a>
+  If this is unexpected, please contact <a href="mailto:<%= Rails.application.config.help_email_id %>"><%= Rails.application.config.help_email_id %></a>
 </div>

@@ -41,7 +41,7 @@ class UserAccess
     power_user: {
       id: :power_user,
       name: "Power User",
-      description: "Power user: Can manage the entire Simple deployment"
+      description: "Power user: Can manage the entire #{Rails.application.config.application_brand_name} deployment"
     }
   }.freeze
 

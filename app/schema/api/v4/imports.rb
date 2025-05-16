@@ -110,9 +110,9 @@ class Api::V4::Imports
             description: "Phone number of the patient. Not having phone numbers will impact overdue reporting."
           },
           use: Api::CommonDefinitions.strict_enum(%w[home work temp old mobile]).merge!(
-            description: 'Phone number type of the patient. \
-                  Everything else other than "mobile" and "old", is marked as landline in Simple. \
-                  "old" would mark the phone number as inactive.'
+            description: "Phone number type of the patient. \
+                  Everything else other than \"mobile\" and \"old\", is marked as landline in #{Rails.application.config.application_brand_name}. \
+                  \"old\" would mark the phone number as inactive."
           )
         },
         required: ["value"]
@@ -161,12 +161,12 @@ class Api::V4::Imports
               }
             },
             description: "Full name of the patient. Client can send anonymised names. \
-                          If name is unset, Simple will generate a random name.",
+                          If name is unset, #{Rails.application.config.application_brand_name} will generate a random name.",
             required: ["text"]
           },
           telecom: Api::CommonDefinitions.array_of("contact_point"),
           gender: Api::CommonDefinitions.strict_enum(%w[male female other])
-            .merge!(description: "FHIR does not have a code for transgender, but Simple does.\
+            .merge!(description: "FHIR does not have a code for transgender, but #{Rails.application.config.application_brand_name} does.\
                     To accomodate this use case, we are considering 'other' to mean transgender."),
           birthDate: {
             type: :string,
@@ -193,7 +193,7 @@ class Api::V4::Imports
           identifier: identifier(description: "ID of the appointment in the partner org database"),
           status: Api::CommonDefinitions.strict_enum(%w[pending fulfilled cancelled]).merge!({
             description: <<~DESCRIPTION
-              Status of appointment. Translation to simple statuses:
+              Status of appointment. Translation to #{Rails.application.config.application_brand_name} statuses:
               - pending: scheduled
               - fulfilled: visited
               - cancelled: cancelled
@@ -203,7 +203,7 @@ class Api::V4::Imports
           start: {type: :string,
                   format: "date-time",
                   nullable: false,
-                  description: "Start datetime of appointment. Simple will truncate it to a date granularity."},
+                  description: "Start datetime of appointment. #{Rails.application.config.application_brand_name} will truncate it to a date granularity."},
           participant: {
             type: "array",
             items: {type: :object,
@@ -486,7 +486,7 @@ class Api::V4::Imports
                           code: {type: :string,
                                  enum: %w[QD BID TID QID],
                                  nullable: false,
-                                 description: "Mapping to Simple representation\n" \
+                                 description: "Mapping to #{Rails.application.config.application_brand_name} representation\n" \
                                    "QD: OD (Once a day)\n" \
                                    "BID: BD (Twice a day)\n" \
                                    "TID: TDS (Thrice a day)\n" \

@@ -156,6 +156,18 @@ RSpec.describe SimpleServerEnvHelper do
         expect(alt_for_environment).to eq "Simple Dashboard Production Logo"
       end
     end
+
+    context "with customised app name" do
+      before do
+        allow(Rails.application.config).to receive(:application_brand_name).and_return("Test Brand")
+      end
+
+      it "should return the production alt for the logo with the new brand name" do
+        ENV[simple_server_env] = "production"
+
+        expect(alt_for_environment).to eq "Test Brand Dashboard Production Logo"
+      end
+    end
   end
 
   describe "apple_logo_for_environment" do
