@@ -187,7 +187,7 @@ namespace :opensrp do
       patient_name: patient.full_name,
       patient_gender: patient.gender,
       patient_date_of_birth: patient.date_of_birth || patient.age_updated_at - patient.age.years,
-      patient_address: patient.address.street_address,
+      patient_address: patient.address ? patient.address.street_address : "",
       patient_telephone: patient.phone_numbers.pluck(:number).join(";"),
       patient_facility: facilities[patient.assigned_facility_id][:name],
       patient_preferred_language: "Sinhala",

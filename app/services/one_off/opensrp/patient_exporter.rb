@@ -36,17 +36,7 @@ module OneOff
               use: "mobile"
             )
           end,
-          address: FHIR::Address.new(
-            line: [patient.address.street_address],
-            city: patient.address.village_or_colony,
-            district: patient.address.district,
-            state: patient.address.state,
-            country: patient.address.country,
-            postalCode: patient.address.pin,
-            use: "home",
-            type: "physical",
-            text: address_text
-          ),
+          address: fhir_patient_address,
           generalPractitioner: [
             FHIR::Reference.new(reference: "Practitioner/#{opensrp_ids[:practitioner_id]}")
           ],
@@ -66,7 +56,25 @@ module OneOff
         )
       end
 
+      def fhir_patient_address
+        return {} if patient.address.nil?
+
+        FHIR::Address.new(
+          line: [patient.address.street_address],
+          city: patient.address.village_or_colony,
+          district: patient.address.district,
+          state: patient.address.state,
+          country: patient.address.country,
+          postalCode: patient.address.pin,
+          use: "home",
+          type: "physical",
+          text: address_text
+        ) if patient.address
+      end
+
       def address_text
+        return "" if patient.address.nil?
+
         "#{patient.address.street_address} (#{patient.address.village_or_colony}), [No GND Registered]"
       end
 
