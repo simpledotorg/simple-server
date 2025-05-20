@@ -22,6 +22,7 @@ jobs:
         image: postgres
         env:
           POSTGRES_PASSWORD: postgres
+          port: "5432:5432"
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
@@ -33,7 +34,7 @@ jobs:
     env:
       RAILS_ENV: test
       DISABLE_SPRING: 1
-      SIMPLE_SERVER_DATABASE_HOST: postgres
+      SIMPLE_SERVER_DATABASE_HOST: localhost
       SIMPLE_SERVER_DATABASE_USERNAME: postgres
       SIMPLE_SERVER_DATABASE_PASSWORD: postgres
       TEST_ENV_NUMBER: 1
