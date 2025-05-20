@@ -43,10 +43,10 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: Turn on local Postgres
+      - name: Promote local Postgresql
+        run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
+      - name: Turn on local Postgresql
         run: |
-          echo "$(pg_config --bindir)" >> $GITHUB_PATH
-
           echo "Initializing database cluster..."
           export PGHOST="${RUNNER_TEMP//\\//}/postgres"
           export PGDATA="$PGHOST/pgdata"
