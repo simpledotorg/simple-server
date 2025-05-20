@@ -79,10 +79,10 @@ te-IN:
     menu:
       videos_html: వీడియోలు
       start_html: 1. ప్రారంభించడం
-      register_html: 2. రోగిని రిజిస్టర్ చేయండి
-      search_html: 3. సరైన రోగిని కనుగొనండి
-      record_html: 4. రోగి సందర్శనను రికార్డ్ చేయండి
-      overdue_html: 5. గడువు తేదీ దాటిన రోగులకు కాల్ చేయండి
+      register_html: "%{list_order_number}. రోగిని రిజిస్టర్ చేయండి"
+      search_html: "%{list_order_number}. సరైన రోగిని కనుగొనండి"
+      record_html: "%{list_order_number}. రోగి సందర్శనను రికార్డ్ చేయండి"
+      overdue_html: "%{list_order_number}. గడువు తేదీ దాటిన రోగులకు కాల్ చేయండి"
       faq_html: సాధారణ ప్రశ్నలు
     support:
       heading_html: సహాయం కోసం అడగండి
