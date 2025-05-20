@@ -16,7 +16,15 @@ describe PatientStates::Diabetes::BsOver200PatientsQuery do
       facility_2_bs_below_200_patients = create_list(:patient, 1, :bs_below_200, assigned_facility: regions[:facility_2])
       facility_2_bs_200_to_300_patients = create_list(:patient, 1, :bs_200_to_300, assigned_facility: regions[:facility_2])
       facility_2_bs_over_300_patients = create_list(:patient, 1, :bs_over_300, assigned_facility: regions[:facility_2])
-      refresh_views
+      refresh_views views: %w[
+        Reports::Month
+        Reports::Facility
+        Reports::PatientBloodPressure
+        Reports::PatientBloodSugar
+        Reports::PatientVisit
+        Reports::Prescriptions
+        Reports::PatientState
+      ]
 
       expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_1].region, period)
                                                    .call
