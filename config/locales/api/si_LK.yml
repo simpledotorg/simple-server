@@ -79,10 +79,10 @@ si-LK:
     menu:
       videos_html: වීඩියෝ
       start_html: 1. ආරම්භ කිරීම
-      register_html: 2. රෝගියකු ලියාපදිංචි කිරීම
-      search_html: 3. නිවැරදි රෝගියාව සොයා ගන්න
-      record_html: 4. රෝගියෙකුගේ හමුවීම වාර්තා කරන්න
-      overdue_html: 5. කල් ඉක්මුණු රෝගීන්ව අමතන්න
+      register_html: "%{list_order_number}. රෝගියකු ලියාපදිංචි කිරීම"
+      search_html: "%{list_order_number}. නිවැරදි රෝගියාව සොයා ගන්න"
+      record_html: "%{list_order_number}. රෝගියෙකුගේ හමුවීම වාර්තා කරන්න"
+      overdue_html: "%{list_order_number}. කල් ඉක්මුණු රෝගීන්ව අමතන්න"
       faq_html: පොදු ප්‍රශ්න
     support:
       heading_html: සහාය ඉල්ලන්න

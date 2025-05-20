@@ -79,10 +79,10 @@ hi-IN:
     menu:
       videos_html: वीडियो
       start_html: 1. आरंभ करना
-      register_html: 2. रोगी को पंजीकृत करें
-      search_html: 3. सही रोगी को खोजें
-      record_html: 4. रोगी की विज़िट को रिकॉर्ड करें
-      overdue_html: 5. निर्धारित दिन पर नहीं आए रोगियों को कॉल करें
+      register_html: "%{list_order_number}. रोगी को पंजीकृत करें"
+      search_html: "%{list_order_number}. सही रोगी को खोजें"
+      record_html: "%{list_order_number}. रोगी की विज़िट को रिकॉर्ड करें"
+      overdue_html: "%{list_order_number}. निर्धारित दिन पर नहीं आए रोगियों को कॉल करें"
       faq_html: सामान्य सवाल
     support:
       heading_html: मदद पाने के लिए पूछें

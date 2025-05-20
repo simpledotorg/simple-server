@@ -79,10 +79,10 @@ en:
     menu:
       videos_html: Videos
       start_html: 1. Getting started
-      register_html: 2. Register a patient
-      search_html: 3. Find the correct patient
-      record_html: 4. Record a patient’s visit
-      overdue_html: 5. Call overdue patients
+      register_html: "%{list_order_number}. Register a patient"
+      search_html: "%{list_order_number}. Find the correct patient"
+      record_html: "%{list_order_number}. Record a patient’s visit"
+      overdue_html: "%{list_order_number}. Call overdue patients"
       faq_html: Common questions
     support:
       heading_html: Ask for help

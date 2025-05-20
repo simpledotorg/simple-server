@@ -79,10 +79,10 @@ ta-LK:
     menu:
       videos_html: வீடியோக்கள்
       start_html: 1. தொடங்குதல்
-      register_html: 2. நோயாளரைப் பதிவு செய்யவும்
-      search_html: 3. சரியான நோயாளரைக் கண்டுபிடிக்கவும்
-      record_html: 4. நோயாளரின் வருகையைப் பதிவுசெய்யவும்
-      overdue_html: 5. தாமதமான நோயாளர்களை அழைக்கவும்
+      register_html: "%{list_order_number}. நோயாளரைப் பதிவு செய்யவும்"
+      search_html: "%{list_order_number}. சரியான நோயாளரைக் கண்டுபிடிக்கவும்"
+      record_html: "%{list_order_number}. நோயாளரின் வருகையைப் பதிவுசெய்யவும்"
+      overdue_html: "%{list_order_number}. தாமதமான நோயாளர்களை அழைக்கவும்"
       faq_html: பொதுவான கேள்விகள்
     support:
       heading_html: உதவிக் கேட்கவும்

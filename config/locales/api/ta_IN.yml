@@ -79,10 +79,10 @@ ta-IN:
     menu:
       videos_html: வீடியோக்கள்
       start_html: 1. தொடங்குதல்
-      register_html: 2. நோயாளியைப் பதிவு செய்தல்
-      search_html: 3. சரியான நோயாளியைக் கண்டுபிடித்தல்
-      record_html: 4. நோயாளியின் வருகையைப் பதிவு செய்தல்
-      overdue_html: 5. வரத் தவறிய நோயாளிகளை அழைத்தல்
+      register_html: "%{list_order_number}. நோயாளியைப் பதிவு செய்தல்"
+      search_html: "%{list_order_number}. சரியான நோயாளியைக் கண்டுபிடித்தல்"
+      record_html: "%{list_order_number}. நோயாளியின் வருகையைப் பதிவு செய்தல்"
+      overdue_html: "%{list_order_number}. வரத் தவறிய நோயாளிகளை அழைத்தல்"
       faq_html: பொதுவான கேள்விகள்
     support:
       heading_html: உதவி கேட்கவும்

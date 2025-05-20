@@ -79,10 +79,10 @@ pa-Guru-IN:
     menu:
       videos_html: ਵੀਡੀਓ
       start_html: 1. ਸ਼ੁਰੂ ਕਰੋ
-      register_html: 2. ਮਰੀਜ਼ ਨੂੰ ਰਜਿਸਟਰ ਕਰੋ
-      search_html: 3. ਸਹੀ ਮਰੀਜ਼ ਲੱਭੋ
-      record_html: 4. ਮਰੀਜ਼ ਦੀ ਮੁਲਾਕਾਤ ਰਿਕਾਰਡ ਕਰੋ
-      overdue_html: 5. ਓਵਰਡਿਊ ਮਰੀਜ਼ਾਂ ਨੂੰ ਕਾਲ ਕਰੋ
+      register_html: "%{list_order_number}. ਮਰੀਜ਼ ਨੂੰ ਰਜਿਸਟਰ ਕਰੋ"
+      search_html: "%{list_order_number}. ਸਹੀ ਮਰੀਜ਼ ਲੱਭੋ"
+      record_html: "%{list_order_number}. ਮਰੀਜ਼ ਦੀ ਮੁਲਾਕਾਤ ਰਿਕਾਰਡ ਕਰੋ"
+      overdue_html: "%{list_order_number}. ਓਵਰਡਿਊ ਮਰੀਜ਼ਾਂ ਨੂੰ ਕਾਲ ਕਰੋ"
       faq_html: ਆਮ ਸਵਾਲ
     support:
       heading_html: ਮਦਦ ਮੰਗੋ
