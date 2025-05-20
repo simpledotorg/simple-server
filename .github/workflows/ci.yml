@@ -44,31 +44,33 @@ jobs:
         with:
           bundler-cache: true
       - name: Promote local Postgresql
-        run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
-      - name: Turn on local Postgresql
         run: |
-          set -e
+          echo "$(pg_config --bindir)" >> $GITHUB_PATH
+          sudo systemctl start postgresql.service
+      # - name: Turn on local Postgresql
+      #   run: |
+      #     set -e
 
-          echo "Initializing database cluster..."
-          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
-          export PGDATA="$PGHOST/pgdata"
-          mkdir -p "$PGDATA"
+      #     echo "Initializing database cluster..."
+      #     export PGHOST="${RUNNER_TEMP//\\//}/postgres"
+      #     export PGDATA="$PGHOST/pgdata"
+      #     mkdir -p "$PGDATA"
 
-          echo "Creating default headless passsword..."
-          export PWFILE="$RUNNER_TEMP/pwfile"
-          echo "postgres" > "$PWFILE"
-          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
+      #     echo "Creating default headless passsword..."
+      #     export PWFILE="$RUNNER_TEMP/pwfile"
+      #     echo "postgres" > "$PWFILE"
+      #     initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
 
-          echo "Starting Postgresql..."
-          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
-          pg_ctl start
+      #     echo "Starting Postgresql..."
+      #     echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
+      #     pg_ctl start
 
-          echo "Creating user..."
-          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $SIMPLE_SERVER_DATABASE_USERNAME PASSWORD '$SIMPLE_SERVER_DATABASE_PASSWORD'" --command="\du"
+      #     echo "Creating user..."
+      #     psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $SIMPLE_SERVER_DATABASE_USERNAME PASSWORD '$SIMPLE_SERVER_DATABASE_PASSWORD'" --command="\du"
 
-          # (optional; because it would be created by Rails)
-          # echo "Creating database..."
-          # createdb --owner="$SIMPLE_SERVER_DATABASE_USERNAME" --username="postgres" "$PGDATABASE"
+      #     # (optional; because it would be created by Rails)
+      #     # echo "Creating database..."
+      #     # createdb --owner="$SIMPLE_SERVER_DATABASE_USERNAME" --username="postgres" "$PGDATABASE"
       - name: Setup DB
         run: bundle exec rake db:prepare
       - run: bundle exec rspec
