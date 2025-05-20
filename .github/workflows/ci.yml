@@ -3,6 +3,9 @@ name: Suite Tests
 on:
   pull_request:
 
+env:
+  RAILS_ENV: production
+
 jobs:
   linting:
     runs-on: ubuntu-latest
