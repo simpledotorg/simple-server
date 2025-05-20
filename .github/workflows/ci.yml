@@ -1,0 +1,53 @@
+name: Suite Tests
+
+on:
+  pull_request:
+
+env:
+  RAILS_ENV: production
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec standardrb
+
+  suite-tests:
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+          port:
+            - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    needs:
+      - linting
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      NODE_ENV: test
+      SIMPLE_SERVER_DATABASE_HOST: localhost
+      SIMPLE_SERVER_DATABASE_USERNAME: postgres
+      SIMPLE_SERVER_DATABASE_PASSWORD: postgres
+      TEST_ENV_NUMBER: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Setup DB
+        run: bundle exec rake db:test:prepare
+      - run: bundle exec rspec
