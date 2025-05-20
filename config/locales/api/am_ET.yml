@@ -79,10 +79,10 @@ am-ET:
     menu:
       videos_html: ቪዲዮዎች
       start_html: 1. ጀምር
-      register_html: 2. ታካሚ መዝግብ
-      search_html: 3. ትክክለኛውን ታካሚ ፈልግ
-      record_html: 4. የታካሚ ጉብኝት መዝግብ
-      overdue_html: 5. የዘገዩ ታካሚዎችን ይጥሩ
+      register_html: "%{list_order_number}. ታካሚ መዝግብ"
+      search_html: "%{list_order_number}. ትክክለኛውን ታካሚ ፈልግ"
+      record_html: "%{list_order_number}. የታካሚ ጉብኝት መዝግብ"
+      overdue_html: "%{list_order_number}. የዘገዩ ታካሚዎችን ይጥሩ"
       faq_html: የተለመዱ ጥያቄዎች
     support:
       heading_html: እገዛ ይጠይቁ

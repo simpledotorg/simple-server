@@ -79,10 +79,10 @@ mr-IN:
     menu:
       videos_html: व्हिडिओ
       start_html: 1. सुरुवात करत आहे
-      register_html: 2. रुग्णाची नोंदणी करा
-      search_html: 3. योग्य रूग्ण शोधा
-      record_html: 4. रुग्णाच्या भेटीचा रेकॉर्ड ठेवा
-      overdue_html: 5. ओव्हरड्यू रुग्णांना कॉल करा
+      register_html: "%{list_order_number}. रुग्णाची नोंदणी करा"
+      search_html: "%{list_order_number}. योग्य रूग्ण शोधा"
+      record_html: "%{list_order_number}. रुग्णाच्या भेटीचा रेकॉर्ड ठेवा"
+      overdue_html: "%{list_order_number}. ओव्हरड्यू रुग्णांना कॉल करा"
       faq_html: सामान्&zwj;य प्रश्&zwj;न
     support:
       heading_html: मदत घ्या

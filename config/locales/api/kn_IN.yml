@@ -79,10 +79,10 @@ kn-IN:
     menu:
       videos_html: ವೀಡಿಯೊಗಳು
       start_html: 1. ಆರಂಭಿಸುವುದು
-      register_html: 2. ರೋಗಿಯನ್ನು ನೋಂದಣಿ ಮಾಡಿ
-      search_html: 3. ಸರಿಯಾದ ರೋಗಿಯನ್ನು ಹುಡುಕಿ
-      record_html: 4. ರೋಗಿಯ ಭೇಟಿಯನ್ನು ದಾಖಲಿಸಿ
-      overdue_html: 5. ಓವರ್‌ಡ್ಯೂ ಇರುವ ರೋಗಿಗಳಿಗೆ ಕರೆ ಮಾಡಿ
+      register_html: "%{list_order_number}. ರೋಗಿಯನ್ನು ನೋಂದಣಿ ಮಾಡಿ"
+      search_html: "%{list_order_number}. ಸರಿಯಾದ ರೋಗಿಯನ್ನು ಹುಡುಕಿ"
+      record_html: "%{list_order_number}. ರೋಗಿಯ ಭೇಟಿಯನ್ನು ದಾಖಲಿಸಿ"
+      overdue_html: "%{list_order_number}. ಓವರ್‌ಡ್ಯೂ ಇರುವ ರೋಗಿಗಳಿಗೆ ಕರೆ ಮಾಡಿ"
       faq_html: ಸಾಮಾನ್ಯ ಪ್ರಶ್ನೆಗಳು
     support:
       heading_html: ಸಹಾಯ ಕೇಳಿ
