@@ -1,0 +1,72 @@
+name: Suite Tests
+
+on:
+  pull_request:
+
+env:
+  RAILS_ENV: production
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec standardrb
+
+  suite-tests:
+    # services:
+    #   postgres:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_PASSWORD: postgres
+    #       port: "5432:5432"
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    needs:
+      - linting
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      DISABLE_SPRING: 1
+      SIMPLE_SERVER_DATABASE_HOST: localhost
+      SIMPLE_SERVER_DATABASE_USERNAME: simple_testuser
+      SIMPLE_SERVER_DATABASE_PASSWORD: postgres
+      TEST_ENV_NUMBER: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - name: Promote local Postgresql
+        run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
+      - name: Turn on local Postgresql
+        run: |
+          echo "Initializing database cluster..."
+          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
+          export PGDATA="$PGHOST/pgdata"
+          mkdir -p "$PGDATA"
+
+          echo "Creating default headless passsword..."
+          export PWFILE="$RUNNER_TEMP/pwfile"
+          echo "postgres" > "$PWFILE"
+          initdb --pgdata="$PGDATA" --username="postgres" --pwfile="$PWFILE"
+
+          echo "Starting Postgresql..."
+          echo "unix_socket_directories = '$PGHOST'" >> "$PGDATA/postgresql.conf"
+          pg_ctl start
+
+          echo "Creating user..."
+          psql --host "$PGHOST" --username="postgres" --dbname="postgres" --command="CREATE USER $SIMPLE_SERVER_DATABASE_USERNAME PASSWORD '$SIMPLE_SERVER_DATABASE_PASSWORD'" --command="\du"
+
+          # (optional; because it would be created by Rails)
+          # echo "Creating database..."
+          # createdb --owner="$SIMPLE_SERVER_DATABASE_USERNAME" --username="postgres" "$PGDATABASE"
+      - name: Setup DB
+        run: bundle exec rake db:prepare
+      - run: bundle exec rspec
