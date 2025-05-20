@@ -53,8 +53,8 @@ RSpec.configure do |config|
     end
   end
 
-  def refresh_views
-    RefreshReportingViews.call
+  def refresh_views(views: :all)
+    RefreshReportingViews.call(views: views)
   end
 
   config.before(:each) do
