@@ -80,10 +80,10 @@ es:
     menu:
       videos_html: Videos
       start_html: 1. Cómo empezar
-      register_html: 2. Registrar un paciente
-      search_html: 3. Encontrar al paciente correcto
-      record_html: 4. Registrar la visita del paciente
-      overdue_html: 5. Llamar a pacientes atrasados
+      register_html: "%{list_order_number}. Registrar un paciente"
+      search_html: "%{list_order_number}. Encontrar al paciente correcto"
+      record_html: "%{list_order_number}. Registrar la visita del paciente"
+      overdue_html: "%{list_order_number}. Llamar a pacientes atrasados"
       faq_html: Preguntas comunes
     support:
       heading_html: Pedir ayuda
