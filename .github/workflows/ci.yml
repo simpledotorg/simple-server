@@ -47,6 +47,8 @@ jobs:
         run: echo "$(pg_config --bindir)" >> $GITHUB_PATH
       - name: Turn on local Postgresql
         run: |
+          set -e
+
           echo "Initializing database cluster..."
           export PGHOST="${RUNNER_TEMP//\\//}/postgres"
           export PGDATA="$PGHOST/pgdata"
