@@ -1,5 +1,5 @@
 module ExternalLinksHelper
-  DEPLOYMENT_CHECKLIST_LINK = "https://docs.google.com/document/d/1cleJkm09VRGUAafkpzC9U2ao9r4r8ewZjLPwfTTj57Q/edit?usp=sharing"
+  DEPLOYMENT_CHECKLIST_LINK = Rails.application.config.deployment_checklist_link
   BP_PASSPORT_CREATOR_LINK = "https://drive.google.com/file/d/1fB9RFdrFC4NaU1CQUfEodC6IyXdQcs_A/view?usp=sharing"
 
   INDIA_SIMPLE_TRAINING_GUIDE_LINK = "https://docs.google.com/presentation/d/1YKlZfXpnX0tGk6NMO6JLuZY0l9O3P3zOxKXsWNJh7W0/edit#slide=id.g25f6af9dd6_0_0"
