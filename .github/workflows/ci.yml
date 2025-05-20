@@ -48,7 +48,7 @@ jobs:
           echo "$(pg_config --bindir)" >> $GITHUB_PATH
 
           echo "Initializing database cluster..."
-          export PGHOST="${RUNNER_TEMP//\\//}/postgres
+          export PGHOST="${RUNNER_TEMP//\\//}/postgres"
           export PGDATA="$PGHOST/pgdata"
           mkdir -p "$PGDATA"
 
