@@ -60,28 +60,28 @@ RSpec.describe ProgressTab::Hypertension::UncontrolledComponent, type: :componen
     end
 
     it "renders the correct title text" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_short"))
     end
 
     it "renders the correct subtitle text" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle",
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.subtitle",
         facility_name: "Region 1", diagnosis: "Hypertension",
         uncontrolled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long")))
     end
 
     it "renders the tooltip with correct numerator and denominator text" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.numerator",
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.numerator",
         uncontrolled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_uncontrolled_long")))
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator",
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator",
         facility_name: "Region 1", diagnosis: "Hypertension"))
     end
 
     it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector("[data-graph-type='bar-chart']")
+      expect(page).to have_selector("[data-graph-type='bar-chart']")
     end
 
     it "includes the correct graph colors" do
-      expect(rendered_component).to have_selector(".bgc-yellow-dark-new")
+      expect(page).to have_selector(".bgc-yellow-dark-new")
     end
   end
 end
