@@ -33,3 +33,20 @@ LICENSE_LINK="https://www.simple.org/license/"
 Make sure these environment variables are set in your environment, `.env` file, or your deployment configuration system.
 
 Once set, the application will reflect the customized brand name and email addresses in relevant views, exports, headers, and documentation like Swagger API pages.
+
+### Overriding the assets
+
+Please overriede below assets with the corresponding brand assets.
+
+app/assets/images/logos/production/simple_logo.png
+app/assets/images/logos/production/simple_logo.svg
+app/assets/images/logos/production/simple_logo_256.png
+app/assets/images/logos/production/simple_logo_android_192.png
+app/assets/images/logos/production/simple_logo_android_512.png
+app/assets/images/logos/production/simple_logo_apple_touch.png
+app/assets/images/logos/production/simple_logo_favicon.png
+app/assets/images/rtsl_logo.png
+public/404.html
+public/500.html
+app.json
+public/documents/monthly-report-template.xlsx
