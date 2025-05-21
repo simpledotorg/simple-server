@@ -43,6 +43,7 @@ jobs:
     env:
       RAILS_ENV: test
       NODE_ENV: test
+      NODE_OPTIONS: --openssl-legacy-provider
       SIMPLE_SERVER_DATABASE_HOST: localhost
       SIMPLE_SERVER_DATABASE_USERNAME: postgres
       SIMPLE_SERVER_DATABASE_PASSWORD: postgres
@@ -52,6 +53,17 @@ jobs:
       - uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.11.0
+          cache: 'yarn'
+      - name: Install Node Packages
+        run: yarn install --frozen-lockfile
       - name: Setup DB
         run: bundle exec rake db:test:prepare
-      - run: bundle exec rspec
+      - name: Refresh Materialized Views
+        run: bundle exec rake db:refresh_matviews
+      - name: Precompile assets
+        run: bundle exec rake assets:precompile
+      - name: Run Tests
+        run: bundle exec rspec
