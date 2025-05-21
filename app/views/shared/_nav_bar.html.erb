@@ -117,7 +117,7 @@
             Error traces
           <% end %>
         <% end %>
-        <% if current_admin.power_user? %>
+        <% if current_admin.power_user? && !Rails.application.config.whitelabel_app %>
           <%= link_to admin_cphc_migration_path, class: "sub-nav-link #{active_controller?("admin/cphc_migration")}" do %>
             CPHC Migration
           <% end %>
@@ -126,10 +126,10 @@
 
       <div class="nav-divider"></div>
 
-      <a href="https://www.simple.org/privacy/" class="sub-nav-link" target="_blank">
+      <a href="<%= Rails.application.config.privacy_link %>" class="sub-nav-link" target="_blank">
         Privacy policy
       </a>
-      <a href="https://www.simple.org/license/" class="sub-nav-link" target="_blank">
+      <a href="<%= Rails.application.config.license_link %>" class="sub-nav-link" target="_blank">
         License
       </a>
 

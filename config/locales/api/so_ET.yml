@@ -79,10 +79,10 @@ so-ET:
     menu:
       videos_html: Fiidyawyo
       start_html: 1. Bilawga
-      register_html: 2. Duwaan gelinta bukaanka
-      search_html: 3. Hel bukaanka saxda ah
-      record_html: 4. Duwaanka booqashada bukaanka
-      overdue_html: 5. La hadal bukaanka mudadu ka dhaaftay
+      register_html: "%{list_order_number}. Duwaan gelinta bukaanka"
+      search_html: "%{list_order_number}. Hel bukaanka saxda ah"
+      record_html: "%{list_order_number}. Duwaanka booqashada bukaanka"
+      overdue_html: "%{list_order_number}. La hadal bukaanka mudadu ka dhaaftay"
       faq_html: Su'aalaha caamka ah
     support:
       heading_html: Dalbo kaalmo
