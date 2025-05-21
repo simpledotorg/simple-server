@@ -79,10 +79,10 @@ bn-BD:
     menu:
       videos_html: ভিডিওগুলি
       start_html: 1. শুরু করা হচ্ছে
-      register_html: 2. রোগীকে নিবন্ধন করুন
-      search_html: 3. সঠিক রোগীকে খুঁজুন
-      record_html: 4. একজন রোগীর ভিজিট রেকর্ড করুন
-      overdue_html: 5. ভিজিটের সময় পেরিয়ে যাওয়া রোগীদের ফোন করা
+      register_html: "%{list_order_number}. রোগীকে নিবন্ধন করুন"
+      search_html: "%{list_order_number}. সঠিক রোগীকে খুঁজুন"
+      record_html: "%{list_order_number}. একজন রোগীর ভিজিট রেকর্ড করুন"
+      overdue_html: "%{list_order_number}. ভিজিটের সময় পেরিয়ে যাওয়া রোগীদের ফোন করা"
       faq_html: সাধারণ প্রশ্নাবলী
     support:
       heading_html: সহায়্তা চান

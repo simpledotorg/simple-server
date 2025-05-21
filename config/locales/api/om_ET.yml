@@ -79,10 +79,10 @@ om-ET:
     menu:
       videos_html: Suursagalee
       start_html: 1. Jalqabuu
-      register_html: 2. Dhukkubsataa galmeessi
-      search_html: 3. Dhukkubsataa sirrii barbaadi
-      record_html: 4. Daawwannaa dhukkubsataa galmeessi
-      overdue_html: 5. Dhukkubsatoota yeroon irra darbe waami
+      register_html: "%{list_order_number}. Dhukkubsataa galmeessi"
+      search_html: "%{list_order_number}. Dhukkubsataa sirrii barbaadi"
+      record_html: "%{list_order_number}. Daawwannaa dhukkubsataa galmeessi"
+      overdue_html: "%{list_order_number}. Dhukkubsatoota yeroon irra darbe waami"
       faq_html: Gaaffiiwwan baraman
     support:
       heading_html: Gargaarsaaf gaafadhu
