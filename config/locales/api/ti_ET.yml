@@ -79,10 +79,10 @@ ti-ET:
     menu:
       videos_html: ቪዲዮታት
       start_html: 1. ኣብ ምጅማር
-      register_html: 2. ተሓካሚ መዝግብ
-      search_html: 3. ንእትደልዮ ተሓካሚ ብልክዕ ርኸቦ
-      record_html: 4. ናይ ተሓካማይ ምብፃሕ ምምዝጋብ
-      overdue_html: 5. ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም
+      register_html: "%{list_order_number}. ተሓካሚ መዝግብ"
+      search_html: "%{list_order_number}. ንእትደልዮ ተሓካሚ ብልክዕ ርኸቦ"
+      record_html: "%{list_order_number}. ናይ ተሓካማይ ምብፃሕ ምምዝጋብ"
+      overdue_html: "%{list_order_number}. ጊዚኦም ዝሓለፎም ተሓከምቲ ጸዉዕዎም"
       faq_html: ብኣብዝሓ ዝሕተቱ ሕቶታት
     support:
       heading_html: ሓገዝ ሕተት

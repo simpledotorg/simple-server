@@ -17,28 +17,32 @@
     <div id="help-section" class="help-body">
       <div class="help-contents">
         <nav class="help-nav">
-          <a href="#" onclick="goToPage('help-section', 'help-videos'); return false">
-          <%= t("help.menu.videos_html") %>
-          <%= inline_svg('icon_chevron_right.svg') %>
-          </a>
-          <a href="#" onclick="goToPage('help-section', 'help-start'); return false">
-          <%= t("help.menu.start_html") %>
-          <%= inline_svg('icon_chevron_right.svg') %>
-          </a>
+          <% if !Rails.application.config.whitelabel_app %>
+            <a href="#" onclick="goToPage('help-section', 'help-videos'); return false">
+            <%= t("help.menu.videos_html") %>
+            <%= inline_svg('icon_chevron_right.svg') %>
+            </a>
+          <% end %>
+          <% if !Rails.application.config.whitelabel_app %>
+            <a href="#" onclick="goToPage('help-section', 'help-start'); return false">
+            <%= t("help.menu.start_html") %>
+            <%= inline_svg('icon_chevron_right.svg') %>
+            </a>
+          <% end %>
           <a href="#" onclick="goToPage('help-section', 'help-register'); return false">
-          <%= t("help.menu.register_html") %>
+          <%= t("help.menu.register_html", list_order_number: Rails.application.config.whitelabel_app ? "1" : "2") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="goToPage('help-section', 'help-search'); return false">
-          <%= t("help.menu.search_html") %>
+          <%= t("help.menu.search_html", list_order_number: Rails.application.config.whitelabel_app ? "2" : "3") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="goToPage('help-section', 'help-record'); return false">
-          <%= t("help.menu.record_html") %>
+          <%= t("help.menu.record_html", list_order_number: Rails.application.config.whitelabel_app ? "3" : "4") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="goToPage('help-section', 'help-overdue'); return false">
-          <%= t("help.menu.overdue_html") %>
+          <%= t("help.menu.overdue_html", list_order_number: Rails.application.config.whitelabel_app ? "4" : "5") %>
           <%= inline_svg('icon_chevron_right.svg') %>
           </a>
           <a href="#" onclick="goToPage('help-section', 'help-faq'); return false">
@@ -67,150 +71,152 @@
           <p><%= t("help.bp_passport_app_summary.contents_2_html") %></p>
           <p class="card-footer-button"><a href="#" onclick="goToPage('help-section', 'help-bp-passport-app'); return false"><%= t("help.bp_passport_app_summary.learn_more_html") %></a></p>
         </div>
-        <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.privacy_policy_html") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.terms_of_service_html") %></a></p>
+        <% if !Rails.application.config.whitelabel_app %>
+          <p class="tos"><a href="https://simple.org/simple-privacy"><%= t("help.privacy_policy_html") %></a> <span class="divider">&nbsp;|&nbsp;</span> <a href="https://simple.org/terms"><%= t("help.terms_of_service_html") %></a></p>
+        <% end %>
       </div>
     </div>
+    <% if !Rails.application.config.whitelabel_app %>
+      <!-----  Videos Page ------>
 
-    <!-----  Videos Page ------>
-
-    <div id="help-videos" class="help-body" style="display: none;">
-      <div class="help-contents">
-        <a href="#" onclick="goToPage('help-videos', 'help-section'); return false" class="help-back">
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2><%= t("help.videos.heading_html") %></h2>
-        <div class="card">
-          <h3><%= t("help.videos.class.heading_html") %></h3>
-          <p><%= t("help.videos.class.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-          <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>" class="video">
-          <%= inline_svg('thumb_training.svg') %>
+      <div id="help-videos" class="help-body" style="display: none;">
+        <div class="help-contents">
+          <a href="#" onclick="goToPage('help-videos', 'help-section'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
           </a>
-          <p>
-            <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>"><%= t("help.videos.class.training_videos_link_html") %></a>
-            <br>
-            <%= t("help.videos.class.training_videos_subtitle_html") %>
-          </p>
-        </div>
-        <div class="card">
-          <h3><%= t("help.videos.chapters.heading_html") %></h3>
-          <div class="video-small">
-            <a href="https://youtu.be/r0mbu1s0l7A"><%= t("help.videos.chapters.chapter_1_html") %></a>
+          <h2><%= t("help.videos.heading_html") %></h2>
+          <div class="card">
+            <h3><%= t("help.videos.class.heading_html") %></h3>
+            <p><%= t("help.videos.class.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+            <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>" class="video">
+            <%= inline_svg('thumb_training.svg') %>
+            </a>
+            <p>
+              <a href="<%= ENV['HELP_SCREEN_YOUTUBE_TRAINING_URL'] %>"><%= t("help.videos.class.training_videos_link_html") %></a>
+              <br>
+              <%= t("help.videos.class.training_videos_subtitle_html") %>
+            </p>
           </div>
-          <div class="video-small">
-            <a href="https://youtu.be/YPySS9sL-EU"><%= t("help.videos.chapters.chapter_2_html") %></a>
+          <div class="card">
+            <h3><%= t("help.videos.chapters.heading_html") %></h3>
+            <div class="video-small">
+              <a href="https://youtu.be/r0mbu1s0l7A"><%= t("help.videos.chapters.chapter_1_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/YPySS9sL-EU"><%= t("help.videos.chapters.chapter_2_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/5P5mGQVQFOU"><%= t("help.videos.chapters.chapter_3_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/6hR1vQ8hoTU"><%= t("help.videos.chapters.chapter_4_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/o3klwHrMEi0"><%= t("help.videos.chapters.chapter_5_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/PuM29XINOn4"><%= t("help.videos.chapters.chapter_6_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/elCBnApJLIM"><%= t("help.videos.chapters.chapter_7_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/Aj-dKn_kmlw"><%= t("help.videos.chapters.chapter_8_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9_html") %></a>
+            </div>
+            <div class="video-small">
+              <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10_html", app_brand_name: Rails.application.config.application_brand_name) %></a>
+            </div>
           </div>
-          <div class="video-small">
-            <a href="https://youtu.be/5P5mGQVQFOU"><%= t("help.videos.chapters.chapter_3_html") %></a>
+          <div class="card">
+            <h3><%= t("help.videos.teleconsultation.heading_html") %></h3>
+            <p><%= t("help.videos.teleconsultation.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+            <div class="video-small">
+              <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link_html", app_brand_name: Rails.application.config.application_brand_name) %><span><%= t("help.videos.teleconsultation.english_video_link_language_html") %></span></a>
+            </div>
+            <div class="video-small">
+              <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link_html") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language_html") %></span></a>
+            </div>
           </div>
-          <div class="video-small">
-            <a href="https://youtu.be/6hR1vQ8hoTU"><%= t("help.videos.chapters.chapter_4_html") %></a>
+          <div class="card">
+            <h3><%= t("help.videos.bp_passports.heading_html") %></h3>
+            <p><%= t("help.videos.bp_passports.contents_html") %></p>
+            <div class="video-small">
+              <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s"><%= t("help.videos.bp_passports.video_link_html") %><span><%= t("help.videos.bp_passports.video_link_subtitle_html") %></span></a>
+            </div>
           </div>
-          <div class="video-small">
-            <a href="https://youtu.be/o3klwHrMEi0"><%= t("help.videos.chapters.chapter_5_html") %></a>
+          <div class="card">
+            <h3><%= t("help.videos.film.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
+            <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
+            <%= inline_svg('thumb_documentary.svg') %>
+            </a>
+            <p>
+              <%= t("help.videos.film.link_html", app_brand_name: Rails.application.config.application_brand_name) %>
+            </p>
           </div>
-          <div class="video-small">
-            <a href="https://youtu.be/PuM29XINOn4"><%= t("help.videos.chapters.chapter_6_html") %></a>
-          </div>
-          <div class="video-small">
-            <a href="https://youtu.be/elCBnApJLIM"><%= t("help.videos.chapters.chapter_7_html") %></a>
-          </div>
-          <div class="video-small">
-            <a href="https://youtu.be/Aj-dKn_kmlw"><%= t("help.videos.chapters.chapter_8_html") %></a>
-          </div>
-          <div class="video-small">
-            <a href="https://youtu.be/wF4t_pFuugY"><%= t("help.videos.chapters.chapter_9_html") %></a>
-          </div>
-          <div class="video-small">
-            <a href="https://youtu.be/kls4QnWz1Nw"><%= t("help.videos.chapters.chapter_10_html", app_brand_name: Rails.application.config.application_brand_name) %></a>
-          </div>
-        </div>
-        <div class="card">
-          <h3><%= t("help.videos.teleconsultation.heading_html") %></h3>
-          <p><%= t("help.videos.teleconsultation.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_ENGLISH_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.english_video_link_html", app_brand_name: Rails.application.config.application_brand_name) %><span><%= t("help.videos.teleconsultation.english_video_link_language_html") %></span></a>
-          </div>
-          <div class="video-small">
-            <a href="<%= ExternalLinksHelper::TELEMEDICINE_TRAINING_HINDI_YOUTUBE_LINK %>"><%= t("help.videos.teleconsultation.hindi_video_link_html") %><span><%= t("help.videos.teleconsultation.hindi_video_link_language_html") %></span></a>
-          </div>
-        </div>
-        <div class="card">
-          <h3><%= t("help.videos.bp_passports.heading_html") %></h3>
-          <p><%= t("help.videos.bp_passports.contents_html") %></p>
-          <div class="video-small">
-            <a href="https://www.youtube.com/watch?v=aktZ1yTdDOA&t=52s"><%= t("help.videos.bp_passports.video_link_html") %><span><%= t("help.videos.bp_passports.video_link_subtitle_html") %></span></a>
-          </div>
-        </div>
-        <div class="card">
-          <h3><%= t("help.videos.film.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
-          <a href="https://www.youtube.com/watch?v=C26CoyeExmU" class="video">
-          <%= inline_svg('thumb_documentary.svg') %>
-          </a>
-          <p>
-            <%= t("help.videos.film.link_html", app_brand_name: Rails.application.config.application_brand_name) %>
-          </p>
         </div>
       </div>
-    </div>
 
-    <!-----  Getting Started Page ------>
+      <!-----  Getting Started Page ------>
 
-    <div id="help-start" class="help-body" style="display: none;">
-      <div class="help-contents">
-        <a href="#" onclick="goToPage('help-start', 'help-section'); return false" class="help-back">
-          <%= inline_svg('icon_back.svg') %>
-        </a>
-        <h2><%= t("help.start.heading_html") %></h2>
-        <div class="card">
-          <h3><%= t("help.start.getting_started_video.heading_html") %></h3>
-          <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
-            <%= inline_svg('thumb_demo.svg') %>
+      <div id="help-start" class="help-body" style="display: none;">
+        <div class="help-contents">
+          <a href="#" onclick="goToPage('help-start', 'help-section'); return false" class="help-back">
+            <%= inline_svg('icon_back.svg') %>
           </a>
-          <p><%= t("help.start.getting_started_video.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-        </div>
-        <div class="card">
-          <h3><%= t("help.start.who_to_record.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
-          <p><%= t("help.start.who_to_record.contents_1_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-          <p><%= t("help.start.who_to_record.contents_2_html") %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_1.label_html") %></span></span><%= t("help.start.step_1.heading_html") %></h3>
-          <p><%= t("help.start.step_1.contents_html") %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_2.label_html") %></span></span><%= t("help.start.step_2.heading_html") %></h3>
-          <p><%= t("help.start.step_2.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_3.label_html") %></span></span><%= t("help.start.step_3.heading_html") %></h3>
-          <p><%= t("help.start.step_3.contents_html") %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_4.label_html") %></span></span><%= t("help.start.step_4.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
-          <p><%= t("help.start.step_4.contents_html") %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_5.label_html") %></span></span><%= t("help.start.step_5.heading_html") %></h3>
-          <p><%= t("help.start.step_5.contents_html") %></p>
-        </div>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.step_6.label_html") %></span></span><%= t("help.start.step_6.heading_html") %></h3>
-          <p><%= t("help.start.step_6.contents_html") %></p>
-        </div>
-        <hr>
-        <div class="card">
-          <h3><span class="header-label"><span><%= t("help.start.missed_visit.label_html") %></span></span><%= t("help.start.missed_visit.heading_html") %></h3>
-          <p><%= t("help.start.missed_visit.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
-        </div>
-        <hr>
-        <div class="card card-tip">
-          <%= inline_svg('help/tip.svg') %>
-          <h3><%= t("help.start.tip.heading_html") %></h3>
-          <p><%= t("help.start.tip.contents_html") %></p>
+          <h2><%= t("help.start.heading_html") %></h2>
+          <div class="card">
+            <h3><%= t("help.start.getting_started_video.heading_html") %></h3>
+            <a href="<%= ENV['HELP_SCREEN_YOUTUBE_VIDEO_URL'] %>" class="video">
+              <%= inline_svg('thumb_demo.svg') %>
+            </a>
+            <p><%= t("help.start.getting_started_video.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+          </div>
+          <div class="card">
+            <h3><%= t("help.start.who_to_record.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
+            <p><%= t("help.start.who_to_record.contents_1_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+            <p><%= t("help.start.who_to_record.contents_2_html") %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_1.label_html") %></span></span><%= t("help.start.step_1.heading_html") %></h3>
+            <p><%= t("help.start.step_1.contents_html") %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_2.label_html") %></span></span><%= t("help.start.step_2.heading_html") %></h3>
+            <p><%= t("help.start.step_2.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_3.label_html") %></span></span><%= t("help.start.step_3.heading_html") %></h3>
+            <p><%= t("help.start.step_3.contents_html") %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_4.label_html") %></span></span><%= t("help.start.step_4.heading_html", app_brand_name: Rails.application.config.application_brand_name) %></h3>
+            <p><%= t("help.start.step_4.contents_html") %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_5.label_html") %></span></span><%= t("help.start.step_5.heading_html") %></h3>
+            <p><%= t("help.start.step_5.contents_html") %></p>
+          </div>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.step_6.label_html") %></span></span><%= t("help.start.step_6.heading_html") %></h3>
+            <p><%= t("help.start.step_6.contents_html") %></p>
+          </div>
+          <hr>
+          <div class="card">
+            <h3><span class="header-label"><span><%= t("help.start.missed_visit.label_html") %></span></span><%= t("help.start.missed_visit.heading_html") %></h3>
+            <p><%= t("help.start.missed_visit.contents_html", app_brand_name: Rails.application.config.application_brand_name) %></p>
+          </div>
+          <hr>
+          <div class="card card-tip">
+            <%= inline_svg('help/tip.svg') %>
+            <h3><%= t("help.start.tip.heading_html") %></h3>
+            <p><%= t("help.start.tip.contents_html") %></p>
+          </div>
         </div>
       </div>
-    </div>
-
+    <% end %>
     <!-----  Register a Patient Page ------>
 
     <div id="help-register" class="help-body" style="display: none;">
