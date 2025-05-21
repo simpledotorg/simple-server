@@ -58,18 +58,18 @@ RSpec.describe ProgressTab::Hypertension::ControlComponent, type: :component do
     before { render_component }
 
     it "renders the controlled threshold long text" do
-      expect(rendered_component).to have_text(I18n.t(
+      expect(page).to have_text(I18n.t(
         "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.numerator",
         controlled_threshold: I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_long")
       ))
     end
 
     it "renders the controlled threshold short text" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.diagnosis_thresholds.hypertension_controlled_short"))
     end
 
     it "renders the correct subtitle" do
-      expect(rendered_component).to have_text(I18n.t(
+      expect(page).to have_text(I18n.t(
         "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.subtitle",
         facility_name: "Region 1",
         diagnosis: "Hypertension",
@@ -78,8 +78,8 @@ RSpec.describe ProgressTab::Hypertension::ControlComponent, type: :component do
     end
 
     it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
+      expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+      expect(page).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
     end
   end
 end
