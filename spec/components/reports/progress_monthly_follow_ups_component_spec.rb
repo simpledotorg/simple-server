@@ -33,7 +33,7 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
     monthly_follow_ups_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
-  let(:rendered_component) do
+  let(:page) do
     render_inline(described_class.new(
       monthly_follow_ups: monthly_follow_ups,
       period_info: period_info,
@@ -44,25 +44,25 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
 
   describe "rendering the component" do
     it "renders the title correctly" do
-      expect(rendered_component).to have_css("h2", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.title"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.title"))
     end
 
     it "renders the subtitle with correct facility name and diagnosis" do
-      expect(rendered_component).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle_dm", facility_name: region.name, diagnosis: diagnosis))
+      expect(page).to have_selector("p", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.subtitle_dm", facility_name: region.name, diagnosis: diagnosis))
     end
 
     it "displays the correct number of total registrations" do
       monthly_follow_ups_data.values.each do |value|
-        expect(rendered_component).to have_text(value.to_s)
+        expect(page).to have_text(value.to_s)
       end
     end
 
     it "passes the correct data to the data bar graph partial" do
-      expect(rendered_component).to have_selector('div[data-graph-type="bar-chart"]')
+      expect(page).to have_selector('div[data-graph-type="bar-chart"]')
       monthly_follow_ups_data.keys.each do |date_str|
-        expect(rendered_component).to have_text(period_info_data[date_str][:name])
+        expect(page).to have_text(period_info_data[date_str][:name])
       end
-      monthly_follow_ups_data.values.each { |value| expect(rendered_component).to have_text(value.to_s) }
+      monthly_follow_ups_data.values.each { |value| expect(page).to have_text(value.to_s) }
     end
   end
 

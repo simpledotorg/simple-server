@@ -64,15 +64,15 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
       end
 
       it "displays the correct uncontrolled threshold long text" do
-        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.numerator_dm_fbs"))
+        expect(page).to have_text(I18n.t("bs_over_200_copy.bs_over_300.numerator_dm_fbs"))
       end
 
       it "displays the correct uncontrolled threshold short text" do
-        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title_dm_fbs"))
+        expect(page).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title_dm_fbs"))
       end
 
       it "displays the correct denominator text" do
-        expect(rendered_component).to have_text(
+        expect(page).to have_text(
           I18n.t(
             "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator",
             facility_name: region.name,
@@ -82,8 +82,8 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
       end
 
       it "renders the bar chart with correct styling and tooltip enabled" do
-        expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-        expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
+        expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+        expect(page).to have_selector(".w-32px.bgc-yellow-dark-new")
       end
     end
 
@@ -93,11 +93,11 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
       end
 
       it "displays the correct uncontrolled threshold short text" do
-        expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title"))
+        expect(page).to have_text(I18n.t("bs_over_200_copy.bs_over_300.title"))
       end
 
       it "displays the correct denominator text" do
-        expect(rendered_component).to have_text(
+        expect(page).to have_text(
           I18n.t(
             "progress_tab.diagnosis_report.patient_treatment_outcomes.controlled_card.help_tooltip.denominator",
             facility_name: region.name,
@@ -107,8 +107,8 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar300AndAboveComponent, type: :com
       end
 
       it "renders the bar chart with correct styling and tooltip enabled" do
-        expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-        expect(rendered_component).to have_selector(".w-32px.bgc-yellow-dark-new")
+        expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+        expect(page).to have_selector(".w-32px.bgc-yellow-dark-new")
       end
     end
   end
