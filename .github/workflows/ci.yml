@@ -1,0 +1,71 @@
+name: Suite Tests
+
+on:
+  pull_request:
+
+env:
+  RAILS_ENV: production
+
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.ref }}
+#   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - run: bundle exec standardrb
+
+  suite-tests:
+    services:
+      postgres:
+        image: postgres:14-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379:6379
+    needs:
+      - linting
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+      NODE_ENV: test
+      NODE_OPTIONS: --openssl-legacy-provider
+      SIMPLE_SERVER_DATABASE_HOST: localhost
+      SIMPLE_SERVER_DATABASE_USERNAME: postgres
+      SIMPLE_SERVER_DATABASE_PASSWORD: postgres
+      TEST_ENV_NUMBER: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18.11.0
+          cache: 'yarn'
+      - name: Install Node Packages
+        run: yarn install --frozen-lockfile
+      - name: Setup DB
+        run: |
+          bundle exec rake parallel:create
+          bundle exec rake parallel:setup
+      - name: Refresh Materialized Views
+        run: bundle exec rake db:refresh_matviews
+      - name: Precompile assets
+        run: bundle exec rake assets:precompile
+      - name: Run Tests
+        run: bundle exec rake parallel:spec
