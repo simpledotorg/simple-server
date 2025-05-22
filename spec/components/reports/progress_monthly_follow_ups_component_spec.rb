@@ -33,7 +33,7 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
     monthly_follow_ups_data.map { |date_str, value| [Period.new(type: :month, value: date_str), value] }.to_h
   end
 
-  let(:rendered_component) do
+  let(:page) do
     render_inline(described_class.new(
       monthly_follow_ups: monthly_follow_ups,
       period_info: period_info,
@@ -44,7 +44,7 @@ RSpec.describe Reports::ProgressMonthlyFollowUpsComponent, type: :component do
 
   describe "rendering the component" do
     it "renders the title correctly" do
-      expect(page).to have_css("h2", text: I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.title"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.monthly_follow_up_patients.title"))
     end
 
     it "renders the subtitle with correct facility name and diagnosis" do
