@@ -60,10 +60,12 @@ jobs:
       - name: Install Node Packages
         run: yarn install --frozen-lockfile
       - name: Setup DB
-        run: bundle exec rake db:test:prepare
+        run: |
+          bundle exec rake parallel:create
+          bundle exec rake parallel:setup
       - name: Refresh Materialized Views
         run: bundle exec rake db:refresh_matviews
       - name: Precompile assets
         run: bundle exec rake assets:precompile
       - name: Run Tests
-        run: bundle exec rspec
+        run: bundle exec rake parallel:spec
