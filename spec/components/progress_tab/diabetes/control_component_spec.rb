@@ -61,15 +61,15 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the controlled threshold long text for WHO standard" do
-      expect(rendered_component).to have_text("Numerator: Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months")
+      expect(page).to have_text("Numerator: Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months")
     end
 
     it "renders the controlled threshold short text for WHO standard" do
-      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm_fbs"))
+      expect(page).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm_fbs"))
     end
 
     it "renders the correct subtitle for WHO standard" do
-      expect(rendered_component).to have_text(I18n.t(
+      expect(page).to have_text(I18n.t(
         "bs_below_200_copy.reports_card_subtitle_dm_fbs",
         region_name: "Region 1",
         diagnosis: "Diabetes",
@@ -78,8 +78,8 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
+      expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+      expect(page).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
     end
   end
 
@@ -89,15 +89,15 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the controlled threshold long text for non-WHO standard" do
-      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.numerator"))
+      expect(page).to have_text(I18n.t("bs_below_200_copy.numerator"))
     end
 
     it "renders the controlled threshold short text for non-WHO standard" do
-      expect(rendered_component).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm_bs"))
+      expect(page).to have_text(I18n.t("bs_below_200_copy.reports_card_title_dm_bs"))
     end
 
     it "renders the correct subtitle for non-WHO standard" do
-      expect(rendered_component).to have_text(I18n.t(
+      expect(page).to have_text(I18n.t(
         "bs_below_200_copy.reports_card_subtitle_dm",
         region_name: "Region 1",
         diagnosis: "Diabetes",
@@ -106,8 +106,8 @@ RSpec.describe ProgressTab::Diabetes::ControlComponent, type: :component do
     end
 
     it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
+      expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+      expect(page).to have_selector(".w-32px.bgc-green-dark-new", count: 3)
     end
   end
 end

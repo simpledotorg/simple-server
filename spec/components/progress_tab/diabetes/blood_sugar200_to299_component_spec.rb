@@ -63,24 +63,24 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     end
 
     it "renders the correct uncontrolled threshold long text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.reports_card_title_dm_fbs"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.reports_card_title_dm_fbs"))
     end
 
     it "renders the correct uncontrolled threshold short text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
     end
 
     it "renders the correct denominator text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
     end
 
     it "renders the bar chart with correct data" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-yellow")
+      expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+      expect(page).to have_selector(".w-32px.bgc-yellow")
     end
 
     it "renders the correct uncontrolled bar text for Sri Lanka" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_fbs"))
     end
   end
 
@@ -90,24 +90,24 @@ RSpec.describe ProgressTab::Diabetes::BloodSugar200To299Component, type: :compon
     end
 
     it "renders the correct uncontrolled threshold long text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.reports_card_title_dm"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.reports_card_title_dm"))
     end
 
     it "renders the correct uncontrolled threshold short text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_bs"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm_bs"))
     end
 
     it "renders the correct denominator text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
+      expect(page).to have_text(I18n.t("progress_tab.diagnosis_report.patient_treatment_outcomes.uncontrolled_card.help_tooltip.denominator", facility_name: "Region 1", diagnosis: "Diabetes"))
     end
 
     it "renders the bar chart with correct data for non-Sri Lanka countries" do
-      expect(rendered_component).to have_selector('.d-flex[data-graph-type="bar-chart"]')
-      expect(rendered_component).to have_selector(".w-32px.bgc-yellow")
+      expect(page).to have_selector('.d-flex[data-graph-type="bar-chart"]')
+      expect(page).to have_selector(".w-32px.bgc-yellow")
     end
 
     it "renders the correct uncontrolled bar text for non-Sri Lanka countries" do
-      expect(rendered_component).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm"))
+      expect(page).to have_text(I18n.t("bs_over_200_copy.bs_200_to_299.title_dm"))
     end
   end
 end
