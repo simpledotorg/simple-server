@@ -27,6 +27,8 @@ blocks:
             - cache store
   - name: Tests
     task:
+      skip:
+        when: change_in(["/doc", "/swagger", "**/*.md", "/public", "/script"])
       env_vars:
         - name: RAILS_ENV
           value: "test"
