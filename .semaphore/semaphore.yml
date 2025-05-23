@@ -26,9 +26,9 @@ blocks:
             - yarn install
             - cache store
   - name: Tests
+    skip:
+      when: change_in(["/doc", "/swagger", "**/*.md", "/public", "/script"])
     task:
-      skip:
-        when: change_in(["/doc", "/swagger", "**/*.md", "/public", "/script"])
       env_vars:
         - name: RAILS_ENV
           value: "test"
