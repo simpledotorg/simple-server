@@ -16,6 +16,7 @@ blocks:
           - docker images
           - docker push $tag_latest
           - docker push $tag_git_sha
+          - docker push "$image_name:${SEMAPHORE_WORKFLOW_ID}"
       secrets:
       - name: docker-hub
 queue:
