@@ -13,6 +13,8 @@ Rails.application.routes.draw do
 
   use_doorkeeper
 
+  mount Nursebot::Engine, at: "/nursebot"
+
   mount Rswag::Ui::Engine => "/api-docs"
 
   get "/api-docs/:version/swagger.json", to: "custom_swagger#show"
