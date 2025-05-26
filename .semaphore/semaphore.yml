@@ -33,7 +33,7 @@ blocks:
         '/doc',
         '/public',
         '/script',
-        '/swagger',
+        '/swagger'
       ])
     task:
       env_vars:
