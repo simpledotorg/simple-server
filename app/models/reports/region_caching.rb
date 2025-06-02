@@ -27,7 +27,7 @@ module Reports
       end
       namespace = self.class.name.demodulize.underscore
       options[:version] = cache_version
-      combinations.map { |region, period| Reports::RegionPeriodEntry.new(namespace, region, period, calculation, options) }
+      combinations.map { |region, period| Reports::RegionPeriodEntry.new(namespace, region, period, calculation, **options) }
     end
   end
 end

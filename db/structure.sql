@@ -851,7 +851,7 @@ CREATE TABLE public.flipper_gates (
     id bigint NOT NULL,
     feature_key character varying NOT NULL,
     key character varying NOT NULL,
-    value character varying,
+    value text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -1120,9 +1120,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
             medical_histories.deleted_at,
             medical_histories.user_id,
             medical_histories.hypertension,
-            medical_histories.receiving_treatment_for_diabetes,
-            medical_histories.smoking,
-            medical_histories.cholesterol
+            medical_histories.receiving_treatment_for_diabetes
            FROM public.medical_histories
           WHERE (medical_histories.deleted_at IS NULL)
         ), ranked_prescription_drugs AS (
@@ -7870,6 +7868,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241204155510'),
 ('20241210092449'),
 ('20250120104431'),
-('20250327172921');
+('20250327172921'),
+('20250523112330'),
+('20250523112331');
 
 
