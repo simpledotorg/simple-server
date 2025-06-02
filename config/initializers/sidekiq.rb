@@ -70,7 +70,7 @@ end
 
 Sidekiq.logger.level = Rails.logger.level
 
-Sidekiq::Throttled.setup!
+# Sidekiq::Throttled.setup!
 SidekiqUniqueJobs.configure do |config|
   config.enabled = !Rails.env.test?
 end
