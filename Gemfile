@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.7.8"
+ruby "3.1.6"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -126,7 +126,8 @@ group :development, :test, :profiling do
   gem "derailed_benchmarks"
   gem "memory_profiler", require: false
   gem "prosopite"
-  gem "pg_query"
+  gem "pg_query", "~> 6.1"
+  gem "syntax_suggest"
 end
 
 group :development do

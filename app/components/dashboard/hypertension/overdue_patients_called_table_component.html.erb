@@ -3,16 +3,21 @@
     title: "Overdue patients called",
     subtitle: t("overdue_patients_call_activity.reports_card_subtitle") 
   ) do |c| %>
-    <%= c.tooltip({ "Patients called" => t("overdue_patients_call_activity.patients_called"),
-                    "Percent called" => "",
-                    "Numerator" => t("overdue_patients_call_activity.percent_called_numerator"),
-                    "note" => t("overdue_patients_called.numerator_note"),
-                    "divider" => "",
-                    "Denominator" => t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name)
-                  }) %>
+    <% c.tooltip do %>
+      <%= render Dashboard::Card::TooltipComponent.new({
+        definitions: {
+          "Patients called" => t("overdue_patients_call_activity.patients_called"),
+          "Percent called" => "",
+          "Numerator" => t("overdue_patients_call_activity.percent_called_numerator"),
+          "note" => t("overdue_patients_called.numerator_note"),
+          "divider" => "",
+          "Denominator" => t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name)
+        }
+      }) %>
+    <% end %>
   <% end %>
   <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |table| %>
-      <% table.column_group do %>
+      <% table.column_groups << tag.colgroup  do %>
         <colgroup>
           <col>
           <col class="table-divider">
@@ -24,16 +29,16 @@
         </colgroup>
       <% end %>
       <% periods.each do |period| %>
-       <%= table.header(period, colspan: 2) %>
+       <%= table.with_header(period, colspan: 2) %>
       <% end %>
-      <%= table.sub_header(facility? ? 'Users' : region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
+      <%= table.with_sub_header(facility? ? 'Users' : region.child_region_type.capitalize, sort_default: true, sort_method: :string) %>
 
       <% periods.each do %>
-        <%= table.sub_header("Patients called") %>
-        <%= table.sub_header("Percent") %>
+        <%= table.with_sub_header("Patients called") %>
+        <%= table.with_sub_header("Percent") %>
       <% end %>
 
-      <%= table.row do %>
+      <%= table.rows do %>
         <tr class="row-title row-total" data-sort-method="none">
           <td class="row-title row-total">
             <%= region.name %>
@@ -54,7 +59,7 @@
         </tr>
       <% end %>
         <% children_data&.each do |(row, count_by_period)| %>
-          <% table.row do %>
+          <% table.rows do %>
             <tr>
               <td class="row-title">
               <%= link_to row.name, reports_region_path(row.region, report_scope: row.region_type) unless facility?%>

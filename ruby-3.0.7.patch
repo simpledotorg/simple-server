@@ -1,0 +1,15 @@
+diff --git a/ext/bigdecimal/bigdecimal.c b/ext/bigdecimal/bigdecimal.c
+index 49c83e3..2e7c0a0 100644
+--- a/ext/bigdecimal/bigdecimal.c
++++ b/ext/bigdecimal/bigdecimal.c
+@@ -65,7 +65,11 @@ VALUE BigMath;
+ #define SIZEOF_BDIGITS (SIZEOF_BDIGIT * VP_BASE_FIG)
+
+ #define ENTER(n) \
+-    volatile VALUE RB_UNUSED_VAR(vStack[n]);int iStack=0
++    volatile VALUE vStack[n]; \
++    RBIMPL_ATTR_MAYBE_UNUSED() volatile VALUE *RB_UNUSED_VAR(p_vStack) = vStack; \
++    int iStack=0 \
+
+ #define PUSH(v) \
+     (vStack[iStack++] = (v))
