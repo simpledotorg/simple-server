@@ -10,6 +10,10 @@ module Reports
       end
     end
 
+    def partitioned?
+      false
+    end
+
     private
 
     def refresh_view
