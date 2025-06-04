@@ -105,9 +105,14 @@ class RefreshReportingViews
 
   def refresh
     views.each do |name|
+      klass = name.constantize
       benchmark_and_statsd(name) do
-        klass = name.constantize
         klass.refresh
+      end
+      if klass.partitioned?
+        klass.get_refresh_months.each do |refresh_month|
+          klass.partitioned_refresh(refresh_month)
+        end
       end
     end
   end
