@@ -11,6 +11,9 @@
                     "Denominator" => t("overdue_patients_call_activity.percent_called_denominator", region_name: @region.name)
                   }) %>
   <% end %>
+  <div class="table-responsive-md">
+
+
   <%= render Dashboard::Card::TableComponent.new(id: "overdueCalledActivity") do |table| %>
       <% table.column_group do %>
         <colgroup>
@@ -83,4 +86,5 @@
          <% end %>
       <% end %>
   <% end %>
+    </div>
 </div>
