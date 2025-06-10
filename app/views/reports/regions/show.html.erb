@@ -60,6 +60,9 @@
 
 
 <%= render "header" %>
+<!-- Progress reports block -->
+<div id="progress"></div>
+
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 <% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
@@ -398,6 +401,45 @@
 <div id="data-json" style="display: none;">
   <%= raw @data.to_json %>
 </div>
+
+
+<%# <div id="nuxt-widget"></div>
+<script type="module" src="/nuxt-widget/_nuxt/BfKFHQBe.js" crossorigin></script>
+
+<button id="open-sidebar">Open Sidebar</button>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const button = document.getElementById("open-sidebar");
+
+    const tryToBind = () => {
+      if (window.__NUXT_SIDEBAR__ && typeof window.__NUXT_SIDEBAR__.toggleOpen === 'function') {
+        console.log("✅ Sidebar store ready");
+
+        button.addEventListener("click", () => {
+          window.__NUXT_SIDEBAR__.toggleOpen("open");
+        });
+      } else {
+        setTimeout(tryToBind, 100); // Wait until Nuxt loads
+      }
+    };
+
+    tryToBind();
+  });
+</script> %>
+
+
+
+<!-- Vue mount point -->
+<div id="sidebar-root"></div>
+
+<!-- Rails-controlled open button -->
+<button onclick="SIDEBAR_STORE?.toggleOpen('open')">Open Sidebar</button>
+
+<!-- Load widget bundle -->
+<script src="/nuxt-widget/widget.iife.js"></script>
+<link rel="stylesheet" href="/nuxt-widget/widget.css" />
+
 <script>
   window.addEventListener("DOMContentLoaded", () => {
   new Reports({

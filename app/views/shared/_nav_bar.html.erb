@@ -2,32 +2,27 @@
   <div class="navigation-brand">
     <%= logo_for_environment %>
   </div>
-
   <% if email_authentication_signed_in? %>
     <% if current_admin.accessible_facilities(:view_reports).any? || current_admin.power_user? %>
-    <!-----------------
+      <!-----------------
       Home
     ----------------->
-
-		  <%= link_to(root_path, class: "nav-link #{active_controller?("my_facilities") && active_action?("index")}") do %>
+      <%= link_to(root_path, class: "nav-link #{active_controller?("my_facilities") && active_action?("index")}") do %>
         <i class="fa-regular fa-house-chimney main-menu-icon w-16px"></i> <span>Home</span>
-		  <% end %>
-
-    <!-----------------
+      <% end %>
+      <!-----------------
       Reports
     ----------------->
       <%= link_to(reports_regions_path, class: "nav-link #{active_controller?("reports/regions")}") do %>
         <i class="fa-regular fa-chart-line main-menu-icon w-16px"></i> <span>Reports</span>
       <% end %>
-
-    <!-----------------
+      <!-----------------
       My Facilities
     ----------------->
       <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")} #{active_action?("bp_not_controlled")} #{active_action?("missed_visits")}") do %>
         <i class="fa-regular fa-table main-menu-icon w-16px"></i> <span>Facility trends</span>
       <% end %>
-
-    <!-----------------
+      <!-----------------
       Drug stock
     ----------------->
       <% if current_admin.drug_stocks_enabled? %>
@@ -35,127 +30,117 @@
           <i class="fa-regular fa-tablets main-menu-icon w-16px"></i> <span>Drug stock</span>
         <% end %>
       <% end %>
-
-    <!-----------------
+      <!-----------------
       Overdue patients
     ----------------->
       <% if current_admin.accessible_facilities(:manage_overdue_list).any? || current_admin.power_user? %>
-          <%= link_to(appointments_path, class: "nav-link #{active_controller?("appointments")}") do %>
-           <i class="fa-regular fa-circle-phone main-menu-icon w-16px"></i> <span>Overdue patients</span>
-          <% end %>
+        <%= link_to(appointments_path, class: "nav-link #{active_controller?("appointments")}") do %>
+          <i class="fa-regular fa-circle-phone main-menu-icon w-16px"></i> <span>Overdue patients</span>
+        <% end %>
       <% end %>
-
-    <div class="nav-divider"></div>
-
-    <% if current_admin.accessible_facilities(:manage).any? %>
-      <%= link_to admin_deduplication_path, class: "nav-link #{active_controller?("admin/deduplicate_patients")}" do %>
-        <i class="fa-regular fa-merge main-menu-icon w-16px"></i> <span>Merge duplicate patients</span>
+      <div class="nav-divider"></div>
+      <!-----------------
+      Add action
+    ----------------->
+      <button class="nav-link block" onclick="SIDEBAR_STORE?.toggleOpen('open')">
+        <i class="fa-regular fa-bullseye-arrow main-menu-icon w-16px"></i> <span>Add an action</span>
+      </button>
+      <div class="nav-divider"></div>
+      <% if current_admin.accessible_facilities(:manage).any? %>
+        <%= link_to admin_deduplication_path, class: "nav-link #{active_controller?("admin/deduplicate_patients")}" do %>
+          <i class="fa-regular fa-merge main-menu-icon w-16px"></i> <span>Merge duplicate patients</span>
+        <% end %>
       <% end %>
-    <% end %>
-
-    <!-----------------
+      <!-----------------
       Resources
     ----------------->
       <%= link_to (resources_path), class: "nav-link #{active_controller?("resources")}" do %>
         <i class="fa-regular fa-chalkboard-teacher main-menu-icon w-16px"></i> <span>Resources &amp; training</span>
       <% end %>
-
-    <!-----------------
+      <!-----------------
       Settings
     ----------------->
       <a data-toggle="collapse" href="#nav-settings" role="button" aria-expanded="false" aria-controls="nav-settings" class="nav-link">
         <i class="fa-regular fa-cog main-menu-icon w-16px"></i> <span>Settings</span>
       </a>
-
       <div id="nav-settings" class="nav-section collapse">
         <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-        <%= link_to (admin_facilities_path), class: "sub-nav-link #{active_controller?("admin/facilities")}" do %>
+          <%= link_to (admin_facilities_path), class: "sub-nav-link #{active_controller?("admin/facilities")}" do %>
             Facilities
-        <% end %>
-        <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
-          <%= link_to (admin_organizations_path), class: "sub-nav-link #{active_controller?("admin/organizations")}", id: "nav-organizations-link" do %>
-            Organizations
+          <% end %>
+          <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+            <%= link_to (admin_organizations_path), class: "sub-nav-link #{active_controller?("admin/organizations")}", id: "nav-organizations-link" do %>
+              Organizations
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
+            <%= link_to (admin_protocols_path), class: "sub-nav-link #{active_controller?("admin/protocols")}" do %>
+              Mobile app medications
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
+            <%= link_to (admins_path), class: "sub-nav-link #{active_controller?("admins")}" do %>
+              Dashboard admins
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? || current_admin.accessible_users(:manage).any?  %>
+            <%= link_to (admin_users_path), class: "sub-nav-link #{active_controller?("admin/users")}", id: "mobile-app-users" do %>
+              Mobile app users
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user?  %>
+            <%= link_to (new_admin_patient_import_path), class: "sub-nav-link #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
+              Patient import
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? %>
+            <div class="nav-divider"></div>
+          <% end %>
+          <% if current_admin.power_user? %>
+            <%= link_to ("/sidekiq"), class: "sub-nav-link #{active_controller?("sidekiq")}" do %>
+              Sidekiq
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? %>
+            <%= link_to ("/flipper"), class: "sub-nav-link #{active_controller?("flipper")}" do %>
+              Flipper
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? %>
+            <%= link_to admin_error_traces_path, class: "sub-nav-link #{active_controller?("admin/error_traces")}" do %>
+              Error traces
+            <% end %>
+          <% end %>
+          <% if current_admin.power_user? && !Rails.application.config.whitelabel_app %>
+            <%= link_to admin_cphc_migration_path, class: "sub-nav-link #{active_controller?("admin/cphc_migration")}" do %>
+              CPHC Migration
+            <% end %>
           <% end %>
         <% end %>
-        <% if current_admin.power_user? || current_admin.accessible_organizations(:manage).any? %>
-          <%= link_to (admin_protocols_path), class: "sub-nav-link #{active_controller?("admin/protocols")}" do %>
-            Mobile app medications
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user? || current_admin.accessible_facilities(:manage).any? %>
-          <%= link_to (admins_path), class: "sub-nav-link #{active_controller?("admins")}" do %>
-            Dashboard admins
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user? || current_admin.accessible_users(:manage).any?  %>
-          <%= link_to (admin_users_path), class: "sub-nav-link #{active_controller?("admin/users")}", id: "mobile-app-users" do %>
-            Mobile app users
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user?  %>
-          <%= link_to (new_admin_patient_import_path), class: "sub-nav-link #{active_controller?("admin/patient_imports")}", id: "patient-import" do %>
-            Patient import
-          <% end %>
-        <% end %>
-
-        <% if current_admin.power_user? %>
         <div class="nav-divider"></div>
-        <% end %>
-
-        <% if current_admin.power_user? %>
-          <%= link_to ("/sidekiq"), class: "sub-nav-link #{active_controller?("sidekiq")}" do %>
-            Sidekiq
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user? %>
-          <%= link_to ("/flipper"), class: "sub-nav-link #{active_controller?("flipper")}" do %>
-            Flipper
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user? %>
-          <%= link_to admin_error_traces_path, class: "sub-nav-link #{active_controller?("admin/error_traces")}" do %>
-            Error traces
-          <% end %>
-        <% end %>
-        <% if current_admin.power_user? && !Rails.application.config.whitelabel_app %>
-          <%= link_to admin_cphc_migration_path, class: "sub-nav-link #{active_controller?("admin/cphc_migration")}" do %>
-            CPHC Migration
-          <% end %>
-        <% end %>
-      <% end %>
-
-      <div class="nav-divider"></div>
-
-      <a href="<%= Rails.application.config.privacy_link %>" class="sub-nav-link" target="_blank">
-        Privacy policy
-      </a>
-      <a href="<%= Rails.application.config.license_link %>" class="sub-nav-link" target="_blank">
-        License
-      </a>
-
+        <a href="<%= Rails.application.config.privacy_link %>" class="sub-nav-link" target="_blank">
+          Privacy policy
+        </a>
+        <a href="<%= Rails.application.config.license_link %>" class="sub-nav-link" target="_blank">
+          License
+        </a>
       <% end %>
     </div>
-
     <!-----------------
     User
     ------------------>
-
     <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "nav-link mobile", id: "nav-more-logout") do %>
       <i class="fas fa-user-circle main-menu-icon"></i>  <span>Logout</span>
     <% end %>
-
     <div class="desktop">
       <div class="nav-user">
-
         <%= link_to(destroy_email_authentication_session_path, method: :delete, class: "float-right", id: "nav-more-logout") do %>
           <span>Logout</span>
         <% end %>
-
         <%= current_admin.email %>
       </div>
     </div>
   <% end %>
-
   <a href="#" onclick="openMenu()" class="navigation-shim">Close</a>
   <script>
     const async = false;
@@ -166,12 +151,10 @@
       element.classList.toggle("navigation-open");
     }
   </script>
-
 </nav>
-
 <div class="mobile-header d-print-none">
-    <a href="#" onclick="openMenu()" class="navigation-icon"><i class="fa-regular fa-bars pr-1"></i> MENU</a>
-    <%= link_to root_path, class: "navigation-brand" do %>
-      <%= logo_for_environment %>
-    <% end %>
+  <a href="#" onclick="openMenu()" class="navigation-icon"><i class="fa-regular fa-bars pr-1"></i> MENU</a>
+  <%= link_to root_path, class: "navigation-brand" do %>
+    <%= logo_for_environment %>
+  <% end %>
 </div>
