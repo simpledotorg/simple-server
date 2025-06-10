@@ -1,7 +1,6 @@
 <% content_for :title do %>
  <%= @region.name %> | Hypertension
 <% end %>
-<% if @is_desktop && Flipper.enabled?(:quick_link_for_metabase, current_admin) %>
   <% last_month = Date.today.last_month.strftime("%b-%Y") %>
 
   <% if @region.facility_region? %>
@@ -55,7 +54,7 @@
       </a></div>
     </div>
   <% end %>
-<% end %>
+
 
 
 
