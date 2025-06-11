@@ -2,8 +2,8 @@ module Reports
   # Handles the task of returning summed values from Reports::FacilityState for an array of
   # regions. Must be called with regions all having the same region_type.
   class RegionSummary
-    def self.call(regions, range: nil, per: nil)
-      new(regions, range: range, per: per).call
+    def self.call(regions, range: nil)
+      new(regions, range: range).call
     end
 
     def self.group_by(grouping: :month, data: nil)
@@ -117,10 +117,8 @@ module Reports
     SUMS = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{field}") }
     CALCULATIONS = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
 
-    def initialize(regions, range: nil, per: nil)
+    def initialize(regions, range: nil)
       @range = range
-      @grouping = per
-      @grouping ||= :month
       @regions = Array(regions).map(&:region)
       if @regions.map(&:region_type).uniq.size != 1
         raise ArgumentError, "RegionSummary must be called with regions of the same region_type"
