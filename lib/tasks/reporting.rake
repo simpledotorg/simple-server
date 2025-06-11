@@ -8,11 +8,12 @@ namespace :reporting do
     ].freeze
 
     reporting_tables.each do |reporting_table|
+      klass = reporting_table.constantize
       ActiveRecord::Base.connection.exec_query(
-        "TRUNCATE TABLE simple_reporting.#{reporting_table.constantize.table_name}"
+        "TRUNCATE TABLE simple_reporting.#{klass.table_name}"
       )
-      Reports::Month.order(:month_date).select(:month_date).each do |reporting_month|
-        reporting_table.constantize.partitioned_refresh(reporting_month.month_date)
+      Reports::Month.order(:month_date).select(:month_date).each_with_index do |reporting_month, index|
+        RefreshReportingPartitionedTableJob.set(wait_until: Time.now + (index * 45).minutes).perform_async(reporting_month.month_date.to_s, klass.table_name)
       end
     end
   end
