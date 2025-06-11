@@ -32,4 +32,10 @@ RSpec.describe Reports::Refreshable do
       Reports::FakeMatView.refresh
     end
   end
+
+  describe "#partitioned?" do
+    it "returns false" do
+      expect(Reports::FakeMatView.partitioned?).to be false
+    end
+  end
 end
