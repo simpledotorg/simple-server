@@ -1566,7 +1566,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(region_summary.well_formed?(facility_results)).to be_truthy
     end
 
-
     it "can be done per quarter" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:appointment, patient: facility_1_patients.first, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)

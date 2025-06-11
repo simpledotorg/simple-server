@@ -109,7 +109,7 @@ module Reports
     def initialize(regions, range: nil, per: nil)
       @range = range
       @grouping = per
-      @grouping = :month unless @grouping
+      @grouping ||= :month
       @regions = Array(regions).map(&:region)
       if @regions.map(&:region_type).uniq.size != 1
         raise ArgumentError, "RegionSummary must be called with regions of the same region_type"
@@ -130,9 +130,9 @@ module Reports
       @results unless @grouping
       case @grouping
       when :quarter
-        return quarterly(@results)
+        quarterly(@results)
       else
-        return monthly(@results)
+        monthly(@results)
       end
     end
 
@@ -163,7 +163,7 @@ module Reports
       raise("Malformed results hash") unless well_formed? results_hash
       case aggregated_by
       when :sum
-        output = results_hash.map do |facility, months|
+        results_hash.map do |facility, months|
           # NOTE: `months` here is a Period[]
           aggregated = {}
 
@@ -189,7 +189,7 @@ module Reports
             aggregated
           ]
         end.to_h
-        output
+
       when :average
         raise("Unimplemented")
       else
