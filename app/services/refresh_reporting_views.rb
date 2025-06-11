@@ -120,12 +120,12 @@ class RefreshReportingViews
     end
   end
 
-  def benchmark_and_statsd(operation, partitioned_refresh=false)
+  def benchmark_and_statsd(operation, partitioned_refresh = false)
     view = operation == "all" ? "all" : operation.constantize.table_name
     name = "reporting_views_refresh_duration_seconds"
     result = nil
     options_hash = {view: view}
-    options_hash.merge!({partitioned_refresh: true}) if partitioned_refresh
+    options_hash[:partitioned_refresh] = true if partitioned_refresh
     Metrics.benchmark_and_gauge(name, options_hash) do
       result = yield
     end

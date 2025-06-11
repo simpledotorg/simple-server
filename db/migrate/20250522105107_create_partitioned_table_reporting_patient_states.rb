@@ -104,7 +104,7 @@ class CreatePartitionedTableReportingPatientStates < ActiveRecord::Migration[6.1
     add_index "simple_reporting.reporting_patient_states", :bp_facility_id, name: "reporting_patient_states_bp_facility_id"
     add_index "simple_reporting.reporting_patient_states", :titrated, name: "reporting_patient_states_titrated"
 
-    #Create functions used for getting data into a partition
+    # Create functions used for getting data into a partition
     execute <<-SQL
       CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_function(date)
       RETURNS SETOF simple_reporting.reporting_patient_states
