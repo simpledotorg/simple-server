@@ -30,4 +30,27 @@ RSpec.describe Reports::View, {type: :model, reporting_spec: true} do
       expect(ActiveRecord::Base.connection.execute(column_descriptions_sql(klass.table_name)).map { |d| d["col_description"] }).to all be_present
     end
   end
+
+  describe ".get_refresh_months" do
+    it "returns current and previous month when current day is odd" do
+      travel_to Date.new(2023, 6, 15) do
+        expected_months = [Date.new(2023, 6, 1), Date.new(2023, 5, 1)]
+        expect(described_class.get_refresh_months).to eq(expected_months)
+      end
+    end
+
+    it "returns current month and month offset when current day is even" do
+      travel_to Date.new(2023, 6, 16) do
+        expected_months = [Date.new(2023, 6, 1), Date.new(2022, 9, 1)]
+        expect(described_class.get_refresh_months).to eq(expected_months)
+      end
+    end
+
+    it "handles month transitions correctly for odd days" do
+      travel_to Date.new(2023, 1, 1) do
+        expected_months = [Date.new(2023, 1, 1), Date.new(2022, 12, 1)]
+        expect(described_class.get_refresh_months).to eq(expected_months)
+      end
+    end
+  end
 end
