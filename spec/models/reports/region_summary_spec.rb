@@ -1529,5 +1529,59 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(described_class.new(facility, range: range).for_regions.where("month_date < ?", Period.current.to_date)).to be_empty
       expect(described_class.new(facility, range: range).for_regions.where("month_date = ?", Period.current.to_date)).not_to be_empty
     end
+
+    it "groups per quarter" do
+      facility
+    end
+  end
+
+  describe "grouping" do
+    let(:timezone) { Time.find_zone(Period::REPORTING_TIME_ZONE) }
+    let(:this_month) { timezone.local(Date.today.year, Date.today.month, 1, 0, 0, 0) }
+    let(:one_month_ago) { this_month - 1.month }
+    let(:two_months_ago) { this_month - 2.month }
+    let(:three_months_ago) { this_month - 3.month }
+    let(:four_months_ago) { this_month - 4.month }
+    let(:five_months_ago) { this_month - 5.month }
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+    let(:facility_1) { district_with_facilities[:facility_1] }
+    let(:facility_2) { district_with_facilities[:facility_2] }
+    let(:views) {
+      %w[ Reports::Month
+        Reports::Facility
+        Reports::PatientVisit
+        Reports::PatientState
+        Reports::OverduePatient
+        Reports::FacilityState].freeze
+    }
+
+    it "knows and validates a well formed hash" do
+      facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:appointment, patient: facility_1_patients.third, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
+      create(:appointment, patient: facility_1_patients.fourth, scheduled_date: one_month_ago, facility: facility_1, device_created_at: three_months_ago)
+      RefreshReportingViews.new(views: views).call
+      region_summary = described_class.new(facility_1)
+      facility_results = region_summary.call
+      expect(region_summary.well_formed?(facility_results)).to be_truthy
+    end
+
+
+    it "can be done per quarter" do
+      facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
+      create(:appointment, patient: facility_1_patients.first, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
+      create(:appointment, patient: facility_1_patients.second, scheduled_date: two_months_ago, facility: facility_1, device_created_at: three_months_ago)
+      create(:appointment, patient: facility_1_patients.third, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
+      create(:appointment, patient: facility_1_patients.fourth, scheduled_date: one_month_ago, facility: facility_1, device_created_at: three_months_ago)
+
+      RefreshReportingViews.new(views: views).call
+
+      facility_1_results = described_class.call(facility_1, per: :quarter)[facility_1.region.slug]
+
+      # Quarter Check
+      expect(facility_1_results[this_month.to_period.to_quarter_period]["overdue_patients"]).to eq 6
+      expect(facility_1_results[this_month.to_period.to_quarter_period]["month_date"]).to eq(this_month.to_period.to_quarter_period.to_date)
+      expect(facility_1_results[this_month.to_period.to_quarter_period]["facility_region_slug"]).to eq(facility_1.slug)
+    end
   end
 end

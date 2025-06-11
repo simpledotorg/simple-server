@@ -2,8 +2,8 @@ module Reports
   # Handles the task of returning summed values from Reports::FacilityState for an array of
   # regions. Must be called with regions all having the same region_type.
   class RegionSummary
-    def self.call(regions, range: nil)
-      new(regions, range: range).call
+    def self.call(regions, range: nil, per: nil)
+      new(regions, range: range, per: per).call
     end
 
     FIELDS = %i[
@@ -86,6 +86,11 @@ module Reports
       adjusted_bs_missed_visit
     ].freeze
 
+    GROUPINGS = %i[
+      month
+      quarter
+    ]
+
     attr_reader :id_field
     attr_reader :range
     attr_reader :region_type
@@ -101,8 +106,10 @@ module Reports
     SUMS = FIELDS.map { |field| Arel.sql("COALESCE(SUM(#{field}::int), 0) as #{field}") }
     CALCULATIONS = UNDER_CARE_WITH_LTFU.map { |field| under_care_with_ltfu(field) }
 
-    def initialize(regions, range: nil)
+    def initialize(regions, range: nil, per: nil)
       @range = range
+      @grouping = per
+      @grouping = :month unless @grouping
       @regions = Array(regions).map(&:region)
       if @regions.map(&:region_type).uniq.size != 1
         raise ArgumentError, "RegionSummary must be called with regions of the same region_type"
@@ -120,7 +127,13 @@ module Reports
       facility_states.each { |facility_state|
         @results[facility_state.send(slug_field)][facility_state.period] = facility_state.attributes
       }
-      @results
+      @results unless @grouping
+      case @grouping
+      when :quarter
+        return quarterly(@results)
+      else
+        return monthly(@results)
+      end
     end
 
     def for_regions
@@ -134,5 +147,68 @@ module Reports
 
       query.where(filter)
     end
+
+    # BEGIN Grouping Functions
+    #
+    # NOTE: For these functions, the result hash must already exist. This means
+    # `.call` should have succeeded. Since Ruby is untyped, there is no innate
+    # way to enforce this; except to infer on the structure of the hash at runtime.
+
+    def monthly(results_hash)
+      raise("Malformed results hash") unless well_formed? results_hash
+      results_hash
+    end
+
+    def quarterly(results_hash, aggregated_by = :sum)
+      raise("Malformed results hash") unless well_formed? results_hash
+      case aggregated_by
+      when :sum
+        output = results_hash.map do |facility, months|
+          # NOTE: `months` here is a Period[]
+          aggregated = {}
+
+          months.each do |period, stats|
+            quarter = period.to_quarter_period
+            aggregated[quarter] ||= {}
+            stats.each do |attr, val|
+              if val.is_a? Numeric
+                if aggregated[quarter][attr].nil?
+                  aggregated[quarter][attr] = val
+                else
+                  aggregated[quarter][attr] += val
+                end
+              else
+                # This catches the other case where the data is either a Date or a String
+                aggregated[quarter][attr] = val
+              end
+            end
+          end
+
+          [
+            facility,
+            aggregated
+          ]
+        end.to_h
+        output
+      when :average
+        raise("Unimplemented")
+      else
+        raise("Unimplemented")
+      end
+    end
+
+    def well_formed?(results_hash)
+      # This is an effect of an old code base. Ideally, this is type-checking.
+      # But since we are building on a righ without type-checking, we have to
+      # manually do these checks.
+      results_hash.all? do |facility, period_data|
+        facility.is_a?(String) &&
+          period_data.all? do |period, _|
+            period.is_a? Period
+          end
+      end
+    end
+
+    # END Grouping Functions
   end
 end
