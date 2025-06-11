@@ -4,7 +4,7 @@ RSpec.describe RefreshReportingPartitionedTableJob do
   describe "#perform" do
     let(:reporting_month) { "2023-06" }
     let(:table_name) { "reporting_patient_states" }
-    
+
     it "logs the start of the refresh" do
       allow(ActiveRecord::Base.connection).to receive(:exec_query)
       expect(Rails.logger).to receive(:info).with(
@@ -12,7 +12,7 @@ RSpec.describe RefreshReportingPartitionedTableJob do
       )
       subject.perform(reporting_month, table_name)
     end
-    
+
     it "executes the correct SQL query" do
       allow(Rails.logger).to receive(:info)
       expect(ActiveRecord::Base.connection).to receive(:exec_query).with(
