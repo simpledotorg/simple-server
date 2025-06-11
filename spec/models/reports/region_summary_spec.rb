@@ -1529,10 +1529,6 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       expect(described_class.new(facility, range: range).for_regions.where("month_date < ?", Period.current.to_date)).to be_empty
       expect(described_class.new(facility, range: range).for_regions.where("month_date = ?", Period.current.to_date)).not_to be_empty
     end
-
-    it "groups per quarter" do
-      facility
-    end
   end
 
   describe "grouping" do
