@@ -73,4 +73,78 @@ RSpec.describe RefreshReportingViews do
     }.to change { Reports::FacilityDailyFollowUpAndRegistration.count }.to be > 0
     expect(Reports::PatientState.count).to eq(0)
   end
+
+  describe "#refresh" do
+    let(:mock_view_class) { double("MockViewClass") }
+    let(:partitioned_view_class) { double("PartitionedViewClass") }
+
+    before do
+      allow(mock_view_class).to receive(:refresh)
+      allow(mock_view_class).to receive(:partitioned?).and_return(false)
+      allow(mock_view_class).to receive(:table_name).and_return("mock_view_table")
+      allow(mock_view_class).to receive(:partitioned_refresh)
+      allow(partitioned_view_class).to receive(:refresh)
+      allow(partitioned_view_class).to receive(:partitioned?).and_return(true)
+      allow(partitioned_view_class).to receive(:get_refresh_months).and_return([Date.current.beginning_of_month])
+      allow(partitioned_view_class).to receive(:partitioned_refresh)
+      allow(partitioned_view_class).to receive(:table_name).and_return("partitioned_view_table")
+      allow(Metrics).to receive(:benchmark_and_gauge).and_yield
+    end
+
+    it "calls refresh on each view class" do
+      allow_any_instance_of(String).to receive(:constantize).and_return(mock_view_class)
+      refresher = RefreshReportingViews.new(views: ["MockView"])
+      refresher.send(:refresh)
+      expect(mock_view_class).to have_received(:refresh)
+    end
+
+    it "calls partitioned_refresh for partitioned views" do
+      allow_any_instance_of(String).to receive(:constantize).and_return(partitioned_view_class)
+      refresher = RefreshReportingViews.new(views: ["PartitionedView"])
+      refresher.send(:refresh)
+      expect(partitioned_view_class).to have_received(:refresh)
+      expect(partitioned_view_class).to have_received(:partitioned_refresh).with(Date.current.beginning_of_month)
+    end
+
+    it "does not call partitioned_refresh for non-partitioned views" do
+      allow_any_instance_of(String).to receive(:constantize).and_return(mock_view_class)
+      refresher = RefreshReportingViews.new(views: ["MockView"])
+      refresher.send(:refresh)
+      expect(mock_view_class).not_to have_received(:partitioned_refresh)
+    end
+  end
+
+  describe "#benchmark_and_statsd" do
+    let(:refresher) { RefreshReportingViews.new(views: ["Reports::PatientState"]) }
+
+    it "calls Metrics.benchmark_and_gauge with correct parameters for regular refresh" do
+      allow(Reports::PatientState).to receive(:table_name).and_return("reporting_patient_states")
+      expect(Metrics).to receive(:benchmark_and_gauge).with(
+        "reporting_views_refresh_duration_seconds",
+        {view: "reporting_patient_states"}
+      ).and_yield
+
+      result = refresher.send(:benchmark_and_statsd, "Reports::PatientState") { "test_result" }
+      expect(result).to eq("test_result")
+    end
+
+    it "calls Metrics.benchmark_and_gauge with partitioned_refresh flag when specified" do
+      allow(Reports::PatientState).to receive(:table_name).and_return("reporting_patient_states")
+      expect(Metrics).to receive(:benchmark_and_gauge).with(
+        "reporting_views_refresh_duration_seconds",
+        {view: "reporting_patient_states", partitioned_refresh: true}
+      ).and_yield
+
+      refresher.send(:benchmark_and_statsd, "Reports::PatientState", true) { "test_result" }
+    end
+
+    it "handles 'all' operation correctly" do
+      expect(Metrics).to receive(:benchmark_and_gauge).with(
+        "reporting_views_refresh_duration_seconds",
+        {view: "all"}
+      ).and_yield
+
+      refresher.send(:benchmark_and_statsd, "all") { "test_result" }
+    end
+  end
 end

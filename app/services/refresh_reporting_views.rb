@@ -105,18 +105,28 @@ class RefreshReportingViews
 
   def refresh
     views.each do |name|
+      klass = name.constantize
       benchmark_and_statsd(name) do
-        klass = name.constantize
         klass.refresh
+      end
+
+      if klass.partitioned?
+        benchmark_and_statsd(name, true) do
+          klass.get_refresh_months.each do |refresh_month|
+            klass.partitioned_refresh(refresh_month)
+          end
+        end
       end
     end
   end
 
-  def benchmark_and_statsd(operation)
+  def benchmark_and_statsd(operation, partitioned_refresh=false)
     view = operation == "all" ? "all" : operation.constantize.table_name
     name = "reporting_views_refresh_duration_seconds"
     result = nil
-    Metrics.benchmark_and_gauge(name, {view: view}) do
+    options_hash = {view: view}
+    options_hash.merge!({partitioned_refresh: true}) if partitioned_refresh
+    Metrics.benchmark_and_gauge(name, options_hash) do
       result = yield
     end
     result
