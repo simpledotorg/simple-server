@@ -6,6 +6,17 @@ module Reports
       new(regions, range: range, per: per).call
     end
 
+    def self.group_by(grouping: :month, data: nil)
+      raise "Must call RegionSummary.call before hand" unless data
+      raise "Unknown grouping" unless GROUPINGS.include?(grouping)
+      case grouping
+      when :month
+        data
+      when :quarter
+        quarterly(data)
+      end
+    end
+
     FIELDS = %i[
       adjusted_controlled_under_care
       adjusted_missed_visit_lost_to_follow_up
@@ -127,13 +138,7 @@ module Reports
       facility_states.each { |facility_state|
         @results[facility_state.send(slug_field)][facility_state.period] = facility_state.attributes
       }
-      @results unless @grouping
-      case @grouping
-      when :quarter
-        quarterly(@results)
-      else
-        monthly(@results)
-      end
+      @results
     end
 
     def for_regions
@@ -154,12 +159,12 @@ module Reports
     # `.call` should have succeeded. Since Ruby is untyped, there is no innate
     # way to enforce this; except to infer on the structure of the hash at runtime.
 
-    def monthly(results_hash)
+    def self.monthly(results_hash)
       raise("Malformed results hash") unless well_formed? results_hash
       results_hash
     end
 
-    def quarterly(results_hash, aggregated_by = :sum)
+    def self.quarterly(results_hash, aggregated_by = :sum)
       raise("Malformed results hash") unless well_formed? results_hash
       case aggregated_by
       when :sum
@@ -197,7 +202,7 @@ module Reports
       end
     end
 
-    def well_formed?(results_hash)
+    def self.well_formed?(results_hash)
       # This is an effect of an old code base. Ideally, this is type-checking.
       # But since we are building on a righ without type-checking, we have to
       # manually do these checks.

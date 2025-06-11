@@ -1557,9 +1557,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       create(:appointment, patient: facility_1_patients.third, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
       create(:appointment, patient: facility_1_patients.fourth, scheduled_date: one_month_ago, facility: facility_1, device_created_at: three_months_ago)
       RefreshReportingViews.new(views: views).call
-      region_summary = described_class.new(facility_1)
-      facility_results = region_summary.call
-      expect(region_summary.well_formed?(facility_results)).to be_truthy
+      region_summary = described_class.call(facility_1)
+      expect(described_class.well_formed?(region_summary)).to be_truthy
     end
 
     it "can be done per quarter" do
@@ -1571,7 +1570,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
       RefreshReportingViews.new(views: views).call
 
-      facility_1_results = described_class.call(facility_1, per: :quarter)[facility_1.region.slug]
+      data = described_class.call(facility_1, per: :quarter)
+      facility_1_results = described_class.group_by(data: data, grouping: :quarter)[facility_1.region.slug]
 
       # Quarter Check
       expect(facility_1_results[this_month.to_period.to_quarter_period]["overdue_patients"]).to eq 6
