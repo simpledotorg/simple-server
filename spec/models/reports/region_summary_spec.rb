@@ -1570,7 +1570,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
       RefreshReportingViews.new(views: views).call
 
-      data = described_class.call(facility_1, per: :quarter)
+      data = described_class.call(facility_1)
       facility_1_results = described_class.group_by(data: data, grouping: :quarter)[facility_1.region.slug]
 
       # Quarter Check
