@@ -427,10 +427,11 @@
   });
 </script> %>
 
-<%= render "sidebar" %>
-
 <!-- Vue mount point -->
 <div id="sidebar-root"></div>
+
+<%= render "sidebar" %>
+
 
 <!-- Rails-controlled open button -->
 <button onclick="SIDEBAR_STORE?.toggleOpen('open')">Open Sidebar</button>

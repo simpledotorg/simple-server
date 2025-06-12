@@ -23,7 +23,6 @@
 @import "partials/admin/index";
 @import "partials/admin/show";
 
-
 body {
   font-size: 15px;
   font-family: $font-condensed;
@@ -732,14 +731,20 @@ span.inactive {
 .w-full {
   width: 100%;
 }
-.jc-space-between { justify-content: space-between; }
-
-.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::before {
-  background-color: #ADB2B8;
-  border-color: #ADB2B8;
+.jc-space-between {
+  justify-content: space-between;
 }
 
-.checkbox-outside-card .custom-control-input:not(:checked) ~ .custom-control-label::after {
+.checkbox-outside-card
+  .custom-control-input:not(:checked)
+  ~ .custom-control-label::before {
+  background-color: #adb2b8;
+  border-color: #adb2b8;
+}
+
+.checkbox-outside-card
+  .custom-control-input:not(:checked)
+  ~ .custom-control-label::after {
   background-color: #fff;
 }
 
@@ -747,7 +752,9 @@ span.inactive {
   color: #2f363d;
 }
 
-.o-65 { opacity: 0.65; }
+.o-65 {
+  opacity: 0.65;
+}
 
 .card-chip-container {
   white-space: nowrap;
@@ -806,6 +813,8 @@ span.inactive {
 // Action plan
 
 .sidepanel {
+  // display: none;
+  display: flex;
   position: fixed;
   top: 0;
   left: 100px;
@@ -813,7 +822,6 @@ span.inactive {
   height: 100%;
   background: white;
   z-index: 1000;
-  display: flex;
   flex-direction: column;
   font-family: "Roboto", sans-serif;
   font-size: 16px;
@@ -868,7 +876,7 @@ span.inactive {
     margin: 0;
     padding: 0;
     font-size: 18px;
-    font-weight: semi-bold;
+    font-weight: 600 !important;
     font-family: $font-condensed;
   }
 
@@ -979,6 +987,81 @@ span.inactive {
       flex-shrink: 0;
     }
   }
+}
 
-  // Save button styles
+.action-progress-block {
+  width: 100%;
+  background: #feffd8;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 20px;
+  border-radius: 4px;
+  position: relative;
+  @scope (.progress) {
+    h3 {
+      font-size: 20px;
+      font-weight: bold;
+      color: #483d04;
+    }
+
+    ul {
+      margin: 6px 0 0;
+      list-style-type: disc;
+      padding-left: 1.5em;
+    }
+
+    meatball-menu {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+
+      &:hover {
+        cursor: pointer;
+        background: #eceeb1;
+      }
+
+      .popover {
+        width: 112px;
+        border-radius: 4px;
+        border: 4px solid #d5d5d550;
+      }
+    }
+  }
+
+  .loading-animation {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: #f9f9f9;
+  }
+
+  .dot-1 {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #fff;
+    animation: pulse 0.6s infinite ease-in-out;
+  }
+
+  .dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
+
+  @keyframes pulse {
+    0%,
+    80%,
+    100% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    40% {
+      transform: scale(1.6);
+      opacity: 1;
+    }
+  }
 }
