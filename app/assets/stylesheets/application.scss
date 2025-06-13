@@ -1213,11 +1213,13 @@ span.inactive {
       font-size: 1.5rem;
       font-weight: bold;
       display: inline-block;
-      right: -100%;
+      right: 0;
+      transform: translateX(100%);
+      transform: translateX(calc(100% + 8px));
     }
 
-    .progress-number-over-80-percent {
-      right: -6px;
+    .progress-number-over-88-percent {
+      transform: translateX(-8px);
       text-align: right;
     }
   }
