@@ -95,29 +95,29 @@
   <div>
     <h3>Call 1,000 overdue patients by 30-Jun</h3>
     <ul>
-      <li>Man a stand at Holi festival event near town hall - 15th Mar</li>
-      <li>Provide phone data for overdue calling</li>
-      <li>Test Whatsapp messaging with patients that have 2 calls with no answer</li>
+      <li>
+        <p>Man a stand at Holi festival event near town hall - 15th Mar</p>
+      </li>
+      <li>
+        <p>Provide phone data for overdue calling</p>
+      </li>
+      <li>
+        <p>Test Whatsapp messaging with patients that have 2 calls with no answer</p>
+      </li>
     </ul>
   </div>
-  <div class="progress">
+  <div class="progress-right-col">
     <p class="progress-statement">0 of 1200 overdue patients</p>
     <div class="progress-bar">
-      <span
-          style="width: 45%"
+      <div
+          class="progress-bar-fill"
+          style="width: 1%"
         >
         <span
-            class="tw:absolute tw:top-0 tw:text-[#6A6500] tw:text-2xl tw:font-bold tw:font-condensed tw:inline-block tw:pt-0.75"
-            :style="
-              (progressPercentage || 0) === 0
-                ? 'left: 8px'
-                : (progressPercentage || 0) < 85
-                  ? 'right: -46px'
-                  : 'right: 6px'
-            "
-            >{{ Math.round(progressPercentage) }}%</span
+            class="progress-number"
+            >1%</span
           >
-      </span>
+      </div>
     </div>
   </div>
 </div>

@@ -926,34 +926,13 @@ span.inactive {
 
   ul {
     margin: 6px 0 0;
-    li {
-    }
   }
 
-  // .highlight {
-  //   background-color: #fde047;
-  //   padding: 0 2px;
-  //   margin: 0 -2px;
-  // }
-
-  // h3 {
-  //   margin: 20px 0 6px;
-  //   padding: 0;
-  //   font-size: 14px;
-  //   font-weight: 500;
-  //   // font-family: $font-condensed;
-  //   color: #777; // Tailwind's gray-800
-  //   // text-transform: uppercase;
-  // }
-
-  // h3.goal {
-  //   margin-bottom: 12px;
-  // }
-
-  // .activity-value {
-  //   font-size: 24px;
-  //   font-weight: 700;
-  // }
+  .highlight {
+    background-color: #fde047;
+    padding: 0 2px;
+    margin: 0 -2px;
+  }
 
   .activity-statement {
     margin: 16px 0 0;
@@ -1129,6 +1108,7 @@ span.inactive {
   background: #feffd8;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: 20px;
   padding: 20px;
   border-radius: 4px;
   position: relative;
@@ -1139,12 +1119,19 @@ span.inactive {
     font-size: 20px;
     font-weight: bold;
     color: #483d04;
+    font-family: $font-condensed;
   }
 
   ul {
     margin: 6px 0 0;
     list-style-type: disc;
     padding-left: 1.5em;
+  }
+
+  p {
+    // font-family: $font-condensed;
+    margin-bottom: 2px;
+    font-size: 16px;
   }
 
   .progress-options {
@@ -1191,18 +1178,47 @@ span.inactive {
     }
   }
 
+  .progress-right-col {
+    padding-right: 20px;
+  }
+
+  .progress-statement {
+    text-align: right;
+    margin: 12px 0 6px;
+    font-weight: 500;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: $font-condensed;
+  }
+
   .progress-bar {
     background: #eceeb1;
     width: 100%;
     height: 36px;
     border-radius: 0.375rem;
     overflow: hidden;
+    position: relative;
 
-    .progress-statement {
+    .progress-bar-fill {
+      background: #d7cd06;
+      height: 100%;
+      position: relative;
+      display: block;
+    }
+
+    .progress-number {
+      position: absolute;
+      top: 1px;
+      color: #6a6500;
+      font-size: 1.5rem;
+      font-weight: bold;
+      display: inline-block;
+      right: -100%;
+    }
+
+    .progress-number-over-80-percent {
+      right: -6px;
       text-align: right;
-      font-family: $font-condensed;
-      margin-bottom: 0.5rem;
-      font-weight: 500;
     }
   }
   // <span
