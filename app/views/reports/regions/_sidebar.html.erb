@@ -29,7 +29,28 @@
     <div class="step-block">
       <h2>What is the goal?</h2>
       <button class="link-button edit">Edit</button>
-      <p class="step-statement">Contact 500 overdue patients by Jun 30</p>
+      <label class="goal-input-block">
+        <input type="text" placeholder="Q2 goal">
+        <span class="">%</span>
+      </label>
+      <p>Contact <span class="highlight">500</span> overdue patients by Jun 30</p>
+      <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in Q1-2025</p>
+      <button class="next-button">Next</button>
+      <%# <p class="step-statement">Call 500 overdue patients by Jun 30</p> %>
+    </div>
+    <div class="step-block">
+      <h2>What is the goal?</h2>
+      <button class="link-button edit">Edit</button>
+      <label class="goal-input-block patients">
+        <input type="text" placeholder="Q2 goal">
+        <span>patients</span>
+      </label>
+      <p><span class="highlight">8,000</span> hypertension patients registered by Jun-30</p>
+      <%# <h3>Activity in Q1 2025</h3> %>
+      <p class="activity-statement">Registered <span>6,000</span> hypertension patients in Q1 2025</p>
+      <%# <h3>Goal for Q2 2025</h3> %>
+      <button class="next-button">Next</button>
+      <%# <p class="step-statement">8,000 hypertension patients registered by Jun-30</p> %>
     </div>
     <div class="step-block">
       <h2>What action should be taken?</h2>
@@ -42,32 +63,36 @@
         <li><button class="link-button">Allocate staff time for calling patients</button></li>
         <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
         <li><button class="link-button">Call 25 patients per day</button></li>
-        <li><button class="link-button clicked">Record call outcomes in Simple</button></li>
+        <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
       </ul>
     </div>
     <div class="action-buttons-block">
       <button class="action-button cancel-button">Cancel</button>
       <button class="action-button save-button">
-        <div class="loading-animation">
-          <div class="dot-1"></div>
-          <div class="dot-1"></div>
-          <div class="dot-1"></div>
-        </div>
+        <%# <div class="loading-animation">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div> %>
+        Saving
       </button>
     </div>
   </div>
 </div>
 <div class="action-progress-block">
+  <div class="progress-options">
+    <button targetpopover="progress-options-button">
+      <i class="fa-solid fa-ellipsis"></i>
+    </button>
+    <%# <div class="popover" popover="manual" id="progressoptions">
+      <ul>
+        <li class="edit">Edit</li>
+        <hr />
+        <li class="delete">Delete</li>
+      </ul>
+    </div> %>
+  </div>
   <div>
-    <div class="meatball-menu">
-      <div class="popover">
-        <ul>
-          <li>Edit</li>
-          <hr />
-          <li>Delete</li>
-        </ul>
-      </div>
-    </div>
     <h3>Call 1,000 overdue patients by 30-Jun</h3>
     <ul>
       <li>Man a stand at Holi festival event near town hall - 15th Mar</li>
@@ -75,6 +100,24 @@
       <li>Test Whatsapp messaging with patients that have 2 calls with no answer</li>
     </ul>
   </div>
-  <div>
+  <div class="progress">
+    <p class="progress-statement">0 of 1200 overdue patients</p>
+    <div class="progress-bar">
+      <span
+          style="width: 45%"
+        >
+        <span
+            class="tw:absolute tw:top-0 tw:text-[#6A6500] tw:text-2xl tw:font-bold tw:font-condensed tw:inline-block tw:pt-0.75"
+            :style="
+              (progressPercentage || 0) === 0
+                ? 'left: 8px'
+                : (progressPercentage || 0) < 85
+                  ? 'right: -46px'
+                  : 'right: 6px'
+            "
+            >{{ Math.round(progressPercentage) }}%</span
+          >
+      </span>
+    </div>
   </div>
 </div>
