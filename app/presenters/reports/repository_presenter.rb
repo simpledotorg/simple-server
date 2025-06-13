@@ -11,9 +11,12 @@ module Reports
       to_hash(region)
     end
 
-    def to_hash(region)
+    def to_hash(region, keep_only: nil)
+      if keep_only && (!keep_only.is_a?(Array) || !keep_only.all? { |k| k.is_a?(Symbol) })
+        raise "Filter using array of symbols"
+      end
       slug = region.slug
-      {
+      result = {
         adjusted_patient_counts_with_ltfu: adjusted_patients_with_ltfu[slug],
         adjusted_patient_counts: adjusted_patients_without_ltfu[slug],
         controlled_patients_rate: controlled_rates[slug],
@@ -103,6 +106,12 @@ module Reports
         contactable_patients_returned_with_result_remind_to_call_later_rates: contactable_patients_returned_with_result_remind_to_call_later_rates[slug],
         contactable_patients_returned_with_result_removed_from_list_rates: contactable_patients_returned_with_result_removed_from_list_rates[slug]
       }
+
+      if keep_only.nil?
+        return result
+      else
+        return result.select { |key, _| keep_only.include?(key) }
+      end
     end
 
     def my_facilities_hash(region)
