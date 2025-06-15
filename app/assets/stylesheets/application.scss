@@ -968,6 +968,11 @@ span.inactive {
   margin-top: 16px;
 }
 
+.actions-block button {
+  border: 0;
+  background-color: inherit;
+}
+
 .actions-header {
   display: flex;
   align-items: center;
