@@ -168,6 +168,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
+    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 

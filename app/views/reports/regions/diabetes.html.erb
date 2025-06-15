@@ -4,6 +4,11 @@
 
 <%= render "header" %>
 
+<% if Flipper.enabled?(:dr_rai_reports) %>
+  <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter]) %>
+<% end %>
+
+<h4 class="mt-5 mb-32px"></h4>
 <% args = { data: @data, region: @region, period: @period } %>
 <% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu, use_who_standard: @use_who_standard } %>
 
