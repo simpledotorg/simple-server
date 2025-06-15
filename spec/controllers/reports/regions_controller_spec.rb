@@ -190,6 +190,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       sign_in(user.email_authentication)
       get :show, params: {id: organization.slug, report_scope: "organization"}
+      expect(response).not_to be_successful
     end
 
     it "renders successfully if report viewer has access to region" do

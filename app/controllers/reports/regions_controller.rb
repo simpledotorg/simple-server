@@ -58,7 +58,7 @@ class Reports::RegionsController < AdminController
     regions = if @region.facility_region?
       [@region]
     else
-      [@region, @region.reportable_children].flatten
+      [@region, child_regions].flatten
     end
 
     @repository = Reports::Repository.new(regions, periods: range)
@@ -162,38 +162,36 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
     @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
-    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
+    start_period = @period.advance(months: months)
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
+    child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, child_regions].flatten
+    end
+    @repository = Reports::Repository.new(regions, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
     @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 
-    authorize { current_admin.accessible_facilities(:view_reports).any? }
-
-    @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
-    repo = Reports::Repository.new(@child_regions, periods: @period, use_who_standard: @use_who_standard)
-
-    @children_data = @child_regions.map { |region|
+    @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
+    @children_data = child_regions.map { |region|
       slug = region.slug
-      {
-        region: region,
-        diabetes_patients_with_bs_taken: repo.diabetes_patients_with_bs_taken[slug],
-        diabetes_patients_with_bs_taken_breakdown_rates: repo.diabetes_patients_with_bs_taken_breakdown_rates[slug],
-        diabetes_patients_with_bs_taken_breakdown_counts: repo.diabetes_patients_with_bs_taken_breakdown_counts[slug]
-      }
+      keys_needed = %i[
+        diabetes_patients_with_bs_taken
+        diabetes_patients_with_bs_taken_breakdown_rates
+        diabetes_patients_with_bs_taken_breakdown_counts
+      ]
+      @presenter.to_hash(region, keep_only: keys_needed).merge({ region: region })
     }
 
-    regions = if @region.facility_region?
-      [@region]
-    else
-      [@region, @region.reportable_children].flatten
-    end
-
-    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
     @details_period_range = Range.new(@period.advance(months: -5), @period)
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range, use_who_standard: @use_who_standard)
     chart_range = (@period.advance(months: months)..@period)

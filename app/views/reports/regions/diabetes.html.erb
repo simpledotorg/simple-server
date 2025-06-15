@@ -41,7 +41,7 @@
 <% if @children_data.any? %>
   <%= render Dashboard::Diabetes::MeasurementChildComparisonTableComponent.new(args.merge(
     children_data: @children_data,
-    localized_region_type: @child_regions.first.localized_region_type
+    localized_region_type: @localized_region_type
   )) %>
 <% end %>
 
