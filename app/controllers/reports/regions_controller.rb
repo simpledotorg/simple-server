@@ -64,6 +64,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
+    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @latest_period = Period.current
     @with_ltfu = with_ltfu?
     @with_non_contactable = with_non_contactable?
@@ -470,5 +471,11 @@ class Reports::RegionsController < AdminController
   def percentage(numerator, denominator)
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
+  end
+
+  def quarterly_region_summary(repository, region)
+    data = repository.schema.send(:region_summaries)
+    quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
+    quarterlies[region]
   end
 end

@@ -61,7 +61,7 @@
 
 <%= render "header" %>
 
-<%= render "dr_rai_progress" %>
+<%= render "dr_rai_progress", quarterlies: @quarterlies %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 <% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
