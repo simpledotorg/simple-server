@@ -61,7 +61,9 @@
 
 <%= render "header" %>
 
-<%= render "dr_rai_progress", quarterlies: @quarterlies %>
+<% if Flipper.enabled?(:dr_rai_reports) %>
+  <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter]) %>
+<% end %>
 
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 <% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
