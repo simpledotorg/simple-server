@@ -1,5 +1,12 @@
 require 'rails_helper'
 
 RSpec.describe DrRai::Action, type: :model do
-  pending "add some examples to (or delete) #{__FILE__}"
+  describe 'default scope' do
+    let(:first_action) { DrRai::Action.create(description: "the first") }
+    let(:second_action) { DrRai::Action.create(description: "the second") }
+
+    it 'orders by ascending created_at' do
+      expect(DrRai::Action.all).to eq [first_action, second_action]
+    end
+  end
 end

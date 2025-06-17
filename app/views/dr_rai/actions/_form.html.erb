@@ -1,0 +1,3 @@
+<%= bootstrap_form_with(model: dr_rai_action, local: true, local_errors: true) do |f| %>
+  <%= f.text_field :description, hide_label: true, append: f.submit("Create Action") %>
+<% end %>
