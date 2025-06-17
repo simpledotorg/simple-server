@@ -33,5 +33,13 @@ module Reports
     def self.materialized?
       raise NotImplementedError
     end
+
+    def self.get_refresh_months
+      current_date = Date.today
+      current_day = current_date.day
+      current_month = current_date.beginning_of_month
+      month_offset = (current_day / 2) + 1
+      current_day.odd? ? [current_month, current_month.prev_month] : [current_month, current_month - month_offset.month]
+    end
   end
 end
