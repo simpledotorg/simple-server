@@ -1,10 +1,10 @@
-<div id="progress">
+<div id="dr-rai--progress">
   <div class="actions-block">
     <div class="actions-header">
       <h4>Action plans</h4>
       <% quarterlies.each do |period, info| %>
         <%# TODO: Do a JS which moves the "action-header-selected" onClick %>
-        <%= link_to human_readable(period), url_for(request.query_parameters.merge(selected_quarter: period.value)), class: classes_for_period(period) %>
+        <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
       <% end %>
       <button class="actions-header-add-action">&#x2b; Add an action</button>
     </div>
