@@ -1,0 +1,71 @@
+<div id="dr-rai--progress">
+  <div class="actions-block">
+    <div class="actions-header">
+      <h4>Action plans</h4>
+      <% quarterlies.each do |period, info| %>
+        <%# TODO: Do a JS which moves the "action-header-selected" onClick %>
+        <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
+      <% end %>
+      <button class="actions-header-add-action">&#x2b; Add an action</button>
+    </div>
+
+    <% if period_goals.present? %>
+      <% period_goals.each do |goal| %>
+        <div class="action-progress-block">
+          <div class="progress-options">
+            <button targetpopover="progress-options">
+              <i class="fa-solid fa-ellipsis"></i>
+            </button>
+            <%# <div class="popover" popover="manual" id="progress-options"> %>
+              <%#   <ul> %>
+                <%#     <li class="edit">Edit</li> %>
+                <%#     <hr /> %>
+                <%#     <li class="delete">Delete</li> %>
+                <%#   </ul> %>
+              <%# </div> %>
+          </div>
+          <div>
+            <h3>Call 1,000 overdue patients by 30-Jun</h3>
+            <ul>
+              <li>
+                <p>Man a stand at Holi festival event near town hall - 15th Mar</p>
+              </li>
+              <li>
+                <p>Provide phone data for overdue calling</p>
+              </li>
+              <li>
+                <p>Test Whatsapp messaging with patients that have 2 calls with no answer</p>
+              </li>
+            </ul>
+          </div>
+          <div class="progress-right-col">
+            <p class="progress-statement">0 of 1200 overdue patients</p>
+            <div class="progress-bar">
+              <div
+                  class="progress-bar-fill"
+                  style="width: 89%"
+                  >
+                  <span
+                      class="progress-number progress-number-over-88-percent"
+                      >89%</span
+                    >
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="empty-goals-block">
+        <p class="empty-goals-message">
+        Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <p class="empty-goals-message">
+        No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <button class="empty-goals-add-button">
+          &#x2b; Add an action
+        </button>
+      </div>
+    <% end %>
+  </div>
+</div>

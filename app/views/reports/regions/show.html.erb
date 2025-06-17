@@ -61,6 +61,10 @@
 
 <%= render "header" %>
 
+<% if Flipper.enabled?(:dr_rai_reports) %>
+  <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter]) %>
+<% end %>
+
 <% control_graph_denominator_copy = @with_ltfu ? "denominator_with_ltfu_copy" : "denominator_copy" %>
 <% show_htn_cascade = %[organization state district].include?(@region.region_type) %>
 
@@ -300,7 +304,7 @@
 
 <% if @children_data.any? %>
   <h4 class="mt-5 mb-32px">Compare performance</h4>
-  <%= render "child_data_tables", data: @children_data, localized_region_type: @child_regions.first.localized_region_type %>
+  <%= render "child_data_tables", data: @children_data, localized_region_type: @localized_region_type %>
 <% end %>
 <% if @region.facility_region? %>
   <h4 class="mt-5 mb-32px">Facility activity</h4>
