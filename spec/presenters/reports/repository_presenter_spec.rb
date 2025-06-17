@@ -110,7 +110,7 @@ describe Reports::RepositoryPresenter do
         :missed_visits_rate,
         :missed_visits_with_ltfu_rate,
         :missed_visits_with_ltfu,
-        :missed_visits,
+        :missed_visits
       ]
       expect(presenter.to_hash(region, keep_only: expected_keys).keys).to match_array(expected_keys)
     end
@@ -118,7 +118,7 @@ describe Reports::RepositoryPresenter do
     it "only filters with an array of symbols" do
       expected_keys = [
         "missed_visits_rate",
-        "missed_visits",
+        "missed_visits"
       ]
       expect { presenter.to_hash(region, keep_only: expected_keys).keys }.to raise_error("Filter using array of symbols")
     end

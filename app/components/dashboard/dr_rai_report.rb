@@ -17,10 +17,10 @@ class Dashboard::DrRaiReport < ApplicationComponent
     @quarterlies = quarterlies
     @region = region
     @selected_period = if selected_quarter.nil?
-                         current_period
-                       else
-                         Period.new(type: :quarter, value: selected_quarter)
-                       end
+      current_period
+    else
+      Period.new(type: :quarter, value: selected_quarter)
+    end
     @goals = {}
   end
 
@@ -29,11 +29,11 @@ class Dashboard::DrRaiReport < ApplicationComponent
   end
 
   def start_of period
-    period.begin.strftime('%b-%-d')
+    period.begin.strftime("%b-%-d")
   end
 
   def end_of period
-    period.end.strftime('%b-%-d')
+    period.end.strftime("%b-%-d")
   end
 
   def classes_for_period period
@@ -57,6 +57,6 @@ class Dashboard::DrRaiReport < ApplicationComponent
   private
 
   def human_readable_period period
-    period.value.to_s.gsub("-", " ")
+    period.value.to_s.tr("-", " ")
   end
 end

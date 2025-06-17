@@ -84,7 +84,7 @@ class Reports::RegionsController < AdminController
         uncontrolled_patients
         uncontrolled_patients_rate
       ]
-      @presenter.to_hash(region, keep_only: keys_needed).merge({ region: region })
+      @presenter.to_hash(region, keep_only: keys_needed).merge({region: region})
     }
 
     # ======================
@@ -189,7 +189,7 @@ class Reports::RegionsController < AdminController
         diabetes_patients_with_bs_taken_breakdown_rates
         diabetes_patients_with_bs_taken_breakdown_counts
       ]
-      @presenter.to_hash(region, keep_only: keys_needed).merge({ region: region })
+      @presenter.to_hash(region, keep_only: keys_needed).merge({region: region})
     }
 
     @details_period_range = Range.new(@period.advance(months: -5), @period)

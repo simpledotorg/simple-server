@@ -108,9 +108,9 @@ module Reports
       }
 
       if keep_only.nil?
-        return result
+        result
       else
-        return result.select { |key, _| keep_only.include?(key) }
+        result.select { |key, _| keep_only.include?(key) }
       end
     end
 
