@@ -1036,7 +1036,8 @@ CREATE TABLE public.deduplication_logs (
 
 CREATE TABLE public.dr_rai_actions (
     id bigint NOT NULL,
-    content character varying,
+    description character varying,
+    deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL
 );
