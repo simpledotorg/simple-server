@@ -71,7 +71,6 @@ class Reports::RegionsController < AdminController
 
     @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
     @children_data = child_regions.map { |region|
-      slug = region.slug
       keys_needed = %i[
         adjusted_patient_counts
         controlled_patients
@@ -183,7 +182,6 @@ class Reports::RegionsController < AdminController
 
     @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
     @children_data = child_regions.map { |region|
-      slug = region.slug
       keys_needed = %i[
         diabetes_patients_with_bs_taken
         diabetes_patients_with_bs_taken_breakdown_rates
