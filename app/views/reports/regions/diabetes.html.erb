@@ -4,7 +4,7 @@
 
 <%= render "header" %>
 
-<% if Flipper.enabled?(:dr_rai_reports) %>
+<% if Flipper.enabled?(:dr_rai_reports) && @region.facility_region? %>
   <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter]) %>
 <% end %>
 

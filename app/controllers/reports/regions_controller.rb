@@ -180,6 +180,25 @@ class Reports::RegionsController < AdminController
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
+    start_period = @period.advance(months: months)
+    range = Range.new(start_period, @period)
+    child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, child_regions].flatten
+    end
+    @repository = Reports::Repository.new(regions, periods: range, use_who_standard: @use_who_standard)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
+    @data = @presenter.call(@region)
+    @quarterlies = quarterly_region_summary(@repository, @region.slug)
+    @with_ltfu = with_ltfu?
+    @latest_period = Period.current
+
     @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
     @children_data = child_regions.map { |region|
       keys_needed = %i[
