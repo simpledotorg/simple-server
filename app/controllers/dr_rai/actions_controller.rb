@@ -1,6 +1,6 @@
 class DrRai::ActionsController < AdminController
   before_action :authorize_user
-  before_action :set_dr_rai_action, only: %i[ show edit update destroy ]
+  before_action :set_dr_rai_action, only: %i[show edit update destroy]
 
   # GET /dr_rai/actions or /dr_rai/actions.json
   def index
@@ -42,17 +42,18 @@ class DrRai::ActionsController < AdminController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_dr_rai_action
-      @dr_rai_action = DrRai::Action.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def dr_rai_action_params
-      params.require(:dr_rai_action).permit(:description)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_dr_rai_action
+    @dr_rai_action = DrRai::Action.find(params[:id])
+  end
 
-    def authorize_user
-      authorize { current_admin.accessible_facilities(:view_reports).any? }
-    end
+  # Only allow a list of trusted parameters through.
+  def dr_rai_action_params
+    params.require(:dr_rai_action).permit(:description)
+  end
+
+  def authorize_user
+    authorize { current_admin.accessible_facilities(:view_reports).any? }
+  end
 end
