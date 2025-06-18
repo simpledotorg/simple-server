@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :dr_rai do
+    resources :actions, except: %i[new edit show]
+  end
   resources :home
 
   devise_scope :email_authentication do
