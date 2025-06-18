@@ -97,6 +97,11 @@
             Patient import
           <% end %>
         <% end %>
+        <% if current_admin.power_user? || current_admin.accessible_users(:manage).any?  %>
+          <%= link_to (dr_rai_actions_path), class: "sub-nav-link #{active_controller?("dr_rai/actions")}", id: "dr-rai-actions" do %>
+            Dr. Rai Actions List
+          <% end %>
+        <% end %>
 
         <% if current_admin.power_user? %>
         <div class="nav-divider"></div>
