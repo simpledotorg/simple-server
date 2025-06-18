@@ -51,53 +51,48 @@ class Reports::RegionsController < AdminController
   end
 
   def show
-    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    start_period = @period.advance(months: months)
     range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range)
+    child_regions = @region.reportable_children
+    regions = if @region.facility_region?
+      [@region]
+    else
+      [@region, child_regions].flatten
+    end
+
+    @repository = Reports::Repository.new(regions, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
+    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @latest_period = Period.current
     @with_ltfu = with_ltfu?
     @with_non_contactable = with_non_contactable?
 
-    @child_regions = @region.reportable_children
-    repo = Reports::Repository.new(@child_regions, periods: @period)
-
-    @children_data = @child_regions.map { |region|
-      slug = region.slug
-      {
-        region: region,
-        adjusted_patient_counts: repo.adjusted_patients[slug],
-        controlled_patients: repo.controlled[slug],
-        controlled_patients_rate: repo.controlled_rates[slug],
-        uncontrolled_patients: repo.uncontrolled[slug],
-        uncontrolled_patients_rate: repo.uncontrolled_rates[slug],
-        missed_visits: repo.missed_visits[slug],
-        missed_visits_rate: repo.missed_visits_rate[slug],
-        registrations: repo.monthly_registrations[slug],
-        cumulative_patients: repo.cumulative_assigned_patients[slug],
-        cumulative_registrations: repo.cumulative_registrations[slug]
-      }
+    @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
+    @children_data = child_regions.map { |region|
+      keys_needed = %i[
+        adjusted_patient_counts
+        controlled_patients
+        controlled_patients_rate
+        cumulative_patients
+        cumulative_registrations
+        missed_visits
+        missed_visits_rate
+        registrations
+        uncontrolled_patients
+        uncontrolled_patients_rate
+      ]
+      @presenter.to_hash(region, keep_only: keys_needed).merge({region: region})
     }
 
     # ======================
     # DETAILS
     # ======================
     @details_period_range = Range.new(@period.advance(months: -5), @period)
-    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
-
-    regions = if @region.facility_region?
-      [@region]
-    else
-      [@region, @region.reportable_children].flatten
-    end
-
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range)
-
-    chart_range = (@period.advance(months: months)..@period)
-    chart_repo = Reports::Repository.new(@region, periods: chart_range)
     @details_chart_data = {
-      ltfu_trend: ltfu_chart_data(chart_repo, chart_range),
+      ltfu_trend: ltfu_chart_data(@repository, range),
       **medications_dispensation_data(region: @region, period: @period, diagnosis: :hypertension)
     }
 
@@ -166,37 +161,35 @@ class Reports::RegionsController < AdminController
   end
 
   def diabetes
-    @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
-    start_period = @period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1))
-    range = Range.new(start_period, @period)
-    @repository = Reports::Repository.new(@region, periods: range, use_who_standard: @use_who_standard)
-    @presenter = Reports::RepositoryPresenter.new(@repository)
-    @data = @presenter.call(@region)
-    @with_ltfu = with_ltfu?
-    @latest_period = Period.current
-
     authorize { current_admin.accessible_facilities(:view_reports).any? }
 
-    @child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
-    repo = Reports::Repository.new(@child_regions, periods: @period, use_who_standard: @use_who_standard)
-
-    @children_data = @child_regions.map { |region|
-      slug = region.slug
-      {
-        region: region,
-        diabetes_patients_with_bs_taken: repo.diabetes_patients_with_bs_taken[slug],
-        diabetes_patients_with_bs_taken_breakdown_rates: repo.diabetes_patients_with_bs_taken_breakdown_rates[slug],
-        diabetes_patients_with_bs_taken_breakdown_counts: repo.diabetes_patients_with_bs_taken_breakdown_counts[slug]
-      }
-    }
-
+    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @use_who_standard = Flipper.enabled?(:diabetes_who_standard_indicator, current_admin)
+    start_period = @period.advance(months: months)
+    range = Range.new(start_period, @period)
+    child_regions = @region.reportable_children.filter { |region| region.diabetes_management_enabled? }
     regions = if @region.facility_region?
       [@region]
     else
-      [@region, @region.reportable_children].flatten
+      [@region, child_regions].flatten
     end
+    @repository = Reports::Repository.new(regions, periods: range, use_who_standard: @use_who_standard)
+    @presenter = Reports::RepositoryPresenter.new(@repository)
+    @data = @presenter.call(@region)
+    @quarterlies = quarterly_region_summary(@repository, @region.slug)
+    @with_ltfu = with_ltfu?
+    @latest_period = Period.current
 
-    months = -(Reports::MAX_MONTHS_OF_DATA - 1)
+    @localized_region_type = child_regions.first.localized_region_type unless child_regions.empty?
+    @children_data = child_regions.map { |region|
+      keys_needed = %i[
+        diabetes_patients_with_bs_taken
+        diabetes_patients_with_bs_taken_breakdown_rates
+        diabetes_patients_with_bs_taken_breakdown_counts
+      ]
+      @presenter.to_hash(region, keep_only: keys_needed).merge({region: region})
+    }
+
     @details_period_range = Range.new(@period.advance(months: -5), @period)
     @details_repository = Reports::Repository.new(regions, periods: @details_period_range, use_who_standard: @use_who_standard)
     chart_range = (@period.advance(months: months)..@period)
@@ -475,5 +468,11 @@ class Reports::RegionsController < AdminController
   def percentage(numerator, denominator)
     return 0 if denominator == 0 || numerator == 0
     ((numerator.to_f / denominator) * 100).round(2)
+  end
+
+  def quarterly_region_summary(repository, region)
+    data = repository.schema.send(:region_summaries)
+    quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
+    quarterlies[region]
   end
 end
