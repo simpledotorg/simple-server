@@ -65,11 +65,11 @@ CREATE PROCEDURE simple_reporting.add_shard_to_table(IN target_month_date date, 
       DECLARE
         monitoring_key TEXT := UPPER(table_name) || '_PARTITION_ALL';
         call_internal_statement TEXT ;
-
+        
       BEGIN
-        call_internal_statement :=
-          'CALL simple_reporting.generate_and_attach_shard_to_table(TO_DATE('''
-          || TO_CHAR(target_month_date, 'YYYY-MM')
+        call_internal_statement := 
+          'CALL simple_reporting.generate_and_attach_shard_to_table(TO_DATE(''' 
+          || TO_CHAR(target_month_date, 'YYYY-MM') 
           || ''', ''YYYY-MM''),'''|| table_name ||''');';
         CALL simple_reporting.monitored_execute(
           gen_random_uuid(),
@@ -100,17 +100,17 @@ CREATE PROCEDURE simple_reporting.generate_and_attach_shard_to_table(IN start_da
 
         drop_statement TEXT := 'DROP TABLE IF EXISTS ' || target_table_name || ';';
 
-        ctas_statement TEXT :=
+        ctas_statement TEXT := 
             'CREATE TABLE ' || target_table_name ||
             ' AS SELECT * FROM simple_reporting.' || table_name || '_table_function(' ||
             target_to_date || ');';
 
-        check_statement TEXT :=
+        check_statement TEXT := 
             'ALTER TABLE ' || target_table_name ||
             ' ADD CONSTRAINT ' || table_name || '_month_date_shard_check CHECK (month_date = ' ||
             target_to_date || ');';
 
-        shard_statement TEXT :=
+        shard_statement TEXT := 
             'ALTER TABLE simple_reporting.' || table_name || ' ATTACH PARTITION ' ||
             target_table_name || ' FOR VALUES IN (' || target_to_date || ');';
 
@@ -1028,6 +1028,38 @@ CREATE TABLE public.deduplication_logs (
     updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone
 );
+
+
+--
+-- Name: dr_rai_actions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_actions (
+    id bigint NOT NULL,
+    description character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dr_rai_actions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_actions_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_actions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
@@ -5818,6 +5850,13 @@ ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: dr_rai_actions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_actions_id_seq'::regclass);
+
+
+--
 -- Name: facility_business_identifiers id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6031,6 +6070,14 @@ ALTER TABLE ONLY public.data_migrations
 
 ALTER TABLE ONLY public.deduplication_logs
     ADD CONSTRAINT deduplication_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_actions dr_rai_actions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_actions
+    ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
 
 
 --
@@ -8397,6 +8444,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250120104431'),
 ('20250327172921'),
 ('20250522105107'),
-('20250522133245')
+('20250522133245'),
+('20250617152713');
 
 

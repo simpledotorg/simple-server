@@ -1,0 +1,74 @@
+<div class="w-50 mx-auto dr-rai">
+  <div class="page-header">
+    <h1 class="page-title">Dr. Rai Actions</h1>
+  </div>
+
+  <%= render 'form', dr_rai_action: @dr_rai_action %>
+
+  <table class="table table-responsive-md table-hover">
+    <tbody id="actions-table">
+      <% @dr_rai_actions.each do |dr_rai_action| %>
+        <tr class="dr-rai--action" data-id="<%= dr_rai_action.id %>">
+          <td class="w-75">
+            <span class="description-text"><%= dr_rai_action.description %></span>
+            <input type="text" class="form-control form-control-sm description-input d-none" value="<%= dr_rai_action.description %>">
+          </td>
+          <td class='text-center'><%= link_to 'Remove', dr_rai_action, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  $(document).ready(() => {
+    $('.dr-rai--action .description-text').on('click', (e) => {
+      const the_text = $(e.currentTarget);
+      const the_input = the_text.siblings('.description-input');
+
+      [the_text, the_input].forEach((e) => { e.toggleClass('d-none') })
+      the_input.focus();
+    });
+
+    $('.dr-rai--action .description-input').on('blur', (e) => {
+      const the_input = $(e.currentTarget);
+      const the_text = the_input.siblings('.description-text');
+      const newDescription = the_input.val();
+      const actionId = the_input.closest('tr').data('id');
+
+      $.ajax({
+        url: `/dr_rai/actions/${actionId}.json`,
+        type: 'PATCH',
+        data: {
+          'dr_rai_action': {
+            'description': newDescription
+          }
+        },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: (response) => {
+          the_text.text(response.description);
+          [the_text, the_input].forEach((e) => { e.toggleClass('d-none') })
+        },
+        error: (xhr) => {
+          // Technically there should be no error case. IF an entry is entered
+          // wrongly, removing the entry and redoing it costs little
+        }
+      });
+    });
+
+    $('.description-input').on('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        $(this).blur(); // technically, save()
+      } else if (e.key === 'Escape') {
+        const $input = $(this);
+        const $span = $input.siblings('.description-text');
+        $input.val($span.text());
+        $input.addClass('d-none');
+        $span.removeClass('d-none');
+      }
+    });
+  })
+</script>
