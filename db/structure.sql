@@ -1068,7 +1068,6 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 CREATE TABLE public.dr_rai_indicators (
     id bigint NOT NULL,
-    title character varying,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
@@ -8580,6 +8579,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619104804'),
 ('20250619113919'),
 ('20250619114859'),
-('20250619152112');
+('20250619152112'),
+('20250619152733');
 
 

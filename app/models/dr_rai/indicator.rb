@@ -17,6 +17,4 @@ class DrRai::Indicator < ApplicationRecord
   accepts_nested_attributes_for :target
 
   belongs_to :region
-
-  validates :title, presence: true
 end
