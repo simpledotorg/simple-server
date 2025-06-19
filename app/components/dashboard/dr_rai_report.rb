@@ -29,6 +29,10 @@ class Dashboard::DrRaiReport < ApplicationComponent
     Period.current.to_quarter_period
   end
 
+  def current_period?
+    current_period == selected_period
+  end
+
   def start_of period
     period.begin.strftime("%b-%-d")
   end
