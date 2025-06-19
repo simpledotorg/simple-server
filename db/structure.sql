@@ -1031,6 +1031,42 @@ CREATE TABLE public.deduplication_logs (
 
 
 --
+-- Name: dr_rai_action_plans; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_action_plans (
+    id bigint NOT NULL,
+    statement character varying,
+    actions text,
+    dr_rai_indicator_id bigint NOT NULL,
+    dr_rai_target_id bigint NOT NULL,
+    region_id uuid NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dr_rai_action_plans_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_action_plans_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_action_plans_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_action_plans_id_seq OWNED BY public.dr_rai_action_plans.id;
+
+
+--
 -- Name: dr_rai_actions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5920,6 +5956,13 @@ ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: dr_rai_action_plans id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_plans ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_action_plans_id_seq'::regclass);
+
+
+--
 -- Name: dr_rai_actions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6154,6 +6197,14 @@ ALTER TABLE ONLY public.data_migrations
 
 ALTER TABLE ONLY public.deduplication_logs
     ADD CONSTRAINT deduplication_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_action_plans dr_rai_action_plans_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_plans
+    ADD CONSTRAINT dr_rai_action_plans_pkey PRIMARY KEY (id);
 
 
 --
@@ -6898,6 +6949,27 @@ CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree
 --
 
 CREATE UNIQUE INDEX index_df_facility_region_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_region_id, visit_date);
+
+
+--
+-- Name: index_dr_rai_action_plans_on_dr_rai_indicator_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_action_plans_on_dr_rai_indicator_id ON public.dr_rai_action_plans USING btree (dr_rai_indicator_id);
+
+
+--
+-- Name: index_dr_rai_action_plans_on_dr_rai_target_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_action_plans_on_dr_rai_target_id ON public.dr_rai_action_plans USING btree (dr_rai_target_id);
+
+
+--
+-- Name: index_dr_rai_action_plans_on_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_action_plans_on_region_id ON public.dr_rai_action_plans USING btree (region_id);
 
 
 --
@@ -8110,6 +8182,14 @@ ALTER TABLE ONLY public.treatment_groups
 
 
 --
+-- Name: dr_rai_action_plans fk_rails_226032ca90; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_plans
+    ADD CONSTRAINT fk_rails_226032ca90 FOREIGN KEY (region_id) REFERENCES public.regions(id);
+
+
+--
 -- Name: patients fk_rails_256d8f15cb; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8358,6 +8438,14 @@ ALTER TABLE ONLY public.facilities
 
 
 --
+-- Name: dr_rai_action_plans fk_rails_c6db95d644; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_plans
+    ADD CONSTRAINT fk_rails_c6db95d644 FOREIGN KEY (dr_rai_target_id) REFERENCES public.dr_rai_targets(id);
+
+
+--
 -- Name: questionnaire_responses fk_rails_cd769e0a12; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8371,6 +8459,14 @@ ALTER TABLE ONLY public.questionnaire_responses
 
 ALTER TABLE ONLY public.protocol_drugs
     ADD CONSTRAINT fk_rails_dbcef01693 FOREIGN KEY (protocol_id) REFERENCES public.protocols(id);
+
+
+--
+-- Name: dr_rai_action_plans fk_rails_ddc9cc5019; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_plans
+    ADD CONSTRAINT fk_rails_ddc9cc5019 FOREIGN KEY (dr_rai_indicator_id) REFERENCES public.dr_rai_indicators(id);
 
 
 --
@@ -8580,6 +8676,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619113919'),
 ('20250619114859'),
 ('20250619152112'),
-('20250619152733');
+('20250619152733'),
+('20250619195214');
 
 
