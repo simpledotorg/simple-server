@@ -1072,7 +1072,8 @@ CREATE TABLE public.dr_rai_indicators (
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    region_id uuid NOT NULL
+    region_id uuid NOT NULL,
+    type character varying
 );
 
 
@@ -8578,6 +8579,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250618201739'),
 ('20250619104804'),
 ('20250619113919'),
-('20250619114859');
+('20250619114859'),
+('20250619152112');
 
 
