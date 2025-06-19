@@ -10,7 +10,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
   # to view, we need to do a full page refresh if we are depending on the view
   # component; a full page refresh passing in the selected quarter. We need JS
 
-  attr_reader :quarterlies
+  attr_reader :quarterlies, :indicators
   attr_accessor :selected_period
 
   def initialize(quarterlies, region, selected_quarter = nil)
@@ -22,6 +22,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
       Period.new(type: :quarter, value: selected_quarter)
     end
     @goals = {}
+    @indicators = DrRai::Indicator.where(region: Region.find_by(slug: region))
   end
 
   def current_period

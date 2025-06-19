@@ -1,5 +1,9 @@
 module DrRai
   class ContactOverduePatientsIndicator < Indicator
+    def display_name
+      "Contact overdue patients"
+    end
+
     def indicator_function
       range = Range.new(Period.current.advance(months: -4), Period.current)
       data = Reports::RegionSummary.call(region, range: range)

@@ -78,19 +78,21 @@
       <h2>Which indicator to improve?</h2>
       <button class="link-button edit">Edit</button>
       <ul>
+      <% indicators.each do |indicator| %>
         <li><button class="link-button advancer">Contact overdue patients</button></li>
-        <li><button class="link-button">Increase drug stock</button></li>
-        <li><button class="link-button">Prescribe statins</button></li>
-        <li><button class="link-button">Reduce BP fudging</button></li>
-        <li><button class="link-button">Refer patients to community clinics</button></li>
-        <li><button class="link-button">Register patients</button></li>
-        <li><button class="link-button">Titrate medication for uncontrolled patients</button></li>
-        <li><button class="link-button">Treat patients to drug protocol</button></li>
-        <li><button class="link-button">Add a custom indicator</button></li>
+      <% end %>
       </ul>
+        <%# <li><button class="link-button">Increase drug stock</button></li> %>
+        <%# <li><button class="link-button">Prescribe statins</button></li> %>
+        <%# <li><button class="link-button">Reduce BP fudging</button></li> %>
+        <%# <li><button class="link-button">Refer patients to community clinics</button></li> %>
+        <%# <li><button class="link-button">Register patients</button></li> %>
+        <%# <li><button class="link-button">Titrate medication for uncontrolled patients</button></li> %>
+        <%# <li><button class="link-button">Treat patients to drug protocol</button></li> %>
+        <%# <li><button class="link-button">Add a custom indicator</button></li> %>
     </div>
     <div class='inactive d-none'>
-      <p class="step-statement">Contact overdue patients</p>
+      <p class="step-statement"></p>
     </div>
   </div>
   <div class="step-block d-none" id="step-2">
@@ -215,6 +217,15 @@
 
     $('.step-block .next-button, .advancer').on('click', (e) => {
       $(e.currentTarget).closest('.step-block').trigger("step-through")
+    })
+
+    $('.link-button.advancer').on('click', (e) => {
+      $(e.currentTarget)
+        .closest(".active")
+        .siblings('.inactive')
+        .children('.step-statement')
+        .first()
+        .text($(e.currentTarget).text())
     })
 
     // A poor man's state update
