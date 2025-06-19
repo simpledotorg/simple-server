@@ -1,0 +1,22 @@
+# Dr Rai Indicator
+#
+# This is the entity. From a data perspective, this entity is complete as is.
+# However, there is logic layered on this entity which does not allow it be
+# complete by itself. Other "logical" entities are layered ontop of this one to
+# make the feature complete. So while vaildations may pass, the entity may
+# still be functionally unusable if used by itself. If you want to create an
+# indicator, look to one of the child classes.
+class DrRai::Indicator < ApplicationRecord
+
+  # Consider this an abstract class which forces child classes to implement
+  # specific functionality. Ruby does not have abstract classes so this is the
+  # best we can do technique-wise
+  include Calculatable
+
+  has_one :target, class_name: 'DrRai::Target', dependent: :destroy
+  accept_nested_attributes_for :target
+
+  belongs_to :region
+
+  validates :title, presence: true
+end

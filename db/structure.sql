@@ -1063,6 +1063,39 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
+-- Name: dr_rai_indicators; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_indicators (
+    id bigint NOT NULL,
+    title character varying,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL,
+    region_id uuid NOT NULL
+);
+
+
+--
+-- Name: dr_rai_indicators_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_indicators_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_indicators_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_indicators_id_seq OWNED BY public.dr_rai_indicators.id;
+
+
+--
 -- Name: dr_rai_targets; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1075,7 +1108,8 @@ CREATE TABLE public.dr_rai_targets (
     period jsonb,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    dr_rai_indicators_id bigint NOT NULL
 );
 
 
@@ -5893,6 +5927,13 @@ ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: dr_rai_indicators id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_indicators ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_indicators_id_seq'::regclass);
+
+
+--
 -- Name: dr_rai_targets id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6121,6 +6162,14 @@ ALTER TABLE ONLY public.deduplication_logs
 
 ALTER TABLE ONLY public.dr_rai_actions
     ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_indicators dr_rai_indicators_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_indicators
+    ADD CONSTRAINT dr_rai_indicators_pkey PRIMARY KEY (id);
 
 
 --
@@ -6849,6 +6898,20 @@ CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree
 --
 
 CREATE UNIQUE INDEX index_df_facility_region_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_region_id, visit_date);
+
+
+--
+-- Name: index_dr_rai_indicators_on_region_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_indicators_on_region_id ON public.dr_rai_indicators USING btree (region_id);
+
+
+--
+-- Name: index_dr_rai_targets_on_dr_rai_indicators_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_targets_on_dr_rai_indicators_id ON public.dr_rai_targets USING btree (dr_rai_indicators_id);
 
 
 --
@@ -8151,6 +8214,14 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
+-- Name: dr_rai_indicators fk_rails_785a65e106; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_indicators
+    ADD CONSTRAINT fk_rails_785a65e106 FOREIGN KEY (region_id) REFERENCES public.regions(id);
+
+
+--
 -- Name: blood_sugars fk_rails_7c63b0ef2d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8327,6 +8398,14 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
+-- Name: dr_rai_targets fk_rails_f0398a9ae0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_targets
+    ADD CONSTRAINT fk_rails_f0398a9ae0 FOREIGN KEY (dr_rai_indicators_id) REFERENCES public.dr_rai_indicators(id);
+
+
+--
 -- Name: patient_attributes fk_rails_fc46ae3757; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8496,6 +8575,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250327172921'),
 ('20250522105107'),
 ('20250522133245'),
-('20250618201739');
+('20250618201739'),
+('20250619104804'),
+('20250619113919'),
+('20250619114859');
 
 
