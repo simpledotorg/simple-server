@@ -79,23 +79,15 @@
       <button class="link-button edit">Edit</button>
       <ul>
       <% indicators.each do |indicator| %>
-        <li><button class="link-button advancer">Contact overdue patients</button></li>
+        <li><button class="link-button advancer" data-indicator-type="<%= indicator.target_type %>" data-indicator-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %>>Contact overdue patients</button></li>
       <% end %>
       </ul>
-        <%# <li><button class="link-button">Increase drug stock</button></li> %>
-        <%# <li><button class="link-button">Prescribe statins</button></li> %>
-        <%# <li><button class="link-button">Reduce BP fudging</button></li> %>
-        <%# <li><button class="link-button">Refer patients to community clinics</button></li> %>
-        <%# <li><button class="link-button">Register patients</button></li> %>
-        <%# <li><button class="link-button">Titrate medication for uncontrolled patients</button></li> %>
-        <%# <li><button class="link-button">Treat patients to drug protocol</button></li> %>
-        <%# <li><button class="link-button">Add a custom indicator</button></li> %>
     </div>
     <div class='inactive d-none'>
       <p class="step-statement"></p>
     </div>
   </div>
-  <div class="step-block d-none" id="step-2">
+  <div class="step-block d-none" id="step-2-percent">
     <div class='active'>
       <h2>What is the goal?</h2>
       <button class="link-button edit">Edit</button>
@@ -112,6 +104,35 @@
     <div class="inactive d-none">
       <%# The step statement is what we plan to achieve this period %>
       <p class="step-statement">Call 500 overdue patients by Jun 30</p>
+    </div>
+  </div>
+  <div class="step-block d-none" id="step-2-numeric">
+    <div class='active'>
+      <h2>What is the goal?</h2>
+      <button class="link-button edit">Edit</button>
+      <label class="goal-input-block">
+        <input type="text" placeholder="Q2 goal">
+        <%# Note that this could also be a unit. In some cases "patient" %>
+        <span class="">patients</span>
+      </label>
+      <p>Contact <span class="highlight">500</span> overdue patients by <%= end_of(selected_period) %></p>
+      <%# The activity statement is the outcome of the goal in the last period %>
+      <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
+      <button class="next-button">Next</button>
+    </div>
+    <div class="inactive d-none">
+      <%# The step statement is what we plan to achieve this period %>
+      <p class="step-statement">Call 3600 overdue patients by Jun 30</p>
+    </div>
+  </div>
+  <div class="step-block d-none" id="step-2-boolean">
+    <div class='active'>
+      <h2>What is the goal?</h2>
+      <button class="link-button edit">Edit</button>
+      <button class="next-button">Next</button>
+    </div>
+    <div class="inactive d-none">
+      <p class="step-statement">Mark as done when completed</p>
     </div>
   </div>
   <div class="step-block d-none" id="step-3">
@@ -137,6 +158,8 @@
     var bsDefaults = { offset: false, overlay: true, width: '450px' },
         bsMain = $('.bs-offset-main'),
         bsOverlay = $('.bs-canvas-overlay')
+
+    const toHide = [], toReveal = []
 
     // Opening the offcanvas
     $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function() {
@@ -190,22 +213,40 @@
       return false
     })
 
+    // ===================
+    // BEGIN DR. RAI LOGIC
+    // ===================
+
     // TODO: Handle state through "step-through"
     // Here, we should be answering the questions
     //   - What state do we want to pass along from the frontend to the back?
     //   - Do we want health workers to be able to recover from halfway through?
-    $('.step-block').on('step-through', (e) => {
+    $('.step-block').on('step-through', (e, nextUI, targetType) => {
       const targets = ['.active', '.inactive']
       targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
-      const nextStep = e.currentTarget.id.replace(/\d+$/, (idx) => parseInt(idx) + 1)
-      $('#' + nextStep).toggleClass('d-none')
-      if (nextStep === 'step-3') {
+      $(e.currentTarget).find('.active').addClass('d-none')
+      toReveal.push($(e.currentTarget).find('.active'))
+      $(e.currentTarget).find('.inactive').removeClass('d-none')
+      toHide.push($(e.currentTarget).find('.inactive'))
+      const nextStep = parseInt(e.currentTarget.id.split('-')[1]) + 1
+      if (nextUI === undefined) {
+        $('#step-' + nextStep).removeClass('d-none')
+        toHide.push($('#step-' + nextStep))
+      } else {
+        $('#step-' + nextStep + '-' + nextUI).removeClass('d-none')
+        toHide.push($('#step-' + nextStep + '-' + nextUI))
+      }
+      if (nextStep === 3) {
         // FIXME: Make the styling follow the state of the button.
         // Since there's custom CSS here, this button which starts out as
         // disabled is styled as a primary button. Though this does not impact
         // functionality since a disabled button cannot be clicked, it would
         // confuse the user; thus it needs to be fixed
         $('.action-buttons-block .save-button').prop('disabled', false)
+      } else {
+        if (nextUI !== undefined) {
+          $('#step-3').data('target-type', targetType)
+        }
       }
     })
 
@@ -216,7 +257,13 @@
     })
 
     $('.step-block .next-button, .advancer').on('click', (e) => {
-      $(e.currentTarget).closest('.step-block').trigger("step-through")
+      $('#action-plan-offcanvas').data('indicator-id', $(e.currentTarget).data('indicator-id'))
+      $(e.currentTarget)
+        .closest('.step-block')
+        .trigger("step-through", [
+          $(e.currentTarget).data('indicator-ui'),
+          $(e.currentTarget).data('indicator-type'),
+        ])
     })
 
     $('.link-button.advancer').on('click', (e) => {
@@ -226,6 +273,19 @@
         .children('.step-statement')
         .first()
         .text($(e.currentTarget).text())
+    })
+
+    $('.cancel-button').on('click', (e) => {
+      // Clear "state"
+      $('#action-plan-offcanvas').removeData('indicator-id')
+
+      // Reset UI
+      toHide.forEach((el) => el.addClass('d-none'))
+      toReveal.forEach((el) => el.removeClass('d-none'))
+      $('.action-buttons-block .save-button').prop('disabled', true)
+
+      // Close the offcanvas
+      $('.bs-canvas-close').trigger('click')
     })
 
     // A poor man's state update

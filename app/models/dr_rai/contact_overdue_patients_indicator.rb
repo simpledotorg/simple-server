@@ -12,5 +12,13 @@ module DrRai
         [t, data['contactable_patients_called']]
       end.to_h
     end
+
+    def target_type
+      "DrRai::PercentageTarget"
+    end
+
+    def target_type_frontend
+      "percent"
+    end
   end
 end
