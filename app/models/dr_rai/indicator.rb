@@ -11,10 +11,10 @@ class DrRai::Indicator < ApplicationRecord
   # Consider this an abstract class which forces child classes to implement
   # specific functionality. Ruby does not have abstract classes so this is the
   # best we can do technique-wise
-  include Calculatable
+  include DrRai::Calculatable
 
-  has_one :target, class_name: 'DrRai::Target', dependent: :destroy
-  accept_nested_attributes_for :target
+  has_one :target, class_name: 'DrRai::Target', dependent: :destroy, foreign_key: 'dr_rai_indicators_id'
+  accepts_nested_attributes_for :target
 
   belongs_to :region
 
