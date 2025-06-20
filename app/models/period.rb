@@ -3,6 +3,7 @@ class Period
 
   include Comparable
   include ActiveModel::Model
+  include ActiveModel::Serialization
   validates :type, presence: true, inclusion: {in: [:month, :quarter], message: "must be month or quarter"}
   validates :value, presence: true
 
