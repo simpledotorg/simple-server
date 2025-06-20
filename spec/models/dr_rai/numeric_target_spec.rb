@@ -9,7 +9,7 @@ RSpec.describe DrRai::NumericTarget, type: :model do
 
   describe "validations:" do
     it "numeric_value must exist" do
-      new_target = DrRai::Target.new
+      new_target = DrRai::NumericTarget.new
       expect(new_target).not_to be_valid
       expect(new_target.errors.added?(:numeric_value, :blank)).to be_truthy
     end
