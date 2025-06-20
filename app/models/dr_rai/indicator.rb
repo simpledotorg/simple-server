@@ -7,6 +7,7 @@
 # still be functionally unusable if used by itself. If you want to create an
 # indicator, look to one of the child classes.
 class DrRai::Indicator < ApplicationRecord
+  DEFAULT_RANGE = Range.new(Period.current.advance(months: -6), Period.current)
 
   # Consider this an abstract class which forces child classes to implement
   # specific functionality. Ruby does not have abstract classes so this is the
@@ -16,5 +17,12 @@ class DrRai::Indicator < ApplicationRecord
   has_one :target, class_name: 'DrRai::Target', dependent: :destroy, foreign_key: 'dr_rai_indicators_id'
   accepts_nested_attributes_for :target
 
-  belongs_to :region
+  def quarterlies(region)
+    data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
+    Reports::RegionSummary.group_by(grouping: :quarter, data: data)[region.slug]
+  end
+
+  def period
+    Period.new(type: :quarter, value: target.period)
+  end
 end

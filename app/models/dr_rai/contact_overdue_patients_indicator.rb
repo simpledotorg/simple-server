@@ -4,12 +4,23 @@ module DrRai
       "Contact overdue patients"
     end
 
-    def indicator_function
-      range = Range.new(Period.current.advance(months: -4), Period.current)
-      data = Reports::RegionSummary.call(region, range: range)
-      quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
-      quarterlies[region.slug].map do |t, data|
-        [t, data['contactable_patients_called']]
+    def numerator(region, the_period = period)
+      numerators(region)[the_period]
+    end
+
+    def denominator(region, the_period = period)
+      denominators(region)[the_period]
+    end
+
+    def numerators(region)
+      quarterlies(region).map do |t, data|
+        [t, data[numerator_key]]
+      end.to_h
+    end
+
+    def denominators(region)
+      quarterlies(region).map do |t, data|
+        [t, data[denominator_key]]
       end.to_h
     end
 
@@ -19,6 +30,14 @@ module DrRai
 
     def target_type_frontend
       "percent"
+    end
+
+    def numerator_key
+      'contactable_patients_called'
+    end
+
+    def denominator_key
+      'overdue_patients'
     end
   end
 end

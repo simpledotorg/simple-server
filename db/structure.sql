@@ -1107,7 +1107,6 @@ CREATE TABLE public.dr_rai_indicators (
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    region_id uuid NOT NULL,
     type character varying
 );
 
@@ -1141,11 +1140,11 @@ CREATE TABLE public.dr_rai_targets (
     numeric_value integer,
     numeric_units character varying,
     completed boolean,
-    period jsonb,
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    dr_rai_indicators_id bigint NOT NULL
+    dr_rai_indicators_id bigint NOT NULL,
+    period character varying
 );
 
 
@@ -6973,13 +6972,6 @@ CREATE INDEX index_dr_rai_action_plans_on_region_id ON public.dr_rai_action_plan
 
 
 --
--- Name: index_dr_rai_indicators_on_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_dr_rai_indicators_on_region_id ON public.dr_rai_indicators USING btree (region_id);
-
-
---
 -- Name: index_dr_rai_targets_on_dr_rai_indicators_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8294,14 +8286,6 @@ ALTER TABLE ONLY public.oauth_access_tokens
 
 
 --
--- Name: dr_rai_indicators fk_rails_785a65e106; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dr_rai_indicators
-    ADD CONSTRAINT fk_rails_785a65e106 FOREIGN KEY (region_id) REFERENCES public.regions(id);
-
-
---
 -- Name: blood_sugars fk_rails_7c63b0ef2d; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8677,6 +8661,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619114859'),
 ('20250619152112'),
 ('20250619152733'),
-('20250619195214');
+('20250619195214'),
+('20250619222520'),
+('20250619225935');
 
 

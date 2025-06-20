@@ -2,8 +2,11 @@
 module DrRai
   module Calculatable
 
-    # This should be implemented by all children of DrRai::Indicator
-    def indicator_function
+    def numerator
+      raise 'Unimplemented'
+    end
+
+    def denominator
       raise 'Unimplemented'
     end
   end
