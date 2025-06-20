@@ -14,7 +14,7 @@ class DrRai::Indicator < ApplicationRecord
   # best we can do technique-wise
   include DrRai::Calculatable
 
-  has_one :target, class_name: 'DrRai::Target', dependent: :destroy, foreign_key: 'dr_rai_indicators_id'
+  has_one :target, class_name: "DrRai::Target", dependent: :destroy, foreign_key: "dr_rai_indicators_id"
   accepts_nested_attributes_for :target
 
   def quarterlies(region)

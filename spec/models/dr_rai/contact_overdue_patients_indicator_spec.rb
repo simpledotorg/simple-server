@@ -1,7 +1,7 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
-  describe 'indicator_function' do
+  describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }
     end
@@ -33,15 +33,14 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       create(:call_result, patient: facility_1_patient_with_out_phone, device_created_at: this_month + 27.days)
       create(:call_result, patient: facility_1_patient_removed_from_list, device_created_at: this_month + 4.days)
 
-
       RefreshReportingViews.new(views: views).call
 
-      indicator = DrRai::ContactOverduePatientsIndicator.new region: Region.find_by(slug: facility_1.slug), title: "Test"
-      target = DrRai::BooleanTarget.new period: one_month_ago.to_period, indicator: indicator
+      indicator = DrRai::ContactOverduePatientsIndicator.new
 
-      facility_1_results = indicator.indicator_function
+      period = Period.new(type: :quarter, value: this_month.to_period.to_quarter_period.value.to_s)
+      facility_1_results = indicator.numerator(region, period)
 
-      expect(facility_1_results[this_month.to_period.to_quarter_period]).to eq 4
+      expect(facility_1_results).to eq 4
     end
   end
 end

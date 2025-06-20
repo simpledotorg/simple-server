@@ -33,11 +33,11 @@ module DrRai
     end
 
     def numerator_key
-      'contactable_patients_called'
+      "contactable_patients_called"
     end
 
     def denominator_key
-      'overdue_patients'
+      "overdue_patients"
     end
   end
 end

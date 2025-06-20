@@ -25,7 +25,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
       .includes(:dr_rai_target)
       .where(
         region: @region,
-        dr_rai_target: { period: @selected_period.value.to_s }
+        dr_rai_target: {period: @selected_period.value.to_s}
       )
     @indicators = DrRai::Indicator.all
     # @current_denominator = quarterlies(region_entity)[@selected_period][???]
@@ -33,10 +33,6 @@ class Dashboard::DrRaiReport < ApplicationComponent
 
   def indicator_denominator(indicator)
     indicator.denominator(region, selected_period)
-  end
-
-  def action_plans
-    @action_plans
   end
 
   def current_period
