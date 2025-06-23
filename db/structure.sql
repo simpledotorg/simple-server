@@ -10,6 +10,13 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
+-- Name: simple_reporting; Type: SCHEMA; Schema: -; Owner: -
+--
+
+CREATE SCHEMA simple_reporting;
+
+
+--
 -- Name: ltree; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -48,7 +55,402 @@ CREATE TYPE public.gender_enum AS ENUM (
 );
 
 
+--
+-- Name: add_shard_to_table(date, text); Type: PROCEDURE; Schema: simple_reporting; Owner: -
+--
+
+CREATE PROCEDURE simple_reporting.add_shard_to_table(IN target_month_date date, IN table_name text)
+    LANGUAGE plpgsql
+    AS $$
+      DECLARE
+        monitoring_key TEXT := UPPER(table_name) || '_PARTITION_ALL';
+        call_internal_statement TEXT ;
+
+      BEGIN
+        call_internal_statement :=
+          'CALL simple_reporting.generate_and_attach_shard_to_table(TO_DATE('''
+          || TO_CHAR(target_month_date, 'YYYY-MM')
+          || ''', ''YYYY-MM''),'''|| table_name ||''');';
+        CALL simple_reporting.monitored_execute(
+          gen_random_uuid(),
+          monitoring_key,
+          target_month_date,
+          call_internal_statement
+        );
+      END;
+      $$;
+
+
+--
+-- Name: generate_and_attach_shard_to_table(date, text); Type: PROCEDURE; Schema: simple_reporting; Owner: -
+--
+
+CREATE PROCEDURE simple_reporting.generate_and_attach_shard_to_table(IN start_date date, IN table_name text)
+    LANGUAGE plpgsql
+    AS $$
+      DECLARE
+        target_reference_date DATE := date_trunc('month', start_date)::DATE;
+        target_table_key TEXT := TO_CHAR(target_reference_date, 'YYYYMMDD');
+        target_to_date TEXT := 'date_trunc(''month'', TO_DATE(''' || target_table_key || ''', ''YYYYMMDD''))::date';
+        target_table_name TEXT := 'simple_reporting.'|| table_name || '_' || target_table_key;
+        partition_drop_monitoring_key TEXT := UPPER(table_name) || '_PARTITION_DROP';
+        ctas_monitoring_key TEXT := UPPER(table_name) || '_PARTITION_CTAS';
+        partition_check_monitoring_key TEXT := UPPER(table_name) || '_PARTITION_CHECK';
+        partition_attach_monitoring_key TEXT := UPPER(table_name) || '_PARTITION_SHARD';
+
+        drop_statement TEXT := 'DROP TABLE IF EXISTS ' || target_table_name || ';';
+
+        ctas_statement TEXT :=
+            'CREATE TABLE ' || target_table_name ||
+            ' AS SELECT * FROM simple_reporting.' || table_name || '_table_function(' ||
+            target_to_date || ');';
+
+        check_statement TEXT :=
+            'ALTER TABLE ' || target_table_name ||
+            ' ADD CONSTRAINT ' || table_name || '_month_date_shard_check CHECK (month_date = ' ||
+            target_to_date || ');';
+
+        shard_statement TEXT :=
+            'ALTER TABLE simple_reporting.' || table_name || ' ATTACH PARTITION ' ||
+            target_table_name || ' FOR VALUES IN (' || target_to_date || ');';
+
+        run_key UUID := gen_random_uuid();
+      BEGIN
+        CALL simple_reporting.monitored_execute(run_key, partition_drop_monitoring_key, target_reference_date, drop_statement);
+        CALL simple_reporting.monitored_execute(run_key, ctas_monitoring_key, target_reference_date, ctas_statement);
+        CALL simple_reporting.monitored_execute(run_key, partition_check_monitoring_key, target_reference_date, check_statement);
+        CALL simple_reporting.monitored_execute(run_key, partition_attach_monitoring_key, target_reference_date, shard_statement);
+      END;
+      $$;
+
+
+--
+-- Name: monitored_execute(uuid, text, date, text); Type: PROCEDURE; Schema: simple_reporting; Owner: -
+--
+
+CREATE PROCEDURE simple_reporting.monitored_execute(IN run_id uuid, IN action_key text, IN target_month_date date, IN target_query text)
+    LANGUAGE plpgsql
+    AS $$
+      DECLARE
+        internal_start_date TIMESTAMP := clock_timestamp();
+      BEGIN
+        RAISE NOTICE 'EXECUTING <%>: %', action_key, target_query;
+        BEGIN
+          EXECUTE target_query;
+
+          INSERT INTO simple_reporting.simple_reporting_runs (run_key, action_name, target_date, start_date, end_date, action_status)
+          VALUES (run_id, action_key, target_month_date, internal_start_date, clock_timestamp(), 'OK');
+
+        EXCEPTION WHEN OTHERS THEN
+          INSERT INTO simple_reporting.simple_reporting_runs (run_key, action_name, target_date, start_date, end_date, action_status, sql_state, sql_error_message)
+          VALUES (run_id, action_key, target_month_date, internal_start_date, clock_timestamp(), 'ERROR', SQLSTATE, SQLERRM);
+        END;
+      END;
+      $$;
+
+
 SET default_tablespace = '';
+
+--
+-- Name: reporting_patient_states; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.reporting_patient_states (
+    patient_id uuid,
+    recorded_at timestamp without time zone,
+    status character varying,
+    gender character varying,
+    age integer,
+    age_updated_at timestamp without time zone,
+    date_of_birth date,
+    current_age double precision,
+    month_date date,
+    month double precision,
+    quarter double precision,
+    year double precision,
+    month_string text,
+    quarter_string text,
+    hypertension text,
+    prior_heart_attack text,
+    prior_stroke text,
+    chronic_kidney_disease text,
+    receiving_treatment_for_hypertension text,
+    diabetes text,
+    assigned_facility_id uuid,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    registration_facility_id uuid,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    blood_pressure_id uuid,
+    bp_facility_id uuid,
+    bp_recorded_at timestamp without time zone,
+    systolic integer,
+    diastolic integer,
+    blood_sugar_id uuid,
+    bs_facility_id uuid,
+    bs_recorded_at timestamp without time zone,
+    blood_sugar_type character varying,
+    blood_sugar_value numeric,
+    blood_sugar_risk_state text,
+    encounter_id uuid,
+    encounter_recorded_at timestamp without time zone,
+    prescription_drug_id uuid,
+    prescription_drug_recorded_at timestamp without time zone,
+    appointment_id uuid,
+    appointment_recorded_at timestamp without time zone,
+    visited_facility_ids uuid[],
+    months_since_registration double precision,
+    quarters_since_registration double precision,
+    months_since_visit double precision,
+    quarters_since_visit double precision,
+    months_since_bp double precision,
+    quarters_since_bp double precision,
+    months_since_bs double precision,
+    quarters_since_bs double precision,
+    last_bp_state text,
+    htn_care_state text,
+    htn_treatment_outcome_in_last_3_months text,
+    htn_treatment_outcome_in_last_2_months text,
+    htn_treatment_outcome_in_quarter text,
+    diabetes_treatment_outcome_in_last_3_months text,
+    diabetes_treatment_outcome_in_last_2_months text,
+    diabetes_treatment_outcome_in_quarter text,
+    titrated boolean
+)
+PARTITION BY LIST (month_date);
+
+
+--
+-- Name: reporting_patient_states_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
+    LANGUAGE plpgsql
+    AS $_$
+      BEGIN
+        RETURN QUERY
+        SELECT DISTINCT ON (p.id)
+        -- Basic patient identifiers
+          p.id AS patient_id,
+          p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS recorded_at,
+          p.status,
+          p.gender,
+          p.age,
+          p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
+          p.date_of_birth,
+          EXTRACT(YEAR FROM COALESCE(
+            age(p.date_of_birth),
+            make_interval(years => p.age) + age(p.age_updated_at)
+          ))::float8 AS current_age,
+
+          -- Calendar
+          cal.month_date,
+          cal.month,
+          cal.quarter,
+          cal.year,
+          cal.month_string,
+          cal.quarter_string,
+
+          -- Medical history
+          mh.hypertension,
+          mh.prior_heart_attack,
+          mh.prior_stroke,
+          mh.chronic_kidney_disease,
+          mh.receiving_treatment_for_hypertension,
+          mh.diabetes,
+
+          -- Assigned facility and regions
+          p.assigned_facility_id,
+          assigned_facility.facility_size,
+          assigned_facility.facility_type,
+          assigned_facility.facility_region_slug,
+          assigned_facility.facility_region_id,
+          assigned_facility.block_slug,
+          assigned_facility.block_region_id,
+          assigned_facility.district_slug,
+          assigned_facility.district_region_id,
+          assigned_facility.state_slug,
+          assigned_facility.state_region_id,
+          assigned_facility.organization_slug,
+          assigned_facility.organization_region_id,
+
+          -- Registration facility and regions
+          p.registration_facility_id,
+          registration_facility.facility_size,
+          registration_facility.facility_type,
+          registration_facility.facility_region_slug,
+          registration_facility.facility_region_id,
+          registration_facility.block_slug,
+          registration_facility.block_region_id,
+          registration_facility.district_slug,
+          registration_facility.district_region_id,
+          registration_facility.state_slug,
+          registration_facility.state_region_id,
+          registration_facility.organization_slug,
+          registration_facility.organization_region_id,
+
+          -- Visit details
+          bps.blood_pressure_id,
+          bps.blood_pressure_facility_id AS bp_facility_id,
+          bps.blood_pressure_recorded_at AS bp_recorded_at,
+          bps.systolic,
+          bps.diastolic,
+
+          bss.blood_sugar_id,
+          bss.blood_sugar_facility_id AS bs_facility_id,
+          bss.blood_sugar_recorded_at AS bs_recorded_at,
+          bss.blood_sugar_type,
+          bss.blood_sugar_value,
+          bss.blood_sugar_risk_state,
+
+          visits.encounter_id,
+          visits.encounter_recorded_at,
+          visits.prescription_drug_id,
+          visits.prescription_drug_recorded_at,
+          visits.appointment_id,
+          visits.appointment_recorded_at,
+          visits.visited_facility_ids,
+
+          -- Relative time calculations
+          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          AS months_since_registration,
+
+          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
+          (cal.quarter - DATE_PART('quarter', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          AS quarters_since_registration,
+
+          visits.months_since_visit,
+          visits.quarters_since_visit,
+          bps.months_since_bp,
+          bps.quarters_since_bp,
+          bss.months_since_bs,
+          bss.quarters_since_bs,
+
+          -- BP and treatment indicators
+          CASE
+            WHEN bps.systolic IS NULL OR bps.diastolic IS NULL THEN 'unknown'
+            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+            ELSE 'uncontrolled'
+          END AS last_bp_state,
+
+          CASE
+            WHEN p.status = 'dead' THEN 'dead'
+            WHEN (
+              (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+              (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
+              OR visits.months_since_visit < 12
+            ) THEN 'under_care'
+            ELSE 'lost_to_follow_up'
+          END AS htn_care_state,
+
+          CASE
+            WHEN visits.months_since_visit >= 3 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+            WHEN bps.months_since_bp >= 3 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
+            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+            ELSE 'uncontrolled'
+          END AS htn_treatment_outcome_in_last_3_months,
+
+          CASE
+            WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+            WHEN bps.months_since_bp >= 2 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
+            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+            ELSE 'uncontrolled'
+          END AS htn_treatment_outcome_in_last_2_months,
+
+          CASE
+            WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
+            WHEN bps.quarters_since_bp >= 1 OR bps.quarters_since_bp IS NULL THEN 'visited_no_bp'
+            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+            ELSE 'uncontrolled'
+          END AS htn_treatment_outcome_in_quarter,
+
+          CASE
+            WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
+            WHEN (bss.months_since_bs >= 3 OR bss.months_since_bs is NULL) THEN 'visited_no_bs'
+            ELSE bss.blood_sugar_risk_state
+          END AS diabetes_treatment_outcome_in_last_3_months,
+
+          CASE
+            WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+            WHEN bss.months_since_bs >= 2 OR bss.months_since_bs IS NULL THEN 'visited_no_bs'
+            ELSE bss.blood_sugar_risk_state
+          END AS diabetes_treatment_outcome_in_last_2_months,
+
+          CASE
+            WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
+            WHEN bss.quarters_since_bs >= 1 OR bss.quarters_since_bs IS NULL THEN 'visited_no_bs'
+            ELSE bss.blood_sugar_risk_state
+          END AS diabetes_treatment_outcome_in_quarter,
+
+          (
+            current_meds.amlodipine > past_meds.amlodipine OR
+            current_meds.telmisartan > past_meds.telmisartan OR
+            current_meds.losartan > past_meds.losartan OR
+            current_meds.atenolol > past_meds.atenolol OR
+            current_meds.enalapril > past_meds.enalapril OR
+            current_meds.chlorthalidone > past_meds.chlorthalidone OR
+            current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide
+          ) AS titrated
+
+        FROM public.patients p
+        JOIN public.reporting_months cal
+          ON cal.month_date = $1
+          AND p.recorded_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
+          AND ((
+            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.recorded_at)), 'YYYY-MM'::text) <=
+            to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))
+          )
+
+        LEFT OUTER JOIN public.reporting_patient_blood_pressures bps
+          ON p.id = bps.patient_id AND cal.month = bps.month AND cal.year = bps.year
+
+        LEFT OUTER JOIN public.reporting_patient_blood_sugars bss
+          ON p.id = bss.patient_id AND cal.month = bss.month AND cal.year = bss.year
+
+        LEFT OUTER JOIN public.reporting_patient_visits visits
+          ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
+
+        LEFT OUTER JOIN public.medical_histories mh
+          ON p.id = mh.patient_id AND mh.deleted_at IS NULL
+
+        LEFT OUTER JOIN public.reporting_prescriptions current_meds
+          ON current_meds.patient_id = p.id AND cal.month_date = current_meds.month_date
+
+        LEFT OUTER JOIN public.reporting_prescriptions past_meds
+          ON past_meds.patient_id = p.id AND cal.month_date = past_meds.month_date + INTERVAL '1 month'
+
+        INNER JOIN public.reporting_facilities registration_facility
+          ON registration_facility.facility_id = p.registration_facility_id
+
+        INNER JOIN public.reporting_facilities assigned_facility
+          ON assigned_facility.facility_id = p.assigned_facility_id
+
+        WHERE p.deleted_at IS NULL;
+      END;
+      $_$;
+
 
 SET default_table_access_method = heap;
 
@@ -5357,6 +5759,23 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: simple_reporting_runs; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.simple_reporting_runs (
+    run_key uuid NOT NULL,
+    action_name character varying(255) NOT NULL,
+    target_date date,
+    start_date timestamp without time zone DEFAULT now(),
+    end_date timestamp without time zone,
+    duration_in_second numeric(18,3) GENERATED ALWAYS AS (EXTRACT(epoch FROM (end_date - start_date))) STORED,
+    action_status character varying(255),
+    sql_state character varying(255),
+    sql_error_message character varying(255)
+);
+
+
+--
 -- Name: alpha_sms_delivery_details id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -5932,6 +6351,14 @@ ALTER TABLE ONLY public.user_authentications
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: simple_reporting_runs simple_reporting_runs_pkey; Type: CONSTRAINT; Schema: simple_reporting; Owner: -
+--
+
+ALTER TABLE ONLY simple_reporting.simple_reporting_runs
+    ADD CONSTRAINT simple_reporting_runs_pkey PRIMARY KEY (run_key, action_name);
 
 
 --
@@ -7384,6 +7811,104 @@ CREATE UNIQUE INDEX user_authentications_master_users_authenticatable_uniq_index
 
 
 --
+-- Name: index_reporting_patient_states_on_age; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_age ON ONLY simple_reporting.reporting_patient_states USING btree (age);
+
+
+--
+-- Name: index_reporting_patient_states_on_gender; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_gender ON ONLY simple_reporting.reporting_patient_states USING btree (gender);
+
+
+--
+-- Name: index_reporting_patient_states_on_gender_and_age; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_states_on_gender_and_age ON ONLY simple_reporting.reporting_patient_states USING btree (gender, age);
+
+
+--
+-- Name: patient_states_assigned_block; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_assigned_block ON ONLY simple_reporting.reporting_patient_states USING btree (assigned_block_region_id);
+
+
+--
+-- Name: patient_states_assigned_district; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_assigned_district ON ONLY simple_reporting.reporting_patient_states USING btree (assigned_district_region_id);
+
+
+--
+-- Name: patient_states_assigned_facility; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_assigned_facility ON ONLY simple_reporting.reporting_patient_states USING btree (assigned_facility_region_id);
+
+
+--
+-- Name: patient_states_assigned_state; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_assigned_state ON ONLY simple_reporting.reporting_patient_states USING btree (assigned_state_region_id);
+
+
+--
+-- Name: patient_states_care_state; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_care_state ON ONLY simple_reporting.reporting_patient_states USING btree (hypertension, htn_care_state, htn_treatment_outcome_in_last_3_months);
+
+
+--
+-- Name: patient_states_month_date_assigned_facility; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_assigned_facility ON ONLY simple_reporting.reporting_patient_states USING btree (assigned_facility_id);
+
+
+--
+-- Name: patient_states_month_date_patient_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE UNIQUE INDEX patient_states_month_date_patient_id ON ONLY simple_reporting.reporting_patient_states USING btree (month_date, patient_id);
+
+
+--
+-- Name: patient_states_month_date_registration_facility_region; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_month_date_registration_facility_region ON ONLY simple_reporting.reporting_patient_states USING btree (registration_facility_region_id);
+
+
+--
+-- Name: patient_states_registration_facility; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_states_registration_facility ON ONLY simple_reporting.reporting_patient_states USING btree (registration_facility_id);
+
+
+--
+-- Name: reporting_patient_states_bp_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_bp_facility_id ON ONLY simple_reporting.reporting_patient_states USING btree (bp_facility_id);
+
+
+--
+-- Name: reporting_patient_states_titrated; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_titrated ON ONLY simple_reporting.reporting_patient_states USING btree (titrated);
+
+
+--
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7870,6 +8395,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20241204155510'),
 ('20241210092449'),
 ('20250120104431'),
-('20250327172921');
+('20250327172921'),
+('20250522105107'),
+('20250522133245')
 
 

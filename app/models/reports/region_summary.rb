@@ -6,6 +6,17 @@ module Reports
       new(regions, range: range).call
     end
 
+    def self.group_by(grouping: :month, data: nil)
+      raise "Must call RegionSummary.call before hand" unless data
+      raise "Unknown grouping" unless GROUPINGS.include?(grouping)
+      case grouping
+      when :month
+        data
+      when :quarter
+        quarterly(data)
+      end
+    end
+
     FIELDS = %i[
       adjusted_controlled_under_care
       adjusted_missed_visit_lost_to_follow_up
@@ -86,6 +97,11 @@ module Reports
       adjusted_bs_missed_visit
     ].freeze
 
+    GROUPINGS = %i[
+      month
+      quarter
+    ]
+
     attr_reader :id_field
     attr_reader :range
     attr_reader :region_type
@@ -134,5 +150,68 @@ module Reports
 
       query.where(filter)
     end
+
+    # BEGIN Grouping Functions
+    #
+    # NOTE: For these functions, the result hash must already exist. This means
+    # `.call` should have succeeded. Since Ruby is untyped, there is no innate
+    # way to enforce this; except to infer on the structure of the hash at runtime.
+
+    def self.monthly(results_hash)
+      raise("Malformed results hash") unless well_formed? results_hash
+      results_hash
+    end
+
+    def self.quarterly(results_hash, aggregated_by = :sum)
+      raise("Malformed results hash") unless well_formed? results_hash
+      case aggregated_by
+      when :sum
+        results_hash.map do |facility, months|
+          # NOTE: `months` here is a Period[]
+          aggregated = {}
+
+          months.each do |period, stats|
+            quarter = period.to_quarter_period
+            aggregated[quarter] ||= {}
+            stats.each do |attr, val|
+              if val.is_a? Numeric
+                if aggregated[quarter][attr].nil?
+                  aggregated[quarter][attr] = val
+                else
+                  aggregated[quarter][attr] += val
+                end
+              else
+                # This catches the other case where the data is either a Date or a String
+                aggregated[quarter][attr] = val
+              end
+            end
+          end
+
+          [
+            facility,
+            aggregated
+          ]
+        end.to_h
+
+      when :average
+        raise("Unimplemented")
+      else
+        raise("Unimplemented")
+      end
+    end
+
+    def self.well_formed?(results_hash)
+      # This is an effect of an old code base. Ideally, this is type-checking.
+      # But since we are building on a righ without type-checking, we have to
+      # manually do these checks.
+      results_hash.all? do |facility, period_data|
+        facility.is_a?(String) &&
+          period_data.all? do |period, _|
+            period.is_a? Period
+          end
+      end
+    end
+
+    # END Grouping Functions
   end
 end
