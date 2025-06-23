@@ -18,7 +18,7 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   def denominator
-    indicator.denominator(region)
+    target.numeric_value
   end
 
   def progress
