@@ -1,4 +1,6 @@
 class DrRai::ActionPlan < ApplicationRecord
+  include DrRai::Calculatable
+
   belongs_to :dr_rai_indicator, class_name: "DrRai::Indicator"
   belongs_to :dr_rai_target, class_name: "DrRai::Target"
   belongs_to :region
