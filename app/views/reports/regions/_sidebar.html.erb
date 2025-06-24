@@ -101,7 +101,7 @@
   <div class="action-progress-block">
     <div class="progress-options">
       <div class="progress-options-inner">
-        <button class="dots-button" targetpopover="progress-options-button">
+        <button class="dots-button">
           <svg width="4" height="4" viewBox="0 0 4 4" xmlns="http://www.w3.org/2000/svg">
             <circle cx="2" cy="2" r="2" fill="#6A6500"/>
           </svg>
@@ -113,13 +113,16 @@
           </svg>
           <%# <i class="fa-solid fa-ellipsis" style="height:10px;"></i> %>
         </button>
-        <%# <div class="popover" popover="manual" id="progressoptions">
-        <ul>
-          <li><button class="edit">Edit</button></li>
-          <hr />
-          <li><button  class="delete">Delete</button></li>
-        </ul>
-      </div> %>
+        <div
+          id="progress-options-button-1"
+          class="action-popover"
+         >
+          <ul>
+            <li><button class="edit">Edit</button></li>
+            <hr />
+            <li><button  class="delete">Delete</button></li>
+          </ul>
+        </div>
       </div>
     </div>
     <div>
