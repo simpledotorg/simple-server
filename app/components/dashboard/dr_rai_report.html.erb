@@ -3,7 +3,6 @@
     <div class="actions-header">
       <h4>Action plans</h4>
       <% quarterlies.each do |period, info| %>
-        <%# TODO: Do a JS which moves the "action-header-selected" onClick %>
         <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
       <% end %>
       <% if current_period? %>
@@ -27,7 +26,6 @@
               <%# </div> %>
           </div>
           <div>
-            <%# <h3>Call 1,000 overdue patients by <%= end_of(selected_period) %1></h3> %>
             <h3><%= action_plan.statement %></h3>
             <% if !action_plan.actions.nil? %>
               <ul>
@@ -98,16 +96,13 @@
         <button class="link-button edit">Edit</button>
         <label class="goal-input-block">
           <input type="text" placeholder="Q2 goal">
-          <%# Note that this could also be a unit. In some cases "patient" %>
           <span class="">%</span>
         </label>
-        <p class="activity-promise">Contact <span class="highlight">500</span> overdue patients by <%= end_of(selected_period) %></p>
-        <%# The activity statement is the outcome of the goal in the last period %>
+        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
         <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
-        <%# The step statement is what we plan to achieve this period %>
         <p class="step-statement">Call 500 overdue patients by Jun 30</p>
       </div>
     </div>
@@ -117,16 +112,13 @@
         <button class="link-button edit">Edit</button>
         <label class="goal-input-block">
           <input type="text" placeholder="Q2 goal">
-          <%# Note that this could also be a unit. In some cases "patient" %>
           <span class="">patients</span>
         </label>
-        <p class="activity-promise">Contact <span class="highlight">500</span> overdue patients by <%= end_of(selected_period) %></p>
-        <%# The activity statement is the outcome of the goal in the last period %>
+        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
         <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
-        <%# The step statement is what we plan to achieve this period %>
         <p class="step-statement">Call 3600 overdue patients by Jun 30</p>
       </div>
     </div>
@@ -273,11 +265,12 @@
       } else {
         inputValue = parseInt($(e.currentTarget).val())
       }
-      $(e.currentTarget)
+      const activityPromise = $(e.currentTarget)
         .closest('.goal-input-block')
         .siblings('.activity-promise')
-        .find('.highlight')
+      activityPromise.find('.highlight')
         .text(Math.round(inputValue / 100 * $('#step-2-percent').data('denominator')))
+      activityPromise.removeClass('d-none')
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
@@ -348,6 +341,9 @@
       toHide.forEach((el) => el.addClass('d-none'))
       toReveal.forEach((el) => el.removeClass('d-none'))
       $('.action-buttons-block .save-button').prop('disabled', true)
+      $('.sidepanel input').val('')
+      $('.active .activity-promise').addClass('d-none')
+      $('.sidepanel textarea').val('')
 
       // Close the offcanvas
       $('.bs-canvas-close').trigger('click')
