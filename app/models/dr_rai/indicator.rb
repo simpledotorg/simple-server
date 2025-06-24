@@ -14,6 +14,9 @@ class DrRai::Indicator < ApplicationRecord
   # best we can do technique-wise
   include DrRai::Calculatable
 
+  # There should only ever be one instance of any indicator in the db
+  validates :type, uniqueness: true
+
   has_one :target, class_name: "DrRai::Target", dependent: :destroy, foreign_key: "dr_rai_indicators_id"
   accepts_nested_attributes_for :target
 
