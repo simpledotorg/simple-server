@@ -145,7 +145,7 @@
     </div>
     <div class="action-buttons-block">
       <button class="action-button cancel-button">Discard</button>
-      <button class="action-button save-button" disabled>Save</button>
+      <button class="action-button save-button invisible">Save</button>
     </div>
   </div>
   <% else %>
@@ -245,12 +245,7 @@
       if (nextStep === 3) {
         $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
         $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
-        // FIXME: Make the styling follow the state of the button.
-        // Since there's custom CSS here, this button which starts out as
-        // disabled is styled as a primary button. Though this does not impact
-        // functionality since a disabled button cannot be clicked, it would
-        // confuse the user; thus it needs to be fixed
-        $('.action-buttons-block .save-button').prop('disabled', false)
+        $('.action-buttons-block .save-button').removeClass('invisible')
       } else {
         if (nextUI !== undefined) {
           $('#step-3').data('target-type', targetType)
@@ -340,9 +335,9 @@
       // Reset UI
       toHide.forEach((el) => el.addClass('d-none'))
       toReveal.forEach((el) => el.removeClass('d-none'))
-      $('.action-buttons-block .save-button').prop('disabled', true)
+      $('.action-buttons-block .save-button').addClass('d-none')
       $('.sidepanel input').val('')
-      $('.active .activity-promise').addClass('d-none')
+      $('.active .activity-promise').addClass('invisible')
       $('.sidepanel textarea').val('')
 
       // Close the offcanvas
