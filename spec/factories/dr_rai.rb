@@ -50,4 +50,3 @@ def contact_overdue_patients_indicator
     indicator
   end
 end
-
