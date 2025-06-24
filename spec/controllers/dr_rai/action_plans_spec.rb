@@ -73,14 +73,14 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
 
   describe "DELETE /destroy" do
     it "destroys the requested dr_rai_action_plan" do
-      action_plan = DrRai::ActionPlan.create! valid_attributes
+      DrRai::ActionPlan.create! valid_attributes
       expect {
         delete dr_rai_action_plan_url(dr_rai_action_plan)
       }.to change(DrRai::ActionPlan, :count).by(-1)
     end
 
     it "redirects to the dr_rai_action_plans list" do
-      action_plan = DrRai::ActionPlan.create! valid_attributes
+      DrRai::ActionPlan.create! valid_attributes
       delete dr_rai_action_plan_url(dr_rai_action_plan)
       expect(response).to redirect_to(dr_rai_action_plans_url)
     end

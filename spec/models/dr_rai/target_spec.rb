@@ -1,16 +1,16 @@
 require "rails_helper"
 
+INVALID_PERIODS = %w[
+  01_2025
+  1_2025
+  Q1_23
+  01-2025
+  1-2025
+  Q1-23
+]
+
 RSpec.describe DrRai::Target, type: :model do
   describe "validations:" do
-    INVALID_PERIODS = %w[
-      01_2025
-      1_2025
-      Q1_23
-      01-2025
-      1-2025
-      Q1-23
-    ]
-
     it "periods must exist" do
       new_target = DrRai::Target.new
       expect(new_target).not_to be_valid
