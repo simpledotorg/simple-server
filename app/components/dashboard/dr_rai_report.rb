@@ -10,22 +10,37 @@ class Dashboard::DrRaiReport < ApplicationComponent
   # to view, we need to do a full page refresh if we are depending on the view
   # component; a full page refresh passing in the selected quarter. We need JS
 
-  attr_reader :quarterlies
+  attr_reader :quarterlies, :indicators, :region, :action_plans
   attr_accessor :selected_period
 
-  def initialize(quarterlies, region, selected_quarter = nil)
+  def initialize(quarterlies, region_slug, selected_quarter = nil)
     @quarterlies = quarterlies
-    @region = region
+    @region = Region.find_by(slug: region_slug)
     @selected_period = if selected_quarter.nil?
-      current_period
+      Period.new(type: :quarter, value: current_period.value.to_s)
     else
       Period.new(type: :quarter, value: selected_quarter)
     end
-    @goals = {}
+    @action_plans = DrRai::ActionPlan
+      .includes(:dr_rai_target)
+      .where(
+        region: @region,
+        dr_rai_target: {period: @selected_period.value.to_s}
+      )
+    @indicators = DrRai::Indicator.all
+    # @current_denominator = quarterlies(region_entity)[@selected_period][???]
+  end
+
+  def indicator_denominator(indicator)
+    indicator.denominator(region, selected_period)
   end
 
   def current_period
     Period.current.to_quarter_period
+  end
+
+  def current_period?
+    current_period == selected_period
   end
 
   def start_of period
@@ -41,10 +56,6 @@ class Dashboard::DrRaiReport < ApplicationComponent
     candidates = ["actions-header-button"]
     candidates << "action-header-selected" if period == selected_period
     candidates.join(" ")
-  end
-
-  def period_goals
-    @goals[selected_period]
   end
 
   def human_readable thing
