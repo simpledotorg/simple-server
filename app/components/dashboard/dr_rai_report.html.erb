@@ -192,9 +192,6 @@
     })
 
     // Closing the offcanvas
-    // NOTE: When wiring this up with data, consider adding the save button
-    // here, or extracting this into a function so the save button can reuse its
-    // logic.
     $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
       var canvas, aria
       if ($(this).hasClass('bs-canvas-close')) {
@@ -225,10 +222,6 @@
     // BEGIN DR. RAI LOGIC
     // ===================
 
-    // TODO: Handle state through "step-through"
-    // Here, we should be answering the questions
-    //   - What state do we want to pass along from the frontend to the back?
-    //   - Do we want health workers to be able to recover from halfway through?
     $('.step-block').on('step-through', (e, nextUI, targetType, indicatorDenominator) => {
       const targets = ['.active', '.inactive']
       targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
@@ -281,10 +274,6 @@
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
-      // FIXME: Handle saving a goal via POST to the database.
-      // This is where we do the post call to the Rails backend and handle all
-      // possibilities which may arise from saving a goal
-
       $.ajax({
         url: `/dr_rai/action_plans`,
         type: 'POST',

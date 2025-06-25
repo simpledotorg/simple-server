@@ -8,8 +8,6 @@ def login_user
 end
 
 RSpec.describe DrRai::ActionPlansController, type: :controller do
-  # TODO: Complete this suite — DrRai::Indicators Request Spec
-
   let(:district_with_facilities) { setup_district_with_facilities }
   let(:region) { district_with_facilities[:region] }
   let(:facility_1) { district_with_facilities[:facility_1] }
