@@ -258,6 +258,11 @@
       }
     })
 
+    $('#step-2-numeric .goal-input-block input').on('blur', (e) => {
+      activityPromise.removeClass('d-none')
+      $('#dr-rai--sidebar').data('target-value', $(e.currentTarget).val())
+    })
+
     $('#step-2-percent .goal-input-block input').on('blur', (e) => {
       var inputValue
       if ($(e.currentTarget).val() === '') {
@@ -268,9 +273,11 @@
       const activityPromise = $(e.currentTarget)
         .closest('.goal-input-block')
         .siblings('.activity-promise')
+      const targetValue = Math.round(inputValue / 100 * $('#step-2-percent').data('denominator'))
       activityPromise.find('.highlight')
-        .text(Math.round(inputValue / 100 * $('#step-2-percent').data('denominator')))
+        .text(targetValue)
       activityPromise.removeClass('d-none')
+      $('#dr-rai--sidebar').data('target-value', targetValue)
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
@@ -289,7 +296,7 @@
             'region_slug': $('#dr-rai--sidebar').data('region'),
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
-            'target_value': $('.goal-input-block input').val(),
+            'target_value': $('#dr-rai--sidebar').data('target-value'),
           }
         },
         headers: {
