@@ -49,18 +49,18 @@
       <% end %>
     <% else %>
       <div class="empty-goals-block">
+        <% if current_period? %>
         <p class="empty-goals-message">
-        Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-      </p>
-      <p class="empty-goals-message">
-        No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-      </p>
-
-      <% if current_period? %>
-      <button class="empty-goals-add-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">
-        &#x2b; Add an action
-      </button>
-      <% end %>
+          Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <button class="empty-goals-add-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">
+          &#x2b; Add an action
+        </button>
+        <% else %>
+        <p class="empty-goals-message">
+          No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <% end %>
       </div>
     <% end %>
   </div>
@@ -87,7 +87,8 @@
         </ul>
       </div>
       <div class='inactive d-none'>
-        <p class="step-statement"></p>
+        <h2>Which indicator to improve?</h2>
+        <p class="step-statement mt-3"></p>
       </div>
     </div>
     <div class="step-block d-none" id="step-2-percent">
@@ -103,7 +104,9 @@
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
-        <p class="step-statement">Call 500 overdue patients by Jun 30</p>
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3"></p>
       </div>
     </div>
     <div class="step-block d-none" id="step-2-numeric">
@@ -119,7 +122,9 @@
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
-        <p class="step-statement">Call 3600 overdue patients by Jun 30</p>
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3"></p>
       </div>
     </div>
     <div class="step-block d-none" id="step-2-boolean">
@@ -129,7 +134,9 @@
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
-        <p class="step-statement">Mark as done when completed</p>
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3">Mark as done when completed</p>
       </div>
     </div>
     <div class="step-block d-none" id="step-3">
@@ -145,7 +152,7 @@
     </div>
     <div class="action-buttons-block">
       <button class="action-button cancel-button">Discard</button>
-      <button class="action-button save-button" disabled>Save</button>
+      <button class="action-button save-button invisible">Save</button>
     </div>
   </div>
   <% else %>
@@ -245,12 +252,7 @@
       if (nextStep === 3) {
         $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
         $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
-        // FIXME: Make the styling follow the state of the button.
-        // Since there's custom CSS here, this button which starts out as
-        // disabled is styled as a primary button. Though this does not impact
-        // functionality since a disabled button cannot be clicked, it would
-        // confuse the user; thus it needs to be fixed
-        $('.action-buttons-block .save-button').prop('disabled', false)
+        $('.action-buttons-block .save-button').removeClass('invisible')
       } else {
         if (nextUI !== undefined) {
           $('#step-3').data('target-type', targetType)
@@ -340,9 +342,9 @@
       // Reset UI
       toHide.forEach((el) => el.addClass('d-none'))
       toReveal.forEach((el) => el.removeClass('d-none'))
-      $('.action-buttons-block .save-button').prop('disabled', true)
+      $('.action-buttons-block .save-button').addClass('d-none')
       $('.sidepanel input').val('')
-      $('.active .activity-promise').addClass('d-none')
+      $('.active .activity-promise').addClass('invisible')
       $('.sidepanel textarea').val('')
 
       // Close the offcanvas
