@@ -18,7 +18,10 @@ class Dashboard::DrRaiReport < ApplicationComponent
         dr_rai_target: {period: @selected_period.value.to_s}
       )
     @indicators = DrRai::Indicator.all
-    # @current_denominator = quarterlies(region_entity)[@selected_period][???]
+  end
+
+  def indicator_previous_numerator(indicator)
+    indicator.numerator(region, selected_period.previous)
   end
 
   def indicator_denominator(indicator)

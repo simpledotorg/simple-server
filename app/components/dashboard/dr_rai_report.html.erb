@@ -80,7 +80,7 @@
         <%# <button class="link-button edit">Edit</button> %>
         <ul>
         <% indicators.each do |indicator| %>
-          <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>">Contact overdue patients</button></li>
+          <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>">Contact overdue patients</button></li>
         <% end %>
         </ul>
       </div>
@@ -98,7 +98,7 @@
           <span class="">%</span>
         </label>
         <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
-        <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
+      <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
@@ -116,7 +116,8 @@
           <span class="">patients</span>
         </label>
         <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
-        <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
+      <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+        <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
@@ -222,7 +223,7 @@
     // BEGIN DR. RAI LOGIC
     // ===================
 
-    $('.step-block').on('step-through', (e, nextUI, targetType, indicatorDenominator) => {
+    $('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
       targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
       $(e.currentTarget).find('.active').addClass('d-none')
@@ -230,23 +231,33 @@
       $(e.currentTarget).find('.inactive').removeClass('d-none')
       toHide.push($(e.currentTarget).find('.inactive'))
       const nextStep = parseInt(e.currentTarget.id.split('-')[1]) + 1
-      if (nextUI === undefined) {
+      $('.indicator-action').text(indicator.action)
+      $('.indicator-denominator').text(indicator.denominator)
+      $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      if (target.ui === undefined) {
         $('#step-' + nextStep).removeClass('d-none')
         toHide.push($('#step-' + nextStep))
       } else {
-        if (nextUI == 'percent') {
-          $('#step-' + nextStep + '-' + nextUI).data('denominator', indicatorDenominator)
+        if (target.ui == 'percent') {
+          var previousPercentage
+          if (indicator.previous_numerator < 1) {
+            previousPercentage = 0
+          } else {
+            previousPercentage = indicator.previous_numerator / indicator.denominator
+          }
+          $('.activity-statement .previous-percentage').text(previousPercentage)
+          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)
         }
-        $('#step-' + nextStep + '-' + nextUI).removeClass('d-none')
-        toHide.push($('#step-' + nextStep + '-' + nextUI))
+        $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
+        toHide.push($('#step-' + nextStep + '-' + target.ui))
       }
       if (nextStep === 3) {
         $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
         $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
         $('.action-buttons-block .save-button').removeClass('invisible')
       } else {
-        if (nextUI !== undefined) {
-          $('#step-3').data('target-type', targetType)
+        if (target.ui !== undefined) {
+          $('#step-3').data('target-type', target.type)
         }
       }
     })
@@ -308,9 +319,15 @@
       $(e.currentTarget)
         .closest('.step-block')
         .trigger("step-through", [
-          $(e.currentTarget).data('target-ui'),
-          $(e.currentTarget).data('target-type'),
-          $(e.currentTarget).data('indicator-denominator'),
+          {
+            'ui': $(e.currentTarget).data('target-ui'),
+            'type': $(e.currentTarget).data('target-type'),
+          },
+          {
+            'denominator': $(e.currentTarget).data('indicator-denominator'),
+            'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
+            'action': $(e.currentTarget).data('indicator-action'),
+          }
         ])
     })
 

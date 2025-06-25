@@ -39,5 +39,9 @@ module DrRai
     def denominator_key
       "overdue_patients"
     end
+
+    def action
+      "overdue patients called"
+    end
   end
 end
