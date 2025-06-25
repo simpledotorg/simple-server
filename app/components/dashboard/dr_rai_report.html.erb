@@ -13,17 +13,15 @@
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
         <div class="action-progress-block">
-          <div class="progress-options">
-            <button targetpopover="progress-options">
+          <div class="dropdown progress-options">
+            <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
-            <%# <div class="popover" popover="manual" id="progress-options"> %>
-              <%#   <ul> %>
-                <%#     <li class="edit">Edit</li> %>
-                <%#     <hr /> %>
-                <%#     <li class="delete">Delete</li> %>
-                <%#   </ul> %>
-              <%# </div> %>
+            <div class="dropdown-menu dropdown-menu-right">
+              <a class="dropdown-item" href="#">Edit</a>
+              <div class="dropdown-divider"></div>
+              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item" %>
+            </div>
           </div>
           <div>
             <h3><%= action_plan.statement %></h3>
