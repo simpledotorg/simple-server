@@ -243,7 +243,7 @@
           if (indicator.previous_numerator < 1) {
             previousPercentage = 0
           } else {
-            previousPercentage = parseFloat(indicator.previous_numerator / indicator.denominator * 100).toFixed(2)
+            previousPercentage = Math.round(indicator.previous_numerator / indicator.denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
           $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)

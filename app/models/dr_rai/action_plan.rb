@@ -27,6 +27,6 @@ class DrRai::ActionPlan < ApplicationRecord
     return 0 unless denominator.positive?
     return 100 unless numerator < denominator
 
-    (numerator.to_f / denominator * 100).round(2)
+    (numerator.to_f / denominator * 100).round
   end
 end

@@ -33,7 +33,7 @@ RSpec.describe DrRai::ActionPlan, type: :model do
         dr_rai_indicator: indicator,
         region: region,
         statement: "TODO")
-      expect(action_plan.progress).to eq((9.to_f / 20 * 100).round(2))
+      expect(action_plan.progress).to eq((9.to_f / 20 * 100))
     end
   end
 end
