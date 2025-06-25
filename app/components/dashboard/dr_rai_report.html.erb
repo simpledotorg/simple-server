@@ -3,46 +3,43 @@
     <div class="actions-header">
       <h4>Action plans</h4>
       <% quarterlies.each do |period, info| %>
-        <%# TODO: Do a JS which moves the "action-header-selected" onClick %>
         <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
       <% end %>
-      <button class="actions-header-add-action" type="button" data-toggle="canvas" data-target="#action-plan-offcanvas" aria-expanded="false" aria-controls="action-plan-offcanvas">&#x2b; Add an action</button>
+      <% if current_period? %>
+      <button class="actions-header-add-action" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
+      <% end %>
     </div>
 
-    <% if period_goals.present? %>
-      <% period_goals.each do |goal| %>
+    <% if action_plans.present? %>
+      <% action_plans.each do |action_plan| %>
         <div class="action-progress-block">
-          <div class="progress-options">
-            <button targetpopover="progress-options">
+          <div class="dropdown progress-options">
+            <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
-            <%# <div class="popover" popover="manual" id="progress-options"> %>
-              <%#   <ul> %>
-                <%#     <li class="edit">Edit</li> %>
-                <%#     <hr /> %>
-                <%#     <li class="delete">Delete</li> %>
-                <%#   </ul> %>
-              <%# </div> %>
+            <div class="dropdown-menu dropdown-menu-right">
+              <%# <a class="dropdown-item" href="#">Edit</a> %>
+              <%# <div class="dropdown-divider"></div> %>
+              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item" %>
+            </div>
           </div>
           <div>
-            <h3>Call 1,000 overdue patients by <%= end_of(selected_period) %></h3>
-          <ul>
-            <li>
-              <p>Man a stand at Holi festival event near town hall - 15th Mar</p>
-            </li>
-            <li>
-              <p>Provide phone data for overdue calling</p>
-            </li>
-            <li>
-              <p>Test Whatsapp messaging with patients that have 2 calls with no answer</p>
-            </li>
-          </ul>
+            <h3><%= action_plan.statement %></h3>
+            <% if !action_plan.actions.nil? %>
+              <ul>
+              <% action_plan.actions.lines.each do |line| %>
+                <li>
+                  <p><%= line %></p>
+                </li>
+              <% end %>
+              </ul>
+            <% end %>
           </div>
           <div class="progress-right-col">
-            <p class="progress-statement">0 of 1200 overdue patients</p>
+            <p class="progress-statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> overdue patients</p>
             <div class="progress-bar">
-              <div class="progress-bar-fill" style="width: 89%">
-                <span class="progress-number progress-number-over-88-percent">89%</span>
+              <div class="progress-bar-fill" style="width: <%= action_plan.progress %>%">
+                <span class="progress-number progress-number-over-88-percent"><%= action_plan.progress %>%</span>
               </div>
             </div>
           </div>
@@ -50,84 +47,119 @@
       <% end %>
     <% else %>
       <div class="empty-goals-block">
+        <% if current_period? %>
         <p class="empty-goals-message">
-        Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-      </p>
-      <p class="empty-goals-message">
-      No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-    </p>
-    <button class="empty-goals-add-button" type="button" data-toggle="canvas" data-target="#action-plan-offcanvas" aria-expanded="false" aria-controls="action-plan-offcanvas">
-      &#x2b; Add an action
-    </button>
+          Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <button class="empty-goals-add-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">
+          &#x2b; Add an action
+        </button>
+        <% else %>
+        <p class="empty-goals-message">
+          No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+        </p>
+        <% end %>
       </div>
     <% end %>
   </div>
 </div>
 
-<div class="sidepanel bs-canvas bs-canvas-right position-fixed bg-light h-100" tabindex="-1" id="action-plan-offcanvas">
+<div class="sidepanel bs-canvas bs-canvas-right position-fixed bg-light h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
     <button class="bs-canvas-close float-left close" aria-label="Close">
       <i class="fa-solid fa-xmark-large"></i>
     </button>
   </div>
+  <% if current_period? %>
   <div class="content">
     <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
-  <div class="step-block" id="step-1">
-    <div class="active">
-      <h2>Which indicator to improve?</h2>
-      <button class="link-button edit">Edit</button>
-      <ul>
-        <li><button class="link-button advancer">Contact overdue patients</button></li>
-        <li><button class="link-button">Increase drug stock</button></li>
-        <li><button class="link-button">Prescribe statins</button></li>
-        <li><button class="link-button">Reduce BP fudging</button></li>
-        <li><button class="link-button">Refer patients to community clinics</button></li>
-        <li><button class="link-button">Register patients</button></li>
-        <li><button class="link-button">Titrate medication for uncontrolled patients</button></li>
-        <li><button class="link-button">Treat patients to drug protocol</button></li>
-        <li><button class="link-button">Add a custom indicator</button></li>
+    <div class="step-block" id="step-1">
+      <div class="active">
+        <h2>Which indicator to improve?</h2>
+        <%# <button class="link-button edit">Edit</button> %>
+        <ul>
+        <% indicators.each do |indicator| %>
+          <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>">Contact overdue patients</button></li>
+        <% end %>
+        </ul>
+      </div>
+      <div class='inactive d-none'>
+        <h2>Which indicator to improve?</h2>
+        <p class="step-statement mt-3"></p>
+      </div>
+    </div>
+    <div class="step-block d-none" id="step-2-percent">
+      <div class='active'>
+        <h2>What is the goal?</h2>
+        <%# <button class="link-button edit">Edit</button> %>
+        <label class="goal-input-block">
+          <input type="text" placeholder="Q2 goal">
+          <span class="">%</span>
+        </label>
+        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+      <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+        <button class="next-button">Next</button>
+      </div>
+      <div class="inactive d-none">
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3"></p>
+      </div>
+    </div>
+    <div class="step-block d-none" id="step-2-numeric">
+      <div class='active'>
+        <h2>What is the goal?</h2>
+        <%# <button class="link-button edit">Edit</button> %>
+        <label class="goal-input-block">
+          <input type="text" placeholder="Q2 goal">
+          <span class="">patients</span>
+        </label>
+        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+      <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+        <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
+        <button class="next-button">Next</button>
+      </div>
+      <div class="inactive d-none">
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3"></p>
+      </div>
+    </div>
+    <div class="step-block d-none" id="step-2-boolean">
+      <div class='active'>
+        <h2>What is the goal?</h2>
+        <%# <button class="link-button edit">Edit</button> %>
+        <button class="next-button">Next</button>
+      </div>
+      <div class="inactive d-none">
+        <h2>What is the goal?</h2>
+        <button class="link-button edit">Edit</button>
+        <p class="step-statement mt-3">Mark as done when completed</p>
+      </div>
+    </div>
+    <div class="step-block d-none" id="step-3">
+      <h2>What action should be taken?</h2>
+      <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
+      <p>Common actions:</p>
+      <ul class="common-actions-list">
+        <li><button class="link-button">Allocate staff time for calling patients</button></li>
+        <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
+        <li><button class="link-button">Call 25 patients per day</button></li>
+        <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
       </ul>
     </div>
-    <div class='inactive d-none'>
-      <p class="step-statement">Contact overdue patients</p>
+    <div class="action-buttons-block">
+      <button class="action-button cancel-button">Discard</button>
+      <button class="action-button save-button invisible">Save</button>
     </div>
   </div>
-  <div class="step-block d-none" id="step-2">
-    <div class='active'>
-      <h2>What is the goal?</h2>
-      <button class="link-button edit">Edit</button>
-      <label class="goal-input-block">
-        <input type="text" placeholder="Q2 goal">
-        <%# Note that this could also be a unit. In some cases "patient" %>
-        <span class="">%</span>
-      </label>
-      <p>Contact <span class="highlight">500</span> overdue patients by <%= end_of(selected_period) %></p>
-      <%# The activity statement is the outcome of the goal in the last period %>
-      <p class="activity-statement"><span>6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
-      <button class="next-button">Next</button>
-    </div>
-    <div class="inactive d-none">
-      <%# The step statement is what we plan to achieve this period %>
-      <p class="step-statement">Call 500 overdue patients by Jun 30</p>
-    </div>
+  <% else %>
+  <div class="content" %>
+    <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
+    <p>Cannot create action plans for periods in the past</p>
   </div>
-  <div class="step-block d-none" id="step-3">
-    <h2>What action should be taken?</h2>
-    <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
-    <p>Common actions:</p>
-    <ul class="common-actions-list">
-      <li><button class="link-button">Allocate staff time for calling patients</button></li>
-      <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
-      <li><button class="link-button">Call 25 patients per day</button></li>
-      <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
-    </ul>
-  </div>
-  <div class="action-buttons-block">
-    <button class="action-button cancel-button">Cancel</button>
-    <button class="action-button save-button" disabled>Saving</button>
-  </div>
-  </div>
+  <% end %>
 </div>
 
 <script type="text/javascript" charset="utf-8">
@@ -135,6 +167,8 @@
     var bsDefaults = { offset: false, overlay: true, width: '450px' },
         bsMain = $('.bs-offset-main'),
         bsOverlay = $('.bs-canvas-overlay')
+
+    const toHide = [], toReveal = []
 
     // Opening the offcanvas
     $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function() {
@@ -159,9 +193,6 @@
     })
 
     // Closing the offcanvas
-    // NOTE: When wiring this up with data, consider adding the save button
-    // here, or extracting this into a function so the save button can reuse its
-    // logic.
     $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
       var canvas, aria
       if ($(this).hasClass('bs-canvas-close')) {
@@ -188,33 +219,147 @@
       return false
     })
 
-    // TODO: Handle state through "step-through"
-    // Here, we should be answering the questions
-    //   - What state do we want to pass along from the frontend to the back?
-    //   - Do we want health workers to be able to recover from halfway through?
-    $('.step-block').on('step-through', (e) => {
+    // ===================
+    // BEGIN DR. RAI LOGIC
+    // ===================
+
+    $('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
       targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
-      const nextStep = e.currentTarget.id.replace(/\d+$/, (idx) => parseInt(idx) + 1)
-      $('#' + nextStep).toggleClass('d-none')
-      if (nextStep === 'step-3') {
-        // FIXME: Make the styling follow the state of the button.
-        // Since there's custom CSS here, this button which starts out as
-        // disabled is styled as a primary button. Though this does not impact
-        // functionality since a disabled button cannot be clicked, it would
-        // confuse the user; thus it needs to be fixed
-        $('.action-buttons-block .save-button').prop('disabled', false)
+      $(e.currentTarget).find('.active').addClass('d-none')
+      toReveal.push($(e.currentTarget).find('.active'))
+      $(e.currentTarget).find('.inactive').removeClass('d-none')
+      toHide.push($(e.currentTarget).find('.inactive'))
+      const nextStep = parseInt(e.currentTarget.id.split('-')[1]) + 1
+      $('.indicator-action').text(indicator.action)
+      $('.indicator-denominator').text(indicator.denominator)
+      $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      if (target.ui === undefined) {
+        $('#step-' + nextStep).removeClass('d-none')
+        toHide.push($('#step-' + nextStep))
+      } else {
+        if (target.ui == 'percent') {
+          var previousPercentage
+          if (indicator.previous_numerator < 1) {
+            previousPercentage = 0
+          } else {
+            previousPercentage = Math.round(indicator.previous_numerator / indicator.denominator * 100)
+          }
+          $('.activity-statement .previous-percentage').text(previousPercentage)
+          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)
+        }
+        $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
+        toHide.push($('#step-' + nextStep + '-' + target.ui))
+      }
+      if (nextStep === 3) {
+        $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
+        $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
+        $('.action-buttons-block .save-button').removeClass('invisible')
+      } else {
+        if (target.ui !== undefined) {
+          $('#step-3').data('target-type', target.type)
+        }
       }
     })
 
+    $('#step-2-numeric .goal-input-block input').on('blur', (e) => {
+      activityPromise.removeClass('d-none')
+      $('#dr-rai--sidebar').data('target-value', $(e.currentTarget).val())
+    })
+
+    $('#step-2-percent .goal-input-block input').on('blur', (e) => {
+      var inputValue
+      if ($(e.currentTarget).val() === '') {
+        inputValue = 0
+      } else {
+        inputValue = parseInt($(e.currentTarget).val())
+      }
+      const activityPromise = $(e.currentTarget)
+        .closest('.goal-input-block')
+        .siblings('.activity-promise')
+      const targetValue = Math.round(inputValue / 100 * $('#step-2-percent').data('denominator'))
+      activityPromise.find('.highlight')
+        .text(targetValue)
+      activityPromise.removeClass('d-none')
+      $('#dr-rai--sidebar').data('target-value', targetValue)
+    })
+
     $('.action-buttons-block .save-button').on('click', (e) => {
-      // FIXME: Handle saving a goal via POST to the database.
-      // This is where we do the post call to the Rails backend and handle all
-      // possibilities which may arise from saving a goal
+      $.ajax({
+        url: `/dr_rai/action_plans`,
+        type: 'POST',
+        data: {
+          'dr_rai_action_plan': {
+            'indicator_id': $('#dr-rai--sidebar').data('indicator-id'),
+            'period': $('#dr-rai--sidebar').data('period'),
+            'actions': $('.custom-actions-list').val(),
+            'region_slug': $('#dr-rai--sidebar').data('region'),
+            'statement': $('#dr-rai--sidebar').data('statement'),
+            'target_type': $('#dr-rai--sidebar').data('target-type'),
+            'target_value': $('#dr-rai--sidebar').data('target-value'),
+          }
+        },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: (response) => {
+          window.location.reload()
+        },
+        error: (xhr) => {
+          // Technically there should be no error case. IF an entry is entered
+          // wrongly, removing the entry and redoing it costs little
+        }
+      });
+
     })
 
     $('.step-block .next-button, .advancer').on('click', (e) => {
-      $(e.currentTarget).closest('.step-block').trigger("step-through")
+      $('#dr-rai--sidebar').data('indicator-id', $(e.currentTarget).data('indicator-id'))
+      $('#dr-rai--sidebar').data('target-type', $(e.currentTarget).data('target-type'))
+      $(e.currentTarget)
+        .closest('.step-block')
+        .trigger("step-through", [
+          {
+            'ui': $(e.currentTarget).data('target-ui'),
+            'type': $(e.currentTarget).data('target-type'),
+          },
+          {
+            'denominator': $(e.currentTarget).data('indicator-denominator'),
+            'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
+            'action': $(e.currentTarget).data('indicator-action'),
+          }
+        ])
+    })
+
+    $('.link-button.advancer').on('click', (e) => {
+      $(e.currentTarget)
+        .closest(".active")
+        .siblings('.inactive')
+        .children('.step-statement')
+        .first()
+        .text($(e.currentTarget).text())
+    })
+
+    $('.cancel-button').on('click', (e) => {
+      // Clear "state"
+      $('#dr-rai--sidebar').removeData([
+        'indicator-id',
+        'period',
+        'region_slug',
+        'statement',
+        'actions',
+      ])
+
+      // Reset UI
+      toHide.forEach((el) => el.addClass('d-none'))
+      toReveal.forEach((el) => el.removeClass('d-none'))
+      $('.action-buttons-block .save-button').addClass('d-none')
+      $('.sidepanel input').val('')
+      $('.active .activity-promise').addClass('invisible')
+      $('.sidepanel textarea').val('')
+
+      // Close the offcanvas
+      $('.bs-canvas-close').trigger('click')
     })
 
     // A poor man's state update
