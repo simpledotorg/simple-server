@@ -3,7 +3,8 @@ require "rails_helper"
 RSpec.describe Dashboard::DrRaiReport, type: :component do
   let(:quarter1) { Period.new(type: :quarter, value: "Q1-2024") }
   let(:quarter2) { Period.new(type: :quarter, value: "Q2-2024") }
-  let(:region) { "test-region" }
+  let(:district_with_facilities) { setup_district_with_facilities }
+  let(:region) { district_with_facilities[:region].slug }
   let(:quarterlies) do
     {
       quarter1 => {},
