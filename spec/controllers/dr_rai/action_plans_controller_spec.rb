@@ -57,9 +57,9 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
         }.to change(DrRai::ActionPlan, :count).by(1)
       end
 
-      it "redirects to the created dr_rai_action_plan" do
+      it "redirects to the facility" do
         post :create, params: {dr_rai_action_plan: valid_attributes}
-        expect(response).to redirect_to(reports_regions_path(report_scope: "facility", id: valid_attributes[:region_slug]))
+        expect(response).to redirect_to(reports_region_path(report_scope: "facility", id: valid_attributes[:region_slug]))
       end
     end
 
@@ -80,10 +80,10 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
       }.to change(DrRai::ActionPlan, :count).by(-1)
     end
 
-    it "redirects to the dr_rai_action_plans list" do
+    it "redirects to the region" do
       dr_rai_action_plan = create :action_plan, region: region, dr_rai_indicator: contact_overdue_patients_indicator
       delete :destroy, params: {id: dr_rai_action_plan.to_param}
-      expect(response).to redirect_to(reports_regions_path(report_scope: "facility", id: dr_rai_action_plan.region.slug))
+      expect(response).to redirect_to(reports_region_path(report_scope: "facility", id: dr_rai_action_plan.region.slug))
     end
   end
 end

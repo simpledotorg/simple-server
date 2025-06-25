@@ -15,7 +15,7 @@ class DrRai::ActionPlansController < AdminController
 
     respond_to do |format|
       if @dr_rai_action_plan.save
-        format.html { redirect_to reports_regions_path(report_scope: "facility", id: dr_rai_action_plan_params[:region_slug]) }
+        format.html { redirect_to reports_region_path(report_scope: "facility", id: dr_rai_action_plan_params[:region_slug]) }
       else
         format.html { render json: @dr_rai_action_plan.errors, status: :unprocessable_entity }
       end
@@ -27,7 +27,7 @@ class DrRai::ActionPlansController < AdminController
     @dr_rai_action_plan.discard
 
     respond_to do |format|
-      format.html { redirect_to reports_regions_path(report_scope: "facility", id: @dr_rai_action_plan.region.slug) }
+      format.html { redirect_to reports_region_path(report_scope: "facility", id: @dr_rai_action_plan.region.slug) }
       format.json { head :no_content }
     end
   end
