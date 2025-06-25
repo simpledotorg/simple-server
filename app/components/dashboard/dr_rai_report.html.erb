@@ -18,8 +18,8 @@
               <i class="fa-solid fa-ellipsis"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="#">Edit</a>
-              <div class="dropdown-divider"></div>
+              <%# <a class="dropdown-item" href="#">Edit</a> %>
+              <%# <div class="dropdown-divider"></div> %>
               <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item" %>
             </div>
           </div>
@@ -77,7 +77,7 @@
     <div class="step-block" id="step-1">
       <div class="active">
         <h2>Which indicator to improve?</h2>
-        <button class="link-button edit">Edit</button>
+        <%# <button class="link-button edit">Edit</button> %>
         <ul>
         <% indicators.each do |indicator| %>
           <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>">Contact overdue patients</button></li>
@@ -92,7 +92,7 @@
     <div class="step-block d-none" id="step-2-percent">
       <div class='active'>
         <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
+        <%# <button class="link-button edit">Edit</button> %>
         <label class="goal-input-block">
           <input type="text" placeholder="Q2 goal">
           <span class="">%</span>
@@ -110,7 +110,7 @@
     <div class="step-block d-none" id="step-2-numeric">
       <div class='active'>
         <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
+        <%# <button class="link-button edit">Edit</button> %>
         <label class="goal-input-block">
           <input type="text" placeholder="Q2 goal">
           <span class="">patients</span>
@@ -128,7 +128,7 @@
     <div class="step-block d-none" id="step-2-boolean">
       <div class='active'>
         <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
+        <%# <button class="link-button edit">Edit</button> %>
         <button class="next-button">Next</button>
       </div>
       <div class="inactive d-none">
