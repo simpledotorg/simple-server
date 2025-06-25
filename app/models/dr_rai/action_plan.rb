@@ -25,6 +25,7 @@ class DrRai::ActionPlan < ApplicationRecord
 
   def progress
     return 0 unless denominator.positive?
+    return 100 unless numerator < denominator
 
     (numerator.to_f / denominator * 100).round(2)
   end
