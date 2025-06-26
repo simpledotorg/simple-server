@@ -12,7 +12,7 @@
 
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
-        <div class="action-progress-block">
+        <div class="action-progress-block my-2">
           <div class="dropdown progress-options">
             <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
@@ -64,7 +64,7 @@
   </div>
 </div>
 
-<div class="sidepanel bs-canvas bs-canvas-right position-fixed bg-light h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
+<div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
     <button class="bs-canvas-close float-left close" aria-label="Close">
