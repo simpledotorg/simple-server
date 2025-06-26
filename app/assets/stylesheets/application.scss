@@ -1196,7 +1196,7 @@ span.inactive {
     display: block;
     font-family: $font-condensed;
     color: grey;
-    span {
+    .highlight {
       font-weight: 800;
     }
   }
