@@ -261,12 +261,12 @@
       }
     })
 
-    $('#step-2-numeric .goal-input-block input').on('blur', (e) => {
+    $('#step-2-numeric .goal-input-block input').on('blur keypress', (e) => {
       activityPromise.removeClass('d-none')
       $('#dr-rai--sidebar').data('target-value', $(e.currentTarget).val())
     })
 
-    $('#step-2-percent .goal-input-block input').on('blur', (e) => {
+    $('#step-2-percent .goal-input-block input').on('blur keypress', (e) => {
       var inputValue
       if ($(e.currentTarget).val() === '') {
         inputValue = 0
