@@ -27,6 +27,9 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       facility_1_contactable_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_patient_with_out_phone = create(:patient, :hypertension, :without_phone_number, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_patient_removed_from_list = create(:patient, :hypertension, :removed_from_overdue_list, assigned_facility: facility_1, recorded_at: five_months_ago)
+      facility_1_contactable_patients.each do |the_patient|
+        create(:appointment, patient: the_patient, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
+      end
       create(:call_result, patient: facility_1_contactable_patients.first, device_created_at: this_month + 15.days)
       create(:call_result, patient: facility_1_contactable_patients.second, device_created_at: this_month + 1.days)
       create(:call_result, patient: facility_1_contactable_patients.third, device_created_at: two_months_ago + 1.days)
@@ -38,9 +41,11 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       indicator = DrRai::ContactOverduePatientsIndicator.new
 
       period = Period.new(type: :quarter, value: this_month.to_period.to_quarter_period.value.to_s)
-      facility_1_results = indicator.numerator(region, period)
+      facility_1_numerator = indicator.numerator(region, period)
+      facility_1_denominator = indicator.denominator(region, period)
 
-      expect(facility_1_results).to eq 4
+      expect(facility_1_numerator).to eq 4
+      expect(facility_1_denominator).to eq 4
     end
   end
 end
