@@ -46,8 +46,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
 
   def classes_for_period period
     raise "#{period} is not a Period" unless period.is_a? Period
-    candidates = ["actions-header-button"]
-    candidates << "action-header-selected" if period == selected_period
+    candidates = ["period-button"]
+    candidates << "selected" if period == selected_period
     candidates.join(" ")
   end
 
