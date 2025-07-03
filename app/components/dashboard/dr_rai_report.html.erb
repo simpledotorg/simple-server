@@ -71,17 +71,20 @@
         </div>
         <div class='inactive d-none'>
           <h2>Which indicator to improve?</h2>
-          <p class="step-statement mt-3"></p>
+          <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-percent">
         <div class='active'>
           <h2>What is the goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
-          <label class="goal-input-block">
-            <input type="text" placeholder="Q2 goal">
-            <span class="">%</span>
-          </label>
+          <div class="goal-input-block">
+            <label class="goal-label-block">
+              <input type="text" placeholder="Q2 goal">
+              <span class="">%</span>
+            </label>
+            <p class="missing-input-warning">Enter a goal value</p>
+          </div>
           <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
@@ -89,17 +92,20 @@
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
           <button class="link-button edit">Edit</button>
-          <p class="step-statement mt-3"></p>
+          <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-numeric">
         <div class='active'>
           <h2>What is the goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
-          <label class="goal-input-block">
-            <input type="text" placeholder="Q2 goal">
-            <span class="">patients</span>
-          </label>
+          <div class="goal-input-block">
+            <label class="goal-label-block patients">
+              <input type="text" placeholder="Q2 goal">
+              <span class="">patients</span>
+            </label>
+            <p class="missing-input-warning">Enter a goal value</p>
+          </div>
           <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
@@ -108,7 +114,7 @@
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
           <button class="link-button edit">Edit</button>
-          <p class="step-statement mt-3"></p>
+          <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-boolean">
@@ -120,7 +126,7 @@
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
           <button class="link-button edit">Edit</button>
-          <p class="step-statement mt-3">Mark as done when completed</p>
+          <p class="step-statement">Mark as done when completed</p>
         </div>
       </div>
       <div class="step-block d-none" id="step-3">
