@@ -134,13 +134,6 @@
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
         <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
-        <p>Common actions:</p>
-        <ul class="common-actions-list">
-          <li><button class="link-button">Allocate staff time for calling patients</button></li>
-          <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
-          <li><button class="link-button">Call 25 patients per day</button></li>
-          <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
-        </ul>
       </div>
       <div class="action-buttons-block">
         <button class="action-button cancel-button">Cancel</button>
@@ -362,15 +355,6 @@
 
       // Close the offcanvas
       $('.bs-canvas-close').trigger('click')
-    })
-
-    // A poor man's state update
-    $('.common-actions-list .link-button').on('click', (e) => {
-      if ($('.custom-actions-list').val() === '') {
-        $('.custom-actions-list').val($(e.currentTarget).text())
-      } else {
-        $('.custom-actions-list').val($('.custom-actions-list').val() + "\n" + $(e.currentTarget).text())
-      }
     })
   });
 </script>
