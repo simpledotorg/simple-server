@@ -247,6 +247,11 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
+
+        around do |example|
+          Timecop.freeze("June 22 2022 22:22 GMT") { example.run }
+        end
+
         it "visit cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
@@ -388,6 +393,11 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
+
+        around do |example|
+          Timecop.freeze("June 22 2022 22:22 GMT") { example.run }
+        end
+
         it "visit cutoffs for a year ago" do
           # For any provided date in June in the local timezone, the LTFU BP cutoff is the end of June 30 of the
           # previous year in the local timezone.
