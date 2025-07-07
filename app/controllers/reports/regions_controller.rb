@@ -473,6 +473,7 @@ class Reports::RegionsController < AdminController
   def quarterly_region_summary(repository, region)
     data = repository.schema.send(:region_summaries)
     quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
-    quarterlies[region]
+    cut_off = Period.new(type: :quarter, value: 1.year.ago.to_period.to_quarter_period.value.to_s)
+    quarterlies[region].select { |k, _| k > cut_off }
   end
 end
