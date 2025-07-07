@@ -85,7 +85,7 @@
               <input type="text" placeholder="Q2 goal">
               <span class="">%</span>
             </label>
-            <p class="missing-input-warning">Enter a goal value</p>
+            <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
@@ -106,7 +106,7 @@
               <input type="text" placeholder="Q2 goal">
               <span class="">patients</span>
             </label>
-            <p class="missing-input-warning">Enter a goal value</p>
+            <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
@@ -157,7 +157,8 @@
 <script type="text/javascript" charset="utf-8">
   jQuery(document).ready(function($) {
     var bsDefaults = { offset: false, overlay: true, width: '450px' },
-        bsMain = $('.bs-offset-main')
+        bsMain = $('.bs-offset-main'),
+        bsOverlay = $('.bs-canvas-overlay')
 
     const toHide = [], toReveal = []
 
@@ -184,7 +185,7 @@
     })
 
     // Closing the offcanvas
-    $('.bs-canvas-close').on('click', function() {
+    $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
       var canvas, aria
       if ($(this).hasClass('bs-canvas-close')) {
         canvas = $(this).closest('.bs-canvas')
@@ -216,15 +217,30 @@
 
     $('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
-      targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
-      $(e.currentTarget).find('.active').addClass('d-none')
-      toReveal.push($(e.currentTarget).find('.active'))
-      $(e.currentTarget).find('.inactive').removeClass('d-none')
-      toHide.push($(e.currentTarget).find('.inactive'))
+      const goalInputBlock = $(e.currentTarget).find('.goal-input-block')
+      if (goalInputBlock.length > 0 && goalInputBlock.find('input').val() === '') {
+        goalInputBlock.find('.missing-input-warning').removeClass('d-none')
+        return
+      } else {
+        targets.forEach((target) => $(e.currentTarget).find(target).toggleClass('d-none'))
+        $(e.currentTarget).find('.active').addClass('d-none')
+        toReveal.push($(e.currentTarget).find('.active'))
+        $(e.currentTarget).find('.inactive').removeClass('d-none')
+        toHide.push($(e.currentTarget).find('.inactive'))
+      }
       const nextStep = parseInt(e.currentTarget.id.split('-')[1]) + 1
       $('.indicator-action').text(indicator.action)
       $('.indicator-denominator').text(indicator.denominator)
       $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      if (nextStep === 3) {
+        $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
+        $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
+        $('.action-buttons-block .save-button').removeClass('invisible')
+      } else {
+        if (target.ui !== undefined) {
+          $('#step-3').data('target-type', target.type)
+        }
+      }
       if (target.ui === undefined) {
         $('#step-' + nextStep).removeClass('d-none')
         toHide.push($('#step-' + nextStep))
@@ -242,15 +258,10 @@
         $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
         toHide.push($('#step-' + nextStep + '-' + target.ui))
       }
-      if (nextStep === 3) {
-        $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
-        $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
-        $('.action-buttons-block .save-button').removeClass('invisible')
-      } else {
-        if (target.ui !== undefined) {
-          $('#step-3').data('target-type', target.type)
-        }
-      }
+    })
+
+    $('.goal-input-block input').on('blur keypress', (e) => {
+      $('.missing-input-warning').addClass('d-none')
     })
 
     $('#step-2-numeric .goal-input-block input').on('blur keypress', (e) => {
@@ -346,7 +357,7 @@
       toReveal.forEach((el) => el.removeClass('d-none'))
       $('.action-buttons-block .save-button').addClass('invisible')
       $('.sidepanel input').val('')
-      $('.active .activity-promise').addClass('invisible')
+      $('.active .activity-promise').addClass('d-none')
       $('.sidepanel textarea').val('')
 
       // Close the offcanvas
