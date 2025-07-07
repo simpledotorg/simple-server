@@ -47,7 +47,9 @@
       </p>
     <% end %>
   </div>
-  <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
+  <% if current_period? %>
+    <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
+  <% end %>
 </div>
 <div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
