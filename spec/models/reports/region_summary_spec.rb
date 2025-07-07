@@ -1552,6 +1552,10 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         Reports::FacilityState].freeze
     }
 
+    around do |example|
+      Timecop.freeze("June 25 2025 15:12 GMT") { example.run }
+    end
+
     it "knows and validates a well formed hash" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
       create(:appointment, patient: facility_1_patients.third, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
