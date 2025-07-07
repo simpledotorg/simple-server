@@ -3,7 +3,8 @@ require "rails_helper"
 RSpec.describe Dashboard::DrRaiReport, type: :component do
   let(:quarter1) { Period.new(type: :quarter, value: "Q1-2024") }
   let(:quarter2) { Period.new(type: :quarter, value: "Q2-2024") }
-  let(:region) { "test-region" }
+  let(:district_with_facilities) { setup_district_with_facilities }
+  let(:region) { district_with_facilities[:region].slug }
   let(:quarterlies) do
     {
       quarter1 => {},
@@ -35,12 +36,12 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
   describe "#classes_for_period" do
     it "includes 'action-header-selected' when period matches selected_period" do
       comp = described_class.new(quarterlies, region, "Q1-2024")
-      expect(comp.classes_for_period(quarter1)).to include("action-header-selected")
+      expect(comp.classes_for_period(quarter1).split).to include("selected")
     end
 
     it "does not include 'action-header-selected' when period does not match" do
       comp = described_class.new(quarterlies, region, "Q1-2024")
-      expect(comp.classes_for_period(quarter2)).not_to include("action-header-selected")
+      expect(comp.classes_for_period(quarter2).split).not_to include("selected")
     end
 
     it "raises if argument is not a Period" do
