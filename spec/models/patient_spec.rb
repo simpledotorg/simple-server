@@ -247,7 +247,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-
         around do |example|
           Timecop.freeze("June 22 2022 22:22 GMT") { example.run }
         end
@@ -393,7 +392,6 @@ describe Patient, type: :model do
       end
 
       describe "timezone-specific boundaries" do
-
         around do |example|
           Timecop.freeze("June 22 2022 22:22 GMT") { example.run }
         end
