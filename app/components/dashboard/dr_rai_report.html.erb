@@ -1,69 +1,54 @@
+<h4 class="mt-5" style="margin-bottom: 0px;">Action plans</h4>
 <div id="dr-rai--progress">
-  <div class="actions-block">
-    <div class="actions-header">
-      <h4>Action plans</h4>
-      <% quarterlies.each do |period, info| %>
-        <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
-      <% end %>
-      <% if current_period? %>
-      <button class="actions-header-add-action" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
-      <% end %>
-    </div>
-
+  <div class="actions-periods-navigation">
+    <% quarterlies.each do |period, info| %>
+      <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
+    <% end %>
+  </div>
+  <div class="actions-block <%= 'empty' unless action_plans.present? %>">
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
-        <div class="action-progress-block my-2">
-          <div class="dropdown progress-options">
+        <div class="action-card">
+          <div class="dropdown options">
             <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
               <i class="fa-solid fa-ellipsis"></i>
             </button>
             <div class="dropdown-menu dropdown-menu-right">
-              <%# <a class="dropdown-item" href="#">Edit</a> %>
-              <%# <div class="dropdown-divider"></div> %>
-              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item" %>
+              <a class="dropdown-item edit" href="#">Edit</a>
+              <div class="dropdown-divider"></div>
+              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
             </div>
           </div>
           <div>
             <h3><%= action_plan.statement %></h3>
             <% if !action_plan.actions.nil? %>
               <ul>
-              <% action_plan.actions.lines.each do |line| %>
-                <li>
-                  <p><%= line %></p>
-                </li>
-              <% end %>
+                <% action_plan.actions.lines.each do |line| %>
+                  <li>
+                    <p><%= line %></p>
+                  </li>
+                <% end %>
               </ul>
             <% end %>
           </div>
-          <div class="progress-right-col">
-            <p class="progress-statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> overdue patients</p>
-            <div class="progress-bar">
-              <div class="progress-bar-fill" style="width: <%= action_plan.progress %>%">
-                <span class="progress-number progress-number-over-88-percent"><%= action_plan.progress %>%</span>
+          <div class="action-progress">
+            <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> overdue patients</p>
+            <div class="bar">
+              <div class="bar-fill" style="width: <%= action_plan.progress %>%">
+                <span class="bar-number over-88-percent"><%= action_plan.progress %>%</span>
               </div>
             </div>
           </div>
         </div>
       <% end %>
     <% else %>
-      <div class="empty-goals-block">
-        <% if current_period? %>
-        <p class="empty-goals-message">
-          Add an action for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-        </p>
-        <button class="empty-goals-add-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">
-          &#x2b; Add an action
-        </button>
-        <% else %>
-        <p class="empty-goals-message">
-          No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
-        </p>
-        <% end %>
-      </div>
+      <p class="empty-message">
+        No actions for <%= start_of(selected_period) %> to <%= end_of(selected_period) %>
+      </p>
     <% end %>
   </div>
+  <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
 </div>
-
 <div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
@@ -72,96 +57,101 @@
     </button>
   </div>
   <% if current_period? %>
-  <div class="content">
-    <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
-    <div class="step-block" id="step-1">
-      <div class="active">
-        <h2>Which indicator to improve?</h2>
-        <%# <button class="link-button edit">Edit</button> %>
-        <ul>
-        <% indicators.each do |indicator| %>
-          <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>">Contact overdue patients</button></li>
-        <% end %>
+    <div class="content">
+      <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
+      <div class="step-block" id="step-1">
+        <div class="active">
+          <h2>Which indicator to improve?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <ul>
+            <% indicators.each do |indicator| %>
+              <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>">Contact overdue patients</button></li>
+            <% end %>
+          </ul>
+        </div>
+        <div class='inactive d-none'>
+          <h2>Which indicator to improve?</h2>
+          <p class="step-statement"></p>
+        </div>
+      </div>
+      <div class="step-block d-none" id="step-2-percent">
+        <div class='active'>
+          <h2>What is the goal?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <div class="goal-input-block">
+            <label class="goal-label-block">
+              <input type="text" placeholder="Q2 goal">
+              <span class="">%</span>
+            </label>
+            <p class="missing-input-warning">Enter a goal value</p>
+          </div>
+          <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <button class="next-button">Next</button>
+        </div>
+        <div class="inactive d-none">
+          <h2>What is the goal?</h2>
+          <button class="link-button edit">Edit</button>
+          <p class="step-statement"></p>
+        </div>
+      </div>
+      <div class="step-block d-none" id="step-2-numeric">
+        <div class='active'>
+          <h2>What is the goal?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <div class="goal-input-block">
+            <label class="goal-label-block patients">
+              <input type="text" placeholder="Q2 goal">
+              <span class="">patients</span>
+            </label>
+            <p class="missing-input-warning">Enter a goal value</p>
+          </div>
+          <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
+          <button class="next-button">Next</button>
+        </div>
+        <div class="inactive d-none">
+          <h2>What is the goal?</h2>
+          <button class="link-button edit">Edit</button>
+          <p class="step-statement"></p>
+        </div>
+      </div>
+      <div class="step-block d-none" id="step-2-boolean">
+        <div class='active'>
+          <h2>What is the goal?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <button class="next-button">Next</button>
+        </div>
+        <div class="inactive d-none">
+          <h2>What is the goal?</h2>
+          <button class="link-button edit">Edit</button>
+          <p class="step-statement">Mark as done when completed</p>
+        </div>
+      </div>
+      <div class="step-block d-none" id="step-3">
+        <h2>What action should be taken?</h2>
+        <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
+        <p>Common actions:</p>
+        <ul class="common-actions-list">
+          <li><button class="link-button">Allocate staff time for calling patients</button></li>
+          <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
+          <li><button class="link-button">Call 25 patients per day</button></li>
+          <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
         </ul>
       </div>
-      <div class='inactive d-none'>
-        <h2>Which indicator to improve?</h2>
-        <p class="step-statement mt-3"></p>
+      <div class="action-buttons-block">
+        <button class="action-button cancel-button">Cancel</button>
+        <button class="action-button save-button invisible">Create</button>
       </div>
     </div>
-    <div class="step-block d-none" id="step-2-percent">
-      <div class='active'>
-        <h2>What is the goal?</h2>
-        <%# <button class="link-button edit">Edit</button> %>
-        <label class="goal-input-block">
-          <input type="text" placeholder="Q2 goal">
-          <span class="">%</span>
-        </label>
-        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
-      <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
-        <button class="next-button">Next</button>
-      </div>
-      <div class="inactive d-none">
-        <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
-        <p class="step-statement mt-3"></p>
-      </div>
-    </div>
-    <div class="step-block d-none" id="step-2-numeric">
-      <div class='active'>
-        <h2>What is the goal?</h2>
-        <%# <button class="link-button edit">Edit</button> %>
-        <label class="goal-input-block">
-          <input type="text" placeholder="Q2 goal">
-          <span class="">patients</span>
-        </label>
-        <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
-      <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
-        <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
-        <button class="next-button">Next</button>
-      </div>
-      <div class="inactive d-none">
-        <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
-        <p class="step-statement mt-3"></p>
-      </div>
-    </div>
-    <div class="step-block d-none" id="step-2-boolean">
-      <div class='active'>
-        <h2>What is the goal?</h2>
-        <%# <button class="link-button edit">Edit</button> %>
-        <button class="next-button">Next</button>
-      </div>
-      <div class="inactive d-none">
-        <h2>What is the goal?</h2>
-        <button class="link-button edit">Edit</button>
-        <p class="step-statement mt-3">Mark as done when completed</p>
-      </div>
-    </div>
-    <div class="step-block d-none" id="step-3">
-      <h2>What action should be taken?</h2>
-      <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
-      <p>Common actions:</p>
-      <ul class="common-actions-list">
-        <li><button class="link-button">Allocate staff time for calling patients</button></li>
-        <li><button class="link-button">Train staff on SOP for calling overdue patients</button></li>
-        <li><button class="link-button">Call 25 patients per day</button></li>
-        <li classs="clicked"><button class="link-button ">Record call outcomes in Simple</button></li>
-      </ul>
-    </div>
-    <div class="action-buttons-block">
-      <button class="action-button cancel-button">Cancel</button>
-      <button class="action-button save-button invisible">Save</button>
-    </div>
-  </div>
   <% else %>
-  <div class="content" %>
-    <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
-    <p>Cannot create action plans for periods in the past</p>
-  </div>
+    <div class="content" %>
+      <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
+      <p>Cannot create action plans for periods in the past</p>
+    </div>
   <% end %>
 </div>
-
 <script type="text/javascript" charset="utf-8">
   jQuery(document).ready(function($) {
     var bsDefaults = { offset: false, overlay: true, width: '450px' },
