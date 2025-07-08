@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  namespace :dr_rai do
+    resources :action_plans, only: [:create, :destroy]
+  end
   resources :home
 
   devise_scope :email_authentication do
