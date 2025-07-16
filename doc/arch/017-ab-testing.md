@@ -74,6 +74,6 @@ We partially tested the A/B framework by sending medication reminders to patient
 
 While debugging the covid notifications, we found that our daily notifications window on production was was only one hour per day. As a result, when whatsapp messages failed, the sms retry was often not sent the same day. We expanded the delivery window and moved it from the afternoon to the morning because most clinics close early in the afternoon and we don't want to direct patient's to closed clinics.
 
-Areas of concern include the additional strain on our background queue and the difficulty of debugging background jobs. We have limited visibility into the health of our notifications system. We added extensive logging, datadog dashboards, and a metabase dashboard to mitigate these limitations.
+Areas of concern include the additional strain on our background queue and the difficulty of debugging background jobs. We have limited visibility into the health of our notifications system. We added extensive logging, and a metabase dashboard to mitigate these limitations.
 
 Developers will be responsible for scheduling and monitoring. See `doc/wiki/running-ab-experiments.md`
