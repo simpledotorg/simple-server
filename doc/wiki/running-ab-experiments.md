@@ -45,8 +45,6 @@
 - a developer with production access should be assigned to monitor the patient selection and notification sending process. That developer should:
   - monitor sentry for errors
   - monitor the notifications metabase dashboard
-  - monitor the datadog notifications module dashboard: https://app.datadoghq.com/logs?query=%40module%3Anotifications&cols=core_host%2Ccore_service&index=%2A&messageDisplay=inline&stream_sort=desc
-  - monitor the datadog notifications metrics dashboard: https://app.datadoghq.com/dashboard/2gr-37g-7sh?from_ts=1627496327194&to_ts=1628101127194&live=true
 
 ## Experiment cleanup:
 - the experiment runner jobs in the scheduler will change the experiment status to "complete" after the end date has passed. This will not prevent scheduled notifications from being sent.

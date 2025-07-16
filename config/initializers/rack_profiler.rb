@@ -1,5 +1,4 @@
-# Only use mini profiler if we _don't_ have Datadog turned on
-if ENV["RACK_MINI_PROFILER"] && !ENV["DATADOG_ENABLED"]
+if ENV["RACK_MINI_PROFILER"]
   Rails.logger.info "Initializing rack-mini-profiler"
   require "stackprof"
   require "memory_profiler"

@@ -50,7 +50,6 @@ Sidekiq.configure_server do |config|
 
   config.on(:shutdown) do
     PrometheusExporter::Client.default.stop(wait_timeout_seconds: 10)
-    Statsd.instance.close
   end
 
   config.client_middleware do |chain|
@@ -59,7 +58,6 @@ Sidekiq.configure_server do |config|
 
   config.server_middleware do |chain|
     chain.add SidekiqMiddleware::SetLocalTimeZone
-    chain.add SidekiqMiddleware::FlushMetrics
     chain.add SidekiqUniqueJobs::Middleware::Server
   end
 

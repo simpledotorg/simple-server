@@ -33,7 +33,7 @@ module Reports
         exception: e
       }
 
-      trace("patient_days", "Reports::DrugStockCalculation#patient_days", error_info)
+      Rails.logger.error "patient_days -- Reports::DrugStockCalculation#patient_days -- #{error_info}"
 
       {patient_days: "error"}
     end
@@ -61,7 +61,7 @@ module Reports
         exception: e
       }
 
-      trace("consumption", "Reports::DrugStockCalculation#consumption", error_info)
+      Rails.logger.error "consumption -- Reports::DrugStockCalculation#consumption -- #{error_info}"
 
       {consumption: "error"}
     end
@@ -111,7 +111,7 @@ module Reports
         exception: e
       }
 
-      trace("consumption_calculation", "Reports::DrugStockCalculation#consumption_calculation", error_info)
+      Rails.logger.error "consumption_calculation -- Reports::DrugStockCalculation#consumption_calculation -- #{error_info}"
 
       {consumed: "error"}
     end
@@ -177,12 +177,6 @@ module Reports
 
     memoize def previous_month_in_stock_by_rxnorm_code
       drug_attribute_sum_by_rxnorm_code(@previous_drug_stocks, :in_stock)
-    end
-
-    def trace(name, resource, error_info)
-      Datadog::Tracing.trace(name, resource: resource) do |span|
-        error_info.each { |tag, value| span.set_tag(tag.to_s, value.to_s) }
-      end
     end
   end
 end
