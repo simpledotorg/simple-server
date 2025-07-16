@@ -61,7 +61,7 @@ class Webview::DrugStocksController < ApplicationController
   end
 
   def login(user)
-    RequestStore.store[:current_user] = user.to_datadog_hash
+    RequestStore.store[:current_user] = user.to_kv_hash
     user.mark_as_logged_in if user.has_never_logged_in?
     @current_user = user
   end

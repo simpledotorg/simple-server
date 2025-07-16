@@ -93,7 +93,7 @@ class APIController < ApplicationController
   def authenticate
     authenticate_or_request_with_http_token do |token, _options|
       if ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
-        RequestStore.store[:current_user] = current_user.to_datadog_hash
+        RequestStore.store[:current_user] = current_user.to_kv_hash
         current_user.mark_as_logged_in if current_user.has_never_logged_in?
         true
       end
