@@ -5,8 +5,7 @@ class Notification < ApplicationRecord
   belongs_to :reminder_template, class_name: "Experimentation::ReminderTemplate", optional: true
   has_many :communications
 
-  # A common logger for all notification related things - adding the top level module tag here will
-  # make things easy to scan for in Datadog.
+  # A common logger for all notification related things
   def self.logger(extra_fields = {})
     fields = {module: :notifications}.merge(extra_fields)
     Rails.logger.child(fields)

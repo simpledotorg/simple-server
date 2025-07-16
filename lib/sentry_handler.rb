@@ -4,11 +4,12 @@
 # Example usage:
 #
 # class MyService
-# . prepend SentryHandler
+#   prepend SentryHandler
 #
 #   def call
-# .   # do things
-# . end
+#     # do things
+#   end
+# end
 module SentryHandler
   def call
     super
