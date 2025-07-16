@@ -18,6 +18,11 @@ class ApplicationController < ActionController::Base
     Groupdate.time_zone = "UTC"
   end
 
+  def current_enabled_features
+    @current_enabled_features ||= Flipper.features.select { |feature| feature.enabled?(current_admin) }.map(&:name)
+  end
+  helper_method :current_enabled_features
+
   private
 
   # Send a user to the admins index after sending invitations
