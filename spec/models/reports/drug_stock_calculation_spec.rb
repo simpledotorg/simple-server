@@ -187,7 +187,7 @@ RSpec.describe Reports::DrugStockCalculation, type: :model do
       expect(result).to eq(patient_days: "error")
     end
 
-    it "reports error to datadog" do
+    it "reports patient_days error" do
       result = described_class.new(
         state: state,
         protocol_drugs: protocol_drugs,
