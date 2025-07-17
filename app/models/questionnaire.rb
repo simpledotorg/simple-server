@@ -73,7 +73,7 @@ class Questionnaire < ApplicationRecord
     return sub_layout unless text
     return sub_layout if text.empty?
 
-    translation = if text.split('.').last == "empty"
+    translation = if text.split(".").last == "empty"
       ""
     else
       I18n.t!(text)
