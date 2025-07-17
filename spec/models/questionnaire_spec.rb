@@ -99,7 +99,7 @@ RSpec.describe Questionnaire, type: :model do
          ]},
         {"text" => "test_translations.test_string"},
         {"text" => ""},
-        {"text" => "empty"}
+        {"text" => "test_translations.empty"}
       ]}
 
       localized_layout = {"item" => [
