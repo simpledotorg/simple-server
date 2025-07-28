@@ -2,7 +2,7 @@
 module DrRai
   class TitrationQuery
 
-    attr_reader :results
+    attr_reader :results, :db_results
 
     include IndicatorFunction
 
@@ -12,8 +12,8 @@ module DrRai
 
     def call
       debugger
-      @presults = ApplicationRecord.connection.exec_query(query_string)
-      # transform @presults
+      @db_results = ApplicationRecord.connection.exec_query(query_string)
+      transform @db_results
     end
 
     def valid_structure? db_result
@@ -36,7 +36,7 @@ module DrRai
 
       # Group by month_date as period
       # Group by facility_name
-      @presults.rows.each do |db_row|
+      db_results.rows.each do |db_row|
         # Legend
         # 0. facility_name
         # 1. uncontrolled
@@ -45,14 +45,37 @@ module DrRai
         # 4. percent_titrated
         # 5. month_date
 
-        the_period = the_period_for(month_date)
+        facility_name = db_row[0]
+        uncontrolled = db_row[1]
+        titrated = db_row[2]
+        not_titrated = db_row[3]
+        percent_titrated = db_row[4]
+        the_period = Period.quarter(db_row[5])
 
-        if result.has_key? db_row[5]
-          result[db_row[5]]
+        titration_data = {
+          uncontrolled: uncontrolled,
+          titrated: titrated,
+          not_titrated: not_titrated,
+          percent_titrated: percent_titrated,
+        }
+
+        if result.has_key? the_period
+          if result[the_period].has_key?(facility_name)
+            result[the_period][facility_name][:uncontrolled] += uncontrolled
+            result[the_period][facility_name][:titrated] += titrated
+            result[the_period][facility_name][:not_titrated] += not_titrated
+            result[the_period][facility_name][:percent_titrated] += percent_titrated
+          else
+            result[the_period][facility_name] = titration_data
+          end
         else
-          result[db_row[5]] = {}
+          result[the_period] = {
+            facility_name => titration_data
+          }
         end
       end
+
+      result
     end
 
     # Get the quarter period for some month date
@@ -84,7 +107,7 @@ module DrRai
 
     def query_string
       "select 1 + 1 as summation"
-   end
+    end
 
     def __query_string
       <<~SQL
@@ -225,16 +248,5 @@ module DrRai
         ORDER BY facility_name, month_date;
       SQL
     end
-
-    # def monthly_drugs
-    #   Patient.joins(<<~JOINER
-    #   LEFT OUTER JOIN
-    #     reporting_months cal
-    #   ON
-    #     to_char(p.recorded_at AT TIME ZONE 'utc' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM') <= cal.month_string
-    #   JOINER
-    #   )
-    # end
   end
 end
-
