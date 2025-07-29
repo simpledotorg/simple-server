@@ -59,18 +59,18 @@ module DrRai
           percent_titrated: percent_titrated,
         }
 
-        if result.has_key? the_period
-          if result[the_period].has_key?(facility_name)
-            result[the_period][facility_name][:uncontrolled] += uncontrolled
-            result[the_period][facility_name][:titrated] += titrated
-            result[the_period][facility_name][:not_titrated] += not_titrated
-            result[the_period][facility_name][:percent_titrated] += percent_titrated
+        if result.has_key? facility_name
+          if result[facility_name].has_key?(the_period)
+            result[facility_name][the_period][:uncontrolled] += uncontrolled
+            result[facility_name][the_period][:titrated] += titrated
+            result[facility_name][the_period][:not_titrated] += not_titrated
+            result[facility_name][the_period][:percent_titrated] += percent_titrated
           else
-            result[the_period][facility_name] = titration_data
+            result[facility_name][the_period] = titration_data
           end
         else
-          result[the_period] = {
-            facility_name => titration_data
+          result[facility_name] = {
+            the_period => titration_data
           }
         end
       end

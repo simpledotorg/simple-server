@@ -39,8 +39,8 @@ describe DrRai::TitrationQuery do
       # Addisalem Primary Hospital, 120, 14, 106, 11.67, May 1 2025
       # to
       # {
-      #   <Period value: "Q2-2025">: {
-      #     "Addisalem Primary Hospital": {
+      #   "Addisalem Primary Hospital": {
+      #     <Period value: "Q2-2025">: {
       #       uncontrolled: 120,
       #       titrated: 14,
       #       not_titrated: 106,
@@ -50,9 +50,12 @@ describe DrRai::TitrationQuery do
       query = described_class.new(region)
       allow(query).to receive(:db_results).and_return(valid_db_result)
       actual = query.transform!
-      expect(actual.size).to eq 1
-      period = Period.quarter("May 1, 2025")
-      expect(actual[period].size).to eq 4
+      expect(actual.size).to eq 4 # four different facilities from dataset
+      expect(actual.keys).to all(be_a(String))
+      facility = actual.keys.first
+      expect(actual[facility].size).to eq 1
+      period = actual[facility].keys.first
+      expect(actual[facility][period].keys).to contain_exactly(*%i[uncontrolled titrated not_titrated percent_titrated])
     end
   end
 end
