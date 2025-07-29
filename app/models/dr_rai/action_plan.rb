@@ -29,4 +29,8 @@ class DrRai::ActionPlan < ApplicationRecord
 
     (numerator.to_f / denominator * 100).round
   end
+
+  def unit
+    indicator.unit
+  end
 end

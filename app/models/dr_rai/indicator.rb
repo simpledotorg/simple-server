@@ -28,4 +28,12 @@ class DrRai::Indicator < ApplicationRecord
   def period
     Period.new(type: :quarter, value: target.period)
   end
+
+  def target_type
+    DrRai::Target::TYPES[target_type_frontend]
+  end
+
+  def action
+    [unit, action_passive].join(" ")
+  end
 end

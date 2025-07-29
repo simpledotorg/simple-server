@@ -24,10 +24,6 @@ module DrRai
       end.to_h
     end
 
-    def target_type
-      "DrRai::PercentageTarget"
-    end
-
     def target_type_frontend
       "percent"
     end
@@ -40,8 +36,16 @@ module DrRai
       "overdue_patients"
     end
 
-    def action
-      "overdue patients called"
+    def unit
+      "overdue patients"
+    end
+
+    def action_passive
+      "called"
+    end
+
+    def action_active
+      "Contact"
     end
   end
 end
