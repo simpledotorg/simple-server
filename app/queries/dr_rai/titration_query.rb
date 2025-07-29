@@ -106,10 +106,6 @@ module DrRai
     end
 
     def query_string
-      "select 1 + 1 as summation"
-    end
-
-    def __query_string
       <<~SQL
         with monthly_drugs as (SELECT p.id as patient_id,
           p.month_date,
