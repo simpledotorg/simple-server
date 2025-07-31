@@ -35,6 +35,5 @@ module DrRai
     def unit
       "patients"
     end
-    end
   end
 end
