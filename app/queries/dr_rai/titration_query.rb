@@ -11,9 +11,8 @@ module DrRai
     end
 
     def call
-      debugger
       @db_results = ApplicationRecord.connection.exec_query(query_string)
-      transform @db_results
+      transform!
     end
 
     def valid_structure? db_result

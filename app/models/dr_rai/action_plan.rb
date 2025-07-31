@@ -24,7 +24,7 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   def progress
-    return 0 unless denominator.positive?
+    return 0 if unprocessible?
     return 100 unless numerator < denominator
 
     (numerator.to_f / denominator * 100).round
@@ -32,5 +32,12 @@ class DrRai::ActionPlan < ApplicationRecord
 
   def unit
     indicator.unit
+  end
+
+  private
+
+  def unprocessible?
+    denominator.negative? ||
+      numerator.nil?
   end
 end

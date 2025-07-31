@@ -1,5 +1,10 @@
 module DrRai
   class TitrationIndicator < Indicator
+    def datasource(region)
+      @query ||= TitrationQuery.new(region).call
+      @query[region.name]
+    end
+
     def display_name
       "Titration"
     end
@@ -26,14 +31,6 @@ module DrRai
 
     def unit
       "patients"
-    end
-
-    def denominator(region, the_period = period)
-      100
-    end
-
-    def numerator(region, the_period = period)
-      89
     end
   end
 end

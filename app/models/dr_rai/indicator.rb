@@ -33,6 +33,26 @@ class DrRai::Indicator < ApplicationRecord
     DrRai::Target::TYPES[target_type_frontend]
   end
 
+  def numerator(region, the_period = period)
+    numerators(region)[the_period]
+  end
+
+  def denominator(region, the_period = period)
+    denominators(region)[the_period]
+  end
+
+  def numerators(region)
+    datasource(region).map do |t, data|
+      [t, data[numerator_key]]
+    end.to_h
+  end
+
+  def denominators(region)
+    datasource(region).map do |t, data|
+      [t, data[denominator_key]]
+    end.to_h
+  end
+
   def action
     [unit, action_passive].join(" ")
   end
