@@ -1,6 +1,9 @@
 # Titration Indicator Function
 module DrRai
   class TitrationQuery
+    include BustCache
+
+    CACHE_VERSION = 2
 
     attr_reader :results, :db_results
 
@@ -11,6 +14,12 @@ module DrRai
     end
 
     def call
+      Rails.cache.fetch(cache_key, expires_in: 1.day, force: bust_cache?) do
+        _call
+      end
+    end
+
+    def _call
       @db_results = ApplicationRecord.connection.exec_query(query_string)
       transform!
     end
@@ -85,6 +94,16 @@ module DrRai
     end
 
     private
+
+    def cache_key
+      [
+        self.class.name,
+        @region.slug,
+        begins_at,
+        ends_at,
+        CACHE_VERSION
+      ].join("/")
+    end
 
     def begins_at
       @from unless @from.nil?

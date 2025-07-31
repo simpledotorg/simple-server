@@ -1,6 +1,9 @@
 module DrRai
   class TitrationIndicator < Indicator
+    attr_reader :region
+
     def datasource(region)
+      @region = region
       @query ||= TitrationQuery.new(region).call
       @query[region.name]
     end
@@ -31,6 +34,13 @@ module DrRai
 
     def unit
       "patients"
+    end
+
+    def cache_key
+      [
+        self.class.name,
+
+      ].join("/")
     end
   end
 end
