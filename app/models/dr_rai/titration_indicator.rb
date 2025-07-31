@@ -35,12 +35,6 @@ module DrRai
     def unit
       "patients"
     end
-
-    def cache_key
-      [
-        self.class.name,
-
-      ].join("/")
     end
   end
 end

@@ -64,7 +64,7 @@ module DrRai
           uncontrolled: uncontrolled,
           titrated: titrated,
           not_titrated: not_titrated,
-          percent_titrated: percent_titrated,
+          percent_titrated: percent_titrated
         }
 
         if result.has_key? facility_name
@@ -120,7 +120,7 @@ module DrRai
     def facilities
       [@region.slug].map do |slug|
         ActiveRecord::Base.connection.quote(slug)
-      end.join(' ')
+      end.join(" ")
     end
 
     def query_string
