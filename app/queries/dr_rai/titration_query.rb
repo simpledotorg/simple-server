@@ -123,6 +123,19 @@ module DrRai
       end.join(" ")
     end
 
+    def country_filter
+      case CountryConfig.current[:name]
+      when "Ethiopia"
+        "AND reporting_patient_states.assigned_facility_slug NOT LIKE '%non-rtsl%'"
+      when "Bangladesh"
+        "AND reporting_patient_states.assigned_organization_slug = 'nhf'"
+      when "Sri Lanka"
+        "AND reporting_patient_states.assigned_organization_slug = 'sri-lanka-organization'"
+      else
+        raise "Unsupported country"
+      end
+    end
+
     def query_string
       <<~SQL
         with monthly_drugs as (SELECT p.id as patient_id,
@@ -175,7 +188,7 @@ module DrRai
         join reporting_patient_states on reporting_patient_states.patient_id = current_month.patient_id and reporting_patient_states.month_date = current_month.month_date
         left outer join monthly_drugs previous_month on current_month.patient_id = previous_month.patient_id and current_month.actual_name = previous_month.actual_name and current_month.month_date = previous_month.month_date + '1 month'::interval
         where reporting_patient_states.month_date between timestamp '#{begins_at}' and timestamp '#{ends_at}'
-        AND reporting_patient_states.assigned_facility_slug NOT LIKE '%non-rtsl%'
+        #{country_filter}
         ),
 
         monthly_patient_wise_titration as (
