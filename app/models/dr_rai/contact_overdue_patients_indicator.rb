@@ -31,5 +31,9 @@ module DrRai
     def action_active
       "Contact"
     end
+
+    def is_supported?(region)
+      true
+    end
   end
 end

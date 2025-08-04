@@ -17,7 +17,14 @@ class Dashboard::DrRaiReport < ApplicationComponent
         region: @region,
         dr_rai_target: {period: @selected_period.value.to_s}
       )
-    @indicators = DrRai::Indicator.all
+    @indicators = custom_indicators
+  end
+
+  def custom_indicators
+    return [] unless region.source_type == "Facility"
+    DrRai::Indicator.all.filter do |indicator|
+      indicator.is_supported?(region)
+    end
   end
 
   def indicator_previous_numerator(indicator)
