@@ -39,11 +39,11 @@ module DrRai
     def is_supported?(region)
       case CountryConfig.current[:name]
       when "Bangladesh"
-        region.path.split('.').include?("nhf")
+        region.path.split(".").include?("nhf")
       when "Ethiopia"
-        region.path.split('.').none? { |level| level.include?("non_rtsl") }
+        region.path.split(".").none? { |level| level.include?("non_rtsl") }
       when "Sri Lanka"
-        region.path.split('.').include?("sri_lanka_organization")
+        region.path.split(".").include?("sri_lanka_organization")
       else
         false
       end
