@@ -32,7 +32,7 @@
             <% end %>
           </div>
           <div class="action-progress">
-            <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> overdue patients</p>
+          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
             <div class="bar">
               <div class="bar-fill" style="width: <%= action_plan.progress %>%">
                 <span class="bar-number over-88-percent"><%= action_plan.progress %>%</span>
@@ -67,7 +67,7 @@
           <%# <button class="link-button edit">Edit</button> %>
           <ul>
             <% indicators.each do |indicator| %>
-              <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>">Contact overdue patients</button></li>
+              <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>" data-indicator-action-active="<%= indicator.action_active %>" data-indicator-action-passive="<%= indicator.action_passive %>" data-indicator-unit="<%= indicator.unit %>"><%= indicator.display_name %></button></li>
             <% end %>
           </ul>
         </div>
@@ -87,7 +87,7 @@
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
-          <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+          <p class="activity-promise d-none"><span class="active-action"></span> <span class="highlight target-number">500</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
@@ -108,9 +108,8 @@
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
-          <p class="activity-promise d-none">Contact <span class="highlight target-number">500</span> overdue patients by <%= end_of(selected_period) %></p>
+          <p class="activity-promise d-none"><span class="active-action"></span> <span class="highlight target-number">500</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
-          <p class="activity-statement"><span class="highlight">6%</span> overdue patients called (600 of 10,000) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
@@ -225,6 +224,9 @@
       $('.indicator-action').text(indicator.action)
       $('.indicator-denominator').text(indicator.denominator)
       $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      $('.active-action').text(indicator.active_action)
+      $('.passive-passion').text(indicator.passive_passion)
+      $('.indicator-unit').text(indicator.unit)
       if (nextStep === 3) {
         $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
         $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
@@ -322,6 +324,9 @@
             'denominator': $(e.currentTarget).data('indicator-denominator'),
             'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
             'action': $(e.currentTarget).data('indicator-action'),
+            'passive_action': $(e.currentTarget).data('indicator-action-passive'),
+            'active_action': $(e.currentTarget).data('indicator-action-active'),
+            'unit': $(e.currentTarget).data('indicator-unit'),
           }
         ])
     })
