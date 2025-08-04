@@ -3,7 +3,9 @@ module DrRai
     attr_reader :region
 
     def datasource(region)
-      nil
+      @region = region
+      @query ||= StatinsQuery.new(region).call
+      @query[region.name]
     end
 
     def display_name
@@ -32,6 +34,14 @@ module DrRai
 
     def action_active
       "Prescribe statins for"
+    end
+
+    def percentage
+      raise "Unimplemented"
+    end
+
+    def is_supported?(region)
+      true
     end
   end
 end

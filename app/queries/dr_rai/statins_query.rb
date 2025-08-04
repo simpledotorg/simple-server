@@ -67,24 +67,17 @@ module DrRai
       [
         self.class.name,
         @region.slug,
-        begins_at,
-        ends_at,
+        time_window.to_s + "months",
         CACHE_VERSION
       ].join("/")
     end
 
-    def query_string
-      <<~SQL
-        select 1 + 1 as summation
-      SQL
-    end
-
     def time_window
-      if from.nil? || to.nil?
+      if @from.nil? || @to.nil?
         return 12
       end
 
-      result = (to.year * 12 + to.month) - (to.year * 12 + to.month)
+      result = (@to.year * 12 + @to.month) - (@from.year * 12 + @from.month)
 
       # Cap this to 18 months for performant query
       [result, 18].min
@@ -96,7 +89,24 @@ module DrRai
       end.join(" ")
     end
 
-    def __query_string
+    def supported_country_org
+      if Organization.count == 1
+        return Organization.first.slug
+      end
+
+      case CountryConfig.current[:name]
+      when "Ethiopia"
+        "ethiopian-hypertension-control-initiative"
+      when "Bangladesh"
+        "nhf"
+      when "Sri Lanka"
+        "sri-lanka-organization"
+      else
+        ""
+      end
+    end
+
+    def query_string
       <<~SQL
         with latest_visits as (
           select
@@ -136,7 +146,7 @@ module DrRai
           from
             facilities
           where
-            facilities.slug in (#{ facilities })
+            facilities.slug in (#{facilities})
         ), rps_with_age_on_month_date__org_wide as (
           select
             case
@@ -169,8 +179,8 @@ module DrRai
           where
             1 = 1
             and rps.htn_care_state = 'under_care'
-            and rps.assigned_organization_slug = 'ethiopian-hypertension-control-initiative'
-            and month_date > now() - '#{ time_window } months'::interval
+            and rps.assigned_organization_slug = '#{supported_country_org}'
+            and month_date > now() - '#{time_window} months'::interval
         ), rps_with_age_on_month_date as (
           select
             case
@@ -205,8 +215,8 @@ module DrRai
           where
             1 = 1
             and rps.htn_care_state = 'under_care'
-            and rps.assigned_organization_slug = 'ethiopian-hypertension-control-initiative'
-            and month_date > now() - '#{time_window } months'::interval
+            and rps.assigned_organization_slug = '#{supported_country_org}'
+            and month_date > now() - '#{time_window} months'::interval
         ), diabetes_patient_under_care__org_wide as (
           select
             *
