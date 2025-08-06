@@ -1,10 +1,12 @@
 <h4 class="mt-5" style="margin-bottom: 0px;">Action plans</h4>
 <div id="dr-rai--progress">
-  <div class="actions-periods-navigation">
-    <% quarterlies.each do |period, info| %>
-      <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
-    <% end %>
-  </div>
+  <% unless is_lite_version? %>
+    <div class="actions-periods-navigation">
+      <% quarterlies.each do |period, info| %>
+        <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
+      <% end %>
+    </div>
+  <% end %>
   <div class="actions-block <%= 'empty' unless action_plans.present? %>">
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
@@ -47,10 +49,11 @@
       </p>
     <% end %>
   </div>
-  <% if current_period? %>
+  <% if current_period? && !is_lite_version? %>
     <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
   <% end %>
 </div>
+<% unless is_lite_version? %>
 <div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
@@ -363,3 +366,4 @@
     })
   });
 </script>
+<% end %>
