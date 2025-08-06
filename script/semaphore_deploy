@@ -17,7 +17,7 @@ echo "Beginning deploy of $SEMAPHORE_GIT_SHA to $deploy_target..."
 source ~/.toolbox/toolbox
 
 export DD_PROFILING_NO_EXTENSION=true
-sem-version ruby 2.7.4
+sem-version ruby 2.7.8
 cache restore
 yarn install
 bundle config set deployment 'true'

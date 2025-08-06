@@ -107,13 +107,13 @@ bin/docker-down
 If the included `bin/setup` script fails for some reason, you can also manually
 set up the application step by step. You can do so as follows.
 
-First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.3.22, so that is also hardcoded below.
+First, you need to [install ruby](https://www.ruby-lang.org/en/documentation/installation). It is recommended to use [rbenv](https://github.com/rbenv/rbenv) to manage ruby versions. Note that we currently use Bundler version 2.4.22, so that is also hardcoded below.
 
 Next, [install NodeJS v18.11.0](https://nodejs.org/en/) using [nvm](https://github.com/nvm-sh/nvm).
 
 ```bash
-gem install bundler -v 2.3.22
-bundle _2.3.22_ install
+gem install bundler -v 2.4.22
+bundle _2.4.22_ install
 brew install nvm
 nvm install 18.11.0
 rake yarn:install

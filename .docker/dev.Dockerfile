@@ -1,7 +1,7 @@
 # Dockerfile development version
-FROM ruby:2.7.4
+FROM ruby:2.7.8
 
-ENV BUNDLE_VERSION 2.3.22
+ENV BUNDLE_VERSION 2.4.22
 ENV EDITOR vim
 
 ## Install dependencies
@@ -11,7 +11,7 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.lis
 RUN apt-get update && apt-get install -y --no-install-recommends yarn
 # Redis and Postgres
 RUN apt-get update && apt-get install -y redis-server postgresql-client jq
-# Node
+# Node  
 RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN apt-get update && apt-get install -y --no-install-recommends nodejs
 # Install vim
@@ -22,7 +22,6 @@ ENV INSTALL_PATH /opt/app
 RUN mkdir -p $INSTALL_PATH
 WORKDIR $INSTALL_PATH
 
-# Copy application files
 COPY . .
 
 # Install gems
