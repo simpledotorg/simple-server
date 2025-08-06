@@ -11,16 +11,18 @@
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
         <div class="action-card">
-          <div class="dropdown options">
-            <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="fa-solid fa-ellipsis"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item edit" href="#">Edit</a>
-              <div class="dropdown-divider"></div>
-              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
+          <% unless is_lite_version? %>
+            <div class="dropdown options">
+              <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item edit" href="#">Edit</a>
+                <div class="dropdown-divider"></div>
+                <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
+              </div>
             </div>
-          </div>
+          <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
             <% if !action_plan.actions.nil? %>
