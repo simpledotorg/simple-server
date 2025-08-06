@@ -13,10 +13,14 @@
     <title>
       <%= raw t("analytics.page_title") %>
     </title>
+    <%= inline_stylesheet("dr_rai.css") %>
     <%= inline_stylesheet("user_analytics.css") %>
   </head>
   <body>
     <div id="home-page">
+      <% if Flipper.enabled?(:dr_rai_reports) && Flipper.enabled?(:dr_rai_progress) && @region.facility_region? %>
+        <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter], true) %>
+      <% end %>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
           <%= t("progress_tab.registrations_and_follow_ups_card.title") %>
