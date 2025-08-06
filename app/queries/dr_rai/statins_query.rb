@@ -36,13 +36,13 @@ module DrRai
 
         internal_data = {
           eligible_statins_patients: eligible_statins_patients,
-          patients_prescribed_statins: patients_prescribed_statins,
+          patients_prescribed_statins: patients_prescribed_statins
           # percentage_statin_patients: percentage_statin_patients
         }
 
         if result.has_key? facility_name
           if result[facility_name].has_key? the_period
-            result[facility_name][the_period].merge!(internal_data) { | _, old, new| old + new }
+            result[facility_name][the_period].merge!(internal_data) { |_, old, new| old + new }
           else
             result[facility_name][the_period] = internal_data
           end
