@@ -132,7 +132,7 @@
 - id: 26a810f2-dcd6-480f-ac32-44d4f2e0b951
   name: Amlodipine
   composition:
-  dosage: 2.5 mgx
+  dosage: 2.5 mg
   frequency: one_per_day
   rxnorm_code: '329527'
   drug_category: hypertension_ccb
