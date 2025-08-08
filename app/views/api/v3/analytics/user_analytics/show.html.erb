@@ -9,17 +9,23 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <title>
       <%= raw t("analytics.page_title") %>
     </title>
-    <%= inline_stylesheet("dr_rai.css") %>
     <%= inline_stylesheet("user_analytics.css") %>
+    <%= inline_stylesheet("dr_rai.css") %>
   </head>
   <body>
     <div id="home-page">
       <% if Flipper.enabled?(:dr_rai_reports) && Flipper.enabled?(:dr_rai_progress) && @region.facility_region? %>
-        <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter], true) %>
+        <div class="mb-8px p-16px bgc-white bs-card">
+          <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
+            Action plan <%# add translation string %>
+          </h1>
+          <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter], true) %>
+        </div>
       <% end %>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-16px fw-bold fs-24px c-black">

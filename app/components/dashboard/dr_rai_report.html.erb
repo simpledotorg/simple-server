@@ -1,4 +1,6 @@
+<% unless is_lite_version? %>
 <h4 class="mt-5" style="margin-bottom: 0px;">Action plans</h4>
+<% end %>
 <div id="dr-rai--progress">
   <% unless is_lite_version? %>
     <div class="actions-periods-navigation">
@@ -7,10 +9,10 @@
       <% end %>
     </div>
   <% end %>
-  <div class="actions-block <%= 'empty' unless action_plans.present? %>">
+  <div class="actions-block<%= ' empty' unless action_plans.present? %>">
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
-        <div class="action-card">
+        <div class="action-card bs-border-box<%= ' progress-tab' if is_lite_version? %>">
           <% unless is_lite_version? %>
             <div class="dropdown options">
               <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
@@ -39,7 +41,7 @@
           <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
             <div class="bar">
               <div class="bar-fill" style="width: <%= action_plan.progress %>%">
-                <span class="bar-number over-88-percent"><%= action_plan.progress %>%</span>
+                <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
               </div>
             </div>
           </div>
