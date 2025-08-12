@@ -70,14 +70,6 @@ class Dashboard::DrRaiReport < ApplicationComponent
     @lite
   end
 
-  def show_progress_bar?(action_plan)
-    if is_lite_version?
-      action_plan.progress > 1
-    else
-      true
-    end
-  end
-
   private
 
   def human_readable_period period
