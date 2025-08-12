@@ -1,24 +1,30 @@
+<% unless is_lite_version? %>
 <h4 class="mt-5" style="margin-bottom: 0px;">Action plans</h4>
+<% end %>
 <div id="dr-rai--progress">
-  <div class="actions-periods-navigation">
-    <% quarterlies.each do |period, info| %>
-      <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
-    <% end %>
-  </div>
-  <div class="actions-block <%= 'empty' unless action_plans.present? %>">
+  <% unless is_lite_version? %>
+    <div class="actions-periods-navigation">
+      <% quarterlies.each do |period, info| %>
+        <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
+      <% end %>
+    </div>
+  <% end %>
+  <div class="actions-block<%= ' empty' unless action_plans.present? %>">
     <% if action_plans.present? %>
       <% action_plans.each do |action_plan| %>
-        <div class="action-card">
-          <div class="dropdown options">
-            <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="fa-solid fa-ellipsis"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item edit" href="#">Edit</a>
-              <div class="dropdown-divider"></div>
-              <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
+        <div class="action-card bs-border-box<%= ' progress-tab' if is_lite_version? %>">
+          <% unless is_lite_version? %>
+            <div class="dropdown options">
+              <button class="" type="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa-solid fa-ellipsis"></i>
+              </button>
+              <div class="dropdown-menu dropdown-menu-right">
+                <a class="dropdown-item edit" href="#">Edit</a>
+                <div class="dropdown-divider"></div>
+                <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
+              </div>
             </div>
-          </div>
+          <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
             <% if !action_plan.actions.nil? %>
@@ -31,14 +37,16 @@
               </ul>
             <% end %>
           </div>
+          <% if show_progress_bar?(action_plan) %>
           <div class="action-progress">
-          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
+            <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
             <div class="bar">
               <div class="bar-fill" style="width: <%= action_plan.progress %>%">
-                <span class="bar-number over-88-percent"><%= action_plan.progress %>%</span>
+                <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
               </div>
             </div>
           </div>
+          <% end %>
         </div>
       <% end %>
     <% else %>
@@ -47,10 +55,11 @@
       </p>
     <% end %>
   </div>
-  <% if current_period? %>
+  <% if current_period? && !is_lite_version? %>
     <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
   <% end %>
 </div>
+<% unless is_lite_version? %>
 <div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
@@ -363,3 +372,4 @@
     })
   });
 </script>
+<% end %>

@@ -3,7 +3,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
   attr_reader :quarterlies, :indicators, :region, :action_plans
   attr_accessor :selected_period
 
-  def initialize(quarterlies, region_slug, selected_quarter = nil)
+  def initialize(quarterlies, region_slug, selected_quarter = nil, lite = false)
+    @lite = lite
     @quarterlies = quarterlies
     @region = Region.find_by(slug: region_slug)
     @selected_period = if selected_quarter.nil?
@@ -62,6 +63,18 @@ class Dashboard::DrRaiReport < ApplicationComponent
     case thing
     when Period
       human_readable_period thing
+    end
+  end
+
+  def is_lite_version?
+    @lite
+  end
+
+  def show_progress_bar?(action_plan)
+    if is_lite_version?
+      action_plan.progress > 1
+    else
+      true
     end
   end
 
