@@ -37,14 +37,16 @@
               </ul>
             <% end %>
           </div>
+          <% if show_progress_bar?(action_plan) %>
           <div class="action-progress">
-          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
+            <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
             <div class="bar">
               <div class="bar-fill" style="width: <%= action_plan.progress %>%">
                 <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
               </div>
             </div>
           </div>
+          <% end %>
         </div>
       <% end %>
     <% else %>
