@@ -20,12 +20,15 @@
   <body>
     <div id="home-page">
       <% if Flipper.enabled?(:dr_rai_reports) && Flipper.enabled?(:dr_rai_progress) && @region.facility_region? %>
+        <% dr_rai_component = Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter], true) %>
+        <% unless dr_rai_component.action_plans.empty? %>
         <div class="mb-8px p-16px bgc-white bs-card">
           <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
             Action plan <%# add translation string %>
           </h1>
-          <%= render Dashboard::DrRaiReport.new(@quarterlies, @region.slug, params[:selected_quarter], true) %>
+          <%= render dr_rai_component %>
         </div>
+        <% end %>
       <% end %>
       <div class="mb-8px p-16px bgc-white bs-card">
         <h1 class="m-0px mb-16px fw-bold fs-24px c-black">
