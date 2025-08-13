@@ -455,6 +455,10 @@ am-ET:
     comments: "አስተያየቶች"
     instruction_1: "መጠኑን ካላወቁ ባዶውን ይተዉት"
     instruction_2: 'በክምችት ውስጥ ከሌለ "0" ያስገቡ'
+    negative: አሉታዊ
+    positive: አዎንታዊ
+    not_eligible: ለክራይዎቴራፊ / ብረት መሞቀት የማይገባ
+    suspicious_cancer: ስለ ያለው የራስ የያሽ/ካንሰር ተገምቶ የምትመስል ቅርጸ-ቁስል
   monthly_screening_report:
     htn_and_dm_screening: "HTN & DM SCREENING"
     # Ethiopia
@@ -470,6 +474,7 @@ am-ET:
     total_dm_diagnosed: "ጠቅላላ ምርመራ የተካሄደባቸው DM"
     cervical_cancer_uc: "የማህጸን ጫፍ ካንሰር"
     total_women_screened_cervical: "ለማህጸን ጫፍ ካንሰር ምርመራ ያካሄዱ ሴቶች ብዛት"
+    total_women_screened_via_screening_result: "ለማህጸን ጫፍ ካንሰር በVIA የተመረመሩ ሴቶች ብዛት"
     total_women_treated_cervical: "ለማህጸን ጫፍ ካንሰር ህክምና ያካሄዱ ሴቶች ብዛት"
     total_women_followup_cervical: "ከ1 አመት በኋላ ክትትል ያደረጉ ሴቶች ብዛት"
     # India
