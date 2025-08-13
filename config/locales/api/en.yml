@@ -456,6 +456,10 @@ en:
     comments: "Comments"
     instruction_1: "Leave blank if you don't know an amount"
     instruction_2: 'Enter "0" if stock is out'
+    negative: "Negative"
+    positive: "Eligible for Cryotherapy/ thermocoagulation"
+    not_eligible: "Not Eligible for Cryotherapy/ thermocoagulation"
+    suspicious_cancer: "Suspicious Cancerous Lesion"
   monthly_screening_report:
     htn_and_dm_screening: "HTN & DM SCREENING"
     # Ethiopia
@@ -471,6 +475,7 @@ en:
     total_dm_diagnosed: "Total DM Diagnosed"
     cervical_cancer_uc: "CERVICAL CANCER"
     total_women_screened_cervical: "Total women screened for Cervical Cancer"
+    total_women_screened_via_screening_result: "Total women screened for cervical Ca VIA screening result"
     total_women_treated_cervical: "Total women treated for Cervical Cancer"
     total_women_followup_cervical: "Total women followed up after 1 year"
     # India
