@@ -4,8 +4,8 @@ module DrRai
 
     def datasource(region)
       @region = region
-      @query ||= TitrationQuery.new(region).call
-      @query[region.name]
+      @source ||= DrRai::Data::Titration.chartable
+      @source[region.name]
     end
 
     def display_name
@@ -17,11 +17,11 @@ module DrRai
     end
 
     def numerator_key
-      "titrated"
+      :titrated_count
     end
 
     def denominator_key
-      "patients"
+      :follow_up_count
     end
 
     def action_passive
@@ -37,16 +37,17 @@ module DrRai
     end
 
     def is_supported?(region)
-      case CountryConfig.current[:name]
-      when "Bangladesh"
-        region.path.split(".").include?("nhf")
-      when "Ethiopia"
-        region.path.split(".").none? { |level| level.include?("non_rtsl") }
-      when "Sri Lanka"
-        region.path.split(".").include?("sri_lanka_organization")
-      else
-        false
-      end
+      true
+      # case CountryConfig.current[:name]
+      # when "Bangladesh"
+      #   region.path.split(".").include?("nhf")
+      # when "Ethiopia"
+      #   region.path.split(".").none? { |level| level.include?("non_rtsl") }
+      # when "Sri Lanka"
+      #   region.path.split(".").include?("sri_lanka_organization")
+      # else
+      #   false
+      # end
     end
   end
 end
