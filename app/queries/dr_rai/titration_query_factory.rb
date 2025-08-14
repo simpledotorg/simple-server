@@ -9,7 +9,7 @@ module DrRai
     def updater
       <<-SQL
       merge into public.dr_rai_data_titrations as existing
-      using (#{ base_query { "" } }) as incoming
+      using (#{base_query { "" }}) as incoming
       on existing.month_date = incoming.month_date and existing.facility_name = incoming.facility_name
       when not matched
         insert (
@@ -87,7 +87,7 @@ module DrRai
           group by month_date
         )
 
-        #{ yield }
+        #{yield}
         (
           select * from selected_facility_titrations
           union all

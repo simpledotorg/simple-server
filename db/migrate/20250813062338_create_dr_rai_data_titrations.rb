@@ -7,7 +7,7 @@ class CreateDrRaiDataTitrations < ActiveRecord::Migration[6.1]
       t.datetime :month_date
       t.decimal :titration_rate, precision: 5, scale: 2
 
-      t.timestamps default: -> { 'CURRENT_TIMESTAMP' }, null: false
+      t.timestamps default: -> { "CURRENT_TIMESTAMP" }, null: false
     end
   end
 end
