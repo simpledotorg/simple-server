@@ -15,6 +15,17 @@ RSpec.describe DrRai::Data::Titration, type: :model do
     #     }
     #   }
     # }
-    pending "transforms into dashboard format"
+    it "has two internal keys" do
+      expect(described_class.instance_variable_get(:@chartable_internal_keys).count).to eq 2
+      expect(described_class.instance_variable_get(:@chartable_internal_keys)).to match(%i[follow_up_count titrated_count])
+    end
+
+    it "uses month_date as period key" do
+      expect(described_class.instance_variable_get(:@chartable_period_key)).to eq :month_date
+    end
+
+    it "uses facility_name as outer_grouping" do
+      expect(described_class.instance_variable_get(:@chartable_outer_grouping)).to eq :facility_name
+    end
   end
 end
