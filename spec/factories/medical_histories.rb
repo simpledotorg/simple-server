@@ -11,6 +11,7 @@ FactoryBot.define do
     hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     smoking { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
+    smokeless_tobacco { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:no] }
     cholesterol { 123 }
     device_created_at { Time.current }
     device_updated_at { Time.current }
@@ -26,6 +27,7 @@ FactoryBot.define do
       hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       diagnosed_with_hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
       smoking { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
+      smokeless_tobacco { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
     trait :hypertension_yes do
@@ -67,6 +69,10 @@ FactoryBot.define do
 
     trait :without_smoking do
       smoking { nil }
+    end
+
+    trait :without_smokeless_tobacco do
+      smokeless_tobacco { nil }
     end
   end
 end
