@@ -1321,3 +1321,123 @@
   rxnorm_code:
   drug_category: diabetes
   deleted: false
+- id: 4382bfa4-424b-4c96-b98e-abb044248fb1
+  name: Metformin
+  composition: 500 mg
+  dosage:
+  frequency: two_per_day
+  rxnorm_code: '860975'
+  drug_category: diabetes
+  deleted: false
+- id: e49be4e3-4e35-4125-af46-aa9646220fa0
+  name: Metformin
+  composition: 850 mg
+  dosage:
+  frequency: two_per_day
+  rxnorm_code: '860975'
+  drug_category: diabetes
+  deleted: false
+- id: de0b8efa-68b6-4550-b947-225abbdf5f3a
+  name: Metformin
+  composition: 1000 mg
+  dosage:
+  frequency: two_per_day
+  rxnorm_code: '860975'
+  drug_category: diabetes
+  deleted: false
+- id: f03623a1-61a8-40db-bb27-6df522367aac
+  name: Glibenclamide
+  composition: 2.5 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: b6fc8ddb-3277-40aa-8d04-4edc7eb6c641
+  name: Glibenclamide
+  composition: 5 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 18995c02-c972-40d1-b465-10db4d0d32f0
+  name: Glibenclamide
+  composition: 10 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 94fc1f81-8bd9-4eeb-a7bb-fd77871b4746
+  name: Glibenclamide
+  composition: 15 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: edd7d66d-a139-4f2e-ba78-8bd62a67e64f
+  name: Glibenclamide
+  composition: 20 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 233ac6d8-6b3c-4fad-a1a0-e4cdd2301879
+  name: Glimepiride
+  composition: 1 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 1b136311-b4e2-4452-bcc3-ed5bcb141b8a
+  name: Glimepiride
+  composition: 2 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 441d10dc-547e-4cb4-8fe5-d6f6a8618cd1
+  name: Glimepiride
+  composition: 4 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: cba8747e-5b33-4ab8-98c8-b0592074839e
+  name: Glimepiride
+  composition: 8 mg
+  dosage:
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 6fdff2da-a953-4f7e-9bf6-a419a30de47d
+  name: Insulin - Regular
+  composition: 
+  dosage: 6-10 units
+  frequency: three_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: c49a851a-aad4-4ac8-88fa-53a174b248a8
+  name: Insulin - NPH
+  composition: 
+  dosage: 10-20 units
+  frequency: two_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
+- id: 863425a5-8e19-40b1-a331-48ed790374a6
+  name: Insulin - Analogue
+  composition: 
+  dosage: 10-20 units 
+  frequency: one_per_day
+  rxnorm_code: 
+  drug_category: diabetes
+  deleted: false
