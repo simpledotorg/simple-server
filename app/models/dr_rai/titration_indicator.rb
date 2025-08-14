@@ -37,17 +37,16 @@ module DrRai
     end
 
     def is_supported?(region)
-      true
-      # case CountryConfig.current[:name]
-      # when "Bangladesh"
-      #   region.path.split(".").include?("nhf")
-      # when "Ethiopia"
-      #   region.path.split(".").none? { |level| level.include?("non_rtsl") }
-      # when "Sri Lanka"
-      #   region.path.split(".").include?("sri_lanka_organization")
-      # else
-      #   false
-      # end
+      case CountryConfig.current[:name]
+      when "Bangladesh"
+        region.path.split(".").include?("nhf")
+      when "Ethiopia"
+        region.path.split(".").none? { |level| level.include?("non_rtsl") }
+      when "Sri Lanka"
+        region.path.split(".").include?("sri_lanka_organization")
+      else
+        false
+      end
     end
   end
 end
