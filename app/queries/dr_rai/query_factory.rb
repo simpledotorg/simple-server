@@ -15,8 +15,7 @@ module DrRai
 
         instance = nil
 
-        case
-        when klazz <= Data::Titration
+        if klazz <= Data::Titration
           instance = DrRai::TitrationQueryFactory.new(from, to)
         else
           raise "Unsupported"
@@ -55,16 +54,16 @@ module DrRai
     private
 
     def set_date_boundaries!
-      if @from.nil?
-        @from_date = 1.year.ago.to_date
+      @from_date = if @from.nil?
+        1.year.ago.to_date
       else
-        @from_date = @from
+        @from
       end
 
-      if @to.nil?
-        @to_date = Date.today
+      @to_date = if @to.nil?
+        Date.today
       else
-        @to_date = @to
+        @to
       end
     end
   end

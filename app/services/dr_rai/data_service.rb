@@ -18,10 +18,10 @@ module DrRai
     end
 
     def populate!
-      if inserting?
-        @query = @query_factory.inserter
+      @query = if inserting?
+        @query_factory.inserter
       else
-        @query = @query_factory.updater
+        @query_factory.updater
       end
 
       ApplicationRecord.connection.exec_query(@query)
