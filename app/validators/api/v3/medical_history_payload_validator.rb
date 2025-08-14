@@ -11,6 +11,7 @@ class Api::V3::MedicalHistoryPayloadValidator < Api::V3::PayloadValidator
     :hypertension,
     :diagnosed_with_hypertension,
     :smoking,
+    :smokeless_tobacco,
     :cholesterol,
     :created_at,
     :updated_at
