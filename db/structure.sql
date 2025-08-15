@@ -641,7 +641,8 @@ CREATE TABLE public.medical_histories (
     hypertension text,
     receiving_treatment_for_diabetes text,
     smoking text,
-    cholesterol integer
+    cholesterol integer,
+    smokeless_tobacco character varying
 );
 
 
@@ -1096,6 +1097,42 @@ CREATE SEQUENCE public.dr_rai_actions_id_seq
 --
 
 ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
+
+
+--
+-- Name: dr_rai_data_titrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_data_titrations (
+    id bigint NOT NULL,
+    facility_name character varying,
+    titrated_count integer,
+    follow_up_count integer,
+    month_date timestamp without time zone,
+    titration_rate numeric(5,2),
+    created_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at timestamp without time zone
+);
+
+
+--
+-- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_data_titrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_data_titrations_id_seq OWNED BY public.dr_rai_data_titrations.id;
 
 
 --
@@ -5969,6 +6006,13 @@ ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: dr_rai_data_titrations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_titrations ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_data_titrations_id_seq'::regclass);
+
+
+--
 -- Name: dr_rai_indicators id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6212,6 +6256,14 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 ALTER TABLE ONLY public.dr_rai_actions
     ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_data_titrations dr_rai_data_titrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_titrations
+    ADD CONSTRAINT dr_rai_data_titrations_pkey PRIMARY KEY (id);
 
 
 --
@@ -8134,6 +8186,118 @@ CREATE INDEX reporting_patient_states_titrated ON ONLY simple_reporting.reportin
 
 
 --
+-- Name: reporting_patient_states_202404_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202404_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202404_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202404_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202407_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202407_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202407_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202407_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_2024_hypertension_htn_care_state__idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2024_hypertension_htn_care_state__idx1;
+
+
+--
+-- Name: reporting_patient_states_2024_hypertension_htn_care_state_h_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2024_hypertension_htn_care_state_h_idx;
+
+
+--
+-- Name: reporting_patient_states_2024_registration_facility_region__idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2024_registration_facility_region__idx;
+
+
+--
+-- Name: reporting_patient_states_2024_registration_facility_region_idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2024_registration_facility_region_idx1;
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state__idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2025_hypertension_htn_care_state__idx1;
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state_h_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2025_hypertension_htn_care_state_h_idx;
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region__idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2025_registration_facility_region__idx;
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region_idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2025_registration_facility_region_idx1;
+
+
+--
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8663,6 +8827,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619152733'),
 ('20250619195214'),
 ('20250619222520'),
-('20250619225935');
+('20250619225935'),
+('20250814092225');
 
 
