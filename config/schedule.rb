@@ -88,6 +88,12 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
   rake "exotel_tasks:update_all_patients_phone_number_details"
 end
 
+every :day, at: local("03:00 am"), roles: [:cron] do
+  from = 1.month.ago.to_date.to_s
+  to = Date.today.to_s
+  rake "dr_rai:populate_titration_data[#{from}, #{to}]"
+end
+
 every :day, at: local("01:00 am"), roles: [:cron] do
   runner "MarkPatientMobileNumbers.call"
 end
