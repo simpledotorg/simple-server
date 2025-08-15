@@ -2264,6 +2264,14 @@
             "unknown"
           ]
         },
+        "smokeless_tobacco": {
+          "type": "string",
+          "enum": [
+            "yes",
+            "no",
+            "unknown"
+          ]
+        },
         "cholesterol_value": {
           "type": "number"
         },

@@ -308,6 +308,7 @@ class Api::V3::Models
          hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          diagnosed_with_hypertension: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
+         smokeless_tobacco: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          cholesterol_value: {type: :number},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
