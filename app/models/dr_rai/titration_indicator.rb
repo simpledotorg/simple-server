@@ -4,8 +4,8 @@ module DrRai
 
     def datasource(region)
       @region = region
-      @query ||= TitrationQuery.new(region).call
-      @query[region.name]
+      @source ||= DrRai::Data::Titration.chartable
+      @source[region.name]
     end
 
     def display_name
@@ -17,11 +17,11 @@ module DrRai
     end
 
     def numerator_key
-      "titrated"
+      :titrated_count
     end
 
     def denominator_key
-      "patients"
+      :follow_up_count
     end
 
     def action_passive
