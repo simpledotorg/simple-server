@@ -1100,6 +1100,42 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
+-- Name: dr_rai_data_titrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_data_titrations (
+    id bigint NOT NULL,
+    facility_name character varying,
+    titrated_count integer,
+    follow_up_count integer,
+    month_date timestamp without time zone,
+    titration_rate numeric(5,2),
+    created_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    deleted_at timestamp without time zone
+);
+
+
+--
+-- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_data_titrations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_data_titrations_id_seq OWNED BY public.dr_rai_data_titrations.id;
+
+
+--
 -- Name: dr_rai_indicators; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -5897,6 +5933,186 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: reporting_patient_states_20250601; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.reporting_patient_states_20250601 (
+    patient_id uuid,
+    recorded_at timestamp without time zone,
+    status character varying,
+    gender character varying,
+    age integer,
+    age_updated_at timestamp without time zone,
+    date_of_birth date,
+    current_age double precision,
+    month_date date,
+    month double precision,
+    quarter double precision,
+    year double precision,
+    month_string text,
+    quarter_string text,
+    hypertension text,
+    prior_heart_attack text,
+    prior_stroke text,
+    chronic_kidney_disease text,
+    receiving_treatment_for_hypertension text,
+    diabetes text,
+    assigned_facility_id uuid,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    registration_facility_id uuid,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    blood_pressure_id uuid,
+    bp_facility_id uuid,
+    bp_recorded_at timestamp without time zone,
+    systolic integer,
+    diastolic integer,
+    blood_sugar_id uuid,
+    bs_facility_id uuid,
+    bs_recorded_at timestamp without time zone,
+    blood_sugar_type character varying,
+    blood_sugar_value numeric,
+    blood_sugar_risk_state text,
+    encounter_id uuid,
+    encounter_recorded_at timestamp without time zone,
+    prescription_drug_id uuid,
+    prescription_drug_recorded_at timestamp without time zone,
+    appointment_id uuid,
+    appointment_recorded_at timestamp without time zone,
+    visited_facility_ids uuid[],
+    months_since_registration double precision,
+    quarters_since_registration double precision,
+    months_since_visit double precision,
+    quarters_since_visit double precision,
+    months_since_bp double precision,
+    quarters_since_bp double precision,
+    months_since_bs double precision,
+    quarters_since_bs double precision,
+    last_bp_state text,
+    htn_care_state text,
+    htn_treatment_outcome_in_last_3_months text,
+    htn_treatment_outcome_in_last_2_months text,
+    htn_treatment_outcome_in_quarter text,
+    diabetes_treatment_outcome_in_last_3_months text,
+    diabetes_treatment_outcome_in_last_2_months text,
+    diabetes_treatment_outcome_in_quarter text,
+    titrated boolean,
+    CONSTRAINT reporting_patient_states_month_date_shard_check CHECK ((month_date = (date_trunc('month'::text, (to_date('20250601'::text, 'YYYYMMDD'::text))::timestamp with time zone))::date))
+);
+
+
+--
+-- Name: reporting_patient_states_20250701; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.reporting_patient_states_20250701 (
+    patient_id uuid,
+    recorded_at timestamp without time zone,
+    status character varying,
+    gender character varying,
+    age integer,
+    age_updated_at timestamp without time zone,
+    date_of_birth date,
+    current_age double precision,
+    month_date date,
+    month double precision,
+    quarter double precision,
+    year double precision,
+    month_string text,
+    quarter_string text,
+    hypertension text,
+    prior_heart_attack text,
+    prior_stroke text,
+    chronic_kidney_disease text,
+    receiving_treatment_for_hypertension text,
+    diabetes text,
+    assigned_facility_id uuid,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    registration_facility_id uuid,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    blood_pressure_id uuid,
+    bp_facility_id uuid,
+    bp_recorded_at timestamp without time zone,
+    systolic integer,
+    diastolic integer,
+    blood_sugar_id uuid,
+    bs_facility_id uuid,
+    bs_recorded_at timestamp without time zone,
+    blood_sugar_type character varying,
+    blood_sugar_value numeric,
+    blood_sugar_risk_state text,
+    encounter_id uuid,
+    encounter_recorded_at timestamp without time zone,
+    prescription_drug_id uuid,
+    prescription_drug_recorded_at timestamp without time zone,
+    appointment_id uuid,
+    appointment_recorded_at timestamp without time zone,
+    visited_facility_ids uuid[],
+    months_since_registration double precision,
+    quarters_since_registration double precision,
+    months_since_visit double precision,
+    quarters_since_visit double precision,
+    months_since_bp double precision,
+    quarters_since_bp double precision,
+    months_since_bs double precision,
+    quarters_since_bs double precision,
+    last_bp_state text,
+    htn_care_state text,
+    htn_treatment_outcome_in_last_3_months text,
+    htn_treatment_outcome_in_last_2_months text,
+    htn_treatment_outcome_in_quarter text,
+    diabetes_treatment_outcome_in_last_3_months text,
+    diabetes_treatment_outcome_in_last_2_months text,
+    diabetes_treatment_outcome_in_quarter text,
+    titrated boolean,
+    CONSTRAINT reporting_patient_states_month_date_shard_check CHECK ((month_date = (date_trunc('month'::text, (to_date('20250701'::text, 'YYYYMMDD'::text))::timestamp with time zone))::date))
+);
+
+
+--
 -- Name: simple_reporting_runs; Type: TABLE; Schema: simple_reporting; Owner: -
 --
 
@@ -5911,6 +6127,20 @@ CREATE TABLE simple_reporting.simple_reporting_runs (
     sql_state character varying(255),
     sql_error_message character varying(255)
 );
+
+
+--
+-- Name: reporting_patient_states_20250601; Type: TABLE ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER TABLE ONLY simple_reporting.reporting_patient_states ATTACH PARTITION simple_reporting.reporting_patient_states_20250601 FOR VALUES IN ('2025-06-01');
+
+
+--
+-- Name: reporting_patient_states_20250701; Type: TABLE ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER TABLE ONLY simple_reporting.reporting_patient_states ATTACH PARTITION simple_reporting.reporting_patient_states_20250701 FOR VALUES IN ('2025-07-01');
 
 
 --
@@ -5967,6 +6197,13 @@ ALTER TABLE ONLY public.dr_rai_action_plans ALTER COLUMN id SET DEFAULT nextval(
 --
 
 ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_actions_id_seq'::regclass);
+
+
+--
+-- Name: dr_rai_data_titrations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_titrations ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_data_titrations_id_seq'::regclass);
 
 
 --
@@ -6213,6 +6450,14 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 ALTER TABLE ONLY public.dr_rai_actions
     ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_data_titrations dr_rai_data_titrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_titrations
+    ADD CONSTRAINT dr_rai_data_titrations_pkey PRIMARY KEY (id);
 
 
 --
@@ -8135,6 +8380,454 @@ CREATE INDEX reporting_patient_states_titrated ON ONLY simple_reporting.reportin
 
 
 --
+-- Name: reporting_patient_states_20250601_age_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_age_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (age);
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_block_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_assigned_block_region_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (assigned_block_region_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_assigned_facility_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (assigned_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_state_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_assigned_state_region_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (assigned_state_region_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_bp_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_bp_facility_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (bp_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_gender_age_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_gender_age_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (gender, age);
+
+
+--
+-- Name: reporting_patient_states_20250601_gender_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_gender_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (gender);
+
+
+--
+-- Name: reporting_patient_states_20250601_month_date_patient_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE UNIQUE INDEX reporting_patient_states_20250601_month_date_patient_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (month_date, patient_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_registration_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_registration_facility_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (registration_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250601_titrated_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250601_titrated_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (titrated);
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_district_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_202506_assigned_district_region_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (assigned_district_region_id);
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_facility_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_202506_assigned_facility_region_id_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (assigned_facility_region_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_age_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_age_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (age);
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_block_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_assigned_block_region_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (assigned_block_region_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_assigned_facility_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (assigned_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_state_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_assigned_state_region_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (assigned_state_region_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_bp_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_bp_facility_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (bp_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_gender_age_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_gender_age_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (gender, age);
+
+
+--
+-- Name: reporting_patient_states_20250701_gender_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_gender_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (gender);
+
+
+--
+-- Name: reporting_patient_states_20250701_month_date_patient_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE UNIQUE INDEX reporting_patient_states_20250701_month_date_patient_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (month_date, patient_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_registration_facility_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_registration_facility_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (registration_facility_id);
+
+
+--
+-- Name: reporting_patient_states_20250701_titrated_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_20250701_titrated_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (titrated);
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_district_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_202507_assigned_district_region_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (assigned_district_region_id);
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_facility_region_id_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_202507_assigned_facility_region_id_idx ON simple_reporting.reporting_patient_states_20250701 USING btree (assigned_facility_region_id);
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state__idx1; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_2025_hypertension_htn_care_state__idx1 ON simple_reporting.reporting_patient_states_20250701 USING btree (hypertension, htn_care_state, htn_treatment_outcome_in_last_3_months);
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state_h_idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_2025_hypertension_htn_care_state_h_idx ON simple_reporting.reporting_patient_states_20250601 USING btree (hypertension, htn_care_state, htn_treatment_outcome_in_last_3_months);
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region__idx; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_2025_registration_facility_region__idx ON simple_reporting.reporting_patient_states_20250601 USING btree (registration_facility_region_id);
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region_idx1; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX reporting_patient_states_2025_registration_facility_region_idx1 ON simple_reporting.reporting_patient_states_20250701 USING btree (registration_facility_region_id);
+
+
+--
+-- Name: reporting_patient_states_202404_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202404_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202404_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202404_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202407_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202407_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202407_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202407_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_2024_hypertension_htn_care_state__idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2024_hypertension_htn_care_state__idx1;
+
+
+--
+-- Name: reporting_patient_states_2024_hypertension_htn_care_state_h_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2024_hypertension_htn_care_state_h_idx;
+
+
+--
+-- Name: reporting_patient_states_2024_registration_facility_region__idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2024_registration_facility_region__idx;
+
+
+--
+-- Name: reporting_patient_states_2024_registration_facility_region_idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2024_registration_facility_region_idx1;
+
+
+--
+-- Name: reporting_patient_states_20250601_age_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_age ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_age_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_block_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_block ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_assigned_block_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_assigned_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_assigned_state_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_state ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_assigned_state_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_bp_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.reporting_patient_states_bp_facility_id ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_bp_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_gender_age_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_gender_and_age ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_gender_age_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_gender_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_gender ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_gender_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_month_date_patient_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_patient_id ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_month_date_patient_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_registration_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_registration_facility ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_registration_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250601_titrated_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.reporting_patient_states_titrated ATTACH PARTITION simple_reporting.reporting_patient_states_20250601_titrated_idx;
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202506_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_age_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_age ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_age_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_block_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_block ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_assigned_block_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_assigned_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_assigned_state_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_state ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_assigned_state_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_bp_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.reporting_patient_states_bp_facility_id ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_bp_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_gender_age_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_gender_and_age ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_gender_age_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_gender_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.index_reporting_patient_states_on_gender ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_gender_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_month_date_patient_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_patient_id ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_month_date_patient_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_registration_facility_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_registration_facility ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_registration_facility_id_idx;
+
+
+--
+-- Name: reporting_patient_states_20250701_titrated_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.reporting_patient_states_titrated ATTACH PARTITION simple_reporting.reporting_patient_states_20250701_titrated_idx;
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_district_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_202507_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_facility_region_id_idx;
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state__idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2025_hypertension_htn_care_state__idx1;
+
+
+--
+-- Name: reporting_patient_states_2025_hypertension_htn_care_state_h_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_care_state ATTACH PARTITION simple_reporting.reporting_patient_states_2025_hypertension_htn_care_state_h_idx;
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region__idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2025_registration_facility_region__idx;
+
+
+--
+-- Name: reporting_patient_states_2025_registration_facility_region_idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
+--
+
+ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_region ATTACH PARTITION simple_reporting.reporting_patient_states_2025_registration_facility_region_idx1;
+
+
+--
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8666,5 +9359,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619222520'),
 ('20250619225935'),
 ('20250814092225');
-
-
+('20250813062338'),
+('20250813064810');

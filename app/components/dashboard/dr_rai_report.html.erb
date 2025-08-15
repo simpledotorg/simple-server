@@ -249,7 +249,7 @@
       } else {
         if (target.ui == 'percent') {
           var previousPercentage
-          if (indicator.previous_numerator < 1) {
+          if (indicator.previous_numerator < 1 || indicator.denominator == '' || indicator.denominator === undefined) {
             previousPercentage = 0
           } else {
             previousPercentage = Math.round(indicator.previous_numerator / indicator.denominator * 100)
