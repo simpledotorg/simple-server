@@ -641,7 +641,8 @@ CREATE TABLE public.medical_histories (
     hypertension text,
     receiving_treatment_for_diabetes text,
     smoking text,
-    cholesterol integer
+    cholesterol integer,
+    smokeless_tobacco character varying
 );
 
 
@@ -8663,6 +8664,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619152733'),
 ('20250619195214'),
 ('20250619222520'),
-('20250619225935');
+('20250619225935'),
+('20250814092225');
 
 
