@@ -8191,34 +8191,6 @@ ALTER INDEX simple_reporting.patient_states_month_date_registration_facility_reg
 
 
 --
--- Name: reporting_patient_states_202506_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
---
-
-ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_district_region_id_idx;
-
-
---
--- Name: reporting_patient_states_202506_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
---
-
-ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202506_assigned_facility_region_id_idx;
-
-
---
--- Name: reporting_patient_states_202507_assigned_district_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
---
-
-ALTER INDEX simple_reporting.patient_states_assigned_district ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_district_region_id_idx;
-
-
---
--- Name: reporting_patient_states_202507_assigned_facility_region_id_idx; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
---
-
-ALTER INDEX simple_reporting.patient_states_assigned_facility ATTACH PARTITION simple_reporting.reporting_patient_states_202507_assigned_facility_region_id_idx;
-
-
---
 -- Name: reporting_patient_states_2025_hypertension_htn_care_state__idx1; Type: INDEX ATTACH; Schema: simple_reporting; Owner: -
 --
 
