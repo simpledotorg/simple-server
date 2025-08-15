@@ -6,6 +6,7 @@ class Api::V3::MedicalHistoryTransformer
         .except("user_id")
         .except(*MedicalHistory::MEDICAL_HISTORY_QUESTIONS.map { |question| "#{question}_boolean" })
         .tap { |params| params["smoking"] ||= "unknown" }
+        .tap { |params| params["smokeless_tobacco"] ||= "unknown" }
     end
 
     def from_request(medical_history_payload)
