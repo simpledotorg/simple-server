@@ -79,6 +79,18 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         expect(response_body["medical_histories"][0]["smoking"]).to eq "unknown"
       end
     end
+
+    context "non-nullable smokeless_tobacco" do
+      let(:patient_in_request_facility) { build(:patient, registration_facility: request_facility) }
+      it "defaults smoking to 'unknown'" do
+        create(:medical_history, :without_smokeless_tobacco, patient: patient_in_request_facility)
+        set_authentication_headers
+        get :sync_to_user
+        response_body = JSON(response.body)
+        expect(response_body["medical_histories"][0]["smokeless_tobacco"]).not_to be nil
+        expect(response_body["medical_histories"][0]["smokeless_tobacco"]).to eq "unknown"
+      end
+    end
   end
 
   describe "#sync_from_user" do
