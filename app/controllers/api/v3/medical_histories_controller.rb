@@ -46,6 +46,7 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
         :hypertension,
         :diagnosed_with_hypertension,
         :smoking,
+        :smokeless_tobacco,
         :cholesterol,
         :created_at,
         :updated_at
