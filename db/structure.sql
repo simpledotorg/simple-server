@@ -1100,42 +1100,6 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
--- Name: dr_rai_data_titrations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.dr_rai_data_titrations (
-    id bigint NOT NULL,
-    facility_name character varying,
-    titrated_count integer,
-    follow_up_count integer,
-    month_date timestamp without time zone,
-    titration_rate numeric(5,2),
-    created_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    deleted_at timestamp without time zone
-);
-
-
---
--- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.dr_rai_data_titrations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: dr_rai_data_titrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.dr_rai_data_titrations_id_seq OWNED BY public.dr_rai_data_titrations.id;
-
-
---
 -- Name: dr_rai_indicators; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6006,13 +5970,6 @@ ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
--- Name: dr_rai_data_titrations id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dr_rai_data_titrations ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_data_titrations_id_seq'::regclass);
-
-
---
 -- Name: dr_rai_indicators id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6256,14 +6213,6 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 ALTER TABLE ONLY public.dr_rai_actions
     ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
-
-
---
--- Name: dr_rai_data_titrations dr_rai_data_titrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dr_rai_data_titrations
-    ADD CONSTRAINT dr_rai_data_titrations_pkey PRIMARY KEY (id);
 
 
 --
