@@ -4,7 +4,7 @@ module DrRai
       def populate klazz, timeline: nil
         raise "Can only populate models" unless klazz < ApplicationRecord
         if timeline.present?
-          raise "timeline must be Date range" unless timelines.is_a?(Range)
+          raise "timeline must be Date range" unless timeline.is_a?(Range)
         end
         new(klazz, timeline).populate!
       end
