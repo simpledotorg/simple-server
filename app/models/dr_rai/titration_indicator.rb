@@ -37,7 +37,7 @@ module DrRai
     end
 
     def is_supported?(region)
-      case CountryConfig.current[:name]
+      @is_supported ||= case CountryConfig.current[:name]
       when "Bangladesh"
         region.path.split(".").include?("nhf")
       when "Ethiopia"
