@@ -472,6 +472,8 @@ en:
     total_bs_raised_ncd_linked: "Total raised BS cases linked to NCD clinic"
     diagnosed_cases: "DIAGNOSED CASES"
     total_htn_diagnosed: "Total HTN Diagnosed"
+    total_htn_enrolled_et: "Total HTN Enrolled"
+    total_dm_enrolled_et: "Total DM Enrolled"
     total_dm_diagnosed: "Total DM Diagnosed"
     cervical_cancer_uc: "CERVICAL CANCER"
     total_women_screened_cervical: "Total women screened for Cervical Cancer"
