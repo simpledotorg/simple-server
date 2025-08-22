@@ -459,7 +459,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
 
   .action-buttons-block {
     display: flex;
-    gap: 28px;
+    gap: 24px;
 
     button {
       border: none;
@@ -475,12 +475,21 @@ $font-condensed: "Roboto Condensed", sans-serif;
       color: #fff;
       width: 100%;
       display: flex;
+      gap: 8px;
       flex-grow: 1;
       justify-content: center;
       align-items: center;
 
       &:hover {
         background-color: #025bbf;
+      }
+
+      &.loading {
+        background-color: #0275ebbb;
+        &:hover {
+          background-color: #0275ebbb;
+          cursor: default;
+        }
       }
     }
 
@@ -499,6 +508,14 @@ $font-condensed: "Roboto Condensed", sans-serif;
         border: 1px solid #ededed; // Tailwind's gray-500
       }
     }
+  }
+
+  .loading-animation {
+    transform: translateX(-4px);
+  }
+
+  .hidden {
+    display: none;
   }
 }
 
