@@ -293,6 +293,9 @@
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
+      $('.action-buttons-block .save-button').addClass('loading')
+      $(".save-button .button-text").text("Creating...");
+      $('.loading-animation').removeClass('hidden')
       $.ajax({
         url: `/dr_rai/action_plans`,
         type: 'POST',
@@ -316,6 +319,10 @@
         error: (xhr) => {
           // Technically there should be no error case. IF an entry is entered
           // wrongly, removing the entry and redoing it costs little
+          $('.action-buttons-block .save-button').removeClass('loading')
+          $(".save-button .button-text").text("Create");
+          $('.loading-animation').addClass('hidden')
+          // add error message show
         }
       });
 
