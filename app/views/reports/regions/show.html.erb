@@ -14,13 +14,13 @@
 
       <% if CountryConfig.current_country?("Ethiopia") %>
         <div>
-          ⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= last_month_last_date %>&name=<%= @region.name %>" target="_blank">
+        ⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= last_month_last_date %>&name=<%= @region.name %>" target="_blank">
             Metabase: Drug stock report
-            </a>
+          </a>
         </div>
       <% elsif !CountryConfig.current_country?("Sri Lanka") %>
           <div>
-          ⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= @region.name %>" target="_blank">
+        ⚡ <a href="<%= ENV.fetch('DRUG_STOCK_REPORT_URL', '') %><%= district %>&zone=<%= zone %>&for_end_of_month=<%= last_month %>&size=<%= size %>" target="_blank">
             Drug stock report
           </a>
         </div>
