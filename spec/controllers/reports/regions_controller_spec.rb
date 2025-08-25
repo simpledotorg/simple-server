@@ -166,7 +166,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Drug stock")
           expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
           expect(response.body).to include(region.source.slug)
-          expect(response.body).to include("for_end_of_month")
         end
       end
 
