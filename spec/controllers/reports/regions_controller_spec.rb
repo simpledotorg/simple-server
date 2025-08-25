@@ -118,6 +118,72 @@ RSpec.describe Reports::RegionsController, type: :controller do
       end
     end
 
+    context "drug stock report links by country" do
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:facility) { create(:facility, facility_group: facility_group) }
+      let(:region) { facility.region }
+
+      before do
+        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+        Flipper.enable(:quick_link_for_metabase, cvho)
+        sign_in(cvho.email_authentication)
+      end
+
+      context "when country is Ethiopia" do
+        before do
+          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
+          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+        end
+
+        it "shows the facility drug stock report link" do
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include("&name=#{region.name}")
+        end
+
+        it "shows the district drug stock report link" do
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include(region.source.slug)
+        end
+      end
+
+      context "when country is not Sri Lanka" do
+        before do
+          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+        end
+
+        it "shows the facility drug stock report link" do
+          expect(response.body).to include("Drug stock report")
+          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include(region.name)
+        end
+
+        it "shows the district drug stock report link" do
+          expect(response.body).to include("Drug stock")
+          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include(region.source.slug)
+          expect(response.body).to include("for_end_of_month")
+        end
+      end
+
+      context "when country is Sri Lanka" do
+        before do
+          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+        end
+
+        it "does not show any drug stock links" do
+          expect(response.body).not_to include("Drug stock report")
+          expect(response.body).not_to include("Metabase: Drug stock report")
+        end
+      end
+    end
+
     context "when the region is a division region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:state) { create(:facility, facility_group: facility_group) }
