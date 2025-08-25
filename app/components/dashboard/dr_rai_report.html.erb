@@ -262,16 +262,16 @@
       }
     })
 
-    $('.goal-input-block input').on('blur keypress', (e) => {
+    $('.goal-input-block input').on('blur keyup', (e) => {
       $('.missing-input-warning').addClass('d-none')
     })
 
-    $('#step-2-numeric .goal-input-block input').on('blur keypress', (e) => {
+    $('#step-2-numeric .goal-input-block input').on('blur keyup', (e) => {
       activityPromise.removeClass('d-none')
       $('#dr-rai--sidebar').data('target-value', $(e.currentTarget).val())
     })
 
-    $('#step-2-percent .goal-input-block input').on('blur keypress', (e) => {
+    $('#step-2-percent .goal-input-block input').on('blur keyup', (e) => {
       var inputValue
       if ($(e.currentTarget).val() === '') {
         inputValue = 0
