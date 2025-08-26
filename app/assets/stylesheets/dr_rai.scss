@@ -459,7 +459,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
 
   .action-buttons-block {
     display: flex;
-    gap: 28px;
+    gap: 24px;
 
     button {
       border: none;
@@ -475,6 +475,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
       color: #fff;
       width: 100%;
       display: flex;
+      gap: 8px;
       flex-grow: 1;
       justify-content: center;
       align-items: center;
@@ -482,13 +483,24 @@ $font-condensed: "Roboto Condensed", sans-serif;
       &:hover {
         background-color: #025bbf;
       }
+
+      &[disabled] {
+        // only disabled when clicked and loading response
+        background-color: #0275ebbb;
+        &:hover {
+          background-color: #0275ebbb;
+        }
+        > .loading-animation {
+          // loading spinner only shown in disabled state
+          display: inline-block;
+        }
+      }
     }
 
-    // Cancel button styles
     .cancel-button {
       display: inline;
       color: #6b7280;
-      border: 1px solid #d0d2d7; // Tailwind's gray-500
+      border: 1px solid #d0d2d7;
       cursor: pointer;
       width: auto;
       min-width: 0;
@@ -496,9 +508,14 @@ $font-condensed: "Roboto Condensed", sans-serif;
       padding: 10px 16px;
       &:hover {
         background-color: #ededed;
-        border: 1px solid #ededed; // Tailwind's gray-500
+        border: 1px solid #ededed;
       }
     }
+  }
+
+  .loading-animation {
+    display: none;
+    transform: translateX(-4px);
   }
 }
 
