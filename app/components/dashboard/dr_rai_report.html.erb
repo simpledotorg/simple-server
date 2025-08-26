@@ -139,11 +139,15 @@
       </div>
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
-        <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
+        <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
       </div>
       <div class="action-buttons-block">
         <button class="action-button cancel-button">Cancel</button>
-        <button class="action-button save-button invisible">Create</button>
+        <button class="action-button save-button invisible">
+          <span class="loading-animation">
+            <i class=" fa-solid fa-spinner-third fa-spin"></i>
+          </span>
+          <span class="button-text">Create</span></button>
       </div>
     </div>
   <% else %>
@@ -295,6 +299,8 @@
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
+      $('.action-buttons-block .save-button').prop('disabled', true)
+      $(".save-button .button-text").text("Creating...");
       $.ajax({
         url: `/dr_rai/action_plans`,
         type: 'POST',
@@ -316,8 +322,8 @@
           window.location.reload()
         },
         error: (xhr) => {
-          // Technically there should be no error case. IF an entry is entered
-          // wrongly, removing the entry and redoing it costs little
+          $('.action-buttons-block .save-button').prop('disabled', false)
+          $(".save-button .button-text").text("Create");
         }
       });
 

@@ -29,7 +29,7 @@ module DrRai
     end
 
     def action_active
-      "Contact"
+      "Call"
     end
 
     def is_supported?(region)
