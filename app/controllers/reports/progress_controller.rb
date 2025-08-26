@@ -19,7 +19,6 @@ class Reports::ProgressController < AdminController
     start_period = @period.advance(months: months)
     range = Range.new(start_period, @period)
     @repository = Reports::Repository.new([@region], periods: range)
-    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @drug_stocks = DrugStock.latest_for_facilities_grouped_by_protocol_drug(current_facility, @for_end_of_month)
     unless @drug_stocks.empty?
       @drug_stocks_query = DrugStocksQuery.new(facilities: [current_facility],
@@ -66,12 +65,5 @@ class Reports::ProgressController < AdminController
   def set_period
     period_params = report_params[:period].presence || Reports.default_period.attributes
     @period = Period.new(period_params)
-  end
-
-  def quarterly_region_summary(repository, region)
-    data = repository.schema.send(:region_summaries)
-    quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
-    cut_off = Period.new(type: :quarter, value: 1.year.ago.to_period.to_quarter_period.value.to_s)
-    quarterlies[region].select { |k, _| k > cut_off }
   end
 end
