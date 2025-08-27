@@ -22,6 +22,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
   end
 
   def custom_indicators
+    return nil if @lite
     return [] unless region.source_type == "Facility"
     DrRai::Indicator.all.filter do |indicator|
       indicator.is_supported?(region)
