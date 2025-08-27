@@ -94,7 +94,7 @@
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
-          <p class="activity-promise d-none"><span class="active-action"></span> <span class="highlight target-number">500</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
+          <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
@@ -115,7 +115,7 @@
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
-          <p class="activity-promise d-none"><span class="active-action"></span> <span class="highlight target-number">500</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
+          <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
           <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
@@ -139,11 +139,15 @@
       </div>
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
-        <textarea class="custom-actions-list" rows="4" placeholder="Write actions or select from list below..."></textarea>
+        <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
       </div>
       <div class="action-buttons-block">
         <button class="action-button cancel-button">Cancel</button>
-        <button class="action-button save-button invisible">Create</button>
+        <button class="action-button save-button invisible">
+          <span class="loading-animation">
+            <i class=" fa-solid fa-spinner-third fa-spin"></i>
+          </span>
+          <span class="button-text">Create</span></button>
       </div>
     </div>
   <% else %>
@@ -262,16 +266,22 @@
       }
     })
 
-    $('.goal-input-block input').on('blur keypress', (e) => {
+    $('.goal-input-block input').on('blur keyup', (e) => {
       $('.missing-input-warning').addClass('d-none')
     })
 
-    $('#step-2-numeric .goal-input-block input').on('blur keypress', (e) => {
+    $('#step-2-numeric .goal-input-block input').on('blur keyup', (e) => {
       activityPromise.removeClass('d-none')
-      $('#dr-rai--sidebar').data('target-value', $(e.currentTarget).val())
+      var inputValue
+      if ($(e.currentTarget).val() === '') {
+        inputValue = 0
+      } else {
+        inputValue = parseInt($(e.currentTarget).val())
+      }
+      $('#dr-rai--sidebar').data('target-value', inputValue)
     })
 
-    $('#step-2-percent .goal-input-block input').on('blur keypress', (e) => {
+    $('#step-2-percent .goal-input-block input').on('blur keyup', (e) => {
       var inputValue
       if ($(e.currentTarget).val() === '') {
         inputValue = 0
@@ -289,6 +299,8 @@
     })
 
     $('.action-buttons-block .save-button').on('click', (e) => {
+      $('.action-buttons-block .save-button').prop('disabled', true)
+      $(".save-button .button-text").text("Creating...");
       $.ajax({
         url: `/dr_rai/action_plans`,
         type: 'POST',
@@ -310,8 +322,8 @@
           window.location.reload()
         },
         error: (xhr) => {
-          // Technically there should be no error case. IF an entry is entered
-          // wrongly, removing the entry and redoing it costs little
+          $('.action-buttons-block .save-button').prop('disabled', false)
+          $(".save-button .button-text").text("Create");
         }
       });
 
