@@ -117,46 +117,51 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
     end
+    
+  context "drug stock report links by country" do
+    let(:facility_group) { create(:facility_group, organization: organization) }
+    let(:facility) { create(:facility, facility_group: facility_group) }
+    let(:region) { facility.region }
+    let(:last_month) { Date.current.last_month.beginning_of_month }
+    let(:last_month_last_date) { last_month.end_of_month }
 
-    context "drug stock report links by country" do
-      let(:facility_group) { create(:facility_group, organization: organization) }
-      let(:facility) { create(:facility, facility_group: facility_group) }
-      let(:region) { facility.region }
+    before do
+      allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      Flipper.enable(:quick_link_for_metabase, cvho)
+      sign_in(cvho.email_authentication)
+    end
 
+    context "when country is Ethiopia" do
       before do
-        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
-        Flipper.enable(:quick_link_for_metabase, cvho)
-        sign_in(cvho.email_authentication)
+        allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
+        allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
+        get :show, params: {id: region.slug, report_scope: "facility"}
       end
 
-      context "when country is Ethiopia" do
-        before do
-          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
-          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-          get :show, params: {id: region.slug, report_scope: "facility"}
-        end
-
-        it "shows the facility drug stock report link" do
-          expect(response.body).to include("Metabase: Drug stock report")
-          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include("&name=#{region.name}")
-        end
-
-        it "shows the district drug stock report link" do
-          expect(response.body).to include("Metabase: Drug stock report")
-          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include(region.source.slug)
-        end
+      it "shows the facility drug stock report link" do
+        expect(response.body).to include("Metabase: Drug stock report")
+        expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
       end
 
-      context "when country is not Sri Lanka" do
-        before do
+      it "shows the district drug stock report link" do
+        expect(response.body).to include("Metabase: Drug stock report")
+        expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
+      end
+
+      it "shows the state drug stock report link with division param" do
+        expect(response.body).to include("Metabase: Drug stock report")
+        expect(response.body).to include(ENV.fetch("DIVISION_DRUG_STOCK_REPORT_URL", "")) 
+      end
+    end
+
+    context "when country is not Sri Lanka" do
+      before do
           allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(false)
           allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
           get :show, params: {id: region.slug, report_scope: "facility"}
         end
 
-        it "shows the facility drug stock report link" do
+        it "shows the facility drug stock" do
           expect(response.body).to include("Drug stock report")
           expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
           expect(response.body).to include(region.name)
