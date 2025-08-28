@@ -14,4 +14,13 @@ describe DrRai::QueryFactory do
       end
     end
   end
+
+  describe "months between" do
+    context "default" do
+      it "is 12 months" do
+        qf = DrRai::QueryFactory.new(nil, nil)
+        expect(qf.months_between).to eq 12
+      end
+    end
+  end
 end
