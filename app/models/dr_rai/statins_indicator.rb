@@ -5,7 +5,7 @@ module DrRai
     def datasource(region)
       @region = region
       @query ||= DrRai::Data::Statin.chartable
-      if @query.keys.include? region.name
+      if @query.key? region.name
         @query[region.name]
       else
         @query[region.slug]

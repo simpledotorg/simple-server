@@ -32,7 +32,7 @@ class DrRai::Indicator < ApplicationRecord
   def has_action_plans?
     @region_exists ||= DrRai::ActionPlan
       .joins(:dr_rai_indicator)
-      .where(dr_rai_indicator: { type: type })
+      .where(dr_rai_indicator: {type: type})
       .exists?
   end
 
