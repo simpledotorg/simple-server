@@ -29,25 +29,36 @@ class DrRai::Indicator < ApplicationRecord
     Period.new(type: :quarter, value: target.period)
   end
 
+  def has_action_plans?
+    @region_exists ||= DrRai::ActionPlan
+      .joins(:dr_rai_indicator)
+      .where(dr_rai_indicator: { type: type })
+      .exists?
+  end
+
   def target_type
     DrRai::Target::TYPES[target_type_frontend]
   end
 
   def numerator(region, the_period = period)
+    0 unless is_supported?(region)
     numerators(region)[the_period]
   end
 
   def denominator(region, the_period = period)
+    0 unless is_supported?(region)
     denominators(region)[the_period]
   end
 
   def numerators(region)
+    [] unless is_supported?(region)
     datasource(region).map do |t, data|
       [t, data[numerator_key]]
     end.to_h
   end
 
   def denominators(region)
+    [] unless is_supported?(region)
     datasource(region).map do |t, data|
       [t, data[denominator_key]]
     end.to_h
