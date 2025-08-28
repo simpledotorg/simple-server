@@ -45,8 +45,7 @@ module DrRai
     end
 
     def is_supported?(region)
-      true
-      # @is_supported ||= (datasource(region).present? && true)
+      @is_supported ||= (datasource(region).present? && true)
     end
   end
 end
