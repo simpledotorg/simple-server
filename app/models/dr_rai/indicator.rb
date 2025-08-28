@@ -34,20 +34,25 @@ class DrRai::Indicator < ApplicationRecord
   end
 
   def numerator(region, the_period = period)
+    debugger if type == "DrRai::StatinsIndicator"
+    0 unless is_supported?(region)
     numerators(region)[the_period]
   end
 
   def denominator(region, the_period = period)
+    0 unless is_supported?(region)
     denominators(region)[the_period]
   end
 
   def numerators(region)
+    [] unless is_supported?(region)
     datasource(region).map do |t, data|
       [t, data[numerator_key]]
     end.to_h
   end
 
   def denominators(region)
+    [] unless is_supported?(region)
     datasource(region).map do |t, data|
       [t, data[denominator_key]]
     end.to_h
