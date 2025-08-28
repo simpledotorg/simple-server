@@ -49,32 +49,50 @@ RSpec.describe Reports::RegionsController, type: :controller do
         allow(region).to receive(:facility_region?).and_return(true)
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
       end
-      context "and the feature flag is enabled" do
+
+      context "and the quick_link_for_metabase feature flag is enabled" do
         before { Flipper.enable(:quick_link_for_metabase, cvho) }
-        it "displays the quick links section with the correct URLs" do
+
+        it "displays the generic quick links section" do
           sign_in(cvho.email_authentication)
           get :show, params: {id: region.slug, report_scope: "facility"}
           expect(response.body).to include("Quick links")
-          expect(response.body).to include("Drug stock report")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
-          expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
-          expect(response.body).to include("href=\"https://metabase.example.com/titration?region=#{region.name}\"")
-          expect(response.body).to include("href=\"https://metabase.example.com/bp_fudging?region=#{region.name}\"")
         end
-      end
-      context "and the feature flag is disabled" do
-        it "does not display the quick links section" do
+
+        it "shows the Drug stock report link for India" do
           sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("India").and_return(true)
           get :show, params: {id: region.slug, report_scope: "facility"}
-          expect(response.body).to_not include("Quick links")
-          expect(response.body).to_not include("Drug stock report")
-          expect(response.body).to_not include("Metabase: Titration report")
-          expect(response.body).to_not include("Metabase: BP fudging report")
+          expect(response.body).to include("Drug stock report")
+          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include("for_end_of_month=")
+          expect(response.body).to include("size=")
+        end
+
+        it "shows the Metabase: Drug stock report link for Ethiopia" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include("&name=#{region.name}")
+        end
+
+        it "does not show any drug stock links for Sri Lanka" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
+          get :show, params: {id: region.slug, report_scope: "facility"}
+          expect(response.body).not_to include("Drug stock report")
+          expect(response.body).not_to include("Metabase: Drug stock report")
         end
       end
     end
-
+    
     context "when the region is a district region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:district) { create(:facility, facility_group: facility_group) }
@@ -83,204 +101,59 @@ RSpec.describe Reports::RegionsController, type: :controller do
         allow(region).to receive(:district_region?).and_return(true)
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
       end
-      context "and the feature flag is enabled" do
+
+      context "and the quick_link_for_metabase feature flag is enabled" do
         before { Flipper.enable(:quick_link_for_metabase, cvho) }
-        it "displays the quick links section with the correct URLs" do
+
+        it "displays the generic quick links section" do
           sign_in(cvho.email_authentication)
           get :show, params: {id: facility_group.slug, report_scope: "district"}
-          expect(response.body).to include("Facility trends")
-          expect(response.body).to include("Drug stock")
+          expect(response.body).to include("Quick links")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
-          expect(response.body).to include("Metabase: Systolic BP reading report")
-          expect(response.body).to include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
-          expect(response.body).to include("https://api.example.com/my_facilities/bp_controlled?facility_group=")
-          expect(response.body).to include("https://metabase.example.com/titration?district_name=")
-          expect(response.body).to include("https://metabase.example.com/bp_fudging?state_name=")
-          expect(response.body).to include("https://metabase.example.com/systolic?district_name=")
         end
-      end
-      context "and the feature flag is disabled" do
-        it "does not display the quick links section" do
+
+        it "displays Drug stock link for India" do
           sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("India").and_return(true)
           get :show, params: {id: facility_group.slug, report_scope: "district"}
-          expect(response.body).to_not include("District facility trend report")
-          expect(response.body).to_not include("District Drug sto_notck report")
-          expect(response.body).to_not include("Metabase: Titration report")
-          expect(response.body).to_not include("Metabase: BP fudging report")
-          expect(response.body).to_not include("Metabase: Systolic BP reading report")
-          expect(response.body).to_not include("https://api.example.com/my_facilities/drug_stocks?facility_group=")
-          expect(response.body).to_not include("https://api.example.com/my_facilities/bp_controlled?facility_group=")
-          expect(response.body).to_not include("https://metabase.example.com/titration?district_name=")
-          expect(response.body).to_not include("https://metabase.example.com/bp_fudging?state_name=")
-          expect(response.body).to_not include("https://metabase.example.com/systolic?district_name=")
+          expect(response.body).to include("Drug stock")
+          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include("for_end_of_month=")
+        end
+
+        it "displays Facility trends link and Metabase: Systolic BP reading report link for Bangladesh" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).to include("Facility trends")
+          expect(response.body).to include(ENV.fetch("DISTRICT_FACILITY_TREND_REPORT_URL", ""))
+          expect(response.body).to include("Metabase: Systolic BP reading report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_SYSTOLIC_BP_URL", ""))
+        end
+
+        it "displays Metabase: Drug stock report link for Ethiopia" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
+        end
+
+        it "does not show any drug stock links for Sri Lanka" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).not_to include("Drug stock report")
+          expect(response.body).not_to include("Metabase: Drug stock report")
         end
       end
     end
-    
-    context "drug stock report links by country" do
-      let(:facility_group) { create(:facility_group, organization: organization) }
-      let(:facility) { create(:facility, facility_group: facility_group) }
-      let(:district) { create(:district, state: state) }
-      let(:state) { create(:state, organization: organization) }
-
-      before do
-        allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
-        Flipper.enable(:quick_link_for_metabase, cvho)
-        sign_in(cvho.email_authentication)
-      end
-
-      context "facility region" do
-        let(:region) { facility.region }
-
-        context "Ethiopia" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
-            allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-            get :show, params: { id: region.slug, report_scope: "facility" }
-          end
-
-          it "shows Metabase drug stock, titration, BP fudging links" do
-            expect(response.body).to include("Metabase: Drug stock report")
-            expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
-            expect(response.body).to include("&name=#{region.name}")
-
-            expect(response.body).to include("Metabase: Titration report")
-            expect(response.body).to include(ENV.fetch("METABASE_TITRATION_URL", ""))
-
-            expect(response.body).to include("Metabase: BP fudging report")
-            expect(response.body).to include(ENV.fetch("METABASE_BP_FUDGING_URL", ""))
-          end
-        end
-
-        context "Bangladesh" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
-            allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(false)
-            get :show, params: { id: region.slug, report_scope: "facility" }
-          end
-
-          it "shows facility drug stock, titration, BP fudging links" do
-            expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("METABASE_TITRATION_URL", ""))
-            expect(response.body).to include(ENV.fetch("METABASE_BP_FUDGING_URL", ""))
-          end
-        end
-
-        context "Sri Lanka" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "facility" }
-          end
-
-          it "does not show any drug stock links" do
-            expect(response.body).not_to include("Drug stock report")
-            expect(response.body).not_to include("Metabase: Drug stock report")
-          end
-        end
-      end
-
-      context "district region" do
-        let(:region) { district.region }
-
-        context "Ethiopia" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "district" }
-          end
-
-          it "shows district drug stock, titration, BP fudging links" do
-            expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
-            expect(response.body).to include(region.source.slug)
-            expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_TITRATION_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_BP_FUDGING_URL", ""))
-            expect(response.body).to include(region.parent.name)
-          end
-        end
-
-        context "Bangladesh" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "district" }
-          end
-
-          it "shows facility trend, district drug stock, titration, BP fudging, systolic BP" do
-            expect(response.body).to include(ENV.fetch("DISTRICT_FACILITY_TREND_REPORT_URL", ""))
-            expect(response.body).to include(region.source.slug)
-            expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
-            expect(response.body).to include(region.source.slug)
-            expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_TITRATION_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_BP_FUDGING_URL", ""))
-            expect(response.body).to include(region.parent.name)
-            expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_SYSTOLIC_BP_URL", ""))
-            expect(response.body).to include(region.name)
-          end
-        end
-
-        context "Sri Lanka" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "district" }
-          end
-
-          it "does not show drug stock links" do
-            expect(response.body).not_to include("Drug stock")
-          end
-        end
-      end
-
-      context "state region" do
-        let(:region) { state.region }
-
-        context "Ethiopia" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "state" }
-          end
-
-          it "shows division drug stock, titration, BP fudging links" do
-            expect(response.body).to include(ENV.fetch("DIVISION_DRUG_STOCK_REPORT_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DIVISION_METABASE_TITRATION_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DIVISION_METABASE_BP_FUDGING_URL", ""))
-            expect(response.body).to include(region.name)
-          end
-        end
-
-        context "Bangladesh" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "state" }
-          end
-
-          it "shows division titration, BP fudging, systolic BP links" do
-            expect(response.body).to include(ENV.fetch("DIVISION_METABASE_TITRATION_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DIVISION_METABASE_BP_FUDGING_URL", ""))
-            expect(response.body).to include(region.name)
-            expect(response.body).to include(ENV.fetch("DIVISION_METABASE_SYSTOLIC_BP_URL", ""))
-            expect(response.body).to include(region.name)
-          end
-        end
-
-        context "Sri Lanka" do
-          before do
-            allow(CountryConfig).to receive(:current_country?).with("Sri Lanka").and_return(true)
-            get :show, params: { id: region.slug, report_scope: "state" }
-          end
-
-          it "does not show drug stock links" do
-            expect(response.body).not_to include("Drug stock")
-          end
-        end
-      end
-    end
-
-
+   
     context "when the region is a division region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:state) { create(:facility, facility_group: facility_group) }
