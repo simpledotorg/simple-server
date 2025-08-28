@@ -1100,6 +1100,42 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
+-- Name: dr_rai_data_statins; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_data_statins (
+    id bigint NOT NULL,
+    aggregate_root character varying,
+    eligible_patients integer,
+    patients_prescribed_statins integer,
+    month_date timestamp without time zone,
+    percentage_statins numeric(5,2),
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dr_rai_data_statins_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_data_statins_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_data_statins_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_data_statins_id_seq OWNED BY public.dr_rai_data_statins.id;
+
+
+--
 -- Name: dr_rai_data_titrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6006,6 +6042,13 @@ ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('publ
 
 
 --
+-- Name: dr_rai_data_statins id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_statins ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_data_statins_id_seq'::regclass);
+
+
+--
 -- Name: dr_rai_data_titrations id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6256,6 +6299,14 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 ALTER TABLE ONLY public.dr_rai_actions
     ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_data_statins dr_rai_data_statins_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_data_statins
+    ADD CONSTRAINT dr_rai_data_statins_pkey PRIMARY KEY (id);
 
 
 --
@@ -7021,6 +7072,13 @@ CREATE INDEX index_dr_rai_action_plans_on_dr_rai_target_id ON public.dr_rai_acti
 --
 
 CREATE INDEX index_dr_rai_action_plans_on_region_id ON public.dr_rai_action_plans USING btree (region_id);
+
+
+--
+-- Name: index_dr_rai_data_statins_on_month_date_and_aggregate_root; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dr_rai_data_statins_on_month_date_and_aggregate_root ON public.dr_rai_data_statins USING btree (month_date, aggregate_root);
 
 
 --
@@ -8716,6 +8774,10 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250619195214'),
 ('20250619222520'),
 ('20250619225935'),
-('20250814092225'),
 ('20250813062338'),
-('20250813064810');
+('20250813064810'),
+('20250814092225'),
+('20250827134615'),
+('20250828111954');
+
+

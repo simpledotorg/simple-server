@@ -35,7 +35,8 @@ module DrRai
           set
             follow_up_count = incoming.follow_up_count,
             titrated_count = incoming.titrated_count,
-            titration_rate = incoming.titration_rate;
+            titration_rate = incoming.titration_rate,
+            updated_at = now(); -- ...for good bookkeeping
       SQL
     end
 

@@ -45,8 +45,8 @@ blocks:
           parallelism: 32
           commands:
             - checkout
-            - docker run -d --name postgres14-$SEMAPHORE_JOB_INDEX -p 543$SEMAPHORE_JOB_INDEX:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:14
-            - export DATABASE_URL=postgresql://postgres@localhost:543$SEMAPHORE_JOB_INDEX
+            # - docker run -d --name postgres14-$SEMAPHORE_JOB_INDEX -p 543$SEMAPHORE_JOB_INDEX:5432 -e POSTGRES_HOST_AUTH_METHOD=trust postgres:14
+            # - export DATABASE_URL=postgresql://postgres@localhost:543$SEMAPHORE_JOB_INDEX
             - export TEST_ENV_NUMBER=$SEMAPHORE_JOB_INDEX
             - script/semaphore_setup
             - rspec_booster --job $SEMAPHORE_JOB_INDEX/$SEMAPHORE_JOB_COUNT
