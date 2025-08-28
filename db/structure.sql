@@ -1,8 +1,3 @@
-\restrict phmOCum9U01I5FUmpU6iiQ5WawLLzwIDxSP2u6DARWPGkkW52gCzl21VA2B5GR7
-
--- Dumped from database version 14.18 (Homebrew)
--- Dumped by pg_dump version 14.19 (Homebrew)
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -8611,8 +8606,6 @@ ALTER TABLE ONLY public.patient_attributes
 --
 -- PostgreSQL database dump complete
 --
-
-\unrestrict phmOCum9U01I5FUmpU6iiQ5WawLLzwIDxSP2u6DARWPGkkW52gCzl21VA2B5GR7
 
 SET search_path TO "$user", public;
 
