@@ -15,4 +15,8 @@ class ApplicationRecord < ActiveRecord::Base
   def readonly?
     RequestStore[:readonly] || @readonly
   end
+
+  def self.domain_attributes
+    attribute_names - %w[id created_at updated_at deleted_at]
+  end
 end
