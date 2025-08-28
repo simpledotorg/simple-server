@@ -29,6 +29,13 @@ class DrRai::Indicator < ApplicationRecord
     Period.new(type: :quarter, value: target.period)
   end
 
+  def has_action_plans?
+    @region_exists ||= DrRai::ActionPlan
+      .joins(:dr_rai_indicator)
+      .where(dr_rai_indicator: { type: type })
+      .exists?
+  end
+
   def target_type
     DrRai::Target::TYPES[target_type_frontend]
   end

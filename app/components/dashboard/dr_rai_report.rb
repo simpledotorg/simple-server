@@ -27,12 +27,16 @@ class Dashboard::DrRaiReport < ApplicationComponent
       )
   end
 
+  def existing_indicators
+    action_plans.map { |ap| ap.indicator.type }
+  end
+
   def custom_indicators
     return nil if @lite
     return [] unless region.source_type == "Facility"
-    DrRai::Indicator.all.filter do |indicator|
-      indicator.is_supported?(region)
-    end
+    DrRai::Indicator
+      .all
+      .filter { |indicator| indicator.is_supported?(region) }
   end
 
   def indicator_previous_numerator(indicator)
