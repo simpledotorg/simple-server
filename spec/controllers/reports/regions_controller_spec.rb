@@ -117,7 +117,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
     end
-
+    
     context "drug stock report links by country" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:facility) { create(:facility, facility_group: facility_group) }
@@ -147,6 +147,22 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
           expect(response.body).to include(region.source.slug)
         end
+
+        it "shows the facility drug stock report link" do
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DIVISION_DRUG_STOCK_REPORT_URL", ""))
+          expect(response.body).to include("&name=#{region.name}")
+        end
+        
+        it "shows the titration report link" do
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include(ENV.fetch("METABASE_TITRATION_URL", ""))
+        end
+
+        it "shows the BP fudging report link" do
+          expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include(ENV.fetch("METABASE_BP_FUDGING_URL", ""))
+        end
       end
 
       context "when country is not Sri Lanka" do
@@ -167,6 +183,30 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
           expect(response.body).to include(region.source.slug)
         end
+
+        it "shows the district titration report link" do
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_TITRATION_URL", ""))
+          expect(response.body).to include(region.name)
+        end
+
+        it "shows the district BP fudging report link" do
+          expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_BP_FUDGING_URL", ""))
+          expect(response.body).to include("district_name=#{region.name}")
+        end
+
+        it "shows the state titration report link" do
+          expect(response.body).to include("Metabase: Titration report")
+          expect(response.body).to include(ENV.fetch("DIVISION_METABASE_TITRATION_URL", ""))
+          expect(response.body).to include(region.name)
+        end
+
+        it "shows the state BP fudging report link" do
+          expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include(ENV.fetch("DIVISION_METABASE_BP_FUDGING_URL", ""))
+          expect(response.body).to include(region.name)
+        end
       end
 
       context "when country is Sri Lanka" do
@@ -182,6 +222,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
     end
+
 
     context "when the region is a division region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
