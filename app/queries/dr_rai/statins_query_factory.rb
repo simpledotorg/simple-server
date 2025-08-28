@@ -3,13 +3,13 @@ module DrRai
     INSERTER_SQL = "insert into #{DrRai::Data::Statin.table_name} (month_date, aggregate_root, eligible_patients, patients_prescribed_statins, percentage_statins, created_at, updated_at)".freeze
 
     CONFLICT_HANDLER_SQL = <<~SQL
-    on conflict (month_date, aggregate_root) do
-      update
-        set
-          eligible_patients = excluded.eligible_patients,
-          patients_prescribed_statins = excluded.patients_prescribed_statins,
-          percentage_statins = excluded.percentage_statins,
-          updated_at = now(); -- ...for good bookkeeping
+      on conflict (month_date, aggregate_root) do
+        update
+          set
+            eligible_patients = excluded.eligible_patients,
+            patients_prescribed_statins = excluded.patients_prescribed_statins,
+            percentage_statins = excluded.percentage_statins,
+            updated_at = now(); -- ...for good bookkeeping
     SQL
 
     def inserter

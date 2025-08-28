@@ -1,4 +1,4 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe DrRai::Data::Statin, type: :model do
   context "data transformations" do

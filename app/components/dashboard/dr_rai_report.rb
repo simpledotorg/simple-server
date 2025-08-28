@@ -1,6 +1,6 @@
 # Root component for Dr. Rai Reports
 class Dashboard::DrRaiReport < ApplicationComponent
-  attr_reader :quarterlies, :region, :action_plans
+  attr_reader :quarterlies, :region
   attr_accessor :selected_period
 
   def initialize(quarterlies, region_slug, selected_quarter = nil, lite = false)

@@ -55,7 +55,7 @@ module DrRai
 
     def months_between
       (@to_date.year * 12 + @to_date.month) - (@from_date.year * 12 + @from_date.month)
-   end
+    end
 
     private
 
