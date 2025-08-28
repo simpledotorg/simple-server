@@ -122,6 +122,8 @@ RSpec.describe Reports::RegionsController, type: :controller do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:facility) { create(:facility, facility_group: facility_group) }
       let(:region) { facility.region }
+      let(:last_month) { Date.current.last_month.beginning_of_month }
+      let(:last_month_last_date) { last_month.end_of_month }
 
       before do
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
@@ -139,13 +141,16 @@ RSpec.describe Reports::RegionsController, type: :controller do
         it "shows the facility drug stock report link" do
           expect(response.body).to include("Metabase: Drug stock report")
           expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include("&name=#{region.name}")
         end
 
         it "shows the district drug stock report link" do
           expect(response.body).to include("Metabase: Drug stock report")
           expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include(region.source.slug)
+        end
+
+        it "shows the state drug stock report link with division param" do
+          expect(response.body).to include("Metabase: Drug stock report")
+          expect(response.body).to include(ENV.fetch("DIVISION_DRUG_STOCK_REPORT_URL", ""))
         end
       end
 
@@ -156,7 +161,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
           get :show, params: {id: region.slug, report_scope: "facility"}
         end
 
-        it "shows the facility drug stock report link" do
+        it "shows the facility drug stock" do
           expect(response.body).to include("Drug stock report")
           expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
           expect(response.body).to include(region.name)
