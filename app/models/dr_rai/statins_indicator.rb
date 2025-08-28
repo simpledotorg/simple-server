@@ -4,8 +4,12 @@ module DrRai
 
     def datasource(region)
       @region = region
-      @query ||= StatinsQuery.new(region).call
-      @query[region.name]
+      @query ||= DrRai::Data::Statin.chartable
+      if @query.keys.include? region.name
+        @query[region.name]
+      else
+        @query[region.slug]
+      end
     end
 
     def display_name
@@ -17,11 +21,11 @@ module DrRai
     end
 
     def numerator_key
-      raise "Undecided"
+      :patients_prescribed_statins
     end
 
     def denominator_key
-      raise "Undecided"
+      :eligible_patients
     end
 
     def unit
@@ -41,7 +45,8 @@ module DrRai
     end
 
     def is_supported?(region)
-      @is_supported ||= (datasource(region).present? && true)
+      true
+      # @is_supported ||= (datasource(region).present? && true)
     end
   end
 end

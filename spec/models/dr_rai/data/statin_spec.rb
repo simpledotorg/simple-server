@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe DrRai::Data::Statin, type: :model do
   context "data transformations" do
     # from
-    # month_date, aggregate_root, eligible_patients, patients_prescribed_statins, percentage_statins
+    # month_date, aggregate_root, eligible_patients, patients_prescribed_statins, percentage_statin
     # May 1 2025, Some Hospital, 120, 14, 11.67
     # to
     # {

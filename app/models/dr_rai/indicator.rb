@@ -34,6 +34,7 @@ class DrRai::Indicator < ApplicationRecord
   end
 
   def numerator(region, the_period = period)
+    debugger if type == "DrRai::StatinsIndicator"
     0 unless is_supported?(region)
     numerators(region)[the_period]
   end

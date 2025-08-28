@@ -17,6 +17,8 @@ module DrRai
 
         if klazz <= Data::Titration
           instance = DrRai::TitrationQueryFactory.new(from, to)
+        elsif klazz <= Data::Statin
+          instance = DrRai::StatinsQueryFactory.new(from, to)
         else
           raise "Unsupported"
         end
@@ -50,6 +52,10 @@ module DrRai
       # see https://www.postgresql.org/docs/current/sql-merge.html#id-1.9.3.156.9
       raise "Unimplemented"
     end
+
+    def months_between
+      (@to_date.year * 12 + @to_date.month) - (@from_date.year * 12 + @from_date.month)
+   end
 
     private
 

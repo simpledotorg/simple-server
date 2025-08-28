@@ -1,3 +1,8 @@
+\restrict phmOCum9U01I5FUmpU6iiQ5WawLLzwIDxSP2u6DARWPGkkW52gCzl21VA2B5GR7
+
+-- Dumped from database version 14.18 (Homebrew)
+-- Dumped by pg_dump version 14.19 (Homebrew)
+
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -7075,6 +7080,13 @@ CREATE INDEX index_dr_rai_action_plans_on_region_id ON public.dr_rai_action_plan
 
 
 --
+-- Name: index_dr_rai_data_statins_on_month_date_and_aggregate_root; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dr_rai_data_statins_on_month_date_and_aggregate_root ON public.dr_rai_data_statins USING btree (month_date, aggregate_root);
+
+
+--
 -- Name: index_dr_rai_targets_on_dr_rai_indicators_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8600,6 +8612,8 @@ ALTER TABLE ONLY public.patient_attributes
 -- PostgreSQL database dump complete
 --
 
+\unrestrict phmOCum9U01I5FUmpU6iiQ5WawLLzwIDxSP2u6DARWPGkkW52gCzl21VA2B5GR7
+
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
@@ -8770,6 +8784,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250813062338'),
 ('20250813064810'),
 ('20250814092225'),
-('20250827134615');
+('20250827134615'),
+('20250828111954');
 
 
