@@ -12,16 +12,16 @@ blocks:
             - checkout
             - script/argocd_deployment.sh $SANDBOX_ARGOCD_ENDPOINT $ARGOCD_USERNAME $SANDBOX_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
     dependencies: []
-#  - name: Deploy to QA
-#    task:
-#      secrets:
-#        - name: argocd
-#      jobs:
-#        - name: Deploy to QA
-#          commands:
-#            - checkout
-#            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
-#    dependencies: []
+  - name: Deploy to QA
+    task:
+      secrets:
+        - name: argocd
+      jobs:
+        - name: Deploy to QA
+          commands:
+            - checkout
+            - script/argocd_deployment.sh $QA_ARGOCD_ENDPOINT $ARGOCD_USERNAME $QA_ARGOCD_PASSWORD $SEMAPHORE_GIT_SHA
+    dependencies: []
 queue:
   name: Deployment queue
   scope: project
