@@ -314,15 +314,27 @@ $font-condensed: "Roboto Condensed", sans-serif;
   .link-button {
     background-color: transparent;
     border: none;
-    color: #007eff;
-    cursor: pointer;
     font-size: 16px;
     padding: 5px 0px;
     text-align: left;
 
-    &:hover {
-      text-decoration: underline;
-      text-underline-offset: 3px;
+    &-active {
+      cursor: pointer;
+      color: #007eff;
+
+      &:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+    }
+
+    &-inactive {
+      color: #8cc5ff;
+      cursor: not-allowed;
+
+      &:hover {
+        text-decoration: none;
+      }
     }
   }
 
