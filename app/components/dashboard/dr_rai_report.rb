@@ -1,6 +1,6 @@
 # Root component for Dr. Rai Reports
 class Dashboard::DrRaiReport < ApplicationComponent
-  attr_reader :quarterlies, :indicators, :region, :action_plans
+  attr_reader :quarterlies, :region, :action_plans
   attr_accessor :selected_period
 
   def initialize(quarterlies, region_slug, selected_quarter = nil, lite = false)
@@ -12,13 +12,19 @@ class Dashboard::DrRaiReport < ApplicationComponent
     else
       Period.new(type: :quarter, value: selected_quarter)
     end
-    @action_plans = DrRai::ActionPlan
+  end
+
+  def indicators
+    @indicators ||= custom_indicators
+  end
+
+  def action_plans
+    @action_plans ||= DrRai::ActionPlan
       .includes(:dr_rai_target)
       .where(
         region: @region,
         dr_rai_target: {period: @selected_period.value.to_s}
       )
-    @indicators = custom_indicators
   end
 
   def custom_indicators
