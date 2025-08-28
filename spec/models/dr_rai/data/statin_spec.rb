@@ -24,7 +24,7 @@ RSpec.describe DrRai::Data::Statin, type: :model do
     end
 
     it "uses facility_name as outer_grouping" do
-      expect(described_class.instance_variable_get(:@chartable_outer_grouping)).to eq :facility_name
+      expect(described_class.instance_variable_get(:@chartable_outer_grouping)).to eq :aggregate_root
     end
   end
 end
