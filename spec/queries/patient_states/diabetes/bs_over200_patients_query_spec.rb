@@ -11,11 +11,17 @@ describe PatientStates::Diabetes::BsOver200PatientsQuery do
   describe "#call" do
     it "returns all the patients with a blood sugar measurement over 200 in a region as of the given period" do
       facility_1_bs_below_200_patients = create_list(:patient, 1, :bs_below_200, assigned_facility: regions[:facility_1])
+      facility_1_bs_below_200_patients_ids = facility_1_bs_below_200_patients.map(&:id)
       facility_1_bs_200_to_300_patients = create_list(:patient, 1, :bs_200_to_300, assigned_facility: regions[:facility_1])
+      facility_1_bs_200_to_300_patients_ids = facility_1_bs_200_to_300_patients.map(&:id)
       facility_1_bs_over_300_patients = create_list(:patient, 1, :bs_over_300, assigned_facility: regions[:facility_1])
+      facility_1_bs_over_300_patients_ids = facility_1_bs_over_300_patients.map(&:id)
       facility_2_bs_below_200_patients = create_list(:patient, 1, :bs_below_200, assigned_facility: regions[:facility_2])
+      facility_2_bs_below_200_patients_ids = facility_2_bs_below_200_patients.map(&:id)
       facility_2_bs_200_to_300_patients = create_list(:patient, 1, :bs_200_to_300, assigned_facility: regions[:facility_2])
+      facility_2_bs_200_to_300_patients_ids = facility_2_bs_200_to_300_patients.map(&:id)
       facility_2_bs_over_300_patients = create_list(:patient, 1, :bs_over_300, assigned_facility: regions[:facility_2])
+      facility_2_bs_over_300_patients_ids = facility_2_bs_over_300_patients.map(&:id)
       refresh_views views: %w[
         Reports::Month
         Reports::Facility
@@ -26,33 +32,20 @@ describe PatientStates::Diabetes::BsOver200PatientsQuery do
         Reports::PatientState
       ]
 
-      expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_1].region, period)
-                                                   .call
-                                                   .map(&:patient_id))
-        .to match_array(facility_1_bs_200_to_300_patients.map(&:id) + facility_1_bs_over_300_patients.map(&:id))
-
-      expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_2].region, period)
-                                                   .call
-                                                   .map(&:patient_id))
-        .to match_array(facility_2_bs_200_to_300_patients.map(&:id) + facility_2_bs_over_300_patients.map(&:id))
-
-      expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_1].region, period)
-                                                   .call
-                                                   .map(&:patient_id))
-        .not_to include(*facility_1_bs_below_200_patients.map(&:id))
-
-      expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_2].region, period)
-                                                   .call
-                                                   .map(&:patient_id))
-        .not_to include(*facility_2_bs_below_200_patients.map(&:id))
+      f1_res = PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_1].region, period).call.map(&:patient_id)
+      f2_res = PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:facility_2].region, period).call.map(&:patient_id)
+      expect(f1_res).to match_array(facility_1_bs_200_to_300_patients_ids + facility_1_bs_over_300_patients_ids)
+      expect(f2_res).to match_array(facility_2_bs_200_to_300_patients_ids + facility_2_bs_over_300_patients_ids)
+      expect(f1_res).not_to include(*facility_1_bs_below_200_patients_ids)
+      expect(f2_res).not_to include(*facility_2_bs_below_200_patients_ids)
 
       expect(PatientStates::Diabetes::BsOver200PatientsQuery.new(regions[:region].region, period)
                                                    .call
                                                    .map(&:patient_id))
-        .to match_array(facility_1_bs_200_to_300_patients.map(&:id) +
-          facility_1_bs_over_300_patients.map(&:id) +
-          facility_2_bs_200_to_300_patients.map(&:id) +
-          facility_2_bs_over_300_patients.map(&:id))
+        .to match_array(facility_1_bs_200_to_300_patients_ids +
+          facility_1_bs_over_300_patients_ids +
+          facility_2_bs_200_to_300_patients_ids +
+          facility_2_bs_over_300_patients_ids)
     end
 
     it "returns same number of patients with a blood sugar measurement over 200 as in the reporting facility states" do
