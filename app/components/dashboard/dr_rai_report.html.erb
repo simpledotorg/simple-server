@@ -74,7 +74,7 @@
           <%# <button class="link-button edit">Edit</button> %>
           <ul>
             <% indicators.each do |indicator| %>
-              <li><button class="link-button advancer" data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>" data-indicator-action-active="<%= indicator.action_active %>" data-indicator-action-passive="<%= indicator.action_passive %>" data-indicator-unit="<%= indicator.unit %>"><%= indicator.display_name %></button></li>
+              <li><button role="button" class="link-button advancer <%= indicator.has_action_plans? ? "link-button-inactive" : "link-button-active" %>" <%= "disabled" if indicator.has_action_plans? %> data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>" data-indicator-action-active="<%= indicator.action_active %>" data-indicator-action-passive="<%= indicator.action_passive %>" data-indicator-unit="<%= indicator.unit %>"><%= indicator.display_name %></button></li>
             <% end %>
           </ul>
         </div>
