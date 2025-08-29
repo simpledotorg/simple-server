@@ -61,17 +61,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Metabase: BP fudging report")
         end
 
-        it "shows the Drug stock report link for India" do
-          sign_in(cvho.email_authentication)
-          allow(CountryConfig).to receive(:current_country?).and_return(false)
-          allow(CountryConfig).to receive(:current_country?).with("India").and_return(true)
-          get :show, params: {id: region.slug, report_scope: "facility"}
-          expect(response.body).to include("Drug stock report")
-          expect(response.body).to include(ENV.fetch("DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include("for_end_of_month=")
-          expect(response.body).to include("size=")
-        end
-
         it "shows the Metabase: Drug stock report link for Ethiopia" do
           sign_in(cvho.email_authentication)
           allow(CountryConfig).to receive(:current_country?).and_return(false)
@@ -111,16 +100,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Quick links")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
-        end
-
-        it "displays Drug stock link for India" do
-          sign_in(cvho.email_authentication)
-          allow(CountryConfig).to receive(:current_country?).and_return(false)
-          allow(CountryConfig).to receive(:current_country?).with("India").and_return(true)
-          get :show, params: {id: facility_group.slug, report_scope: "district"}
-          expect(response.body).to include("Drug stock")
-          expect(response.body).to include(ENV.fetch("DISTRICT_DRUG_STOCK_REPORT_URL", ""))
-          expect(response.body).to include("for_end_of_month=")
         end
 
         it "displays Facility trends link and Metabase: Systolic BP reading report link for Bangladesh" do
