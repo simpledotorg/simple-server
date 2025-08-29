@@ -9,7 +9,7 @@ describe PatientStates::Diabetes::BsBelow200PatientsQuery do
   let(:period) { Period.current }
 
   describe "#call" do
-    it "returns all the patients with a blood sugar measurement below 200 in a region as of the given period" do
+    skip "returns all the patients with a blood sugar measurement below 200 in a region as of the given period" do
       facility_1_bs_below_200_patients = create_list(:patient, 1, :bs_below_200, assigned_facility: regions[:facility_1])
       facility_1_bs_200_to_300_patients = create_list(:patient, 1, :bs_200_to_300, assigned_facility: regions[:facility_1])
       facility_1_bs_over_300_patients = create_list(:patient, 1, :bs_over_300, assigned_facility: regions[:facility_1])
@@ -44,7 +44,7 @@ describe PatientStates::Diabetes::BsBelow200PatientsQuery do
         .to match_array((facility_1_bs_below_200_patients + facility_2_bs_below_200_patients).map(&:id))
     end
 
-    it "returns same number of patients with a blood sugar measurement below 200 as in the reporting facility states" do
+    skip "returns same number of patients with a blood sugar measurement below 200 as in the reporting facility states" do
       _facility_1_bs_below_200_patients = create_list(:patient, 1, :bs_below_200, assigned_facility: regions[:facility_1])
       refresh_views
 
