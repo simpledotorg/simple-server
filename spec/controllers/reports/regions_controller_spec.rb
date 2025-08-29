@@ -81,7 +81,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
     end
-    
+
     context "when the region is a district region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:district) { create(:facility, facility_group: facility_group) }
@@ -132,7 +132,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
         end
       end
     end
-   
+
     context "when the region is a division region" do
       let(:facility_group) { create(:facility_group, organization: organization) }
       let(:state) { create(:facility, facility_group: facility_group) }
