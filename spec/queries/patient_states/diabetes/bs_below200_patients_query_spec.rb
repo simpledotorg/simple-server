@@ -28,14 +28,14 @@ describe PatientStates::Diabetes::BsBelow200PatientsQuery do
       f2_res = PatientStates::Diabetes::BsBelow200PatientsQuery.new(regions[:facility_2].region, period).call.map(&:patient_id)
 
       expect(f1_res).to match_array(facility_1_bs_below_200_patients_ids)
-      expect(f2_res).to match_array(facility_2_bs_below_200_patients_ids)
       expect(f1_res).not_to include(*(facility_1_bs_200_to_300_patients_ids + facility_1_bs_over_300_patients_ids))
+      expect(f2_res).to match_array(facility_2_bs_below_200_patients_ids)
       expect(f2_res).not_to include(*(facility_2_bs_200_to_300_patients_ids + facility_2_bs_over_300_patients_ids))
 
       expect(PatientStates::Diabetes::BsBelow200PatientsQuery.new(regions[:region].region, period)
                                                    .call
                                                    .map(&:patient_id))
-        .to match_array((facility_1_bs_below_200_patients + facility_2_bs_below_200_patients)_ids)
+        .to match_array((facility_1_bs_below_200_patients + facility_2_bs_below_200_patients).map(&:id))
     end
 
     it "returns same number of patients with a blood sugar measurement below 200 as in the reporting facility states" do
