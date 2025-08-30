@@ -74,7 +74,24 @@
           <%# <button class="link-button edit">Edit</button> %>
           <ul>
             <% indicators.each do |indicator| %>
-              <li><button role="button" class="link-button advancer <%= indicator.has_action_plans? ? "link-button-inactive" : "link-button-active" %>" <%= "disabled" if indicator.has_action_plans? %> data-target-type="<%= indicator.target_type %>" data-target-ui="<%= indicator.target_type_frontend %>" data-indicator-id=<%= indicator.id %> data-indicator-denominator="<%= indicator_denominator(indicator) %>" data-indicator-previous-numerator="<%= indicator_previous_numerator(indicator) %>" data-indicator-action="<%= indicator.action %>" data-indicator-action-active="<%= indicator.action_active %>" data-indicator-action-passive="<%= indicator.action_passive %>" data-indicator-unit="<%= indicator.unit %>"><%= indicator.display_name %></button></li>
+              <%= tag.li do %>
+                <%= tag.button disabled: indicator.has_action_plans?(region, selected_period), class: [
+                    "link-button advancer",
+                    indicator.has_action_plans?(region, selected_period) ? "link-button-inactive" : "link-button-active"
+                  ], data: {
+                    indicator_action: indicator.action,
+                    indicator_action_active: indicator.action_active,
+                    indicator_action_passive: indicator.action_passive,
+                    indicator_denominator: indicator_denominator(indicator),
+                    indicator_id: indicator.id,
+                    indicator_previous_numerator: indicator_previous_numerator(indicator),
+                    indicator_unit: indicator.unit,
+                    target_type: indicator.target_type,
+                    target_ui: indicator.target_type_frontend,
+                  } do %>
+                  <%= indicator.display_name %>
+                <% end %>
+              <% end %>
             <% end %>
           </ul>
         </div>
