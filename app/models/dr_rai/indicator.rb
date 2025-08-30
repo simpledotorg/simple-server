@@ -29,11 +29,22 @@ class DrRai::Indicator < ApplicationRecord
     Period.new(type: :quarter, value: target.period)
   end
 
-  def has_action_plans?
+  def has_action_plans?(region, period)
+    raise "Must use a quarter period" unless period.type == :quarter
+    raise "Must use a Region type" unless region.is_a? Region
+
     @region_exists ||= DrRai::ActionPlan
       .joins(:dr_rai_indicator)
-      .where(dr_rai_indicator: {type: type})
-      .exists?
+      .joins(:dr_rai_target)
+      .where(
+        region: region,
+        dr_rai_target: {
+          period: period.value.to_s
+        },
+        dr_rai_indicator: {
+          type: type
+        }
+      ).exists?
   end
 
   def target_type
