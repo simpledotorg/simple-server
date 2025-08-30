@@ -20,7 +20,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
 
   def action_plans
     @action_plans ||= DrRai::ActionPlan
-      .includes(:dr_rai_target)
+      .joins(:dr_rai_target)
       .where(
         region: @region,
         dr_rai_target: {period: @selected_period.value.to_s}
