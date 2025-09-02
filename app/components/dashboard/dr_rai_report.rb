@@ -86,4 +86,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
   def human_readable_period period
     period.value.to_s.tr("-", " ")
   end
+
+  def abbreviated_quarter period
+    period.value.to_s.split("-").first
+  end
 end
