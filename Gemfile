@@ -125,7 +125,6 @@ group :development, :test, :profiling do
   gem "derailed_benchmarks"
   gem "memory_profiler", require: false
   gem "prosopite"
-  gem "pg_query"
 end
 
 group :development do
