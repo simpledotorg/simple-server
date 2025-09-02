@@ -21,7 +21,7 @@ module DrRai
     end
 
     def unit
-      "overdue patients called"
+      "overdue patients"
     end
 
     def action_passive
