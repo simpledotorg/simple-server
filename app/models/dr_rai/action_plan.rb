@@ -34,6 +34,10 @@ class DrRai::ActionPlan < ApplicationRecord
     indicator.unit
   end
 
+  def passive_action
+    indicator.action_passive
+  end
+
   private
 
   def unprocessible?
