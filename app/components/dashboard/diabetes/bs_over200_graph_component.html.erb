@@ -3,7 +3,7 @@
 <% bs_over_300_summary_text = @use_who_standard ? t("bs_over_200_copy.bs_over_300.summary_fbs") : t("bs_over_200_copy.bs_over_300.summary") %>
 <% bs_200_to_299_summary_text = @use_who_standard ? t("bs_over_200_copy.bs_200_to_299.summary_fbs") : t("bs_over_200_copy.bs_200_to_299.summary") %>
 
-<div id="bs-over-200" class="d-lg-flex w-lg-50 pr-lg-2">
+<div id="bs-over-200" class="d-lg-flex min-w-0">
   <%= render Dashboard::Card::GraphComponent.new(id: "bsOver200PatientsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
       title: title_text.html_safe,

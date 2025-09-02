@@ -802,3 +802,56 @@ span.inactive {
 .no-card-gap-filler p {
   color: #a0a0a0;
 }
+
+.d-grid {
+  display: grid;
+}
+
+.grid-2-cols {
+  grid-template-columns: 1fr 1fr;
+}
+.grid-3-cols {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+@media (max-width: 990px) {
+  .grid-2-cols,
+  .grid-3-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.col-span-3 {
+  grid-column: span 3;
+}
+
+@media (max-width: 990px) {
+  .col-span-2,
+  .col-span-3 {
+    grid-column: span 1;
+  }
+}
+
+.gap-16px {
+  gap: 16px;
+}
+.min-w-0 {
+  min-width: 0;
+}
+
+.grid-mb-16px {
+  margin-bottom: 16px;
+
+  // Remove margin-bottom if inside a grid container (DM dashboard uses grid)
+  // Remove once all converted to grid items
+  @at-root {
+    .d-grid &,
+    .grid-2-cols &,
+    .grid-3-cols & {
+      margin-bottom: 0;
+    }
+  }
+}
