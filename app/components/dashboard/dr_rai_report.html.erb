@@ -19,8 +19,8 @@
                 <i class="fa-solid fa-ellipsis"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item edit" href="#">Edit</a>
-                <div class="dropdown-divider"></div>
+                <%# <a class="dropdown-item edit" href="#">Edit</a> %>
+                <%# <div class="dropdown-divider"></div> %>
                 <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
               </div>
             </div>
@@ -106,7 +106,7 @@
           <%# <button class="link-button edit">Edit</button> %>
           <div class="goal-input-block">
             <label class="goal-label-block">
-              <input type="text" placeholder="Q2 goal">
+              <input type="text" placeholder="<%= abbreviated_quarter(selected_period) %> goal">
               <span class="">%</span>
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
@@ -127,7 +127,7 @@
           <%# <button class="link-button edit">Edit</button> %>
           <div class="goal-input-block">
             <label class="goal-label-block patients">
-              <input type="text" placeholder="Q2 goal">
+              <input type="text" placeholder="<%= abbreviated_quarter(selected_period) %> goal">
               <span class="">patients</span>
             </label>
             <p class="missing-input-warning d-none">Enter a goal value</p>
