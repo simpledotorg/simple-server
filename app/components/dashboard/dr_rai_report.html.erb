@@ -38,7 +38,7 @@
             <% end %>
           </div>
           <div class="action-progress">
-          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %></p>
+          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %> <%= action_plan.passive_action %></p>
             <div class="bar">
               <div class="bar-fill" style="width: <%= action_plan.progress %>%">
                 <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
@@ -117,7 +117,7 @@
         </div>
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
-          <button class="link-button edit">Edit</button>
+          <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement"></p>
         </div>
       </div>
@@ -138,7 +138,7 @@
         </div>
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
-          <button class="link-button edit">Edit</button>
+          <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement"></p>
         </div>
       </div>
@@ -150,7 +150,7 @@
         </div>
         <div class="inactive d-none">
           <h2>What is the goal?</h2>
-          <button class="link-button edit">Edit</button>
+          <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement">Mark as done when completed</p>
         </div>
       </div>
@@ -253,7 +253,7 @@
       $('.indicator-denominator').text(indicator.denominator)
       $('.indicator-previous-numerator').text(indicator.previous_numerator)
       $('.active-action').text(indicator.active_action)
-      $('.passive-passion').text(indicator.passive_passion)
+      $('.passive-action').text(indicator.passive_action)
       $('.indicator-unit').text(indicator.unit)
       if (nextStep === 3) {
         $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
