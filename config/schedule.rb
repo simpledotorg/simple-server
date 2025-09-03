@@ -113,7 +113,7 @@ every :day, at: local("02:30 am"), roles: [:cron] do
 end
 
 every REPORTS_REFRESH_FREQUENCY, at: local(REPORTS_CACHE_REFRESH_TIME), roles: [:cron] do
-  runner "Reports::RegionCacheWarmer.call"
+  rake "db:warm_up_cache"
 end
 
 every 1.month, at: local("04:00 am"), roles: [:cron] do
