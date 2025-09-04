@@ -36,6 +36,33 @@ class Period
     end
   end
 
+  # Return a list of quarters as Period objects between two dates
+  def self.quarters_between(the_beginning, the_end)
+    begin_quarter = quarter(the_beginning)
+    end_quarter = quarter(the_end)
+
+    return [begin_quarter] if begin_quarter == end_quarter
+
+    result = []
+    should_reverse = false
+
+    if begin_quarter > end_quarter
+      tmp = begin_quarter
+      begin_quarter = end_quarter
+      end_quarter = tmp
+      should_reverse = true
+    end
+
+    while end_quarter >= begin_quarter
+      result << begin_quarter
+      begin_quarter = begin_quarter.next
+    end
+
+    return result.reverse if should_reverse
+
+    result
+  end
+
   # Return the common formatter so GroupDate can return Period keys instead of dates
   def self.formatter(period_type)
     lambda { |v| period_type == :quarter ? Period.quarter(v) : Period.month(v) }
