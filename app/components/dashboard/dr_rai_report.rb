@@ -51,8 +51,28 @@ class Dashboard::DrRaiReport < ApplicationComponent
     Period.current.to_quarter_period
   end
 
+  def current_period?
+    selected_period == current_period
+  end
+
+  def a_month_to_next_period?
+    next_month_period == current_period.next
+  end
+
+  def next_month_period
+    Period.quarter(1.month.from_now)
+  end
+
+  def future_period?
+    selected_period > current_period
+  end
+
+  def selected_next_period?
+    selected_period == current_period.next
+  end
+
   def active_period?
-    [current_period, current_period.next].include? selected_period
+    current_period? || (selected_next_period? && a_month_to_next_period?)
   end
 
   def start_of period

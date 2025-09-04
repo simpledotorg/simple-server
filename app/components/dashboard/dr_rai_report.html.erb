@@ -53,8 +53,19 @@
       </p>
     <% end %>
   </div>
-  <% if active_period? && !is_lite_version? %>
-    <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
+  <% if !is_lite_version? %>
+    <% if active_period? %>
+        <%= tag.button class: [
+          "add-action-button"
+        ], data: {
+          toggle: "canvas",
+          target: "#dr-rai--sidebar"
+        }, aria: { expanded: "false", controls: "dr-rai--sidebar" } do %>
+          &#x2b; Add an action
+        <% end %>
+    <% elsif future_period? %>
+      <button class="add-action-button" type="button" disabled>&times; Not yet available</button>
+    <% end %>
   <% end %>
 </div>
 <% unless is_lite_version? %>
