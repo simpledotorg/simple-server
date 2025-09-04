@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.7.8"
+ruby "2.7.4"
 
 git_source(:github) do |repo_name|
   repo_name = "#{repo_name}/#{repo_name}" unless repo_name.include?("/")
@@ -7,7 +7,7 @@ git_source(:github) do |repo_name|
 end
 
 gem "dotenv-rails"
-gem "rails", "6.1.7.10"
+gem "rails", "~> 6"
 gem "active_hash", "~> 2.3.0"
 gem "active_record_union"
 gem "activerecord-import"
