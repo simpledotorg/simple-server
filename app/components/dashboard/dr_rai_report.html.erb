@@ -84,7 +84,8 @@
                     indicator_action_passive: indicator.action_passive,
                     indicator_denominator: indicator_denominator(indicator),
                     indicator_id: indicator.id,
-                    indicator_previous_numerator: indicator_previous_numerator(indicator),
+                    indicator_previous_numerator: indicator_numerator(indicator, selected_period.previous),
+                    indicator_previous_denominator: indicator_denominator(indicator, selected_period.previous),
                     indicator_unit: indicator.unit,
                     target_type: indicator.target_type,
                     target_ui: indicator.target_type_frontend,
@@ -112,7 +113,7 @@
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
-          <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-previous-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
@@ -133,7 +134,7 @@
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
-          <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-previous-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
@@ -252,6 +253,7 @@
       $('.indicator-action').text(indicator.action)
       $('.indicator-denominator').text(indicator.denominator)
       $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      $('.indicator-previous-denominator').text(indicator.previous_denominator)
       $('.active-action').text(indicator.active_action)
       $('.passive-action').text(indicator.passive_action)
       $('.indicator-unit').text(indicator.unit)
@@ -359,6 +361,7 @@
           {
             'denominator': $(e.currentTarget).data('indicator-denominator'),
             'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
+            'previous_denominator': $(e.currentTarget).data('indicator-previous-denominator'),
             'action': $(e.currentTarget).data('indicator-action'),
             'passive_action': $(e.currentTarget).data('indicator-action-passive'),
             'active_action': $(e.currentTarget).data('indicator-action-active'),
