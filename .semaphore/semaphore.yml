@@ -16,7 +16,7 @@ blocks:
       jobs:
         - name: Cache everything
           commands:
-            - sem-version ruby 2.7.8
+            - sem-version ruby 2.7.4
             - checkout
             # - cache clear
             - cache restore
