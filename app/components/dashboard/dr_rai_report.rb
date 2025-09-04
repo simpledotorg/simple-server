@@ -39,12 +39,12 @@ class Dashboard::DrRaiReport < ApplicationComponent
       .filter { |indicator| indicator.is_supported?(region) }
   end
 
-  def indicator_previous_numerator(indicator)
-    indicator.numerator(region, selected_period.previous)
+  def indicator_numerator(indicator, period = selected_period)
+    indicator.numerator(region, period)
   end
 
-  def indicator_denominator(indicator)
-    indicator.denominator(region, selected_period)
+  def indicator_denominator(indicator, period = selected_period)
+    indicator.denominator(region, period)
   end
 
   def current_period
