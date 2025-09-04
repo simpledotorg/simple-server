@@ -1,11 +1,11 @@
 # Root component for Dr. Rai Reports
 class Dashboard::DrRaiReport < ApplicationComponent
-  attr_reader :quarterlies, :region
+  attr_reader :periods, :region
   attr_accessor :selected_period
 
-  def initialize(quarterlies, region_slug, selected_quarter = nil, lite = false)
+  def initialize(periods, region_slug, selected_quarter = nil, lite = false)
     @lite = lite
-    @quarterlies = quarterlies
+    @periods = periods
     @region = Region.find_by(slug: region_slug)
     @selected_period = if selected_quarter.nil?
       Period.new(type: :quarter, value: current_period.value.to_s)
@@ -51,8 +51,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
     Period.current.to_quarter_period
   end
 
-  def current_period?
-    current_period == selected_period
+  def active_period?
+    [current_period, current_period.next].include? selected_period
   end
 
   def start_of period

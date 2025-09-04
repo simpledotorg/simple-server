@@ -4,7 +4,7 @@
 <div id="dr-rai--progress">
   <% unless is_lite_version? %>
     <div class="actions-periods-navigation">
-      <% quarterlies.each do |period, info| %>
+      <% periods.each do |period| %>
         <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
       <% end %>
     </div>
@@ -53,7 +53,7 @@
       </p>
     <% end %>
   </div>
-  <% if current_period? && !is_lite_version? %>
+  <% if active_period? && !is_lite_version? %>
     <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
   <% end %>
 </div>
@@ -65,7 +65,7 @@
       <i class="fa-solid fa-xmark-large"></i>
     </button>
   </div>
-  <% if current_period? %>
+  <% if active_period? %>
     <div class="content">
       <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
       <div class="step-block" id="step-1">

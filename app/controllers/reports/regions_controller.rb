@@ -64,7 +64,7 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
-    @quarterlies = quarterly_region_summary(@repository, @region.slug)
+    @periods = dr_rai_periods
     @latest_period = Period.current
     @with_ltfu = with_ltfu?
     @with_non_contactable = with_non_contactable?
@@ -475,5 +475,9 @@ class Reports::RegionsController < AdminController
     quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
     cut_off = Period.new(type: :quarter, value: 1.year.ago.to_period.to_quarter_period.value.to_s)
     quarterlies[region].select { |k, _| k > cut_off }
+  end
+
+  def dr_rai_periods
+    Period.quarters_between(10.months.ago, 2.months.from_now)
   end
 end
