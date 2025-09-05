@@ -76,6 +76,12 @@ $font-condensed: "Roboto Condensed", sans-serif;
   &:hover {
     background: #b8d4ff !important;
   }
+  &:disabled {
+    color: #4ba1fe;
+    &:hover {
+      background: #d4e4fd !important;
+    }
+  }
 }
 
 // action card
