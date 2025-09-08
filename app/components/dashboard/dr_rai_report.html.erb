@@ -283,10 +283,10 @@
       } else {
         if (target.ui == 'percent') {
           var previousPercentage
-          if (indicator.previous_numerator < 1 || indicator.denominator == '' || indicator.denominator === undefined) {
+          if (indicator.previous_numerator < 1 || indicator.previous_denominator == '' || indicator.previous_denominator === undefined) {
             previousPercentage = 0
           } else {
-            previousPercentage = Math.round(indicator.previous_numerator / indicator.denominator * 100)
+            previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
           $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)
