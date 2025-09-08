@@ -207,4 +207,29 @@ RSpec.describe Period, type: :model do
     current_month_date = Date.parse("January 1st, 2024")
     expect(Period.month(current_month_date).ltfu_since_date).to eq("31-Jan-2023")
   end
+
+  describe ".quarters_between" do
+    around do |xmpl|
+      Timecop.freeze("2023-06-27") do
+        xmpl.run
+      end
+    end
+
+    let(:this_quarter) { Period.new type: :quarter, value: "Q2-2023" }
+    let(:last_quarter) { Period.new type: :quarter, value: "Q1-2023" }
+
+    it "lists all the quarters as periods between the two dates" do
+      expect(Period.quarters_between(5.months.ago, Date.today)).to match([last_quarter, this_quarter])
+    end
+
+    context "when the begin date happens after the end date" do
+      it "works" do
+        expect { Period.quarters_between(Date.today, 5.months.ago) }.not_to raise_error
+      end
+
+      it "reverses the order of the list" do
+        expect(Period.quarters_between(Date.today, 5.months.ago)).to match([this_quarter, last_quarter])
+      end
+    end
+  end
 end
