@@ -4,6 +4,7 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, except: [:index, :fastindex]
+  before_action :set_dr_rai_periods, only: [:show, :diabetes]
   before_action :set_page, only: [:show, :details, :diabetes]
   before_action :set_per_page, only: [:show, :details, :diabetes]
   before_action :find_region, except: [:index, :fastindex]
@@ -64,7 +65,6 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: range)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @overview_data = @presenter.call(@region)
-    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @latest_period = Period.current
     @with_ltfu = with_ltfu?
     @with_non_contactable = with_non_contactable?
@@ -176,7 +176,6 @@ class Reports::RegionsController < AdminController
     @repository = Reports::Repository.new(regions, periods: range, use_who_standard: @use_who_standard)
     @presenter = Reports::RepositoryPresenter.new(@repository)
     @data = @presenter.call(@region)
-    @quarterlies = quarterly_region_summary(@repository, @region.slug)
     @with_ltfu = with_ltfu?
     @latest_period = Period.current
 
@@ -470,10 +469,7 @@ class Reports::RegionsController < AdminController
     ((numerator.to_f / denominator) * 100).round(2)
   end
 
-  def quarterly_region_summary(repository, region)
-    data = repository.schema.send(:region_summaries)
-    quarterlies = Reports::RegionSummary.group_by(grouping: :quarter, data: data)
-    cut_off = Period.new(type: :quarter, value: 1.year.ago.to_period.to_quarter_period.value.to_s)
-    quarterlies[region].select { |k, _| k > cut_off }
+  def set_dr_rai_periods
+    @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
   end
 end
