@@ -1,20 +1,26 @@
 require "rails_helper"
 
 RSpec.describe OneOff::Opensrp::Deduplicators::ForPatient do
-  let!(:existing) { create(:patient) }
-  let!(:imported) { create(:patient, :with_dob, :without_address, :without_phone_number) }
+  let(:existing) { create(:patient) }
+  let(:imported) { create(:patient, :with_dob, :without_address, :without_phone_number) }
+  TIME_FIELDS = %i[
+    created_at
+    updated_at
+    device_created_at
+    device_updated_at
+    recorded_at
+  ]
 
   describe "#merge" do
-    described_class::CHOOSING_NEW.each do |attr|
+    described_class::CHOOSING_NEW.reject { |k| TIME_FIELDS.include?(k) }.each do |attr|
       it "prefers the new #{attr}" do
         deduplicator = described_class.new(existing.id, imported.id)
-        # deduplicator.should_debug = attr == :full_name
         merged = deduplicator.merge
         expect(merged.send(attr)).to eq(imported.send(attr))
       end
     end
 
-    described_class::CHOOSING_OLD.each do |attr|
+    described_class::CHOOSING_OLD.reject { |k| TIME_FIELDS.include?(k) }.each do |attr|
       it "prefers the old #{attr}" do
         deduplicator = described_class.new(existing.id, imported.id)
         merged = deduplicator.merge

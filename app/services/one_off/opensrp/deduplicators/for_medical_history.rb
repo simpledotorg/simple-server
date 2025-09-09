@@ -1,7 +1,7 @@
 module OneOff
   module Opensrp
     module Deduplicators
-      class ForMedicalHistory
+      class ForMedicalHistory < ForMutableEntity
         CHOOSING_NEW = %i[
           device_updated_at
           updated_at
@@ -12,8 +12,6 @@ module OneOff
           diabetes
           diagnosed_with_hypertension
           diagnosed_with_hypertension_boolean
-          deleted_at
-          user_id
           hypertension
           receiving_treatment_for_diabetes
           deleted_at
@@ -25,9 +23,9 @@ module OneOff
         ].freeze
 
         def merge
-          new_patient.tap do |patient|
-            merge_old(patient, CHOOSING_OLD)
-            merge_new(patient, CHOOSING_NEW)
+          new_patient.medical_history.tap do |new_medical_history|
+            merge_old(new_medical_history, old_patient.medical_history, CHOOSING_OLD)
+            merge_new(new_medical_history, old_patient.medical_history, CHOOSING_NEW)
           end
         end
       end

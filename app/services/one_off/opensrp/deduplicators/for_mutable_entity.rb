@@ -6,24 +6,24 @@ module OneOff
           raise "Unimplemented"
         end
 
-        def merge_non_null(patient, attributes)
+        def merge_non_null(entity, old_entity, attributes)
           attributes.each do |attr|
-            val = [patient, old_patient].map { |p| p.send(attr) }.compact
+            val = [entity, old_entity].map { |p| p.send(attr) }.compact
             if val.size > 1
               @needs_manual_merge << attr
               next
             end
-            patient.send("#{attr}=", val.first)
+            entity.send("#{attr}=", val.first)
           end
         end
 
-        def merge_new(patient)
-          # no-op; since patient == new_patient
+        def merge_new(entity, old_patient, attributes)
+          # no-op; since entity == new_entity
         end
 
-        def merge_old(patient, attributes)
+        def merge_old(entity, old_entity, attributes)
           attributes.each do |attr|
-            patient.send("#{attr}=", old_patient.send(attr))
+            entity.send("#{attr}=", old_entity.send(attr))
           end
         end
       end

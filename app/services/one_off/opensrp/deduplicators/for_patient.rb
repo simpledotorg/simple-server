@@ -43,12 +43,12 @@ module OneOff
 
         def merge
           new_patient.tap do |patient|
-            merge_old(patient, CHOOSING_OLD)
-            merge_non_null(patient, CHOOSING_NON_NULL)
+            merge_old(patient, old_patient, CHOOSING_OLD)
+            merge_non_null(patient, old_patient, CHOOSING_NON_NULL)
 
             # For all which could not be merged automatically during the
             # non-null merge... perfer the newer value. — which is a no-op effectively
-            merge_new(patient)
+            merge_new(patient, old_patient, @needs_manual_merge)
 
             # Merge age as a special case
             merge_age(patient)
