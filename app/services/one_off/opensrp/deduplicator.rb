@@ -50,6 +50,13 @@ module OneOff
             deduplicator.call! old_id, new_id
           end
         end
+
+        deprecate_old_patients
+      end
+
+      def deprecate_old_patients
+        @old_patients = @duplicates.map(&:first)
+        Patient.where(id: @old_patients).discard!
       end
     end
   end
