@@ -1,15 +1,16 @@
 require "rails_helper"
 
+TIME_FIELDS = %i[
+  created_at
+  updated_at
+  device_created_at
+  device_updated_at
+  recorded_at
+]
+
 RSpec.describe OneOff::Opensrp::Deduplicators::ForPatient do
   let(:existing) { create(:patient) }
   let(:imported) { create(:patient, :with_dob, :without_address, :without_phone_number) }
-  TIME_FIELDS = %i[
-    created_at
-    updated_at
-    device_created_at
-    device_updated_at
-    recorded_at
-  ]
 
   describe "#merge" do
     described_class::CHOOSING_NEW.reject { |k| TIME_FIELDS.include?(k) }.each do |attr|
