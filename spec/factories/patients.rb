@@ -75,6 +75,10 @@ FactoryBot.define do
       phone_numbers { [] }
     end
 
+    trait :without_address do
+      address { nil }
+    end
+
     trait(:with_appointments) do
       recorded_at { 2.years.ago }
       transient do
