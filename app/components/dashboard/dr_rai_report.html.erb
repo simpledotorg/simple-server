@@ -289,7 +289,7 @@
             previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
-          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)
+          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.previous_denominator)
         }
         $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
         toHide.push($('#step-' + nextStep + '-' + target.ui))
