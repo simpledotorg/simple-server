@@ -21,7 +21,6 @@ module OneOff
     end
 
     class Deduplicator
-
       # The order is important here. Patient must be last.
       MUTABLE_ENTITIES = %w[
         MedicalHistory
@@ -81,7 +80,7 @@ module OneOff
       private
 
       def deduplicator_class entity
-        deduplicator = [
+        [
           Module.nesting[1],
           "Deduplicators",
           "For#{entity}"
