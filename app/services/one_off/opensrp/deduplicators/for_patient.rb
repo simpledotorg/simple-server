@@ -52,6 +52,16 @@ module OneOff
 
             # Merge age as a special case
             merge_age(patient)
+
+            # TODO: Bring forward other aspects of the patient.
+            #
+            # There are aspects of the old patient which would need to be
+            # accounted for in the new patient. Things like visits, phone
+            # numbers, and so on. These information were created in Simple, and
+            # belong to Simple. In the case where there needs to be an
+            # interplay, or a return to Simple, these need to still be
+            # available.
+            merge_forward(patient, old_patient)
           end
         end
 
@@ -68,6 +78,10 @@ module OneOff
 
           patient.age = Date.today.year - patient.date_of_birth.year
           patient.age_updated_at = Time.now
+        end
+
+        def merge_forward patient, old_patient
+          raise "Unimplemented"
         end
       end
     end
