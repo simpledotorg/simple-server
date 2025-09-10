@@ -31,12 +31,16 @@ module OneOff
       ].freeze
       # The order is important here. Patient must be last.
 
-      def self.call!
-        new.call!
+      def self.call! duplicates = nil
+        new(duplicates).call!
       end
 
-      def initialize
-        @duplicates = ImportedDuplicatesQuery.call
+      def initialize duplicates = nil
+        @duplicates = if duplicates.nil?
+          ImportedDuplicatesQuery.call
+        else
+          duplicates
+        end
       end
 
       def call!
