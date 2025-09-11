@@ -22,6 +22,7 @@ module OneOff
         end
 
         def merge_old(entity, old_entity, attributes)
+          return if old_entity.nil?
           attributes.each do |attr|
             entity.send("#{attr}=", old_entity.send(attr))
           end
