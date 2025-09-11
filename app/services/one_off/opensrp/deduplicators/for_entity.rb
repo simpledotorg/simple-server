@@ -2,8 +2,12 @@ module OneOff
   module Opensrp
     module Deduplicators
       class ForEntity
-        def self.call! old_id, new_id
-          new(old_id, new_id).call
+        def self.call! old_id, new_id, assoc = nil
+          if assoc.nil?
+            new(old_id, new_id).call!
+          else
+            new(old_id, new_id, assoc).call!
+          end
         end
 
         def initialize old_id, new_id

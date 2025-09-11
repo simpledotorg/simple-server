@@ -9,7 +9,7 @@ module OneOff
         end
 
         def merge
-          old_patient.send(assoc).each do |associated|
+          old_patient.send(@association).each do |associated|
             associated.patient = new_patient
             associated.save!
           end

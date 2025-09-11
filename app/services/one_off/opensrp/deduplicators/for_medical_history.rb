@@ -23,10 +23,18 @@ module OneOff
         ].freeze
 
         def merge
-          new_patient.medical_history.tap do |new_medical_history|
-            merge_old(new_medical_history, old_patient.medical_history, CHOOSING_OLD)
-            merge_new(new_medical_history, old_patient.medical_history, CHOOSING_NEW)
+          if new_patient.medical_history.nil?
+            new_patient.medical_history = old_patient.medical_history
+            new_patient.save!
+            old_patient.medical_history.discard!
+          else
+            new_patient.medical_history.tap do |new_medical_history|
+              merge_old(new_medical_history, old_patient.medical_history, CHOOSING_OLD)
+              merge_new(new_medical_history, old_patient.medical_history, CHOOSING_NEW)
+            end
           end
+
+          new_patient
         end
       end
     end

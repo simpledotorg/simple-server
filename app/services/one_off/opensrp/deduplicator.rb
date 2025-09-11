@@ -74,7 +74,7 @@ module OneOff
 
       def deprecate_old_patients
         @old_patients = @duplicates.map(&:first)
-        Patient.where(id: @old_patients).discard!
+        Patient.where(id: @old_patients).map(&:discard!)
       end
 
       private
