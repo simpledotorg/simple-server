@@ -34,7 +34,7 @@ module OneOff
             end
           end
 
-          new_patient
+          new_patient.medical_history
         end
       end
     end
