@@ -42,10 +42,13 @@
             <%= link_to "Download Report",
                       my_facilities_drug_consumption_path(format: :csv, **request.query_parameters.symbolize_keys),
                       class: "btn btn-sm btn-outline-primary" %>
-          </div>
+          </div>  
         <% end %>
       </div>
-      <% if @facilities.present? %>
+
+      <% if all_district_overview_enabled? %>
+        <%= render partial: "all_district_drug_consumption_table", locals: {district_reports: @district_reports} %>
+      <% elsif @facilities.present? %>
         <%= render "drug_consumption_table" %>
       <% else %>
         <p>There is no data for this selection.</p>

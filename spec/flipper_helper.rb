@@ -8,4 +8,8 @@ module FlipperHelpers
     allow(Flipper).to receive(:enabled?).and_call_original
     allow(Flipper).to receive(:enabled?).with(*args).and_return(false)
   end
+
+  def all_district_overview_enabled?
+    Flipper.enabled?(:all_district_overview) && params[:facility_group] == "all-districts"
+  end
 end
