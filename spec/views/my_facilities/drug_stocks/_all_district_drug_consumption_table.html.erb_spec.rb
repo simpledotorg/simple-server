@@ -12,28 +12,30 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
       district1 => {
         report: {
           district_patient_count: 139,
+          total_patient_count: 139,
           facilities_total_patient_count: 100,
-          district_drug_consumption: {
+          total_drug_consumption: {
             "hypertension" => {
               drug1 => {consumed: 10},
-              drug2 => {consumed: 5}
+              drug2 => {consumed: 5},
+              :base_doses => {total: 15} # optional if partial uses base_doses
             }
-          },
-          patient_days: {"hypertension" => 0}
+          }
         },
         drugs_by_category: {"hypertension" => [drug1, drug2]}
       },
       district2 => {
         report: {
           district_patient_count: 524,
+          total_patient_count: 524,
           facilities_total_patient_count: 400,
-          district_drug_consumption: {
+          total_drug_consumption: {
             "hypertension" => {
               drug1 => {consumed: 20},
-              drug2 => {consumed: 15}
+              drug2 => {consumed: 15},
+              :base_doses => {total: 35} # optional
             }
-          },
-          patient_days: {"hypertension" => 0}
+          }
         },
         drugs_by_category: {"hypertension" => [drug1, drug2]}
       }
