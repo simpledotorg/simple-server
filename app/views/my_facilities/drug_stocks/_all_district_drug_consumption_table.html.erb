@@ -6,15 +6,15 @@
       <colgroup>
         <col>
         <col>
-        <% first_drugs_by_category = @district_reports&.values&.first&.dig(:drugs_by_category) %>
-        <% if first_drugs_by_category.present? %>
-          <% first_drugs_by_category.each do |drug_category, drugs| %>
+        <% first_report_with_drugs = @district_reports.values.find { |data| data[:drugs_by_category].present? } %>
+        <% drugs_by_category = first_report_with_drugs&.dig(:drugs_by_category) || {} %>
+
+        <% if drugs_by_category.present? %>
+          <% drugs_by_category.each do |drug_category, drugs| %>
             <% drugs.each_with_index do |_drug, index| %>
               <col class="<%= "table-divider" if index.zero? %>">
             <% end %>
-            <% unless drug_category == "diabetes" %>
-              <col> <%# Patient Days column %>
-            <% end %>
+            <col> <%# Patient Days column %>
           <% end %>
         <% end %>
       </colgroup>
@@ -24,9 +24,9 @@
         <tr>
           <th></th>
           <th></th>
-          <% if first_drugs_by_category.present? %>
-            <% first_drugs_by_category.each do |drug_category, drugs| %>
-              <th colspan="<%= drugs.count + (drug_category == "diabetes" ? 0 : 1) %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
+              <th colspan="<%= drugs.count + 1 %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
             <% end %>
           <% end %>
         </tr>
@@ -36,8 +36,8 @@
           <th class="row-label sort-label sticky" data-sort-default>Districts</th>
           <th class="row-label sort-label sticky" data-sort-method="number">Patients <br/> under <br/> care</th>
 
-          <% if first_drugs_by_category.present? %>
-            <% first_drugs_by_category.each do |drug_category, drugs| %>
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
               <% drugs.each do |drug| %>
                 <th class="row-label sort-label row-medicine sticky"
                     data-sort-method="number"
@@ -46,13 +46,11 @@
                   <%= drug.dosage %>
                 </th>
               <% end %>
-              <% unless drug_category == "diabetes" %>
-                <th class="row-label sort-label sticky"
-                    data-sort-method="number"
-                    data-sort-column-key="<%= "#{drug_category}_patient_days" %>">
-                  Patient Days
-                </th>
-              <% end %>
+              <th class="row-label sort-label sticky"
+                  data-sort-method="number"
+                  data-sort-column-key="<%= "#{drug_category}_patient_days" %>">
+                Patient Days
+              </th>
             <% end %>
           <% end %>
         </tr>
@@ -62,24 +60,15 @@
         <% all_patient_count = 0 %>
         <% @district_reports&.each do |_, data| %>
           <% report = data[:report] %>
-          <% all_patient_count += (params[:zone].present? || params[:size].present?) ? report[:facilities_total_patient_count].to_i : report[:district_patient_count].to_i %>
+          <% all_patient_count += report[:district_patient_count].to_i %>
 
-          <% if first_drugs_by_category.present? %>
-            <% first_drugs_by_category.each do |drug_category, drugs| %>
-              <% drugs.each do |drug| %>
-                 <% consumption = if params[:zone].present? || params[:size].present?
-                    report[:drug_consumption_by_facility_id]&.values&.sum { |f| f&.values&.sum { |v| v.is_a?(Numeric) ? v : 0 } } || 0
-                  else
-                    val = report[:drug_consumption]&.dig(drug.rxnorm_code)
-                    val.is_a?(Numeric) ? val : 0
-                  end %>
-                <% all_totals[drug.rxnorm_code] += consumption.to_i if consumption.present? && consumption != "error" %>
-              <% end %>
-              <% unless drug_category == "diabetes" %>
-                <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
-                <% all_totals["#{drug_category}_patient_days"] = (all_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
-              <% end %>
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <% drugs.each do |drug| %>
+              <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+              <% all_totals[drug.id] += consumption.to_i if consumption.present? %>
             <% end %>
+            <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
+            <% all_totals["#{drug_category}_patient_days"] = (all_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
           <% end %>
         <% end %>
 
@@ -92,20 +81,20 @@
               data-original-title='<%= "All States: #{all_totals.values.sum} units, #{all_patient_count} patients" %>'>
             All
           </td>
-          <td class="type-number text-center" data-sort-value="<%= all_patient_count %>"><%= all_patient_count %></td>
+          <td class="type-number text-center" data-sort-value="<%= all_patient_count %>">
+            <%= all_patient_count.positive? ? all_patient_count : '0' %>
+          </td>
 
-          <% if first_drugs_by_category.present? %>
-            <% first_drugs_by_category.each do |drug_category, drugs| %>
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
               <% drugs.each do |drug| %>
-                <td class="type-number text-center" data-sort-value="<%= all_totals[drug.rxnorm_code] %>">
-                  <%= all_totals[drug.rxnorm_code].positive? ? all_totals[drug.rxnorm_code] : "0" %>
+                <td class="type-number text-center" data-sort-value="<%= all_totals[drug.id] %>">
+                  <%= all_totals[drug.id].positive? ? all_totals[drug.id] : "0" %>
                 </td>
               <% end %>
-              <% unless drug_category == "diabetes" %>
-                <td class="type-number text-center" data-sort-value="<%= all_totals["#{drug_category}_patient_days"] %>">
-                  <%= all_totals["#{drug_category}_patient_days"] %>
-                </td>
-              <% end %>
+              <td class="type-number text-center" data-sort-value="<%= all_totals["#{drug_category}_patient_days"] %>">
+                <%= all_totals["#{drug_category}_patient_days"] %>
+              </td>
             <% end %>
           <% end %>
         </tr>
@@ -118,24 +107,15 @@
 
         <% districts.each do |_, data| %>
           <% report = data[:report] %>
-          <% state_patient_count += (params[:zone].present? || params[:size].present?) ? report[:facilities_total_patient_count].to_i : report[:district_patient_count].to_i %>
+          <% state_patient_count += report[:district_patient_count].to_i %>
 
-          <% if first_drugs_by_category.present? %>
-            <% first_drugs_by_category.each do |drug_category, drugs| %>
-              <% drugs.each do |drug| %>
-                 <% consumption = if params[:zone].present? || params[:size].present?
-                    report[:drug_consumption_by_facility_id]&.values&.sum { |f| f&.values&.sum { |v| v.is_a?(Numeric) ? v : 0 } } || 0
-                  else
-                    val = report[:drug_consumption]&.dig(drug.rxnorm_code)
-                    val.is_a?(Numeric) ? val : 0
-                  end %>
-                <% state_totals[drug.rxnorm_code] += consumption.to_i if consumption.present? && consumption != "error" %>
-              <% end %>
-              <% unless drug_category == "diabetes" %>
-                <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
-                <% state_totals["#{drug_category}_patient_days"] = (state_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
-              <% end %>
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <% drugs.each do |drug| %>
+              <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+              <% state_totals[drug.id] += consumption.to_i if consumption.present? %>
             <% end %>
+            <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
+            <% state_totals["#{drug_category}_patient_days"] = (state_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
           <% end %>
         <% end %>
 
@@ -150,18 +130,20 @@
                 data-original-title='<%= "#{state}: #{state_totals.values.sum} units, #{state_patient_count} patients" %>'>
               <%= state %><br><span> subtotal </span>
             </td>
-            <td class="type-number text-center" data-sort-value="<%= state_patient_count %>"><%= state_patient_count %></td>
+            <td class="type-number text-center" data-sort-value="<%= state_patient_count %>">
+              <%= state_patient_count.positive? ? state_patient_count : '0' %>
+            </td>
 
-            <% if first_drugs_by_category.present? %>
-              <% first_drugs_by_category.each do |drug_category, drugs| %>
+            <% if drugs_by_category.present? %>
+              <% drugs_by_category.each do |drug_category, drugs| %>
                 <% drugs.each do |drug| %>
-                  <td class="type-number text-center" data-sort-value="<%= state_totals[drug.rxnorm_code] %>"><%= state_totals[drug.rxnorm_code] %></td>
-                <% end %>
-                <% unless drug_category == "diabetes" %>
-                  <td class="type-number text-center" data-sort-value="<%= state_totals["#{drug_category}_patient_days"] %>">
-                    <%= state_totals["#{drug_category}_patient_days"] %>
+                  <td class="type-number text-center" data-sort-value="<%= state_totals[drug.id] %>">
+                    <%= state_totals[drug.id].positive? ? state_totals[drug.id] : '0' %>
                   </td>
                 <% end %>
+                <td class="type-number text-center" data-sort-value="<%= state_totals["#{drug_category}_patient_days"] %>">
+                  <%= state_totals["#{drug_category}_patient_days"] %>
+                </td>
               <% end %>
             <% end %>
           </tr>
@@ -175,30 +157,28 @@
                   data-toggle="tooltip"
                   data-placement="top"
                   data-trigger="hover focus click"
-                  data-original-title='<%= "#{district.name}: #{(params[:zone].present? || params[:size].present?) ? report[:facilities_total_patient_count] : report[:district_patient_count]} patients" %>'>
+                  data-original-title='<%= "#{district.name}: #{report[:district_patient_count]} patients" %>'>
                 <a href="<%= my_facilities_drug_consumption_path(facility_group: district.slug, for_end_of_month: @for_end_of_month_display) %>" target="_blank">
                   <%= district.name %>
                 </a>
               </td>
               <td class="type-number text-center" data-sort-value="<%= report[:district_patient_count].to_i %>">
-                <%= (params[:zone].present? || params[:size].present?) ? report[:facilities_total_patient_count] : report[:district_patient_count] %>
+                <% patient_count = report[:district_patient_count] %>
+                <%= patient_count.present? ? patient_count : '<span class="type-blank">?</span>'.html_safe %>
               </td>
 
-              <% if first_drugs_by_category.present? %>
-                <% first_drugs_by_category.each do |drug_category, drugs| %>
+              <% if drugs_by_category.present? %>
+                <% drugs_by_category.each do |drug_category, drugs| %>
                   <% drugs.each do |drug| %>
-                     <% consumption = if params[:zone].present? || params[:size].present?
-                        report[:drug_consumption_by_facility_id]&.values&.sum { |f| f&.values&.sum { |v| v.is_a?(Numeric) ? v : 0 } } || 0
-                      else
-                        val = report[:drug_consumption]&.dig(drug.rxnorm_code)
-                        val.is_a?(Numeric) ? val : 0
-                      end %>
-                    <td class="type-number text-center" data-sort-value="<%= consumption %>"><%= consumption %></td>
+                    <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+                    <td class=" text-center" data-sort-value="<%= consumption.to_i %>">
+                      <%= consumption.present? ? consumption : '<span class="type-blank">?</span>'.html_safe %>
+                    </td>
                   <% end %>
-                  <% unless drug_category == "diabetes" %>
-                    <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
-                    <td class="type-number text-center" data-sort-value="<%= patient_days %>"><%= patient_days %></td>
-                  <% end %>
+                  <% patient_days = report[:patient_days]&.dig(drug_category) %>
+                  <td class="type-number text-center" data-sort-value="<%= patient_days.to_i %>">
+                    <%= patient_days.present? ? patient_days : '<span class="type-blank">?</span>'.html_safe %>
+                  </td>
                 <% end %>
               <% end %>
             </tr>
