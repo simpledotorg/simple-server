@@ -13,19 +13,19 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
         report: {
           district_patient_count: 139,
           facilities_total_patient_count: 100,
-          drug_consumption: { "X101" => 10, "Y102" => 5 },
-          drug_consumption_by_facility_id: { [1, "X101"] => 10, [1, "Y102"] => 5 }
+          drug_consumption: {"X101" => 10, "Y102" => 5},
+          drug_consumption_by_facility_id: {[1, "X101"] => 10, [1, "Y102"] => 5}
         },
-        drugs_by_category: { "hypertension" => [drug1, drug2] }
+        drugs_by_category: {"hypertension" => [drug1, drug2]}
       },
       district2 => {
         report: {
           district_patient_count: 524,
           facilities_total_patient_count: 400,
-          drug_consumption: { "X101" => 20, "Y102" => 15 },
-          drug_consumption_by_facility_id: { [2, "X101"] => 20, [2, "Y102"] => 15 }
+          drug_consumption: {"X101" => 20, "Y102" => 15},
+          drug_consumption_by_facility_id: {[2, "X101"] => 20, [2, "Y102"] => 15}
         },
-        drugs_by_category: { "hypertension" => [drug1, drug2] }
+        drugs_by_category: {"hypertension" => [drug1, drug2]}
       }
     }
   end
@@ -35,7 +35,7 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
     assign(:for_end_of_month_display, "Sep-2025")
 
     allow(view).to receive(:protocol_drug_labels).and_return(
-      "hypertension": { full: "Hypertension Drugs", short: "HTN" }
+      hypertension: {full: "Hypertension Drugs", short: "HTN"}
     )
 
     allow(view).to receive(:my_facilities_drug_consumption_path) do |opts|
@@ -43,9 +43,9 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
     end
 
     render partial: "my_facilities/drug_stocks/all_district_drug_consumption_table",
-           locals: { district_reports: district_reports }
+      locals: {district_reports: district_reports}
   end
-  
+
   it "renders the 'District' column header" do
     expect(rendered).to have_selector("th.row-label", text: /District/i)
   end
@@ -71,15 +71,15 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
   it "renders Goa subtotal row with correct values" do
     expect(rendered).to have_selector("tr.row-total td.type-title", text: /Goa/)
     expect(rendered).to have_selector("tr.row-total td.type-number", text: "663") # patients under care
-    expect(rendered).to have_selector("tr.row-total td.type-number", text: "30")  # drug1
-    expect(rendered).to have_selector("tr.row-total td.type-number", text: "20")  # drug2
+    expect(rendered).to have_selector("tr.row-total td.type-number", text: "30") # drug1
+    expect(rendered).to have_selector("tr.row-total td.type-number", text: "20") # drug2
   end
 
   it "renders All row with correct totals" do
     expect(rendered).to have_selector("tr.row-total td.type-title", text: "All")
     expect(rendered).to have_selector("tr.row-total td.type-number", text: "663") # patients under care
-    expect(rendered).to have_selector("tr.row-total td.type-number", text: "30")  # drug1 total
-    expect(rendered).to have_selector("tr.row-total td.type-number", text: "20")  # drug2 total
+    expect(rendered).to have_selector("tr.row-total td.type-number", text: "30") # drug1 total
+    expect(rendered).to have_selector("tr.row-total td.type-number", text: "20") # drug2 total
   end
 
   it "renders drug headers dynamically" do
@@ -89,7 +89,7 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
 
   it "renders correct drug consumption values for districts" do
     expect(rendered).to have_selector("tr.district-row td.type-number", text: "10") # Babraich drug1
-    expect(rendered).to have_selector("tr.district-row td.type-number", text: "5")  # Babraich drug2
+    expect(rendered).to have_selector("tr.district-row td.type-number", text: "5") # Babraich drug2
     expect(rendered).to have_selector("tr.district-row td.type-number", text: "20") # Mansa drug1
     expect(rendered).to have_selector("tr.district-row td.type-number", text: "15") # Mansa drug2
   end
