@@ -171,7 +171,7 @@
                 <% drugs_by_category.each do |drug_category, drugs| %>
                   <% drugs.each do |drug| %>
                     <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
-                    <td class=" text-center" data-sort-value="<%= consumption.to_i %>">
+                    <td class="type-number text-center" data-sort-value="<%= consumption.to_i %>">
                       <%= consumption.present? ? consumption : '<span class="type-blank">?</span>'.html_safe %>
                     </td>
                   <% end %>
