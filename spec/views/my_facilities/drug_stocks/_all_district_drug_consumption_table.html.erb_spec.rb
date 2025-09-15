@@ -13,8 +13,13 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
         report: {
           district_patient_count: 139,
           facilities_total_patient_count: 100,
-          drug_consumption: {"X101" => 10, "Y102" => 5},
-          drug_consumption_by_facility_id: {[1, "X101"] => 10, [1, "Y102"] => 5}
+          district_drug_consumption: {
+            "hypertension" => {
+              drug1 => {consumed: 10},
+              drug2 => {consumed: 5}
+            }
+          },
+          patient_days: {"hypertension" => 0}
         },
         drugs_by_category: {"hypertension" => [drug1, drug2]}
       },
@@ -22,8 +27,13 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
         report: {
           district_patient_count: 524,
           facilities_total_patient_count: 400,
-          drug_consumption: {"X101" => 20, "Y102" => 15},
-          drug_consumption_by_facility_id: {[2, "X101"] => 20, [2, "Y102"] => 15}
+          district_drug_consumption: {
+            "hypertension" => {
+              drug1 => {consumed: 20},
+              drug2 => {consumed: 15}
+            }
+          },
+          patient_days: {"hypertension" => 0}
         },
         drugs_by_category: {"hypertension" => [drug1, drug2]}
       }
