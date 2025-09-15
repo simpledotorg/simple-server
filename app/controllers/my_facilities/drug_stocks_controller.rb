@@ -18,8 +18,10 @@ class MyFacilities::DrugStocksController < AdminController
 
     respond_to do |format|
       format.html { render :drug_stocks }
-      format.csv  { send_data DrugStocksReportExporter.csv(@query),
-                    filename: "drug-stocks-report-#{@for_end_of_month_display}.csv" }
+      format.csv {
+        send_data DrugStocksReportExporter.csv(@query),
+          filename: "drug-stocks-report-#{@for_end_of_month_display}.csv"
+      }
     end
   end
 
@@ -29,8 +31,10 @@ class MyFacilities::DrugStocksController < AdminController
 
     respond_to do |format|
       format.html { render :drug_consumption }
-      format.csv  { send_data DrugConsumptionReportExporter.csv(@query),
-                    filename: "drug-consumption-report-#{@for_end_of_month_display}.csv" }
+      format.csv {
+        send_data DrugConsumptionReportExporter.csv(@query),
+          filename: "drug-consumption-report-#{@for_end_of_month_display}.csv"
+      }
     end
   end
 
@@ -109,22 +113,21 @@ class MyFacilities::DrugStocksController < AdminController
   def redirect_unless_drug_stocks_enabled
     redirect_to :root unless current_admin.drug_stocks_enabled?
   end
-   
+
   def prepare_district_reports(report_type)
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
 
     if all_district_overview_enabled?
       @districts = Organization.find_by(slug: "nhf")
-                              .facility_groups
-                              .includes(:facilities)
-                              .where(id: @accessible_facilities.pluck(:facility_group_id).uniq)
-                              .order(:name)
+        .facility_groups
+        .includes(:facilities)
+        .where(id: @accessible_facilities.pluck(:facility_group_id).uniq)
+        .order(:name)
 
       @district_reports = {}
-      @all_facilities = drug_stock_enabled_facilities 
+      @all_facilities = drug_stock_enabled_facilities
 
       @districts.each do |district|
-        
         facilities = @all_facilities.where(facility_group: district)
         next if facilities.blank?
 
@@ -148,14 +151,14 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stock_enabled_facilities
-    # Filtered list of facilities that match u  ser selected filters,
+    # Filtered list of facilities that match user selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
-    active_facility_ids = filter_facilities.active.pluck("facilities.id")
+    active_facility_ids = filter_facilities.pluck("facilities.id")
     base_facilities = @accessible_facilities.where(id: active_facility_ids)
 
     base_facilities
       .eager_load(facility_group: :protocol_drugs)
-      .where(protocol_drugs: { stock_tracked: true }, id: active_facility_ids)
+      .where(protocol_drugs: {stock_tracked: true}, id: active_facility_ids)
       .distinct("facilities.id")
   end
 end
