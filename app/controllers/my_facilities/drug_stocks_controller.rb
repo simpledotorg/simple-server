@@ -148,9 +148,9 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def drug_stock_enabled_facilities
-    # Filtered list of facilities that match user selected filters,
+    # Filtered list of facilities that match u  ser selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
-    active_facility_ids = filter_facilities.pluck("facilities.id")
+    active_facility_ids = filter_facilities.active.pluck("facilities.id")
     base_facilities = @accessible_facilities.where(id: active_facility_ids)
 
     base_facilities
