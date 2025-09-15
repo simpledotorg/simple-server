@@ -1,0 +1,236 @@
+<% grouped = @district_reports.group_by { |district, _| district.state }.sort_by { |state, _| state } %>
+
+<div class="district-drug-consumption-table mb-5">
+  <div class="table-responsive">
+    <table class="mt-4 table table-compact table-hover analytics-table">
+      <colgroup>
+        <col>
+        <col>
+        <% first_report_with_drugs = @district_reports.values.find { |data| data[:drugs_by_category].present? } %>
+        <% drugs_by_category = first_report_with_drugs&.dig(:drugs_by_category) || {} %>
+
+        <% if drugs_by_category.present? %>
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <% drugs.each_with_index do |_drug, index| %>
+              <col class="<%= "table-divider" if index.zero? %>">
+            <% end %>
+            <col> <%# Patient Days column %>
+          <% end %>
+        <% end %>
+      </colgroup>
+
+      <thead>
+        <%# --- Category Headers --- %>
+        <tr>
+          <th></th>
+          <th></th>
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
+              <th colspan="<%= drugs.count + 1 %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
+            <% end %>
+          <% end %>
+        </tr>
+
+        <%# --- Column Headers --- %>
+        <tr data-sort-method="thead" class="sorts">
+          <th class="row-label sort-label sticky" data-sort-default>Districts</th>
+          <th class="row-label sort-label sticky" data-sort-method="number">Patients <br/> under <br/> care</th>
+
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
+              <% drugs.each do |drug| %>
+                <th class="row-label sort-label row-medicine sticky"
+                    data-sort-method="number"
+                    data-sort-column-key="<%= drug.id %>">
+                  <%= drug.name %><br>
+                  <%= drug.dosage %>
+                </th>
+              <% end %>
+              <th class="row-label sort-label sticky"
+                  data-sort-method="number"
+                  data-sort-column-key="<%= "#{drug_category}_patient_days" %>">
+                Patient Days
+              </th>
+            <% end %>
+          <% end %>
+        </tr>
+
+        <%# --- All States Total Row --- %>
+        <% all_totals = Hash.new(0) %>
+        <% all_patient_count = 0 %>
+        <% @district_reports&.each do |_, data| %>
+          <% report = data[:report] %>
+          <% all_patient_count += report[:district_patient_count].to_i %>
+
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <% drugs.each do |drug| %>
+              <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+              <% all_totals[drug.id] += consumption.to_i if consumption.present? %>
+            <% end %>
+            <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
+            <% all_totals["#{drug_category}_patient_days"] = (all_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
+          <% end %>
+        <% end %>
+
+        <tr class="row-total font-weight-bold warning" data-sort-method="none">
+          <td class="type-title"
+              data-html="true"
+              data-toggle="tooltip"
+              data-placement="top"
+              data-trigger="hover focus click"
+              data-original-title='<%= "All States: #{all_totals.values.sum} units, #{all_patient_count} patients" %>'>
+            All
+          </td>
+          <td class="type-number text-center" data-sort-value="<%= all_patient_count %>">
+            <%= all_patient_count.positive? ? all_patient_count : '0' %>
+          </td>
+
+          <% if drugs_by_category.present? %>
+            <% drugs_by_category.each do |drug_category, drugs| %>
+              <% drugs.each do |drug| %>
+                <td class="type-number text-center" data-sort-value="<%= all_totals[drug.id] %>">
+                  <%= all_totals[drug.id].positive? ? all_totals[drug.id] : "0" %>
+                </td>
+              <% end %>
+              <td class="type-number text-center" data-sort-value="<%= all_totals["#{drug_category}_patient_days"] %>">
+                <%= all_totals["#{drug_category}_patient_days"] %>
+              </td>
+            <% end %>
+          <% end %>
+        </tr>
+      </thead>
+
+      <%# --- State & District Rows --- %>
+      <% grouped.each do |state, districts| %>
+        <% state_totals = Hash.new(0) %>
+        <% state_patient_count = 0 %>
+
+        <% districts.each do |_, data| %>
+          <% report = data[:report] %>
+          <% state_patient_count += report[:district_patient_count].to_i %>
+
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <% drugs.each do |drug| %>
+              <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+              <% state_totals[drug.id] += consumption.to_i if consumption.present? %>
+            <% end %>
+            <% patient_days = report[:patient_days]&.dig(drug_category) || 0 %>
+            <% state_totals["#{drug_category}_patient_days"] = (state_totals["#{drug_category}_patient_days"] || 0) + patient_days.to_i %>
+          <% end %>
+        <% end %>
+
+        <tbody class="state-group">
+          <%# State subtotal row %>
+          <tr class="row-total font-weight-bold warning" data-sort-method="none">
+            <td class="type-title"
+                data-html="true"
+                data-toggle="tooltip"
+                data-placement="top"
+                data-trigger="hover focus click"
+                data-original-title='<%= "#{state}: #{state_totals.values.sum} units, #{state_patient_count} patients" %>'>
+              <%= state %><br><span> subtotal </span>
+            </td>
+            <td class="type-number text-center" data-sort-value="<%= state_patient_count %>">
+              <%= state_patient_count.positive? ? state_patient_count : '0' %>
+            </td>
+
+            <% if drugs_by_category.present? %>
+              <% drugs_by_category.each do |drug_category, drugs| %>
+                <% drugs.each do |drug| %>
+                  <td class="type-number text-center" data-sort-value="<%= state_totals[drug.id] %>">
+                    <%= state_totals[drug.id].positive? ? state_totals[drug.id] : '0' %>
+                  </td>
+                <% end %>
+                <td class="type-number text-center" data-sort-value="<%= state_totals["#{drug_category}_patient_days"] %>">
+                  <%= state_totals["#{drug_category}_patient_days"] %>
+                </td>
+              <% end %>
+            <% end %>
+          </tr>
+
+          <%# District rows --- sortable %>
+          <% districts.each do |district, data| %>
+            <% report = data[:report] %>
+            <tr class="type-number district-row">
+              <td class="type-title"
+                  data-html="true"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover focus click"
+                  data-original-title='<%= "#{district.name}: #{report[:district_patient_count]} patients" %>'>
+                <a href="<%= my_facilities_drug_consumption_path(facility_group: district.slug, for_end_of_month: @for_end_of_month_display) %>" target="_blank">
+                  <%= district.name %>
+                </a>
+              </td>
+              <td class="type-number text-center" data-sort-value="<%= report[:district_patient_count].to_i %>">
+                <% patient_count = report[:district_patient_count] %>
+                <%= patient_count.present? ? patient_count : '<span class="type-blank">?</span>'.html_safe %>
+              </td>
+
+              <% if drugs_by_category.present? %>
+                <% drugs_by_category.each do |drug_category, drugs| %>
+                  <% drugs.each do |drug| %>
+                    <% consumption = report[:district_drug_consumption]&.dig(drug_category, drug, :consumed) %>
+                    <td class="type-number text-center" data-sort-value="<%= consumption.to_i %>">
+                      <%= consumption.present? ? consumption : '<span class="type-blank">?</span>'.html_safe %>
+                    </td>
+                  <% end %>
+                  <% patient_days = report[:patient_days]&.dig(drug_category) %>
+                  <td class="type-number text-center" data-sort-value="<%= patient_days.to_i %>">
+                    <%= patient_days.present? ? patient_days : '<span class="type-blank">?</span>'.html_safe %>
+                  </td>
+                <% end %>
+              <% end %>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    </table>
+  </div>
+</div>
+
+<%# --- Legend --- %>
+<div class="d-flex align-center">
+  <em class="h-16px w-16px mr-8px b-2px bg-red br-8px"></em>
+  <p class="fs-12px lh-1 c-grey-dark mt-2 mb-2">&lt;30 patients days of stock</p>
+</div>
+<div class="d-flex align-center">
+  <em class="h-16px w-16px mr-8px b-2px bg-orange br-8px"></em>
+  <p class="fs-12px lh-1 c-grey-dark mt-2 mb-2">&lt;60 patients days of stock</p>
+</div>
+<div class="d-flex align-center">
+  <em class="h-16px w-16px mr-8px b-2px bg-yellow br-8px"></em>
+  <p class="fs-12px lh-1 c-grey-dark mt-2 mb-2">&lt;90 patients days of stock</p>
+</div>
+<div class="d-flex align-center">
+  <em class="h-16px w-16px mr-8px bg-green br-8px"></em>
+  <p class="fs-12px lh-1 c-grey-dark mt-2 mb-2">&gt;90 patients days of stock</p>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.querySelectorAll("th[data-sort-column-key]").forEach(function(header) {
+    header.addEventListener("click", function() {
+      const columnIndex = Array.from(header.parentNode.children).indexOf(header);
+
+      document.querySelectorAll("tbody.state-group").forEach(function(tbody) {
+        const subtotalRow = tbody.querySelector(".row-total");
+        const districtRows = Array.from(tbody.querySelectorAll(".district-row"));
+        const currentOrder = tbody.dataset.sortOrder || "asc";
+
+        const sortedRows = districtRows.sort(function(a, b) {
+          const aValue = parseFloat(a.children[columnIndex]?.dataset.sortValue || 0);
+          const bValue = parseFloat(b.children[columnIndex]?.dataset.sortValue || 0);
+          return currentOrder === "asc" ? bValue - aValue : aValue - bValue;
+        });
+
+        tbody.dataset.sortOrder = currentOrder === "asc" ? "desc" : "asc";
+
+        tbody.innerHTML = "";
+        tbody.appendChild(subtotalRow);
+        sortedRows.forEach(row => tbody.appendChild(row));
+      });
+    });
+  });
+});
+</script>
