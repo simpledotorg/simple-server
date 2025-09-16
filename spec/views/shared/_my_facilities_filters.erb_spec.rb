@@ -68,9 +68,8 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
     end
 
     it "defaults to 'All blocks' for zone filter" do
-      # Add the conditional stub for Bangladesh here
       allow(CountryConfig).to receive(:current).and_return("Bangladesh")
-      render # Re-render to apply the stub
+      render
 
       if CountryConfig.current == "Bangladesh"
         expect(rendered).to include("All upazilas")
@@ -110,9 +109,8 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
     end
 
     it "defaults to 'All blocks' for zone filter but shows only district's zones" do
-      # Add the conditional stub for Bangladesh here
       allow(CountryConfig).to receive(:current).and_return("Bangladesh")
-      render # Re-render to apply the stub
+      render
 
       if CountryConfig.current == "Bangladesh"
         expect(rendered).to include("All upazilas")

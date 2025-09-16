@@ -1,8 +1,8 @@
 <div class="table-responsive">
   <table class="mt-4 table table-compact table-hover analytics-table">
     <colgroup>
-      <col> <%# Facilities %>
-      <col> <%# Patients under care %>
+      <col>
+      <col>
       <% (@drugs_by_category || {}).each do |_drug_category, drugs| %>
         <% (drugs || []).each_with_index do |_drug, index| %>
           <% if index == 0 %>
@@ -51,7 +51,6 @@
     </thead>
 
     <tbody>
-      <%# --- All facilities total row --- %>
       <tr class="row-total" data-sort-method="none">
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" title="" data-original-title="All facilities: <%= "#{@report&.dig(:total_patient_count)} patients" %>">
           All
@@ -86,17 +85,16 @@
         <td class="mobile"></td>
       </tr>
 
-      <%# --- District row --- %>
       <% report = @report&.dig(:district_drug_consumption) || {} %>
       <tr data-sort-method="none">
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title='District: <%= "#{@report&.dig(:district_patient_count)} patients" %>'>
-         <% if @district_region %>
-          <%= link_to(reports_region_path(@district_region, report_scope: "district"), class: "allow-wrap") do %>
-            <%= drug_stock_region_label(@district_region)&.titleize %>
+          <% if @district_region %>
+            <%= link_to(reports_region_path(@district_region, report_scope: "district"), class: "allow-wrap") do %>
+              <%= drug_stock_region_label(@district_region)&.titleize %>
+            <% end %>
+          <% else %>
+            N/A
           <% end %>
-        <% else %>
-          N/A
-        <% end %>
         </td>
         <td class="type-number text-center" data-sort-value="<%= @report&.dig(:district_patient_count) %>"></td>
         <% (@drugs_by_category || {}).each do |drug_category, drugs| %>
@@ -124,7 +122,6 @@
         <td class="mobile"></td>
       </tr>
 
-      <%# --- Blocks rows --- %>
       <% (@blocks || []).each do |block| %>
         <% block_report = @report&.dig(:drug_consumption_by_block_id, block&.id) || {} %>
         <tr data-sort-method="none">
@@ -166,7 +163,6 @@
         </tr>
       <% end %>
 
-      <%# --- Facilities subtotal row --- %>
       <tr class="row-total" data-sort-method="none">
         <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="All facilities: <%= "#{@report&.dig(:patient_count)} patients" %>">
           Facilities subtotal
@@ -201,7 +197,6 @@
         <td class="mobile"></td>
       </tr>
 
-      <%# --- Facilities rows --- %>
       <% (@facilities || []).each do |facility| %>
         <% facility_report = @report&.dig(:drug_consumption_by_facility_id, facility&.id) || {} %>
         <% patient_count = @report&.dig(:patient_count_by_facility_id, facility&.id) %>

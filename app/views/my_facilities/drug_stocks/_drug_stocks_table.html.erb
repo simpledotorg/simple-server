@@ -3,7 +3,7 @@
     <colgroup>
       <col>
       <col>
-      <col> <!-- Patient under care column -->
+      <col>
       <% @drugs_by_category&.map do |drug_category, drugs| %>
         <% drugs&.each_with_index&.map do |_drug, index| %>
           <col class="<%= "table-divider" if index&.zero? %>">
@@ -14,6 +14,7 @@
       <% end %>
       <col class="mobile">
     </colgroup>
+
     <thead>
       <tr>
         <th colspan="3"></th>
@@ -25,6 +26,7 @@
           <% end %>
         <% end %>
       </tr>
+
       <tr data-sort-method="thead" class="sorts">
         <th class="row-label sort-label sticky" colspan="2" data-sort-default>Facilities</th>
         <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key="patients_under_care">
@@ -39,13 +41,13 @@
           <% end %>
           <% unless drug_category == "diabetes" %>
             <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
-              Patient<br>
-              days
+              Patient<br>days
             </th>
           <% end %>
         <% end %>
       </tr>
     </thead>
+
     <tbody>
       <tr class="row-total" data-sort-method="none">
         <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="All facilities: <%= "#{@report&.dig(:total_patient_count)} patients" %>">
@@ -91,8 +93,9 @@
               <%= drug_stock_region_label(@district_region).to_s.titleize %>
             <% end %>
           <% end %>
-        </td><td class="text-center">
-        <% if @district_region %>
+        </td>
+        <td class="text-center">
+          <% if @district_region %>
             <%= link_to my_facilities_drug_stock_form_path(
                           @district_region.id,
                           for_end_of_month: @for_end_of_month_display,

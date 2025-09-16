@@ -53,14 +53,9 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_stock_table.html.er
   end
 
   it "renders 'Patients under care' column correctly for all rows" do
-    # District rows
     expect(rendered).to have_selector("tr", text: /Babraich.*139/m)
     expect(rendered).to have_selector("tr", text: /Mansa.*524/m)
-
-    # Subtotal row
     expect(rendered).to have_selector("tr", text: /Goa subtotal.*663/m)
-
-    # All districts row
     expect(rendered).to have_selector("tr", text: /All.*663/m)
   end
 
