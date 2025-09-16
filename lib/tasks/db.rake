@@ -5,6 +5,11 @@ namespace :db do
     puts "Reporting views have been refreshed"
   end
 
+  desc "Refresh caches for region summary"
+  task warm_up_cache: :environment do
+    Reports::RegionCacheWarmer.call
+  end
+
   task refresh_matviews: :refresh_reporting_views
 
   desc "Refresh matviews for daily follow ups"

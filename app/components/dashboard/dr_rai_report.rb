@@ -1,11 +1,11 @@
 # Root component for Dr. Rai Reports
 class Dashboard::DrRaiReport < ApplicationComponent
-  attr_reader :quarterlies, :region
+  attr_reader :periods, :region
   attr_accessor :selected_period
 
-  def initialize(quarterlies, region_slug, selected_quarter = nil, lite = false)
+  def initialize(periods, region_slug, selected_quarter = nil, lite = false)
     @lite = lite
-    @quarterlies = quarterlies
+    @periods = periods
     @region = Region.find_by(slug: region_slug)
     @selected_period = if selected_quarter.nil?
       Period.new(type: :quarter, value: current_period.value.to_s)
@@ -39,12 +39,12 @@ class Dashboard::DrRaiReport < ApplicationComponent
       .filter { |indicator| indicator.is_supported?(region) }
   end
 
-  def indicator_previous_numerator(indicator)
-    indicator.numerator(region, selected_period.previous)
+  def indicator_numerator(indicator, period = selected_period)
+    indicator.numerator(region, period)
   end
 
-  def indicator_denominator(indicator)
-    indicator.denominator(region, selected_period)
+  def indicator_denominator(indicator, period = selected_period)
+    indicator.denominator(region, period)
   end
 
   def current_period
@@ -52,7 +52,27 @@ class Dashboard::DrRaiReport < ApplicationComponent
   end
 
   def current_period?
-    current_period == selected_period
+    selected_period == current_period
+  end
+
+  def a_month_to_next_period?
+    next_month_period == current_period.next
+  end
+
+  def next_month_period
+    Period.quarter(1.month.from_now)
+  end
+
+  def future_period?
+    selected_period > current_period
+  end
+
+  def selected_next_period?
+    selected_period == current_period.next
+  end
+
+  def active_period?
+    current_period? || (selected_next_period? && a_month_to_next_period?)
   end
 
   def start_of period

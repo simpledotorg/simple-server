@@ -4,7 +4,7 @@
 <div id="dr-rai--progress">
   <% unless is_lite_version? %>
     <div class="actions-periods-navigation">
-      <% quarterlies.each do |period, info| %>
+      <% periods.each do |period| %>
         <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
       <% end %>
     </div>
@@ -53,19 +53,30 @@
       </p>
     <% end %>
   </div>
-  <% if current_period? && !is_lite_version? %>
-    <button class="add-action-button" type="button" data-toggle="canvas" data-target="#dr-rai--sidebar" aria-expanded="false" aria-controls="dr-rai--sidebar">&#x2b; Add an action</button>
+  <% if !is_lite_version? %>
+    <% if active_period? %>
+        <%= tag.button class: [
+          "add-action-button"
+        ], data: {
+          toggle: "canvas",
+          target: "#dr-rai--sidebar"
+        }, aria: { expanded: "false", controls: "dr-rai--sidebar" } do %>
+          &#x2b; Add an action
+        <% end %>
+    <% elsif future_period? %>
+      <button class="add-action-button" type="button" disabled>&times; Not yet available</button>
+    <% end %>
   <% end %>
 </div>
 <% unless is_lite_version? %>
-<div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= current_period.value %>" data-region="<%= region.slug %>">
+<div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
     <button class="bs-canvas-close float-left close" aria-label="Close">
       <i class="fa-solid fa-xmark-large"></i>
     </button>
   </div>
-  <% if current_period? %>
+  <% if active_period? %>
     <div class="content">
       <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
       <div class="step-block" id="step-1">
@@ -84,7 +95,8 @@
                     indicator_action_passive: indicator.action_passive,
                     indicator_denominator: indicator_denominator(indicator),
                     indicator_id: indicator.id,
-                    indicator_previous_numerator: indicator_previous_numerator(indicator),
+                    indicator_previous_numerator: indicator_numerator(indicator, selected_period.previous),
+                    indicator_previous_denominator: indicator_denominator(indicator, selected_period.previous),
                     indicator_unit: indicator.unit,
                     target_type: indicator.target_type,
                     target_ui: indicator.target_type_frontend,
@@ -112,7 +124,7 @@
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
-          <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="previous-percentage">6</span>%</span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-previous-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
@@ -133,7 +145,7 @@
             <p class="missing-input-warning d-none">Enter a goal value</p>
           </div>
           <p class="activity-promise"><span class="active-action"></span> <span class="highlight target-number">0</span> <span class="indicator-unit"></span> by <%= end_of(selected_period) %></p>
-          <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
+          <p class="activity-statement"><span class="highlight"><span class="indicator-previous-numerator">6</span></span> <span class='indicator-action'></span> (<span class='indicator-previous-numerator'></span> of <span class='indicator-previous-denominator'></span>) in <%= human_readable(selected_period.previous) %></p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
@@ -252,6 +264,7 @@
       $('.indicator-action').text(indicator.action)
       $('.indicator-denominator').text(indicator.denominator)
       $('.indicator-previous-numerator').text(indicator.previous_numerator)
+      $('.indicator-previous-denominator').text(indicator.previous_denominator)
       $('.active-action').text(indicator.active_action)
       $('.passive-action').text(indicator.passive_action)
       $('.indicator-unit').text(indicator.unit)
@@ -270,13 +283,13 @@
       } else {
         if (target.ui == 'percent') {
           var previousPercentage
-          if (indicator.previous_numerator < 1 || indicator.denominator == '' || indicator.denominator === undefined) {
+          if (indicator.previous_numerator < 1 || indicator.previous_denominator == '' || indicator.previous_denominator === undefined) {
             previousPercentage = 0
           } else {
-            previousPercentage = Math.round(indicator.previous_numerator / indicator.denominator * 100)
+            previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
-          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.denominator)
+          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.previous_denominator)
         }
         $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
         toHide.push($('#step-' + nextStep + '-' + target.ui))
@@ -359,6 +372,7 @@
           {
             'denominator': $(e.currentTarget).data('indicator-denominator'),
             'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
+            'previous_denominator': $(e.currentTarget).data('indicator-previous-denominator'),
             'action': $(e.currentTarget).data('indicator-action'),
             'passive_action': $(e.currentTarget).data('indicator-action-passive'),
             'active_action': $(e.currentTarget).data('indicator-action-active'),

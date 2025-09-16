@@ -6,6 +6,11 @@ logger = ActiveSupport::Logger.new(logfile)
 logger.extend(ActiveSupport::Logger.broadcast(ActiveSupport::Logger.new($stdout)))
 
 namespace :opensrp do
+  desc "Deduplicate imported data"
+  task deduplicate: :environment do
+    OneOff::Opensrp::Deduplicator.call!
+  end
+
   desc "Export simple patient-related data as OpenSRP FHIR resources"
   task :export, [:config_file, :output_file] => :environment do |_task, args|
     raise "Usage: ./bin/rake 'opensrp:export[path/to/config.yml, name-of-output.json]'" unless args.to_a.size == 2
