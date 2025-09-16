@@ -54,6 +54,13 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
     def localized_facility_size(size)
       size.to_s.titleize
     end
+
+    def protocol_drug_labels
+      {
+        hypertension: {full: "Hypertension Drugs"},
+        diabetes: {full: "Diabetes Drugs"}
+      }
+    end
   end
 
   before do

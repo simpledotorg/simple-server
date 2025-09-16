@@ -6,7 +6,7 @@
       <colgroup>
         <col>
         <col>
-        <% first_drugs_by_category = @district_reports.values.first[:drugs_by_category] %>
+        <% first_drugs_by_category = @district_reports&.values&.first&.dig(:drugs_by_category) || {} %>
         <% first_drugs_by_category.each do |drug_category, drugs| %>
           <% drugs.each_with_index do |_drug, index| %>
             <col class="<%= "table-divider" if index.zero? %>">
