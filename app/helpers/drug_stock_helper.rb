@@ -6,4 +6,8 @@ module DrugStockHelper
       region.localized_region_type.capitalize
     end
   end
+
+  def filter_params
+    params[:zone].present? || params[:size].present?
+  end
 end

@@ -31,10 +31,30 @@
       Drug stock
     ----------------->
       <% if current_admin.drug_stocks_enabled? %>
-        <%= link_to(my_facilities_drug_stocks_path(preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])), class: "nav-link #{active_action?("drug_stocks")} #{active_action?("drug_consumption")}") do %>
-          <i class="fa-regular fa-tablets main-menu-icon w-16px"></i> <span>Drug stock</span>
+        <% if all_district_overview_enabled? %>
+          <%= link_to(
+                my_facilities_drug_stocks_path(
+                  facility_group: "all-districts",
+                  for_end_of_month: @for_end_of_month_display
+                ),
+                class: "nav-link #{active_action?("drug_stocks")} #{active_action?("drug_consumption")}"
+              ) do %>
+            <i class="fa-regular fa-tablets main-menu-icon w-16px"></i>
+            <span>Drug stock</span>
+          <% end %>
+        <% else %>
+          <%= link_to(
+                my_facilities_drug_stocks_path(
+                  preserve_query_params(request.query_parameters, ["facility_group", "zone", "size", "for_end_of_month"])
+                ),
+                class: "nav-link #{active_action?("drug_stocks")} #{active_action?("drug_consumption")}"
+              ) do %>
+            <i class="fa-regular fa-tablets main-menu-icon w-16px"></i>
+            <span>Drug stock</span>
+          <% end %>
         <% end %>
       <% end %>
+
 
     <!-----------------
       Overdue patients
