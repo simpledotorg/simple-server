@@ -31,7 +31,7 @@
       Drug stock
     ----------------->
       <% if current_admin.drug_stocks_enabled? %>
-        <% if Flipper.enabled?("all_district_overview") %>
+        <% if all_district_overview_enabled? %>
           <%= link_to(
                 my_facilities_drug_stocks_path(
                   facility_group: "all-districts",

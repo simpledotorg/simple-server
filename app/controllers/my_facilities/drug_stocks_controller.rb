@@ -1,8 +1,8 @@
 class MyFacilities::DrugStocksController < AdminController
+  include FlipperHelper
   include Pagination
   include MyFacilitiesFiltering
   include SetForEndOfMonth
-  include FlipperHelper
 
   around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
@@ -154,9 +154,8 @@ class MyFacilities::DrugStocksController < AdminController
     # Filtered list of facilities that match user selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
     active_facility_ids = filter_facilities.active.pluck("facilities.id")
-    base_facilities = @accessible_facilities.where(id: active_facility_ids)
 
-    base_facilities
+    filter_facilities
       .eager_load(facility_group: :protocol_drugs)
       .where(protocol_drugs: {stock_tracked: true}, id: active_facility_ids)
       .distinct("facilities.id")
