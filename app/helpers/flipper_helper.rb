@@ -4,6 +4,6 @@ module FlipperHelper
   end
 
   def all_district_overview_enabled?
-    Flipper.enabled?(:all_district_overview) && params[:facility_group] == "all-districts"
+    Flipper.enabled?(:all_district_overview) || params[:facility_group] == "all-districts"
   end
 end

@@ -65,11 +65,8 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_facility_group(facilities)
-      if all_district_overview_enabled?
-        facilities.where(facility_group: @facility_groups)
-      else
-        facilities.where(facility_group: @selected_facility_group)
-      end
+      target_group = all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+      facilities.where(facility_group: target_group)
     end
 
     def facilities_by_zone(facilities)
