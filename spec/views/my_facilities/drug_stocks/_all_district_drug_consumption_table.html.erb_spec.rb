@@ -18,7 +18,7 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
             "hypertension" => {
               drug1 => {consumed: 10},
               drug2 => {consumed: 5},
-              :base_doses => {total: 15} # optional if partial uses base_doses
+              :base_doses => {total: 15}
             }
           }
         },
@@ -33,7 +33,7 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
             "hypertension" => {
               drug1 => {consumed: 20},
               drug2 => {consumed: 15},
-              :base_doses => {total: 35} # optional
+              :base_doses => {total: 35}
             }
           }
         },
@@ -63,14 +63,9 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
   end
 
   it "renders the 'Patients under care' column for all rows" do
-    # District rows
     expect(rendered).to have_selector("tr.district-row td.type-number", text: "139")
     expect(rendered).to have_selector("tr.district-row td.type-number", text: "524")
-
-    # State subtotal row (matches your partial's class `row-total`)
     expect(rendered).to have_selector("tr.row-total td.type-number", text: "663")
-
-    # All row
     expect(rendered).to have_selector("tr.row-total td.type-number", text: "663")
   end
 

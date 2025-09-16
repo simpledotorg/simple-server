@@ -14,7 +14,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
   let(:district1) { instance_double("FacilityGroup", id: 1, name: "District 1", slug: "district-1", state: "State 1") }
   let(:district2) { instance_double("FacilityGroup", id: 2, name: "District 2", slug: "district-2", state: "State 2") }
   let(:organization_region) { create(:region, name: "Organization", region_type: "organization", path: "organization.path") }
-  let(:current_admin) { double("Admin") } # plain double to stub any method freely
+  let(:current_admin) { double("Admin") }
 
   helper do
     def accessible_region?(*args)

@@ -16,10 +16,10 @@ RSpec.describe "my_facilities/drug_stocks/_drug_stocks_table.html.erb", type: :v
 
   let(:report) do
     {
-      total_patient_count: 120, # District total
-      facilities_total_patient_count: 120, # Sum of all facilities
-      patient_count_by_block_id: {1 => 120}, # Block total (sum of facilities)
-      patient_count_by_facility_id: {1 => 50, 2 => 70}, # Facility totals
+      total_patient_count: 120,
+      facilities_total_patient_count: 120,
+      patient_count_by_block_id: {1 => 120},
+      patient_count_by_facility_id: {1 => 50, 2 => 70},
       total_drugs_in_stock: {"X101" => 120},
       district_drugs_in_stock: {"X101" => 120},
       facilities_total_drugs_in_stock: {"X101" => 120},
