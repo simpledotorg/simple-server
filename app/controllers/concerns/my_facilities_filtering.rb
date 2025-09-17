@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module MyFacilitiesFiltering
+  include FlipperHelper
   extend ActiveSupport::Concern
 
   included do
@@ -34,11 +35,20 @@ module MyFacilitiesFiltering
     end
 
     def populate_zones
-      @zones = @accessible_facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
+      @zones = if all_district_overview_enabled?
+        @accessible_facilities.where(facility_group: @facility_groups).pluck(:zone).uniq.compact.sort
+      else
+        @accessible_facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
+      end
     end
 
     def populate_facility_sizes
-      @facility_sizes = @accessible_facilities.where(facility_group: @selected_facility_group, zone: @selected_zones).pluck(:facility_size).uniq.compact.sort
+      facility_groups_scope = all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+
+      @facility_sizes = @accessible_facilities
+        .where(facility_group: facility_groups_scope, zone: @selected_zones)
+        .pluck(:facility_size).uniq.compact.sort
+
       @facility_sizes = sort_facility_sizes_by_size(@facility_sizes)
     end
 
@@ -55,7 +65,8 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_facility_group(facilities)
-      facilities.where(facility_group: @selected_facility_group)
+      target_group = all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+      facilities.where(facility_group: target_group)
     end
 
     def facilities_by_zone(facilities)
