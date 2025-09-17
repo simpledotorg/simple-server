@@ -13,24 +13,24 @@ module DrugStockHelper
 
   def accessible_organization_facilities
     if CountryConfig.current_country?("Bangladesh")
-      Organization.joins(facility_groups: :facilities).where(facilities: { id: @accessible_facilities }).distinct.pluck(:slug).include?("nhf")
+      Organization.joins(facility_groups: :facilities).where(facilities: {id: @accessible_facilities}).distinct.pluck(:slug).include?("nhf")
     else
-      true  
+      true
     end
   end
 
   def accessible_organization_districts
     if CountryConfig.current_country?("Bangladesh")
       @districts = FacilityGroup
-                  .includes(:facilities)
-                  .joins(:organization)
-                  .where(
-                    organization: { slug: "nhf" },
-                    id: @accessible_facilities.pluck(:facility_group_id).uniq
-                  )
-                  .order(:name)
+        .includes(:facilities)
+        .joins(:organization)
+        .where(
+          organization: {slug: "nhf"},
+          id: @accessible_facilities.pluck(:facility_group_id).uniq
+        )
+        .order(:name)
     else
-      FacilityGroup.where(id: @accessible_facilities.pluck(:facility_group_id).uniq).order(:name) 
+      FacilityGroup.where(id: @accessible_facilities.pluck(:facility_group_id).uniq).order(:name)
     end
   end
 end

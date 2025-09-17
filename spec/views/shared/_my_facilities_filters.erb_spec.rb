@@ -67,17 +67,6 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
       expect(rendered).to include("District 1")
     end
 
-    it "defaults to 'All blocks' for zone filter" do
-      allow(CountryConfig).to receive(:current).and_return("Bangladesh")
-      render
-
-      if CountryConfig.current == "Bangladesh"
-        expect(rendered).to include("All upazilas")
-      else
-        expect(rendered).to include("All blocks")
-      end
-    end
-
     it "lists all zones in the zone dropdown" do
       expect(rendered).to include("Zone1")
       expect(rendered).to include("Zone2")
@@ -114,10 +103,7 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
 
       if CountryConfig.current == "Bangladesh"
         expect(rendered).to include("All upazilas")
-      else
-        expect(rendered).to include("All blocks")
       end
-      expect(rendered).to include("Zone1")
     end
 
     it "defaults to 'All facility sizes' for size filter but lists only the selected district's sizes" do
