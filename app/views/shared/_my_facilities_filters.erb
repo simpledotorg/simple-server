@@ -10,7 +10,7 @@
     aria-haspopup="true"
     aria-expanded="false"
   >
-    <% if all_district_overview_enabled? %>
+    <% if Flipper.enabled?("all_district_overview") %>
       <% if params[:facility_group] == "all-districts" %>
         All districts
       <% else %>
@@ -24,7 +24,7 @@
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <!-- 🔑 FIX: dynamic form action -->
     <form id="query-filters" action="<%= request.path %>" method="get">
-      <% if all_district_overview_enabled? %>
+      <% if Flipper.enabled?("all_district_overview") %>
         <button
           class="dropdown-item <%= "active" if params[:facility_group] == "all-districts" %>"
           type="submit"
