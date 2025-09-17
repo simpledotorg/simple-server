@@ -43,6 +43,8 @@ module OneOff
         end
       end
 
+      attr_reader :tally
+
       def self.export config, output
         new(config, output).call!
       end
@@ -74,7 +76,7 @@ module OneOff
       def call!
         @logger.info "Time Boundaries: [#{@config.report_start}..#{@config.report_end}]"
 
-        patients = select_patients @config.facilities.keys
+        patients = select_patients from_facilities: @config.facilities.keys
         patients.each do |patient|
           export_patient_details patient
           export_blood_pressure_details patient
@@ -87,7 +89,7 @@ module OneOff
         @tally[:encounters] += @encounters.size
         @resources << OneOff::Opensrp::EncounterGenerator.new(@encounters).generate
 
-        write_audit_trail
+        write_audit_trail patients
       end
 
       def select_patients from_facilities: []
@@ -99,7 +101,7 @@ module OneOff
       def export_patient_details patient
         return unless @config.time_window.cover?(patient.recorded_at)
 
-        patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, facilities_to_export)
+        patient_exporter = OneOff::Opensrp::PatientExporter.new(patient, @config.facilities)
         @resources << patient_exporter.export
         @tally[:patients] += 1
 
@@ -111,9 +113,14 @@ module OneOff
 
       def export_blood_pressure_details patient
         blood_pressures = if @config.time_bound?
-          patient.blood_pressures
+          patient
+            .blood_pressures
+            .where(recorded_at: @config.time_window)
+          .or(patient
+            .blood_pressures
+            .where(updated_at: @config.time_window))
         else
-          blood_pressures.where(recorded_at: @config.time_window).or(blood_pressures.where(updated_at: @config.time_window))
+          patient.blood_pressures
         end
         @logger.debug "Patient[##{patient.id}] has #{blood_pressures.size} blood pressure readings."
         @tally[:observation] += blood_pressures.size
@@ -130,7 +137,9 @@ module OneOff
           patient
             .blood_sugars
             .where(recorded_at: @config.time_window)
-            .or(blood_sugars.where(updated_at: @config.time_window))
+          .or(patient
+            .blood_sugars
+            .where(updated_at: @config.time_window))
         else
           patient.blood_sugars
         end
@@ -152,10 +161,11 @@ module OneOff
           patient
             .prescription_drugs
             .where(created_at: @config.time_window)
-            .or(prescription_drugs.where(updated_at: @config.time_window))
-        else
-          patient
+          .or(patient
             .prescription_drugs
+            .where(updated_at: @config.time_window))
+        else
+          patient.prescription_drugs
         end
         @logger.debug "Patient[##{patient.id}] has #{prescription_drugs.size} drugs prescribed."
         @tally[:flags] += prescription_drugs.size
@@ -168,10 +178,12 @@ module OneOff
 
       def export_appointments_details patient
         appointments = if @config.time_bound?
-          patients
+          patient
             .appointments
             .where(created_at: @config.time_window)
-            .or(appointments.where(updated_at: @config.time_window))
+          .or(patient
+            .appointments
+            .where(updated_at: @config.time_window))
         else
           patient.appointments
         end
@@ -181,7 +193,7 @@ module OneOff
         @tally[:flags] += appointments.includes(:call_results).where.not(call_results: {id: nil}).size
         appointments.each do |appointment|
           appointment_exporter = OneOff::Opensrp::AppointmentExporter.new(appointment, @config.facilities)
-          resources << appointment_exporter.export
+          @resources << appointment_exporter.export
           if appointment.call_results.present?
             @resources << appointment_exporter.export_call_outcome_task
             @resources << appointment_exporter.export_call_outcome_flag
