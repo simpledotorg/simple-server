@@ -43,7 +43,8 @@ RSpec.describe "my_facilities/drug_stocks/_drug_stocks_table.html.erb", type: :v
     allow(view).to receive(:drug_stock_region_label).and_return("District 1")
     allow(view).to receive(:patient_days_css_class).and_return("bg-green")
     allow(view).to receive(:my_facilities_drug_stock_form_path) { |id, opts| "/drug_stock_form/#{id}" }
-
+    allow(Flipper).to receive(:enabled?).with("all_district_overview").and_return(true)
+    allow(view).to receive(:accessible_organization_facilities).and_return(true)
     render
   end
 
