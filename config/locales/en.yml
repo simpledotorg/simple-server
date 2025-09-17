@@ -24,6 +24,7 @@ en:
   name: "Name"
   phone_number: "Phone Number"
   back: "back"
+  overall_in_base_dose: "Overall in base dose"
   registration_approval_email:
     accessible_facilities: "User will have access to data from"
     organization: "Organization"
