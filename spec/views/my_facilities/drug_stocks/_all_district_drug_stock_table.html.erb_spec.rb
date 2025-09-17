@@ -69,7 +69,6 @@ RSpec.describe "my_facilities/drug_stocks/_all_district_drug_consumption_table.h
   end
 
   it "renders Goa subtotal row with correct name and value" do
-    # allow for "Subtotal" text in different forms/case
     expect(rendered).to match(/Goa.*Subtotal/i)
     expect(rendered).to match(/663/)
     expect(rendered).to match(/30/)

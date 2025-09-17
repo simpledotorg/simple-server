@@ -1,4 +1,4 @@
-<% if @selected_facility_group || access_all_districts_overview?%>
+<% if @selected_facility_group || can_view_all_districts_nav? %>
 <div class="dropdown show mb-8px mr-8px">
   <a
     id="dropdownMenuLink"
@@ -10,7 +10,7 @@
     aria-haspopup="true"
     aria-expanded="false"
   >
-    <% if access_all_districts_overview? %>
+    <% if can_view_all_districts_nav?  %>
       <% if params[:facility_group] == "all-districts" %>
         All districts
       <% else %>
@@ -24,7 +24,7 @@
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <!-- 🔑 FIX: dynamic form action -->
     <form id="query-filters" action="<%= request.path %>" method="get">
-      <% if access_all_districts_overview?%>
+      <% if can_view_all_districts_nav? %>
         <button
           class="dropdown-item <%= "active" if params[:facility_group] == "all-districts" %>"
           type="submit"

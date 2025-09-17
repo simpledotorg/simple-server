@@ -13,19 +13,18 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
   end
   let(:district1) { instance_double("FacilityGroup", id: 1, name: "District 1", slug: "district-1", state: "State 1") }
   let(:district2) { instance_double("FacilityGroup", id: 2, name: "District 2", slug: "district-2", state: "State 2") }
-  let(:organization_region) { create(:region, name: "Organization", region_type: "organization", path: "organization.path") }
   let(:current_admin) { instance_double("Admin") }
 
   helper do
-    def accessible_region?(*args)
+    def accessible_region?(*)
       true
     end
 
-    def active_action?(*args)
+    def active_action?(*)
       false
     end
 
-    def t(key, **args)
+    def t(key, **)
       key.to_s.titleize
     end
 
@@ -35,7 +34,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
       "#{options[:type]}_csv_path"
     end
 
-    def my_facilities_drug_stocks_path(*args)
+    def my_facilities_drug_stocks_path(*)
       "/my_facilities/drug_stocks"
     end
 
@@ -54,13 +53,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
     def localized_facility_size(size)
       size.to_s.titleize
     end
-
-    def protocol_drug_labels
-      {
-        hypertension: {full: "Hypertension Drugs"},
-        diabetes: {full: "Diabetes Drugs"}
-      }
-    end
   end
 
   before do
@@ -78,12 +70,11 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
     allow(current_admin).to receive(:feature_enabled?).and_return(true)
     allow(view).to receive(:request).and_return(double("Request", query_parameters: {}, path: "/test"))
     allow(view).to receive(:params).and_return({})
-    allow(view).to receive(:all_district_overview_enabled?).and_return(false)
   end
 
-  context "when all_district_overview_enabled? is true" do
+  context "when all districts overview is enabled" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(true)
+      allow(view).to receive(:access_all_districts_overview?).and_return(true)
       assign(:district_reports, {})
       render
     end
@@ -93,9 +84,9 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
     end
   end
 
-  context "when facilities are present and all_district_overview_enabled? is false" do
+  context "when facilities are present and overview is disabled" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+      allow(view).to receive(:access_all_districts_overview?).and_return(false)
       assign(:facilities, [facility])
       render
     end
@@ -109,9 +100,9 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
     end
   end
 
-  context "when no data is present" do
+  context "when no facilities are present" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+      allow(view).to receive(:access_all_districts_overview?).and_return(false)
       assign(:facilities, [])
       render
     end

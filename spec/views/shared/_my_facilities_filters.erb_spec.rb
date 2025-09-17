@@ -54,7 +54,7 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
 
   context "when all_district_overview Flipper flag is enabled" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(true)
+      allow(view).to receive(:access_all_districts_overview?).and_return(true)
       allow(Flipper).to receive(:enabled?).with("all_district_overview").and_return(true)
       render
     end
@@ -84,7 +84,7 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
 
   context "when all_district_overview Flipper flag is disabled" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+      allow(view).to receive(:access_all_districts_overview?).and_return(false)
       allow(Flipper).to receive(:enabled?).with("all_district_overview").and_return(false)
       assign(:selected_facility_group, district1)
       assign(:zones, [zone1])

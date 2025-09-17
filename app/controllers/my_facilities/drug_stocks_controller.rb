@@ -1,9 +1,9 @@
 class MyFacilities::DrugStocksController < AdminController
   include FlipperHelper
+  include DrugStockHelper
   include Pagination
   include MyFacilitiesFiltering
   include SetForEndOfMonth
-  include DrugStockHelper
 
   around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
@@ -117,10 +117,10 @@ class MyFacilities::DrugStocksController < AdminController
 
   def prepare_district_reports(report_type)
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-
-    if all_district_overview_enabled? && accessible_organization_facilities
-      @district_reports = {}
+    if access_all_districts_overview?
       @districts = accessible_organization_districts
+
+      @district_reports = {}
       @all_facilities = drug_stock_enabled_facilities
 
       @districts.each do |district|
@@ -149,7 +149,7 @@ class MyFacilities::DrugStocksController < AdminController
   def drug_stock_enabled_facilities
     # Filtered list of facilities that match user selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
-    active_facility_ids = filter_facilities.active.pluck("facilities.id")
+    active_facility_ids = filter_facilities.pluck("facilities.id")
 
     filter_facilities
       .eager_load(facility_group: :protocol_drugs)

@@ -31,7 +31,7 @@
       Drug stock
     ----------------->
       <% if current_admin.drug_stocks_enabled? %>
-        <% if access_all_districts_overview? %>
+        <% if can_view_all_districts_nav? %>
           <%= link_to(
                 my_facilities_drug_stocks_path(
                   facility_group: "all-districts",

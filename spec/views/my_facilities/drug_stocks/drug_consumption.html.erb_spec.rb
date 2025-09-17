@@ -67,7 +67,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     allow(current_admin).to receive(:feature_enabled?).and_return(true)
     allow(view).to receive(:request).and_return(double("Request", query_parameters: {}, path: "/test"))
     allow(view).to receive(:params).and_return({})
-    allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+    allow(view).to receive(:access_all_districts_overview?).and_return(false)
   end
 
   it "displays the heading with the selected month" do
@@ -99,9 +99,9 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     end
   end
 
-  context "when all_district_overview_enabled? is true" do
+  context "when access_all_districts_overview? is true" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(true)
+      allow(view).to receive(:access_all_districts_overview?).and_return(true)
       assign(:district_reports, {})
       render
     end
@@ -111,9 +111,9 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     end
   end
 
-  context "when facilities are present and all_district_overview_enabled? is false" do
+  context "when facilities are present and access_all_districts_overview? is false" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+      allow(view).to receive(:access_all_districts_overview?).and_return(false)
       assign(:facilities, [facility])
       render
     end
@@ -125,7 +125,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
 
   context "when no facilities are present" do
     before do
-      allow(view).to receive(:all_district_overview_enabled?).and_return(false)
+      allow(view).to receive(:access_all_districts_overview?).and_return(false)
       assign(:facilities, [])
       render
     end

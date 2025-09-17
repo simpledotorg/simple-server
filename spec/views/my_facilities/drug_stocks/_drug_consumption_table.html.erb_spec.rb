@@ -24,21 +24,39 @@ RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", typ
     }
   end
 
+  let(:current_admin) { create(:admin, :manager) }
+
+  helper do
+    def protocol_drug_labels
+      {hypertension: {full: "Hypertension Drugs", short: "HTN"}}
+    end
+
+    def reports_region_path(region, opts = {})
+      "/reports/#{region.id}?scope=#{opts[:report_scope]}"
+    end
+
+    def drug_stock_region_label(*)
+      "District 1"
+    end
+
+    def accessible_organization_facilities
+      true
+    end
+
+    attr_reader :current_admin
+  end
+
   before do
+    @current_admin = current_admin
+    allow(view).to receive(:access_all_districts_overview?).and_return(true)
     assign(:facilities, [facility1, facility2])
     assign(:blocks, [block1])
     assign(:district_region, district_region)
     assign(:drugs_by_category, drugs_by_category)
     assign(:report, report)
 
-    allow(view).to receive(:protocol_drug_labels).and_return(
-      hypertension: {full: "Hypertension Drugs", short: "HTN"}
-    )
-    allow(view).to receive(:reports_region_path) { |region, opts| "/reports/#{region.id}?scope=#{opts[:report_scope]}" }
-    allow(view).to receive(:drug_stock_region_label).and_return("District 1")
-    allow(Flipper).to receive(:enabled?).with("all_district_overview").and_return(true)
-    allow(view).to receive(:accessible_organization_facilities).and_return(true)
-
+    allow(Flipper).to receive(:enabled?).with(:all_district_overview, current_admin).and_return(true)
+    allow(view).to receive(:access_all_districts_overview?).and_return(true)
     render
   end
 
