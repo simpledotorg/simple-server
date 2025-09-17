@@ -29,8 +29,8 @@
             <% drugs_by_category.each do |drug_category, drugs| %>
               <th colspan="<%= (drugs || []).count %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
             <% end %>
-            <th colspan="<%= drugs_by_category.count %>">Overall in base doses</th>
-          <% end %>
+            <th colspan="<%= drugs_by_category.count %>"><%= I18n.t('overall_in_base_dose') %></th>
+          <% end %> 
         </tr>
 
         <tr data-sort-method="thead" class="sorts">
@@ -170,7 +170,7 @@
                   data-placement="top"
                   data-trigger="hover focus click"
                   data-original-title='<%= "#{district.name}: #{report[:district_patient_count]} patients" %>'>
-                <a href="<%= my_facilities_drug_consumption_path(facility_group: district.slug, for_end_of_month: @for_end_of_month_display) %>" target="_blank">
+                <a href="<%= my_facilities_drug_consumption_path(facility_group: district.slug, for_end_of_month: @for_end_of_month_display) %>">
                   <%= district.name %>
                 </a>
               </td>
@@ -201,13 +201,19 @@
               <% end %>
 
               <% drugs_by_category.each do |drug_category, _drugs| %>
-                <% base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
-                <td class="<%= base_total.nil? || base_total == 0 ? 'type-blank' : 'type-number text-center' %>"
-                    data-sort-value="<%= base_total.to_i %>"
-                    data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
-                  <%= base_total.present? && base_total != "error" ? base_total : '&#8212;'.html_safe %>
-                </td>
-              <% end %>
+                  <% base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
+                  <td class="<%= base_total.nil? || base_total == 0 ? 'type-blank' : 'type-number text-center' %>"
+                      data-html="true"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-trigger="hover focus click"
+                      data-template="<%= render 'wide_tooltip_template' %>"
+                      data-original-title="<%= render 'base_doses_tooltip', report: report&.dig(:total_drug_consumption, drug_category, :base_doses) %>"
+                      data-sort-value="<%= base_total.to_i %>"
+                      data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
+                    <%= base_total.present? && base_total != "error" ? base_total : '&#8212;'.html_safe %>
+                  </td>
+                <% end %>
             </tr>
           <% end %>
         </tbody>

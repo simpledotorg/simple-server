@@ -1,4 +1,4 @@
-<% if @selected_facility_group || (all_district_overview_enabled? && accessible_organization_facilities)%>
+<% if @selected_facility_group || access_all_districts_overview?%>
 <div class="dropdown show mb-8px mr-8px">
   <a
     id="dropdownMenuLink"
@@ -10,7 +10,7 @@
     aria-haspopup="true"
     aria-expanded="false"
   >
-    <% if Flipper.enabled?("all_district_overview") && accessible_organization_facilities %>
+    <% if access_all_districts_overview? %>
       <% if params[:facility_group] == "all-districts" %>
         All districts
       <% else %>
@@ -24,7 +24,7 @@
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <!-- 🔑 FIX: dynamic form action -->
     <form id="query-filters" action="<%= request.path %>" method="get">
-      <% if Flipper.enabled?("all_district_overview") && accessible_organization_facilities%>
+      <% if access_all_districts_overview?%>
         <button
           class="dropdown-item <%= "active" if params[:facility_group] == "all-districts" %>"
           type="submit"
