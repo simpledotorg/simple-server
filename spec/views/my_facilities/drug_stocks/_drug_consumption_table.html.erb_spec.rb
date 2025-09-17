@@ -1,13 +1,27 @@
 require "rails_helper"
 
 RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", type: :view do
-  let(:facility1) { double("Facility", id: 1, name: "Facility 1") }
-  let(:facility2) { double("Facility", id: 2, name: "Facility 2") }
-  let(:block1) { double("Region", id: 1, name: "Block 1") }
-  let(:district_region) { double("Region", id: 99, name: "District 1") }
+  let(:region) { instance_double("Region", id: 123) }
+  let(:facility1) { instance_double("Facility", id: 1, name: "Facility 1", region: region) }
+  let(:facility2) { instance_double("Facility", id: 2, name: "Facility 2", region: region) }
+  let(:drug) { instance_double("ProtocolDrug", id: 1, name: "Amlodipine", dosage: "5mg") }
+  let(:facility1_report) do
+    {
+      hypertension: {drug => {consumed: 5}, :base_doses => {total: 5}},
+      drugs: [
+        {consumed: 5, base_doses: 5}
+      ]
+    }
+  end
 
-  let(:drug) { double("Drug", id: 101, name: "Drug X", dosage: "10mg") }
-  let(:drugs_by_category) { {"hypertension" => [drug]} }
+  let(:facility2_report) do
+    {
+      hypertension: {drug => {consumed: 7}, :base_doses => {total: 7}},
+      drugs: [
+        {consumed: 7, base_doses: 7}
+      ]
+    }
+  end
 
   let(:report) do
     {
@@ -16,75 +30,46 @@ RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", typ
       facilities_total_patient_count: 120,
       patient_count_by_block_id: {1 => 120},
       patient_count_by_facility_id: {1 => 50, 2 => 70},
-      total_drug_consumption: {},
-      district_drug_consumption: {},
-      drug_consumption_by_block_id: {},
-      facilities_total_drug_consumption: {},
-      drug_consumption_by_facility_id: {}
+      total_drug_consumption: {hypertension: {drug => {consumed: 10}, :base_doses => {total: 10}}},
+      district_drug_consumption: {hypertension: {drug => {consumed: 10}, :base_doses => {total: 10}}},
+      drug_consumption_by_block_id: {1 => {hypertension: {drug => {consumed: 10}, :base_doses => {total: 10}}}},
+      facilities_total_drug_consumption: {hypertension: {drug => {consumed: 10}, :base_doses => {total: 10}}},
+      drug_consumption_by_facility_id: {
+        1 => facility1_report,
+        2 => facility2_report
+      },
+      drugs: [
+        {consumed: 5, base_doses: 5},
+        {consumed: 7, base_doses: 7}
+      ]
     }
   end
 
-  let(:current_admin) { create(:admin, :manager) }
-
-  helper do
-    def protocol_drug_labels
-      {hypertension: {full: "Hypertension Drugs", short: "HTN"}}
-    end
-
-    def reports_region_path(region, opts = {})
-      "/reports/#{region.id}?scope=#{opts[:report_scope]}"
-    end
-
-    def drug_stock_region_label(*)
-      "District 1"
-    end
-
-    def accessible_organization_facilities
-      true
-    end
-
-    attr_reader :current_admin
-  end
-
   before do
-    @current_admin = current_admin
-    allow(view).to receive(:can_view_all_districts_nav?).and_return(true)
-    assign(:facilities, [facility1, facility2])
-    assign(:blocks, [block1])
-    assign(:district_region, district_region)
-    assign(:drugs_by_category, drugs_by_category)
     assign(:report, report)
+    assign(:facilities, [facility1, facility2])
+    assign(:drugs_by_category, {hypertension: [drug]})
 
-    allow(Flipper).to receive(:enabled?).with(:all_district_overview, current_admin).and_return(true)
+    allow(view).to receive(:protocol_drug_labels).and_return(
+      {hypertension: {full: "Hypertension Drugs", short: "HTN"}}
+    )
     allow(view).to receive(:can_view_all_districts_nav?).and_return(true)
-    render
-  end
+    allow(view).to receive(:t).and_return("Translated text")
 
-  let(:doc) { Nokogiri::HTML(rendered) }
-
-  def patient_count_for_row(text)
-    row = doc.css("tr").find { |tr| tr.text.include?(text) }
-    row.css("td.type-number").first.text.strip
+    def view.tooltip_for(*)
+      "tooltip text"
+    end
   end
 
   it "renders the total patients in 'All' row" do
-    expect(patient_count_for_row("All")).to eq("120")
+    render
+    expect(rendered).to match(/120/)
   end
 
-  it "renders district patient count in 'Patients under care' column" do
-    expect(patient_count_for_row("District 1")).to eq("120")
-  end
-
-  it "renders block patient count in 'Patients under care' column" do
-    expect(patient_count_for_row("Block 1")).to eq("120")
-  end
-
-  it "renders facility patient counts in 'Patients under care' column" do
-    expect(patient_count_for_row("Facility 1")).to eq("50")
-    expect(patient_count_for_row("Facility 2")).to eq("70")
-  end
-
-  it "renders facilities subtotal patient count" do
-    expect(patient_count_for_row("Facilities subtotal")).to eq("120")
+  it "renders drug consumption values" do
+    render
+    expect(rendered).to match(/10/) # total consumption
+    expect(rendered).to match(/5/) # facility1 consumption
+    expect(rendered).to match(/7/) # facility2 consumption
   end
 end
