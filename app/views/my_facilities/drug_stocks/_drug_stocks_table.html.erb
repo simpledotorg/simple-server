@@ -36,7 +36,7 @@
         <th class="row-label sort-label sticky" colspan="2" data-sort-default>Facilities</th>
         <% if Flipper.enabled?("all_district_overview") && accessible_organization_facilities %>
           <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key="patients_under_care">
-            Patients<br>under care
+            Patients<br>under<br>care
           </th>
         <% end %>
         <% @drugs_by_category&.map do |drug_category, drugs| %>
