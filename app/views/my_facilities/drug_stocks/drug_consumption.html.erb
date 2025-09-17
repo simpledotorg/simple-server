@@ -46,7 +46,7 @@
         <% end %>
       </div>
 
-      <% if all_district_overview_enabled? %>
+      <% if all_district_overview_enabled? && accessible_organization_facilities %>
         <%= render partial: "all_district_drug_consumption_table", locals: {district_reports: @district_reports} %>
       <% elsif @facilities.present? %>
         <%= render "drug_consumption_table" %>

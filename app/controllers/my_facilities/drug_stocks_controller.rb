@@ -3,6 +3,7 @@ class MyFacilities::DrugStocksController < AdminController
   include Pagination
   include MyFacilitiesFiltering
   include SetForEndOfMonth
+  include DrugStockHelper
 
   around_action :set_reporting_time_zone
   before_action :authorize_my_facilities
@@ -117,14 +118,9 @@ class MyFacilities::DrugStocksController < AdminController
   def prepare_district_reports(report_type)
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
 
-    if all_district_overview_enabled?
-      @districts = Organization.find_by(slug: "nhf")
-        .facility_groups
-        .includes(:facilities)
-        .where(id: @accessible_facilities.pluck(:facility_group_id).uniq)
-        .order(:name)
-
+    if all_district_overview_enabled? && accessible_organization_facilities
       @district_reports = {}
+      @districts = accessible_organization_districts
       @all_facilities = drug_stock_enabled_facilities
 
       @districts.each do |district|
