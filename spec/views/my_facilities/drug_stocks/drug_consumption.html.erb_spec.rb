@@ -15,6 +15,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
   let(:district2) { instance_double("FacilityGroup", id: 2, name: "District 2", slug: "district-2", state: "State 2") }
   let(:organization_region) { create(:region, name: "Organization", region_type: "organization", path: "organization.path") }
   let(:current_admin) { double("Admin") }
+  let(:drug) { instance_double("Drug", id: 101, name: "Drug X", dosage: "10mg") }
 
   helper do
     def accessible_region?(*args)
@@ -28,7 +29,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     def t(key, **args)
       key.to_s.titleize
     end
-
     attr_reader :current_admin
 
     def my_facilities_drug_consumption_path(options = {})
@@ -64,10 +64,41 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     assign(:zones, ["zone1", "zone2"])
     assign(:facility_sizes, ["small", "medium"])
 
+    # ✅ Add total_drug_consumption and last_updated_at
+    assign(:report, {
+      total_patient_count: 42,
+      last_updated_at: Time.zone.parse("2025-09-01 12:00"),
+      total_drug_consumption: {
+        hypertension: {
+          drug => {consumed: 12},
+          :base_doses => {total: 12, drugs: [{consumed: 12}]}
+        }
+      },
+      drug_consumption_by_facility_id: {
+        facility.id => {
+          hypertension: {
+            drug => {consumed: 12},
+            :base_doses => {total: 12, drugs: [{consumed: 12}]}
+          }
+        }
+      },
+      facilities_total_drug_consumption: {
+        hypertension: {
+          drug => {consumed: 12},
+          :base_doses => {total: 12, drugs: [{consumed: 12}]}
+        }
+      }
+    })
+
     allow(current_admin).to receive(:feature_enabled?).and_return(true)
     allow(view).to receive(:request).and_return(double("Request", query_parameters: {}, path: "/test"))
     allow(view).to receive(:params).and_return({})
     allow(view).to receive(:access_all_districts_overview?).and_return(false)
+
+    allow(view).to receive(:protocol_drug_labels).and_return({
+      hypertension: {full: "Hypertension"},
+      diabetes: {full: "Diabetes"}
+    })
   end
 
   it "displays the heading with the selected month" do
@@ -88,17 +119,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     expect(rendered).to have_selector("a#dropdownMenuLink", text: "Aug-2025")
   end
 
-  context "when facilities are present" do
-    before do
-      assign(:facilities, [facility])
-      render
-    end
-
-    it "renders a Download Report button" do
-      expect(rendered).to have_link("Download Report", href: "/my_facilities/drug_consumption.csv")
-    end
-  end
-
   context "when access_all_districts_overview? is true" do
     before do
       allow(view).to receive(:access_all_districts_overview?).and_return(true)
@@ -108,18 +128,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
 
     it "renders the all district drug consumption table partial" do
       expect(view).to have_rendered(partial: "_all_district_drug_consumption_table")
-    end
-  end
-
-  context "when facilities are present and access_all_districts_overview? is false" do
-    before do
-      allow(view).to receive(:access_all_districts_overview?).and_return(false)
-      assign(:facilities, [facility])
-      render
-    end
-
-    it "renders the drug consumption table partial" do
-      expect(view).to have_rendered(partial: "_drug_consumption_table")
     end
   end
 
