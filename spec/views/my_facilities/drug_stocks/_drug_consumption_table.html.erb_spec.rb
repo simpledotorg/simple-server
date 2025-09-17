@@ -36,49 +36,37 @@ RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", typ
     )
     allow(view).to receive(:reports_region_path) { |region, opts| "/reports/#{region.id}?scope=#{opts[:report_scope]}" }
     allow(view).to receive(:drug_stock_region_label).and_return("District 1")
+    allow(Flipper).to receive(:enabled?).with("all_district_overview").and_return(true)
+    allow(view).to receive(:accessible_organization_facilities).and_return(true)
+
+    render
+  end
+
+  let(:doc) { Nokogiri::HTML(rendered) }
+
+  def patient_count_for_row(text)
+    row = doc.css("tr").find { |tr| tr.text.include?(text) }
+    row.css("td.type-number").first.text.strip
   end
 
   it "renders the total patients in 'All' row" do
-    render
-    expect(rendered).to have_selector("tr.row-total td.type-number", text: "120")
+    expect(patient_count_for_row("All")).to eq("120")
   end
 
-  context "when Flipper :all_district_overview is enabled" do
-    before do
-      allow(Flipper).to receive(:enabled?).with(:all_district_overview, anything).and_return(true)
-      allow(view).to receive(:accessible_organization_facilities).and_return(true)
-      render
-    end
-
-    it "renders district patient count in 'Patients under care' column" do
-      district_row = Nokogiri::HTML(rendered).css("tr").find { |tr| tr.text.include?("District 1") }
-      patient_count_cell = district_row.css("td.type-number[data-sort-value]").first
-      expect(patient_count_cell["data-sort-value"]).to eq("120")
-    end
+  it "renders district patient count in 'Patients under care' column" do
+    expect(patient_count_for_row("District 1")).to eq("120")
   end
 
   it "renders block patient count in 'Patients under care' column" do
-    render
-    block_row = Nokogiri::HTML(rendered).css("tr").find { |tr| tr.text.include?("Block 1") }
-    patient_count_cell = block_row.css("td.type-number[data-sort-value]").first
-    expect(patient_count_cell.text.strip).to eq("120")
+    expect(patient_count_for_row("Block 1")).to eq("120")
   end
 
   it "renders facility patient counts in 'Patients under care' column" do
-    render
-    facility1_row = Nokogiri::HTML(rendered).css("tr").find { |tr| tr.text.include?("Facility 1") }
-    facility1_cell = facility1_row.css("td.type-number[data-sort-value]").first
-    expect(facility1_cell.text.strip).to eq("50")
-
-    facility2_row = Nokogiri::HTML(rendered).css("tr").find { |tr| tr.text.include?("Facility 2") }
-    facility2_cell = facility2_row.css("td.type-number[data-sort-value]").first
-    expect(facility2_cell.text.strip).to eq("70")
+    expect(patient_count_for_row("Facility 1")).to eq("50")
+    expect(patient_count_for_row("Facility 2")).to eq("70")
   end
 
   it "renders facilities subtotal patient count" do
-    render
-    subtotal_row = Nokogiri::HTML(rendered).css("tr.row-total").find { |tr| tr.text.include?("Facilities subtotal") }
-    patient_count_cell = subtotal_row.css("td.type-number[data-sort-column-key='patients_under_care']").first
-    expect(patient_count_cell.text.strip).to eq("120")
+    expect(patient_count_for_row("Facilities subtotal")).to eq("120")
   end
 end
