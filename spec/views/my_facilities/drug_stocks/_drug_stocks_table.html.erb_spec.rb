@@ -52,7 +52,7 @@ RSpec.describe "my_facilities/drug_stocks/_drug_stocks_table.html.erb", type: :v
     allow(view).to receive(:my_facilities_drug_stock_form_path) { |id, opts| "/drug_stock_form/#{id}" }
 
     allow(Flipper).to receive(:enabled?).with(:all_district_overview, current_admin).and_return(true)
-    allow(view).to receive(:access_all_districts_overview?).and_return(true)
+    allow(view).to receive(:can_view_all_districts_nav?).and_return(true)
     render
   end
 

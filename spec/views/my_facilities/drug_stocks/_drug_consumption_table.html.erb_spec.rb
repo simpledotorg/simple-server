@@ -48,7 +48,7 @@ RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", typ
 
   before do
     @current_admin = current_admin
-    allow(view).to receive(:access_all_districts_overview?).and_return(true)
+    allow(view).to receive(:can_view_all_districts_nav?).and_return(true)
     assign(:facilities, [facility1, facility2])
     assign(:blocks, [block1])
     assign(:district_region, district_region)
@@ -56,7 +56,7 @@ RSpec.describe "my_facilities/drug_stocks/_drug_consumption_table.html.erb", typ
     assign(:report, report)
 
     allow(Flipper).to receive(:enabled?).with(:all_district_overview, current_admin).and_return(true)
-    allow(view).to receive(:access_all_districts_overview?).and_return(true)
+    allow(view).to receive(:can_view_all_districts_nav?).and_return(true)
     render
   end
 

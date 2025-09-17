@@ -33,7 +33,7 @@
       </tr>
       <tr data-sort-method="thead" class="sorts">
         <th class="row-label sort-label sticky" data-sort-default colspan>Facilities</th>
-        <% if access_all_districts_overview? %>
+        <% if can_view_all_districts_nav? %>
           <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key="patients_under_care">
               Patients <br/>under <br/>care 
           </th>
@@ -60,7 +60,7 @@
           All
         </td>
         <td class="type-number text-center" data-sort-value="<%= @report&.dig(:total_patient_count) %>">
-          <% if access_all_districts_overview? %>
+          <% if can_view_all_districts_nav? %>
             <%= @report&.dig(:all_district_total_patient_count) || @report&.dig(:total_patient_count) %>
           <% end %>
         </td>
@@ -103,7 +103,7 @@
           <% end %>
         </td>
         <td class="type-number text-center" data-sort-value="<%= @report&.dig(:district_patient_count) %>">
-          <% if access_all_districts_overview? %>
+          <% if can_view_all_districts_nav? %>
             <%= @report&.dig(:all_district_patient_count) || @report&.dig(:district_patient_count) %>
           <% end %>
         </td>
@@ -145,7 +145,7 @@
             <% end %>
           </td>
           <td class="type-number text-center" data-sort-value="<%= @report&.dig(:patient_count_by_block_id, block&.id) %>">
-            <% if access_all_districts_overview? %>
+            <% if can_view_all_districts_nav? %>
               <%= @report&.dig(:all_district_patient_count_by_block_id, block&.id) || @report&.dig(:patient_count_by_block_id, block&.id) %>
             <% end %>
           </td>
@@ -180,7 +180,7 @@
           Facilities subtotal
         </td>
         <td class="type-number text-center" data-sort-column-key="patients_under_care">
-          <% if access_all_districts_overview? %>
+          <% if can_view_all_districts_nav? %>
             <%= @report&.dig(:all_district_facilities_total_patient_count) || @report&.dig(:facilities_total_patient_count) %>
           <% end %>
         </td>
@@ -221,7 +221,7 @@
             <% end %>
           </td>
           <td class="type-number text-center" data-sort-value="<%= patient_count %>">
-            <% if access_all_districts_overview? %>
+            <% if can_view_all_districts_nav? %>
               <%= @report&.dig(:all_district_patient_count_by_facility_id, facility&.id) || patient_count %>
             <% end %>
           </td>
