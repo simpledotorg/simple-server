@@ -8,7 +8,7 @@ module FlipperHelper
   end
 
   def all_district_overview_enabled?
-    all_district_overview_feature_enabled? && @all_districts_params
+    all_district_overview_feature_enabled? && params[:facility_group] == "all-districts"
   end
 
   def access_all_districts_overview?
