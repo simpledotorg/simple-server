@@ -10,15 +10,10 @@
     aria-haspopup="true"
     aria-expanded="false"
   >
-    <% if can_view_all_districts_nav?  %>
-      <% if @all_districts_params %>
-        All districts
-      <% else %>
-        <%= @selected_facility_group&.name || "Select Districts" %>
-      <% end %>
-    <% else %>
-      <%= @selected_facility_group&.name %>
-    <% end %>
+    <%= facility_group_dropdown_title(
+      facility_group: @selected_facility_group,
+      overview: @all_districts_params
+    ) %>
   </a>
 
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">

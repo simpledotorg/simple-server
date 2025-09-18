@@ -33,4 +33,12 @@ module DrugStockHelper
       FacilityGroup.where(id: @accessible_facilities.pluck(:facility_group_id).uniq).order(:name)
     end
   end
+
+  def facility_group_dropdown_title(facility_group:, overview: false)
+    if can_view_all_districts_nav?
+      overview ? "All districts" : (facility_group&.name || "Select Districts")
+    else
+      facility_group&.name
+    end
+  end
 end
