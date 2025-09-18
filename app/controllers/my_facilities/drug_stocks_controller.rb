@@ -116,7 +116,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def prepare_district_reports(report_type)
-    @all_districts_params = params[:facility_group] == "all-districts" ? true : false
+    @all_districts_params = params[:facility_group] == "all-districts"
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     if access_all_districts_overview?
       @districts = accessible_organization_districts
@@ -150,7 +150,7 @@ class MyFacilities::DrugStocksController < AdminController
   def drug_stock_enabled_facilities
     # Filtered list of facilities that match user selected filters,
     # and have stock tracking enabled and at least one registered or assigned patient
-    active_facility_ids = filter_facilities.pluck("facilities.id")
+    active_facility_ids = filter_facilities.active.pluck("facilities.id")
 
     filter_facilities
       .eager_load(facility_group: :protocol_drugs)
