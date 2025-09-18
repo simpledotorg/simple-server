@@ -199,4 +199,8 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
           params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id, received: "ten", in_stock: nil}]),
           session: session
       }.not_to change { DrugStock.count }
-      expect(respo
+      expect(response).to redirect_to(redirect_url)
+      expect(flash[:alert]).to eq "Something went wrong, Drug Stocks were not saved."
+    end
+  end
+end
