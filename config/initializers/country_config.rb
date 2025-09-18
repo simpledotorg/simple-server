@@ -25,7 +25,7 @@ class CountryConfig
     },
     BD: {
       abbreviation: "BD",
-      nhf_enabled: true,
+      drug_stock_tracking_organization_slug: "nhf",
       name: "Bangladesh",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],

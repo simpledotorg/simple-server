@@ -11,6 +11,48 @@ module DrugStockHelper
     params[:zone].present? || params[:size].present?
   end
 
+  def patient_count_for(report)
+    if filter_params
+      report[:facilities_total_patient_count].to_i
+    else
+      report[:district_patient_count].to_i
+    end
+  end
+
+  def drug_stock_for(report, drug)
+    if filter_params
+      report[:drugs_in_stock_by_facility_id]
+        .select { |(_, code), _| code == drug.rxnorm_code }
+        .values
+        .sum
+    else
+      report[:total_drugs_in_stock].dig(drug.rxnorm_code).to_i
+    end
+  end
+
+  def aggregate_state_totals(districts, drugs_by_category)
+    totals = Hash.new(0)
+    patient_days = Hash.new(0)
+    patient_count = 0
+
+    districts.each do |_, data|
+      report = data[:report]
+      patient_count += patient_count_for(report)
+
+      drugs_by_category.each do |drug_category, drugs|
+        drugs.each do |drug|
+          totals[drug.rxnorm_code] += drug_stock_for(report, drug)
+        end
+
+        if report.dig(:total_patient_days, drug_category, :patient_days)
+          patient_days[drug_category] += report.dig(:total_patient_days, drug_category, :patient_days).to_i
+        end
+      end
+    end
+
+    {totals: totals, patient_days: patient_days, patient_count: patient_count}
+  end
+
   def grouped_district_reports(district_reports)
     district_reports.group_by { |district, _| district.state }.sort_by { |state, _| state }
   end
@@ -39,15 +81,19 @@ module DrugStockHelper
   end
 
   def accessible_organization_facilities
-    if CountryConfig.current[:nhf_enabled]
-      Organization.joins(facility_groups: :facilities).where(facilities: {id: @accessible_facilities}).distinct.pluck(:slug).include?("nhf")
+    if drug_stock_tracking_slug
+      Organization.joins(facility_groups: :facilities).where(facilities: {id: @accessible_facilities}).distinct.pluck(:slug).include?(drug_stock_tracking_slug)
     else
       true
     end
   end
 
+  def drug_stock_tracking_slug
+    CountryConfig.current[:drug_stock_tracking_organization_slug]
+  end
+
   def accessible_organization_districts
-    if CountryConfig.current[:nhf_enabled]
+    if drug_stock_tracking_slug
       @districts = FacilityGroup
         .includes(:facilities)
         .joins(:organization)
