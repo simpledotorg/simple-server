@@ -7,6 +7,16 @@ RSpec.describe "reports/regions/_header.html.erb", type: :view do
   let(:current_period) { Period.current }
   let(:sub_region) { create(:region, name: "State Subregion", region_type: "state", path: "organization.state") }
 
+  helper do
+    def accessible_region?(*args)
+      true
+    end
+
+    def active_action?(*args)
+      false
+    end
+  end
+
   before do
     allow(view).to receive(:accessible_region?).and_return(true)
     assign(:period, current_period)
