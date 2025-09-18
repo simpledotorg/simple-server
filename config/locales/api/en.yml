@@ -5,6 +5,7 @@ en:
   today_str: "Today"
   registration: "New registration"
   reset_password: "Reset PIN"
+  overall_in_base_dose: "Overall in base dose"
   login:
     error_messages:
       unknown_user: "We don't recognize that user. Please check and try again."

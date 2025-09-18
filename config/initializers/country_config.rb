@@ -25,6 +25,7 @@ class CountryConfig
     },
     BD: {
       abbreviation: "BD",
+      nhf_enabled: true,
       name: "Bangladesh",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],
