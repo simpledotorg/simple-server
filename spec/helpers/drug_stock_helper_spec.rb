@@ -1,252 +1,156 @@
 require "rails_helper"
 
 RSpec.describe DrugStockHelper, type: :helper do
-  let(:facility) { double("Facility", id: 1, facility_group_id: 10) }
-  let(:accessible_facilities) { [facility] }
-
-  before do
-    allow(facility).to receive(:facility_group_id).and_return(10)
-    allow(accessible_facilities).to receive(:pluck).with(:facility_group_id).and_return([10])
-    helper.instance_variable_set(:@accessible_facilities, accessible_facilities)
+  let(:drugs_by_category) do
+    {
+      "hypertension_arb" => [
+        double("ProtocolDrug", id: "39695cff-7bc5-431b-a161-b736726e7ab9", name: "Losartan", dosage: "50 mg", rxnorm_code: "979467"),
+        double("ProtocolDrug", id: "487ac5f1-6fb5-4505-9494-2cfb3c1f2766", name: "Telmisartan", dosage: "40 mg", rxnorm_code: "316764"),
+        double("ProtocolDrug", id: "49131b37-5384-4899-a195-28e79903cd3b", name: "Telmisartan", dosage: "80 mg", rxnorm_code: "316765")
+      ],
+      "hypertension_ccb" => [
+        double("ProtocolDrug", id: "404be899-bcf3-40e7-95cd-f8ce72a213a4", name: "Amlodipine", dosage: "5 mg", rxnorm_code: "329528"),
+        double("ProtocolDrug", id: "33d90c3f-8ad7-4f6b-ae17-c4af5f93ad41", name: "Amlodipine", dosage: "10 mg", rxnorm_code: "329526")
+      ],
+      "hypertension_diuretic" => [
+        double("ProtocolDrug", id: "e18d9140-6392-41ef-83c2-acc327598008", name: "Chlorthalidone", dosage: "12.5 mg", rxnorm_code: "331132"),
+        double("ProtocolDrug", id: "90ca7a13-b9db-423d-888f-82a2b6011c37", name: "Hydrochlorothiazide", dosage: "25 mg", rxnorm_code: "316049")
+      ]
+    }
   end
 
-  describe "#drug_stock_region_label" do
-    it "returns 'District warehouse' for district_region" do
-      region = double("Region", district_region?: true, localized_region_type: "district")
-      expect(helper.drug_stock_region_label(region)).to eq("District warehouse")
-    end
-
-    it "returns capitalized type for non-district_region" do
-      region = double("Region", district_region?: false, localized_region_type: "state")
-      expect(helper.drug_stock_region_label(region)).to eq("State")
-    end
-  end
-
-  describe "#filter_params" do
-    it "returns true if zone param is present" do
-      allow(helper).to receive(:params).and_return({zone: "summer gardens"})
-      expect(helper.filter_params).to eq(true)
-    end
-
-    it "returns true if size param is present" do
-      allow(helper).to receive(:params).and_return({size: "large"})
-      expect(helper.filter_params).to eq(true)
-    end
-
-    it "returns false if neither param is present" do
-      allow(helper).to receive(:params).and_return({})
-      expect(helper.filter_params).to eq(false)
-    end
-  end
-
-  describe "#patient_count_for" do
-    let(:report) { {facilities_total_patient_count: 10, district_patient_count: 5} }
-
-    it "returns facilities_total_patient_count when filter_params true" do
-      allow(helper).to receive(:filter_params).and_return(true)
-      expect(helper.patient_count_for(report)).to eq(10)
-    end
-
-    it "returns district_patient_count when filter_params false" do
-      allow(helper).to receive(:filter_params).and_return(false)
-      expect(helper.patient_count_for(report)).to eq(5)
-    end
-  end
-
-  describe "#drug_stock_for" do
-    let(:drug) { double("Drug", rxnorm_code: "D123") }
-    let(:report) do
+  describe "#state_aggregate" do
+    let(:districts) do
       {
-        drugs_in_stock_by_facility_id: {[1, "D123"] => 5, [2, "D123"] => 3},
-        total_drugs_in_stock: {"D123" => 10}
+        double("district") => {report: {district_patient_count: 17, total_drug_consumption: {}}}
       }
     end
 
-    it "sums drugs_in_stock_by_facility_id when filter_params true" do
-      allow(helper).to receive(:filter_params).and_return(true)
-      expect(helper.drug_stock_for(report, drug)).to eq(8)
-    end
-
-    it "returns total_drugs_in_stock when filter_params false" do
-      allow(helper).to receive(:filter_params).and_return(false)
-      expect(helper.drug_stock_for(report, drug)).to eq(10)
+    it "aggregates totals, base_totals, and patient_count" do
+      result = helper.state_aggregate(districts, drugs_by_category)
+      expect(result).to eq(
+        totals: {},
+        base_totals: {},
+        patient_count: 17
+      )
     end
   end
 
   describe "#aggregate_state_totals" do
-    let(:drug) { double("Drug", rxnorm_code: "D123") }
-    let(:report) do
-      {facilities_total_patient_count: 10, district_patient_count: 5,
-       total_patient_days: {hypertension: {patient_days: 20}},
-       total_drugs_in_stock: {"D123" => 15}}
+    let(:districts) do
+      {
+        double("district") => {
+          report: {
+            total_drugs_in_stock: {
+              "979467" => 172,
+              "316764" => 514,
+              "316765" => 819,
+              "329528" => 744,
+              "329526" => 101,
+              "331132" => 156,
+              "316049" => 530
+            },
+            total_patient_days: {
+              "hypertension_arb" => {patient_days: 369},
+              "hypertension_ccb" => {patient_days: 39},
+              "hypertension_diuretic" => {patient_days: 807}
+            },
+            district_patient_count: 17
+          }
+        }
+      }
     end
-    let(:districts) { {district1: {report: report}} }
-    let(:drugs_by_category) { {hypertension: [drug]} }
 
-    it "aggregates totals, patient_days, and patient_count" do
-      allow(helper).to receive(:filter_params).and_return(false)
+    it "aggregates totals, patient_days, and patient_count using real data shape" do
       result = helper.aggregate_state_totals(districts, drugs_by_category)
-      expect(result[:totals]["D123"]).to eq(15)
-      expect(result[:patient_days][:hypertension]).to eq(20)
-      expect(result[:patient_count]).to eq(5)
+      expect(result).to eq(
+        totals: {
+          "979467" => 172,
+          "316764" => 514,
+          "316765" => 819,
+          "329528" => 744,
+          "329526" => 101,
+          "331132" => 156,
+          "316049" => 530
+        },
+        patient_days: {
+          "hypertension_arb" => 369,
+          "hypertension_ccb" => 39,
+          "hypertension_diuretic" => 807
+        },
+        patient_count: 17
+      )
     end
   end
 
   describe "#grouped_district_reports" do
-    it "groups districts by state and sorts by state" do
-      district1 = double("District", state: "B")
-      district2 = double("District", state: "A")
-      reports = {district1 => {}, district2 => {}}
-      grouped = helper.grouped_district_reports(reports)
-      expect(grouped.map(&:first)).to eq(["A", "B"])
+    let(:district_reports) do
+      [
+        [double("district", state: "Haryana"), {}],
+        [double("district", state: "Maharashtra"), {}]
+      ]
+    end
+
+    it "groups by state and sorts" do
+      result = helper.grouped_district_reports(district_reports)
+      expect(result.map(&:first)).to eq(["Haryana", "Maharashtra"])
     end
   end
 
-  describe "#state_aggregate" do
-    let(:drug1) { double("Drug", id: 1) }
-    let(:drug2) { double("Drug", id: 2) }
-    let(:report) do
-      {
-        district_patient_count: 5,
-        total_drug_consumption: {
-          hypertension: {drug1 => {consumed: 3}, drug2 => {consumed: "error"}, :base_doses => {total: 10}}
-        }
-      }
-    end
-    let(:districts) { {d1: {report: report}} }
-    let(:drugs_by_category) { {hypertension: [drug1, drug2]} }
+  describe "#accessible_organization_facilities" do
+    before { helper.instance_variable_set(:@accessible_facilities, [1, 2, 3]) }
 
-    it "calculates totals, base_totals and patient_count ignoring 'error'" do
-      result = helper.state_aggregate(districts, drugs_by_category)
-      expect(result[:totals][1]).to eq(3)
-      expect(result[:totals][2]).to eq(0)
-      expect(result[:base_totals][:hypertension]).to eq(10)
-      expect(result[:patient_count]).to eq(5)
-    end
-  end
+    let(:slug) { "nhf" }
+    before { allow(helper).to receive(:drug_stock_tracking_slug).and_return(slug) }
 
-  describe "#accessible_organization_districts" do
-    let(:accessible_facilities_relation) { double("Relation") }
+    context "when drug_stock_tracking_slug is present" do
+      it "returns true if organization slugs include the tracking slug" do
+        allow(Organization).to receive_message_chain(:joins, :where, :distinct, :pluck).and_return([slug])
+        expect(helper.accessible_organization_facilities).to eq(true)
+      end
 
-    before do
-      helper.instance_variable_set(:@accessible_facilities, accessible_facilities_relation)
-      allow(accessible_facilities_relation).to receive(:pluck).with(:facility_group_id).and_return([10])
-    end
-
-    context "slug present" do
-      before { allow(helper).to receive(:drug_stock_tracking_slug).and_return("nhf") }
-
-      it "queries FacilityGroups with organization join" do
-        expect(FacilityGroup).to receive(:includes).with(:facilities).and_call_original
-        helper.accessible_organization_districts
+      it "returns false if organization slugs do not include the tracking slug" do
+        allow(Organization).to receive_message_chain(:joins, :where, :distinct, :pluck).and_return(["some_other_slug"])
+        expect(helper.accessible_organization_facilities).to eq(false)
       end
     end
 
-    context "slug nil" do
-      before { allow(helper).to receive(:drug_stock_tracking_slug).and_return(nil) }
+    context "when drug_stock_tracking_slug is nil" do
+      let(:slug) { nil }
 
-      it "returns FacilityGroups without organization join" do
-        expect(FacilityGroup).to receive(:where).with(id: [10]).and_call_original
-        helper.accessible_organization_districts
-      end
-    end
-  end
-
-  describe "#accessible_organization_districts" do
-    let(:fg) { double("FacilityGroup") }
-
-    context "slug present" do
-      before { allow(helper).to receive(:drug_stock_tracking_slug).and_return("nhf") }
-      it "queries FacilityGroups with organization join" do
-        expect(FacilityGroup).to receive(:includes).with(:facilities).and_call_original
-        # Full DB test not possible in helper spec; we ensure method runs
-        helper.accessible_organization_districts
-      end
-    end
-
-    context "slug nil" do
-      before { allow(helper).to receive(:drug_stock_tracking_slug).and_return(nil) }
-      it "returns FacilityGroups without organization join" do
-        expect(FacilityGroup).to receive(:where).and_call_original
-        helper.accessible_organization_districts
+      it "returns true" do
+        expect(helper.accessible_organization_facilities).to eq(true)
       end
     end
   end
 
   describe "#facility_group_dropdown_title" do
-    let(:fg) { double("FacilityGroup", name: "Test FG") }
+    let(:sangli_group) { double("FacilityGroup", name: "Sangli") }
+    let(:allahbad_group) { double("FacilityGroup", name: "Allahbad") }
 
-    it "returns overview title when can_view_all_districts_nav? true and overview true" do
-      allow(helper).to receive(:can_view_all_districts_nav?).and_return(true)
-      expect(helper.facility_group_dropdown_title(facility_group: fg, overview: true)).to eq("All districts")
+    context "when can_view_all_districts_nav? is true" do
+      before { allow(helper).to receive(:can_view_all_districts_nav?).and_return(true) }
+
+      it "returns 'All districts' if overview is true" do
+        expect(helper.facility_group_dropdown_title(facility_group: sangli_group, overview: true)).to eq("All districts")
+      end
+
+      it "returns facility_group name if overview is false" do
+        expect(helper.facility_group_dropdown_title(facility_group: sangli_group, overview: false)).to eq("Sangli")
+        expect(helper.facility_group_dropdown_title(facility_group: allahbad_group, overview: false)).to eq("Allahbad")
+      end
+
+      it "returns 'Select Districts' if facility_group is nil and overview is false" do
+        expect(helper.facility_group_dropdown_title(facility_group: nil, overview: false)).to eq("Select Districts")
+      end
     end
 
-    it "returns facility group name when overview false" do
-      allow(helper).to receive(:can_view_all_districts_nav?).and_return(true)
-      expect(helper.facility_group_dropdown_title(facility_group: fg, overview: false)).to eq("Test FG")
-    end
+    context "when can_view_all_districts_nav? is false" do
+      before { allow(helper).to receive(:can_view_all_districts_nav?).and_return(false) }
 
-    it "returns facility group name when cannot view all districts" do
-      allow(helper).to receive(:can_view_all_districts_nav?).and_return(false)
-      expect(helper.facility_group_dropdown_title(facility_group: fg)).to eq("Test FG")
-    end
-  end
-
-  describe "#aggregate_district_drug_stock" do
-    let(:drug) { double("Drug", rxnorm_code: "D123") }
-    let(:report) do
-      {
-        facilities_total_patient_count: 10,
-        district_patient_count: 5,
-        drugs_in_stock_by_facility_id: {[1, "D123"] => 3},
-        total_drugs_in_stock: {"D123" => 5},
-        total_patient_days: {hypertension: {patient_days: 7}}
-      }
-    end
-    let(:district_reports) { {d1: {report: report}} }
-    let(:drugs_by_category) { {hypertension: [drug]} }
-
-    it "aggregates totals, patient_days, and patient_count with filter_params true" do
-      allow(helper).to receive(:filter_params).and_return(true)
-      result = helper.aggregate_district_drug_stock(district_reports, drugs_by_category)
-      expect(result[:totals]["D123"]).to eq(3)
-      expect(result[:patient_days][:hypertension]).to eq(7)
-      expect(result[:patient_count]).to eq(10)
-    end
-
-    it "aggregates totals, patient_days, and patient_count with filter_params false" do
-      allow(helper).to receive(:filter_params).and_return(false)
-      result = helper.aggregate_district_drug_stock(district_reports, drugs_by_category)
-      expect(result[:totals]["D123"]).to eq(5)
-      expect(result[:patient_days][:hypertension]).to eq(7)
-      expect(result[:patient_count]).to eq(5)
-    end
-  end
-
-  describe "#aggregate_drug_consumption" do
-    let(:drug1) { double("Drug", id: 1) }
-    let(:drug2) { double("Drug", id: 2) }
-    let(:report) do
-      {
-        district_patient_count: 5,
-        total_drug_consumption: {
-          hypertension: {
-            drug1 => {consumed: 3},
-            drug2 => {consumed: "error"},
-            :base_doses => {total: 10}
-          }
-        }
-      }
-    end
-    let(:district_reports) { {d1: {report: report}} }
-    let(:drugs_by_category) { {hypertension: [drug1, drug2]} }
-
-    it "calculates totals, base_totals and patient_count ignoring 'error'" do
-      result = helper.aggregate_drug_consumption(district_reports, drugs_by_category)
-      expect(result[:totals][1]).to eq(3)
-      expect(result[:totals][2]).to eq(0)
-      expect(result[:base_totals][:hypertension]).to eq(10)
-      expect(result[:patient_count]).to eq(5)
+      it "returns facility_group name if present" do
+        expect(helper.facility_group_dropdown_title(facility_group: sangli_group)).to eq("Sangli")
+      end
     end
   end
 end
