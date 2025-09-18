@@ -58,22 +58,10 @@
         </tr>
       </thead>
 
-      <% all_totals = Hash.new(0) %>
-      <% all_base_totals = Hash.new(0) %>
-      <% all_patient_count = 0 %>
-      <% @district_reports&.each do |_, data| %>
-        <% report = data[:report] %>
-        <% all_patient_count += report[:district_patient_count].to_i %>
-
-        <% drugs_by_category.each do |drug_category, drugs| %>
-          <% (drugs || []).each do |drug| %>
-            <% consumed = report[:total_drug_consumption]&.dig(drug_category, drug, :consumed) %>
-            <% all_totals[drug.id] += consumed.to_i if consumed.present? && consumed != "error" %>
-          <% end %>
-          <% total_base = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
-          <% all_base_totals[drug_category] += total_base.to_i if total_base.present? && total_base != "error" %>
-        <% end %>
-      <% end %>
+      <% aggregated = aggregate_drug_consumption(@district_reports, drugs_by_category) %>
+      <% all_totals = aggregated[:totals] %>
+      <% all_base_totals = aggregated[:base_totals] %>
+      <% all_patient_count = aggregated[:patient_count] %>
 
       <tr class="row-total font-weight-bold warning" data-sort-method="none">
         <td class="type-title"

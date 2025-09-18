@@ -52,34 +52,10 @@
           <% end %>
         </tr>
 
-        <% all_totals = Hash.new(0) %>
-        <% all_patient_days = Hash.new(0) %>
-        <% all_patient_count = 0 %>
-
-        <% @district_reports.each do |_, data| %>
-          <% report = data[:report] %>
-          <% if filter_params %>
-            <% all_patient_count += report[:facilities_total_patient_count].to_i %>
-          <% else %>
-            <% all_patient_count += report[:district_patient_count].to_i %>
-          <% end %>
-          <% first_drugs_by_category.each do |drug_category, drugs| %>
-            <% drugs.each do |drug| %>
-              <% if filter_params %>
-                <% sum = report[:drugs_in_stock_by_facility_id]
-                           .select { |(_, code), _| code == drug.rxnorm_code }
-                           .values
-                           .sum %>
-                <% all_totals[drug.rxnorm_code] += sum %>
-              <% else %>
-                <% all_totals[drug.rxnorm_code] += report[:total_drugs_in_stock].dig(drug.rxnorm_code).to_i if report[:total_drugs_in_stock].dig(drug.rxnorm_code) %>
-              <% end %>
-            <% end %>
-            <% if report.dig(:total_patient_days, drug_category, :patient_days) %>
-              <% all_patient_days[drug_category] += report.dig(:total_patient_days, drug_category, :patient_days).to_i %>
-            <% end %>
-          <% end %>
-        <% end %>
+        <% aggregated = aggregate_district_drug_stock(@district_reports, first_drugs_by_category) %>
+        <% all_totals = aggregated[:totals] %>
+        <% all_patient_days = aggregated[:patient_days] %>
+        <% all_patient_count = aggregated[:patient_count] %>
 
         <tr class="row-total font-weight-bold warning" data-sort-method="none">
           <td class="type-title"
