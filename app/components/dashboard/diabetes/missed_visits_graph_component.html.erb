@@ -1,4 +1,4 @@
-<div id="diabetes-missed-visits" class="d-lg-flex w-lg-50 pl-lg-2">
+<div id="diabetes-missed-visits" class="d-lg-flex min-w-0">
   <%= render Dashboard::Card::GraphComponent.new(id: "diabetesMissedVisitsTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
       title: "Missed visits".html_safe,
