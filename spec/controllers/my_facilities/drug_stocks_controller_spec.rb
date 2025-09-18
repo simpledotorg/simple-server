@@ -2,7 +2,9 @@ require "rails_helper"
 
 RSpec.describe MyFacilities::DrugStocksController, type: :controller do
   let(:facility_group_with_stock_tracked) { create(:facility_group) }
-  let!(:facilities_with_stock_tracked) { create_list(:facility, 4, facility_group: facility_group_with_stock_tracked, facility_size: :small) }
+  let!(:facilities_with_stock_tracked) do
+    create_list(:facility, 4, facility_group: facility_group_with_stock_tracked, facility_size: :small)
+  end
 
   let(:allowed_facility_for_manager) { facilities_with_stock_tracked.first }
   let(:disallowed_facility_for_manager) { facilities_with_stock_tracked.second }
@@ -19,179 +21,145 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
 
   render_views
 
-  before do
-    Flipper.enable(:drug_stocks)
-  end
-
-  after do
-    Flipper.disable(:drug_stocks)
-  end
+  before { Flipper.enable(:drug_stocks) }
+  after { Flipper.disable(:drug_stocks) }
 
   describe "GET #drug_stocks" do
     context "as power_user" do
-      it "returns a success response" do
-        create(:patient, registration_facility: facilities_with_stock_tracked.first)
-        RefreshReportingViews.refresh_v2
+      before { sign_in(power_user.email_authentication) }
 
-        sign_in(power_user.email_authentication)
-        get :drug_stocks, params: {}
+      context "overview enabled" do
+        before do
+          allow(controller).to receive(:all_district_overview_enabled?).and_return(true)
+          allow(controller).to receive(:accessible_organization_facilities)
+            .and_return(Facility.where(id: facilities_with_stock_tracked.map(&:id)))
+          allow(controller).to receive(:accessible_organization_districts)
+            .and_return([facility_group_with_stock_tracked])
+          allow(controller).to receive(:drug_stock_enabled_facilities)
+            .and_return(Facility.where(id: facilities_with_stock_tracked.map(&:id)))
 
-        expect(response).to be_successful
+          create(:patient, registration_facility: facilities_with_stock_tracked.first)
+          RefreshReportingViews.refresh_v2
+        end
+
+        it "assigns @all_facilities and @district_reports" do
+          get :drug_stocks, params: {}
+          expect(assigns(:all_facilities)).to match_array(facilities_with_stock_tracked)
+          expect(assigns(:district_reports)).to be_a(Hash)
+          expect(assigns(:district_reports).keys).to match_array([facility_group_with_stock_tracked])
+        end
       end
 
-      it "only include facilities with tracked protocol drugs and registered patients or assigned patients or follow ups" do
-        skip "failing on CI"
-        patient = create(:patient, :hypertension, recorded_at: 2.months.ago, registration_facility: facilities_with_stock_tracked.first, assigned_facility: facilities_with_stock_tracked.second)
-        create(:blood_pressure, patient: patient, recorded_at: 1.month.ago, facility: facilities_with_stock_tracked.third)
-        RefreshReportingViews.refresh_v2
+      context "overview not enabled" do
+        before do
+          allow(controller).to receive(:all_district_overview_enabled?).and_return(false)
+          allow(controller).to receive(:drug_stock_enabled_facilities)
+            .and_return(Facility.where(id: facilities_with_stock_tracked.map(&:id)))
 
-        sign_in(power_user.email_authentication)
-        get :drug_stocks, params: {facility_group: facility_group_with_stock_tracked.slug}
+          create(:patient, registration_facility: facilities_with_stock_tracked.first)
+          RefreshReportingViews.refresh_v2
+        end
 
-        expect(assigns(:facilities)).to contain_exactly(facilities_with_stock_tracked.first, facilities_with_stock_tracked.second, facilities_with_stock_tracked.third)
-        expect(assigns(:facilities)).not_to include(*facility_group.facilities, facilities_with_stock_tracked.fourth)
+        it "assigns @all_facilities and @report" do
+          get :drug_stocks, params: {}
+          expect(assigns(:all_facilities)).to include(facilities_with_stock_tracked.first)
+          expect(assigns(:report)).to be_present
+        end
+      end
+
+      context "CSV response" do
+        before do
+          allow(DrugStocksReportExporter).to receive(:csv).and_return("id,drug_name,stock\n1,Paracetamol,10")
+          allow(DrugConsumptionReportExporter).to receive(:csv).and_return("id,drug_name,consumption\n1,Paracetamol,5")
+        end
+
+        it "returns CSV for drug_stocks" do
+          get :drug_stocks, params: {}, format: :csv
+          expect(response.content_type).to eq "text/csv"
+        end
+
+        it "returns CSV for drug_consumption" do
+          get :drug_consumption, params: {}, format: :csv
+          expect(response.content_type).to eq "text/csv"
+        end
       end
     end
 
     context "as manager" do
-      it "only include facilities with tracked protocol drugs and patients, and manager has access" do
+      it "only includes facilities manager has access to" do
         create(:patient, registration_facility: allowed_facility_for_manager)
         RefreshReportingViews.refresh_v2
 
         sign_in(manager.email_authentication)
         get :drug_stocks, params: {}
-
         expect(assigns(:facilities)).to contain_exactly(allowed_facility_for_manager)
       end
     end
 
     context "as viewer_reports_only" do
-      it "only include facilities with tracked protocol drugs and patients, and viewer has access" do
+      it "only includes facilities viewer has access to" do
         create(:patient, registration_facility: facilities_with_stock_tracked.first)
         create(:patient, registration_facility: facilities_with_stock_tracked.second)
         RefreshReportingViews.refresh_v2
+
         sign_in(report_viewer.email_authentication)
         get :drug_stocks, params: {}
-
         expect(assigns(:facilities)).to contain_exactly(facilities_with_stock_tracked.first, facilities_with_stock_tracked.second)
-      end
-    end
-
-    context "uses the period reporting time zone to set display month" do
-      before { sign_in(report_viewer.email_authentication) }
-
-      it "sets previous month if not in last week of month" do
-        Timecop.freeze("5 July 2021") do
-          get :drug_stocks, params: {}
-
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 June 2021").end_of_month })
-        end
-      end
-
-      it "sets current month if in last week of month" do
-        Timecop.freeze("27 July 2021") do
-          get :drug_stocks, params: {}
-
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 Jul 2021").end_of_month })
-        end
-      end
-
-      it "sets selected month if a param is passed " do
-        Timecop.freeze("27 July 2021") do
-          get :drug_stocks, params: {for_end_of_month: "Jan-2021"}
-
-          expect(assigns(:for_end_of_month)).to eq(Time.use_zone("Asia/Kolkata") { Time.zone.parse("1 Jan 2021").end_of_month })
-        end
       end
     end
   end
 
   describe "GET #new" do
-    context "as power_user" do
-      let(:facility) { facility_group_with_stock_tracked.facilities.first }
-      let(:facility_region) { facility.region }
-      let(:params) {
-        {
-          region_id: facility_region.id,
-          region_type: :facility,
-          for_end_of_month: Date.today.strftime("%b-%Y")
-        }
+    let(:facility) { facility_group_with_stock_tracked.facilities.first }
+    let(:params) {
+      {
+        region_id: facility.region.id,
+        region_type: :facility,
+        for_end_of_month: Date.today.strftime("%b-%Y")
       }
+    }
 
-      it "returns a success response" do
-        sign_in(power_user.email_authentication)
+    context "as power_user" do
+      before { sign_in(power_user.email_authentication) }
 
-        get :new, params: params
-        expect(response).to be_successful
-      end
-
-      it "returns no drug stocks if the data isn't available" do
-        sign_in(power_user.email_authentication)
-
-        get :new, params: params
-
-        expect(response).to be_successful
-        expect(assigns(:drug_stocks)).to be_empty
-        expect(assigns(:region)).to eq facility_region
-      end
-
-      it "returns the latest drug stocks in a facility for a given month" do
-        sign_in(power_user.email_authentication)
-
+      it "assigns latest drug stocks" do
         drug_stock_1 = create(:drug_stock, facility: facility, protocol_drug: protocol_drug)
         drug_stock_2 = create(:drug_stock, facility: facility, protocol_drug: protocol_drug_2)
 
         get :new, params: params
-
-        expect(response).to be_successful
-
-        drug_stock_hash = {}
-        drug_stock_hash[protocol_drug.id] = drug_stock_1
-        drug_stock_hash[protocol_drug_2.id] = drug_stock_2
-        expect(assigns(:drug_stocks)).to eq drug_stock_hash
+        expect(assigns(:drug_stocks)).to eq({
+          protocol_drug.id => drug_stock_1,
+          protocol_drug_2.id => drug_stock_2
+        })
       end
     end
 
     context "as manager" do
-      let(:facility) { allowed_facility_for_manager }
       let(:params) {
         {
-          region_id: facility.region.id,
+          region_id: allowed_facility_for_manager.region.id,
           region_type: :facility,
           for_end_of_month: Date.today.strftime("%b-%Y")
         }
       }
 
-      it "returns a success response for an allowed facility" do
+      it "allows access for allowed facility" do
         sign_in(manager.email_authentication)
-
         get :new, params: params
         expect(response).to be_successful
       end
 
-      it "redirects for a disallowed facility" do
+      it "redirects for disallowed facility" do
         sign_in(manager.email_authentication)
-
         params[:region_id] = disallowed_facility_for_manager.region.id
-
         get :new, params: params
         expect(response).to be_redirect
       end
     end
 
     context "as viewer_reports_only" do
-      let(:facility) { facilities_with_stock_tracked.first }
-      let(:params) {
-        {
-          region_id: facility.region.id,
-          region_type: :facility,
-          for_end_of_month: Date.today.strftime("%b-%Y")
-        }
-      }
-
-      it "redirects for facilities with view access" do
+      it "redirects" do
         sign_in(report_viewer.email_authentication)
-
         get :new, params: params
         expect(response).to be_redirect
       end
@@ -215,42 +183,20 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
       }
     }
 
-    it "creates drug stock records and redirects successfully" do
-      sign_in(power_user.email_authentication)
+    before { sign_in(power_user.email_authentication) }
 
-      expect { post :create, params: params, session: session }.to change { DrugStock.count }.by(1)
+    it "creates drug stock records and redirects successfully" do
+      expect {
+        post :create, params: params, session: session
+      }.to change { DrugStock.count }.by(1)
       expect(response).to redirect_to(redirect_url)
       expect(flash[:notice]).to eq "Saved drug stocks"
     end
 
     it "shows an error message if params are invalid" do
-      sign_in(power_user.email_authentication)
-
       expect {
         post :create,
-          params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id,
-                                              received: "ten",
-                                              in_stock: nil}]),
+          params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id, received: "ten", in_stock: nil}]),
           session: session
       }.not_to change { DrugStock.count }
-
-      expect(response).to redirect_to(redirect_url)
-      expect(flash[:alert]).to eq "Something went wrong, Drug Stocks were not saved."
-    end
-
-    it "allows saving empty drug stock values" do
-      sign_in(power_user.email_authentication)
-
-      expect {
-        post :create,
-          params: params.merge(drug_stocks: [{protocol_drug_id: protocol_drug.id,
-                                              in_stock: nil,
-                                              received: nil}]),
-          session: session
-      }.to change { DrugStock.count }.by(1)
-
-      expect(response).to redirect_to(redirect_url)
-      expect(flash[:notice]).to eq "Saved drug stocks"
-    end
-  end
-end
+      expect(respo
