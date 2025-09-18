@@ -16,7 +16,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
   let(:current_admin) { instance_double("Admin") }
 
   helper do
-    
     attr_reader :current_admin
 
     def action_name

@@ -51,21 +51,21 @@ module DrugStockHelper
       report = data[:report]
 
       all_patient_count += if filter_params
-                             report[:facilities_total_patient_count].to_i
-                           else
-                             report[:district_patient_count].to_i
-                           end
+        report[:facilities_total_patient_count].to_i
+      else
+        report[:district_patient_count].to_i
+      end
 
       first_drugs_by_category.each do |drug_category, drugs|
         drugs.each do |drug|
           if filter_params
             sum = report[:drugs_in_stock_by_facility_id]
-                  .select { |(_, code), _| code == drug.rxnorm_code }
-                  .values
-                  .sum
+              .select { |(_, code), _| code == drug.rxnorm_code }
+              .values
+              .sum
             all_totals[drug.rxnorm_code] += sum
-          else
-            all_totals[drug.rxnorm_code] += report[:total_drugs_in_stock].dig(drug.rxnorm_code).to_i if report[:total_drugs_in_stock].dig(drug.rxnorm_code)
+          elsif report[:total_drugs_in_stock].dig(drug.rxnorm_code)
+            all_totals[drug.rxnorm_code] += report[:total_drugs_in_stock].dig(drug.rxnorm_code).to_i
           end
         end
 
@@ -75,7 +75,7 @@ module DrugStockHelper
       end
     end
 
-    { totals: all_totals, patient_days: all_patient_days, patient_count: all_patient_count }
+    {totals: all_totals, patient_days: all_patient_days, patient_count: all_patient_count}
   end
 
   def aggregate_drug_consumption(district_reports, drugs_by_category)
@@ -98,7 +98,6 @@ module DrugStockHelper
       end
     end
 
-    { totals: all_totals, base_totals: all_base_totals, patient_count: all_patient_count }
+    {totals: all_totals, base_totals: all_base_totals, patient_count: all_patient_count}
   end
-
 end
