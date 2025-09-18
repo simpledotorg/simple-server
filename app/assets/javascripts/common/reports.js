@@ -16,15 +16,16 @@ function dashboardReportsChartJSColors() {
     mediumGrey: "rgba(173, 178, 184, 1)",
     lightGrey: "rgba(240, 242, 245, 0.9)",
     white: "rgba(255, 255, 255, 1)",
-    amber: "rgba(250, 190, 70, 1)",
-    darkAmber: "rgba(223, 165, 50, 1)",
+    lightAmber: "rgba(244, 212, 128, 1)",
+    amber: "rgba(250, 190, 70, 0.8)",
+    darkAmber: "rgba(208, 150, 0, 1)",
     transparent: "rgba(0, 0, 0, 0)",
     teal: "rgba(48, 184, 166, 1)",
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
-    orange: 'rgb(223,104,15)',
-    lightOrange: 'rgba(255,156,8,0.15)',
+    orange: "rgb(223,104,15)",
+    lightOrange: "rgba(255,156,8,0.15)",
     overdueCalledChartLineDarkYellow: "rgba(228, 180, 57, 1)",
     overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
     overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
@@ -163,16 +164,32 @@ DashboardReports = () => {
           labels: Object.keys(data.bsOver300Rate),
           datasets: [
             {
-              label: "Blood sugar 200-299",
-              data: Object.values(data.bs200to300Rate),
-              backgroundColor: colors.amber,
-              hoverBackgroundColor: colors.darkAmber,
+              label: "Test",
+              data: Object.values(data.bsOver200Rate),
+              borderColor: colors.darkAmber,
+              backgroundColor: "transparent",
+              yAxisID: "y",
+              type: "line",
             },
+            // {
+            //   label: "Missed visits",
+            //   backgroundColor: colors.lightBlue,
+            //   borderColor: colors.mediumBlue,
+            //   data: Object.values(data.diabetesMissedVisitsGraphRate),
+            // },
             {
               label: "Blood sugar ≥300",
               data: Object.values(data.bsOver300Rate),
               backgroundColor: colors.mediumRed,
               hoverBackgroundColor: colors.darkRed,
+              yAxisID: "y",
+            },
+            {
+              label: "Blood sugar 200-299",
+              data: Object.values(data.bs200to300Rate),
+              backgroundColor: colors.amber,
+              hoverBackgroundColor: colors.darkAmber,
+              yAxisID: "y",
             },
           ],
         },
@@ -361,9 +378,9 @@ DashboardReports = () => {
               data: Object.values(data.overduePatientsPercentage),
               backgroundColor: colors.lightOrange,
               borderColor: colors.orange,
-            }
-          ]
-        }
+            },
+          ],
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -391,41 +408,46 @@ DashboardReports = () => {
             },
             {
               label: "Agreed to visit",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultAgreedToVisit),
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultAgreedToVisit
+              ),
               backgroundColor: colors.overdueCalledChartFillLightGreen,
               borderWidth: 0,
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
               fill: true,
-              stack: 'callResult',
+              stack: "callResult",
               order: 1,
             },
             {
               label: "Remind to call later",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultRemindToCallLater),
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultRemindToCallLater
+              ),
               backgroundColor: colors.overdueCalledChartFillLightYellow,
               borderWidth: 0,
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
               fill: "-1",
-              stack: 'callResult',
+              stack: "callResult",
               order: 1,
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList),
+              data: Object.values(
+                data.chartProportionalPercentageCalledWithResultRemoveFromOverdueList
+              ),
               backgroundColor: colors.overdueCalledChartFillLightRed,
               borderWidth: 0,
               hoverBorderWidth: 0,
               radius: 0,
               hoverRadius: 0,
               fill: "-1",
-              stack: 'callResult',
+              stack: "callResult",
               order: 1,
             },
-            
           ],
         },
         options: {
@@ -442,8 +464,10 @@ DashboardReports = () => {
       const currentDateOfTheMonth = new Date().getDate();
       const monthsDashed = currentDateOfTheMonth > 15 ? 1 : 2;
       const endDateKey = Object.keys(data.overduePatientsCalled).slice(-1)[0];
-      const numberOfXAxisTicks = Object.keys(data.overduePatientsReturnedRate).length
-      
+      const numberOfXAxisTicks = Object.keys(
+        data.overduePatientsReturnedRate
+      ).length;
+
       const config = {
         data: {
           labels: Object.keys(data.overduePatientsCalled),
@@ -460,7 +484,7 @@ DashboardReports = () => {
                     ctx,
                     numberOfXAxisTicks,
                     endDateKey,
-                    monthsDashed,
+                    monthsDashed
                   ),
               },
             },
@@ -474,11 +498,11 @@ DashboardReports = () => {
               fill: "false",
               segment: {
                 borderDash: (ctx) =>
-                dynamicChartSegementDashed(
+                  dynamicChartSegementDashed(
                     ctx,
                     numberOfXAxisTicks,
                     endDateKey,
-                    monthsDashed,
+                    monthsDashed
                   ),
               },
             },
@@ -496,13 +520,15 @@ DashboardReports = () => {
                     ctx,
                     numberOfXAxisTicks,
                     endDateKey,
-                    monthsDashed,
+                    monthsDashed
                   ),
               },
             },
             {
               label: "Remove from overdue list",
-              data: Object.values(data.patientsReturnedRemovedFromOverdueListRates),
+              data: Object.values(
+                data.patientsReturnedRemovedFromOverdueListRates
+              ),
               borderColor: colors.mediumRed,
               radius: 0,
               hoverRadius: 2,
@@ -514,7 +540,7 @@ DashboardReports = () => {
                     ctx,
                     numberOfXAxisTicks,
                     endDateKey,
-                    monthsDashed,
+                    monthsDashed
                   ),
               },
             },
@@ -523,7 +549,7 @@ DashboardReports = () => {
       };
       return withBaseLineConfig(config);
     },
-    
+
     htnProtected: function (data) {
       const config = {
         options: {
@@ -531,11 +557,11 @@ DashboardReports = () => {
             y: {
               ticks: {
                 count: 11,
-                stepSize: null
+                stepSize: null,
               },
-              max: null 
-            }
-          }
+              max: null,
+            },
+          },
         },
         data: {
           labels: Object.keys(data.patientsProtected),
@@ -545,9 +571,9 @@ DashboardReports = () => {
               data: Object.values(data.patientsProtected),
               backgroundColor: "rgba(69, 205, 57, 0.1)",
               borderColor: "#3BB231",
-            }
-          ]
-        }
+            },
+          ],
+        },
       };
       return withBaseLineConfig(config);
     },
@@ -649,7 +675,7 @@ Reports = function ({
         const ctx = chart.ctx;
         ctx.save();
         canvasDrawGoalLine(chart, goalValue);
-        canvasDrawGoalZone(chart, goalValue, goalDownwards)
+        canvasDrawGoalZone(chart, goalValue, goalDownwards);
         canvasDrawGoalTextBubble(chart, goalValue, goalDownwards);
         canvasDrawLineFromGoalToBubble(chart, goalValue);
       },
@@ -669,14 +695,16 @@ Reports = function ({
     const goalLineConfig = {
       plugins: [goalLinePlugin(goal, goalDownwards)],
     };
-    const configWithoutFill = removeFillFromChartConfig(config)
+    const configWithoutFill = removeFillFromChartConfig(config);
     return mergeConfig(configWithoutFill, goalLineConfig);
   }
 
   function removeFillFromChartConfig(config) {
-    const updatedConfig = config
-    updatedConfig.data.datasets.forEach(dataset => dataset.backgroundColor = colors.transparent)
-    return updatedConfig
+    const updatedConfig = config;
+    updatedConfig.data.datasets.forEach(
+      (dataset) => (dataset.backgroundColor = colors.transparent)
+    );
+    return updatedConfig;
   }
 
   function monthsSinceFirstRegistration(periodValues) {
@@ -694,9 +722,10 @@ Reports = function ({
     };
     return enabledRegions[countryAbbreviation].indexOf(regionType) === -1;
   }
-  
+
   function calculateGoal(periodValues, goalDownwards) {
-    const { threeMonthAverage, improvementRatio } = getThreeMonthAverageAndImprovementRatio(periodValues);
+    const { threeMonthAverage, improvementRatio } =
+      getThreeMonthAverageAndImprovementRatio(periodValues);
 
     if (goalDownwards) {
       return calculateGoalDownwards(threeMonthAverage, improvementRatio);
@@ -705,9 +734,11 @@ Reports = function ({
   }
 
   function getThreeMonthAverageAndImprovementRatio(periodValues) {
-    const evaluationMonth = "Dec" 
+    const evaluationMonth = "Dec";
     const dateKeys = Object.keys(periodValues);
-    const evaluationMonthKeys = dateKeys.filter((item) => item.includes(evaluationMonth));
+    const evaluationMonthKeys = dateKeys.filter((item) =>
+      item.includes(evaluationMonth)
+    );
 
     const [lastMonthKey] = dateKeys.slice(-1);
     const isEndMonthOfYear = lastMonthKey.includes(evaluationMonth);
@@ -715,8 +746,11 @@ Reports = function ({
       evaluationMonthKeys.splice(-1);
     }
 
-    const mostEvaluationMonthKey = evaluationMonthKeys[evaluationMonthKeys.length - 1];
-    const mostEvaluationMonthKeyIndex = dateKeys.indexOf(mostEvaluationMonthKey);
+    const mostEvaluationMonthKey =
+      evaluationMonthKeys[evaluationMonthKeys.length - 1];
+    const mostEvaluationMonthKeyIndex = dateKeys.indexOf(
+      mostEvaluationMonthKey
+    );
 
     const monthThreeDateKey =
       mostEvaluationMonthKeyIndex < defaultMonthsRequired - 1
@@ -731,7 +765,7 @@ Reports = function ({
 
     const sumValues = monthOneValue + monthTwoValue + monthThreeValue;
     const threeMonthAverage = sumValues === 0 ? 0 : sumValues / 3;
-    
+
     const monthThreeIndexOfYear = monthIndexFromDateKey(monthThreeDateKey);
     const improvementRatio = relativeImprovementRatio(monthThreeIndexOfYear);
 
@@ -744,17 +778,19 @@ Reports = function ({
   function relativeImprovementRatio(monthThreeIndex) {
     const annualRelativeImprovement = 0.1; // 10%
     const monthlyRelativeImprovement = annualRelativeImprovement / 12;
-    const monthsRemainingForYear = monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, jan = 11... nov = 1
+    const monthsRemainingForYear =
+      monthThreeIndex === 11 ? 12 : 11 - monthThreeIndex; // dec = 12, jan = 11... nov = 1
     return monthlyRelativeImprovement * monthsRemainingForYear;
   }
 
   function calculateGoalUpwards(threeMonthAverage, improvementRatio) {
-    const goal = threeMonthAverage + ((100 - threeMonthAverage) * improvementRatio);
+    const goal =
+      threeMonthAverage + (100 - threeMonthAverage) * improvementRatio;
     return Math.ceil(goal);
   }
 
   function calculateGoalDownwards(threeMonthAverage, improvementRatio) {
-    const goal = threeMonthAverage - (threeMonthAverage * improvementRatio);
+    const goal = threeMonthAverage - threeMonthAverage * improvementRatio;
     return Math.floor(goal);
   }
 
@@ -777,7 +813,10 @@ Reports = function ({
     ctx.lineTo(chartArea.right - 1, lineYPosition);
     ctx.lineWidth = 3;
     ctx.lineCap = "round";
-    ctx.strokeStyle = changeRGBAColorOpacity(chart.config.data.datasets[0].borderColor, 0.75)
+    ctx.strokeStyle = changeRGBAColorOpacity(
+      chart.config.data.datasets[0].borderColor,
+      0.75
+    );
     ctx.setLineDash([1, 6]);
     ctx.stroke();
     ctx.restore();
@@ -841,7 +880,7 @@ Reports = function ({
     ctx.fillStyle = fillStyle || "grey";
     ctx.fill();
   }
-  
+
   function canvasDrawGoalTextBubble(chart, goalValue, goalDownwards) {
     // draw text
     const ctx = chart.ctx;
@@ -1711,38 +1750,45 @@ function baseBarChartConfig() {
 }
 
 // [Segment] Functions
-// 
+//
 /**
  * Create a dashed line for the last X segments of dynamic charts starting from the end, default is 1 segment
- * @param {*} ctx - ChartJS object 
+ * @param {*} ctx - ChartJS object
  * @param {number} numberOfXAxisTicks - number of labels in x axis (.length)
  * @param {number} [numberOfDashedSegments] - how many segments to dash starting from the last segment of the chart. A segment is the line between 2 points.
- * @returns 
+ * @returns
  */
 
 const dynamicChartSegementDashed = (
   ctx,
   numberOfXAxisTicks,
   endDateKey,
-  monthsDashedBase = 1,
+  monthsDashedBase = 1
 ) => {
-
   const endDateKeyIndex = monthIndexFromDateKey(endDateKey);
-  const dateNowMonth = new Date().getMonth()
-  const monthsInPast =  (dateNowMonth - endDateKeyIndex + 12) % 12
+  const dateNowMonth = new Date().getMonth();
+  const monthsInPast = (dateNowMonth - endDateKeyIndex + 12) % 12;
 
   const dashedSegments = Math.max(0, monthsDashedBase - monthsInPast);
 
-  const segmentStartNodeIndex = ctx.p0DataIndex
-  return isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) 
+  const segmentStartNodeIndex = ctx.p0DataIndex;
+  return isSegmentDashed(
+    segmentStartNodeIndex,
+    numberOfXAxisTicks,
+    dashedSegments
+  )
     ? [4, 3] // dashStyle
     : undefined; // fallback to default line style (solid)
 };
 
-function isSegmentDashed(segmentStartNodeIndex, numberOfXAxisTicks, dashedSegments) {
-  const dataNodeToStartDashedLine = numberOfXAxisTicks - 1 - dashedSegments
-  return segmentStartNodeIndex >= dataNodeToStartDashedLine
-};
+function isSegmentDashed(
+  segmentStartNodeIndex,
+  numberOfXAxisTicks,
+  dashedSegments
+) {
+  const dataNodeToStartDashedLine = numberOfXAxisTicks - 1 - dashedSegments;
+  return segmentStartNodeIndex >= dataNodeToStartDashedLine;
+}
 
 // [plugin] vertical instersect line
 const intersectDataVerticalLine = {
@@ -1775,8 +1821,10 @@ const intersectDataVerticalLine = {
 };
 
 function capOverduePatientsCallRate(data) {
-  return Object.keys(data)
-		.reduce((o, key) => Object.assign(o, {[key]: Math.min(data[key], 100)}), {})
+  return Object.keys(data).reduce(
+    (o, key) => Object.assign(o, { [key]: Math.min(data[key], 100) }),
+    {}
+  );
 }
 
 function withBaseLineConfig(config) {

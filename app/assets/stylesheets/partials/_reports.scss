@@ -356,11 +356,15 @@
   color: $orange;
 }
 .c-orange-darker {
-  color: $orange-dark-new
+  color: $orange-dark-new;
 }
 
 .c-amber {
   color: $amber;
+}
+
+.c-new-amber {
+  color: $newAmber;
 }
 
 .c-teal {
@@ -764,11 +768,11 @@
   display: flex;
   margin-top: 32px;
   position: relative;
-  
+
   p {
     padding: 2px 8px;
   }
-  
+
   .coverage-modal {
     position: absolute;
     width: 100%;

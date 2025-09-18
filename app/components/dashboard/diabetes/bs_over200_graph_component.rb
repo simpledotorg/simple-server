@@ -12,6 +12,19 @@ class Dashboard::Diabetes::BsOver200GraphComponent < ApplicationComponent
     @use_who_standard = use_who_standard
   end
 
+ # Sum two same-shaped series.
+  # Accepts either the series themselves (Hash/Array) OR the Symbol keys to look them up in `data`.
+  def sum_series(a, b)
+    a = data[a] if a.is_a?(Symbol)
+    b = data[b] if b.is_a?(Symbol)
+
+    if a.is_a?(Hash)
+      a.merge(b) { |_k, x, y| x.to_f + y.to_f }
+    else
+      a.zip(b).map { |x, y| x.to_f + y.to_f }
+    end
+  end
+
   def graph_data
     if with_ltfu
       return {
@@ -20,6 +33,7 @@ class Dashboard::Diabetes::BsOver200GraphComponent < ApplicationComponent
         bs200to300Rate: data[:bs_200_to_300_with_ltfu_rates],
         bsOver300Numerator: data[:bs_over_300_patients],
         bsOver300Rate: data[:bs_over_300_with_ltfu_rates],
+        bsOver200Rate: sum_series(:bs_200_to_300_with_ltfu_rates, :bs_over_300_with_ltfu_rates),
         **period_data,
         **breakdown_rates
       }
@@ -31,15 +45,17 @@ class Dashboard::Diabetes::BsOver200GraphComponent < ApplicationComponent
       bs200to300Rate: data[:bs_200_to_300_rates],
       bsOver300Numerator: data[:bs_over_300_patients],
       bsOver300Rate: data[:bs_over_300_rates],
+      bsOver200Rate: sum_series(:bs_200_to_300_rates, :bs_over_300_rates),
       **period_data,
       **breakdown_rates
     }
+    
   end
 
   def denominator_copy
     with_ltfu ? "diabetes_denominator_with_ltfu_copy" : "diabetes_denominator_copy"
   end
-
+  
   def period_data
     {
       startDate: period_info(:bp_control_start_date),
@@ -47,11 +63,11 @@ class Dashboard::Diabetes::BsOver200GraphComponent < ApplicationComponent
       registrationDate: period_info(:bp_control_registration_date)
     }
   end
-
+  
   def period_info(key)
     data[:period_info].map { |k, v| [k, v[key]] }.to_h
   end
-
+  
   def breakdown_rates
     {}
   end
