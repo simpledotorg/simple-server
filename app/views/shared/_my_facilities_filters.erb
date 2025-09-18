@@ -11,7 +11,7 @@
     aria-expanded="false"
   >
     <% if can_view_all_districts_nav?  %>
-      <% if params[:facility_group] == "all-districts" %>
+      <% if @all_districts_params %>
         All districts
       <% else %>
         <%= @selected_facility_group&.name || "Select Districts" %>
@@ -22,11 +22,10 @@
   </a>
 
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
-    <!-- 🔑 FIX: dynamic form action -->
     <form id="query-filters" action="<%= request.path %>" method="get">
       <% if can_view_all_districts_nav? %>
         <button
-          class="dropdown-item <%= "active" if params[:facility_group] == "all-districts" %>"
+          class="dropdown-item <%= "active" if @all_districts_params %>"
           type="submit"
           onclick="$('#selected-facility-group').val('all-districts'); $('#selected-size').remove(); $('#selected-zone').remove();"
         >

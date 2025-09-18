@@ -18,17 +18,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
   let(:drug) { instance_double("Drug", id: 101, name: "Drug X", dosage: "10mg") }
 
   helper do
-    def accessible_region?(*args)
-      true
-    end
-
-    def active_action?(*args)
-      false
-    end
-
-    def t(key, **args)
-      key.to_s.titleize
-    end
     attr_reader :current_admin
 
     def my_facilities_drug_consumption_path(options = {})
@@ -64,7 +53,6 @@ RSpec.describe "my_facilities/drug_stocks/drug_consumption.html.erb", type: :vie
     assign(:zones, ["zone1", "zone2"])
     assign(:facility_sizes, ["small", "medium"])
 
-    # ✅ Add total_drug_consumption and last_updated_at
     assign(:report, {
       total_patient_count: 42,
       last_updated_at: Time.zone.parse("2025-09-01 12:00"),

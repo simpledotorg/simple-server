@@ -116,6 +116,7 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def prepare_district_reports(report_type)
+    @all_districts_params = params[:facility_group] == "all-districts"
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
     if access_all_districts_overview?
       @districts = accessible_organization_districts

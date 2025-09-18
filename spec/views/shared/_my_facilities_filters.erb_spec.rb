@@ -16,22 +16,7 @@ RSpec.describe "shared/_my_facilities_filters.erb", type: :view do
   let(:size_medium) { "medium" }
 
   helper do
-    def accessible_region?(*args)
-      true
-    end
-
-    def active_action?(*args)
-      false
-    end
-
     attr_reader :current_admin
-
-    def t(key, **args)
-      if key == "region_type.block" && CountryConfig.current == "Bangladesh"
-        return "upazilas"
-      end
-      key.to_s.titleize
-    end
   end
 
   before do

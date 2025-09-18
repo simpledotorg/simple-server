@@ -35,15 +35,12 @@ module MyFacilitiesFiltering
     end
 
     def populate_zones
-      @zones = if all_district_overview_enabled?
-        @accessible_facilities.where(facility_group: @facility_groups).pluck(:zone).uniq.compact.sort
-      else
-        @accessible_facilities.where(facility_group: @selected_facility_group).pluck(:zone).uniq.compact.sort
-      end
+      effective_zones = scoped_facility_groups
+      @zones = @accessible_facilities.where(facility_group: effective_zones).pluck(:zone).uniq.compact.sort
     end
 
     def populate_facility_sizes
-      facility_groups_scope = all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+      facility_groups_scope = scoped_facility_groups
 
       @facility_sizes = @accessible_facilities
         .where(facility_group: facility_groups_scope, zone: @selected_zones)
@@ -65,8 +62,12 @@ module MyFacilitiesFiltering
     end
 
     def facilities_by_facility_group(facilities)
-      target_group = all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+      target_group = scoped_facility_groups
       facilities.where(facility_group: target_group)
+    end
+
+    def scoped_facility_groups
+      all_district_overview_enabled? ? @facility_groups : @selected_facility_group
     end
 
     def facilities_by_zone(facilities)
