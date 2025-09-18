@@ -38,7 +38,9 @@
           </div>
         <% end %>
       </div>
-      <% if @facilities.present? %>
+      <% if access_all_districts_overview?(@all_districts_params) %>
+          <%= render partial: "all_district_drug_stock_table", locals: {district_reports: @district_reports} %>
+      <% elsif @facilities.present? %>
         <%= render "drug_stocks_table" %>
       <% else %>
         <p>There is no data for this selection.</p>
