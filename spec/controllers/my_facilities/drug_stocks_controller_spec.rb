@@ -143,13 +143,13 @@ RSpec.describe MyFacilities::DrugStocksController, type: :controller do
         }
       }
 
-      it "allows access for allowed facility" do
+      it "returns a success response for an allowed facility" do
         sign_in(manager.email_authentication)
         get :new, params: params
         expect(response).to be_successful
       end
 
-      it "redirects for disallowed facility" do
+      it "redirects for a disallowed facility" do
         sign_in(manager.email_authentication)
         params[:region_id] = disallowed_facility_for_manager.region.id
         get :new, params: params

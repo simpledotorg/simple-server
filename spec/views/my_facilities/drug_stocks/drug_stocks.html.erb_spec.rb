@@ -16,42 +16,11 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
   let(:current_admin) { instance_double("Admin") }
 
   helper do
-    def accessible_region?(*)
-      true
-    end
-
-    def active_action?(*)
-      false
-    end
-
-    def t(key, **)
-      key.to_s.titleize
-    end
-
+    
     attr_reader :current_admin
-
-    def my_facilities_csv_maker_path(options = {})
-      "#{options[:type]}_csv_path"
-    end
-
-    def my_facilities_drug_stocks_path(*)
-      "/my_facilities/drug_stocks"
-    end
-
-    def preserve_query_params(params, _keys)
-      params
-    end
-
-    def last_n_months(n:, inclusive:)
-      [Date.new(2025, 8, 31)]
-    end
 
     def action_name
       "drug_stocks"
-    end
-
-    def localized_facility_size(size)
-      size.to_s.titleize
     end
   end
 
