@@ -1,22 +1,23 @@
-<% grouped = @district_reports.group_by { |district, _| district.state }.sort_by { |state, _| state } %>
+<% grouped = grouped_district_reports(@district_reports) %>
+<% first_report_with_drugs = @district_reports.values.find { |data| data[:drugs_by_category].present? } %>
+<% drugs_by_category = first_report_with_drugs&.dig(:drugs_by_category) || {} %>
+<% aggregated = aggregate_drug_consumption(@district_reports, drugs_by_category) %>
+<% all_totals = aggregated[:totals] %>
+<% all_base_totals = aggregated[:base_totals] %>
+<% all_patient_count = aggregated[:patient_count] %>
+
 <div class="district-drug-consumption-table mb-5">
   <div class="table-responsive">
     <table class="mt-4 table table-compact table-hover analytics-table">
       <colgroup>
         <col>
         <col>
-        <% first_report_with_drugs = @district_reports.values.find { |data| data[:drugs_by_category].present? } %>
-        <% drugs_by_category = first_report_with_drugs&.dig(:drugs_by_category) || {} %>
-
-        <% if drugs_by_category.present? %>
-          <% drugs_by_category.each do |_, drugs| %>
-            <% (drugs || []).each_with_index do |_drug, index| %>
-              <col class="<%= "table-divider" if index.zero? %>">
-            <% end %>
+        <% drugs_by_category.each do |_, drugs| %>
+          <% (drugs || []).each_with_index do |_drug, index| %>
+            <col class="<%= "table-divider" if index.zero? %>">
           <% end %>
         <% end %>
-
-        <% (drugs_by_category || {}).each_with_index do |(_drug_category, _drugs), index| %>
+        <% drugs_by_category.each_with_index do |(_drug_category, _drugs), index| %>
           <col class="<%= "table-divider" if index.zero? %>">
         <% end %>
       </colgroup>
@@ -25,43 +26,36 @@
         <tr>
           <th></th>
           <th></th>
-          <% if drugs_by_category.present? %>
-            <% drugs_by_category.each do |drug_category, drugs| %>
-              <th colspan="<%= (drugs || []).count %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
-            <% end %>
-            <th colspan="<%= drugs_by_category.count %>"><%= I18n.t('overall_in_base_dose') %></th>
-          <% end %> 
+          <% drugs_by_category.each do |drug_category, drugs| %>
+            <th colspan="<%= (drugs || []).count %>"><%= protocol_drug_labels[drug_category]&.dig(:full) %></th>
+          <% end %>
+          <th colspan="<%= drugs_by_category.count %>"><%= I18n.t('overall_in_base_dose') %></th>
         </tr>
 
         <tr data-sort-method="thead" class="sorts">
           <th class="row-label sort-label sticky" data-sort-default>Districts</th>
           <th class="row-label sort-label sticky" data-sort-method="number">Patients <br/> under <br/> care</th>
 
-          <% if drugs_by_category.present? %>
-            <% drugs_by_category.each do |_drug_category, drugs| %>
-              <% (drugs || []).each do |drug| %>
-                <th class="row-label sort-label row-medicine sticky"
-                    data-sort-method="number"
-                    data-sort-column-key="<%= drug.id %>">
-                  <%= drug.name %><br>
-                  <%= drug.dosage %>
-                </th>
-              <% end %>
-            <% end %>
-
-            <% drugs_by_category.each do |drug_category, _drugs| %>
-              <th class="row-label sort-label sticky" data-sort-method="number" data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
-                <%= protocol_drug_labels[drug_category]&.dig(:short) %><br> base doses
+          <% drugs_by_category.each do |_drug_category, drugs| %>
+            <% (drugs || []).each do |drug| %>
+              <th class="row-label sort-label row-medicine sticky"
+                  data-sort-method="number"
+                  data-sort-column-key="<%= drug.id %>">
+                <%= drug.name %><br>
+                <%= drug.dosage %>
               </th>
             <% end %>
           <% end %>
+
+          <% drugs_by_category.each do |drug_category, _drugs| %>
+            <th class="row-label sort-label sticky"
+                data-sort-method="number"
+                data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
+              <%= protocol_drug_labels[drug_category]&.dig(:short) %><br> base doses
+            </th>
+          <% end %>
         </tr>
       </thead>
-
-      <% aggregated = aggregate_drug_consumption(@district_reports, drugs_by_category) %>
-      <% all_totals = aggregated[:totals] %>
-      <% all_base_totals = aggregated[:base_totals] %>
-      <% all_patient_count = aggregated[:patient_count] %>
 
       <tr class="row-total font-weight-bold warning" data-sort-method="none">
         <td class="type-title"
@@ -75,46 +69,27 @@
         <td class="type-number text-center" data-sort-value="<%= all_patient_count %>">
           <%= all_patient_count.positive? ? all_patient_count : '0' %>
         </td>
-
-        <% if drugs_by_category.present? %>
-          <% drugs_by_category.each do |_, drugs| %>
-            <% (drugs || []).each do |drug| %>
-              <% consumed = all_totals[drug.id] %>
-              <td class="<%= consumed.zero? ? 'type-blank' : 'type-number text-center' %>" data-sort-value="<%= consumed %>">
-                <%= consumed.zero? ? '&#8212;'.html_safe : consumed %>
-              </td>
-            <% end %>
-          <% end %>
-
-          <% drugs_by_category.each do |drug_category, _drugs| %>
-            <% base_total = all_base_totals[drug_category] %>
-            <td class="<%= base_total.zero? ? 'type-blank' : 'type-number text-center' %>"
-                data-sort-value="<%= base_total %>"
-                data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
-              <%= base_total.zero? ? '&#8212;'.html_safe : base_total %>
+        <% drugs_by_category.each do |_, drugs| %>
+          <% (drugs || []).each do |drug| %>
+            <% consumed = all_totals[drug.id] %>
+            <td class="<%= consumed.zero? ? 'type-blank' : 'type-number text-center' %>"
+                data-sort-value="<%= consumed %>">
+              <%= consumed.zero? ? '&#8212;'.html_safe : consumed %>
             </td>
           <% end %>
+        <% end %>
+        <% drugs_by_category.each do |drug_category, _drugs| %>
+          <% base_total = all_base_totals[drug_category] %>
+          <td class="<%= base_total.zero? ? 'type-blank' : 'type-number text-center' %>"
+              data-sort-value="<%= base_total %>"
+              data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
+            <%= base_total.zero? ? '&#8212;'.html_safe : base_total %>
+          </td>
         <% end %>
       </tr>
 
       <% grouped.each do |state, districts| %>
-        <% state_totals = Hash.new(0) %>
-        <% state_base_totals = Hash.new(0) %>
-        <% state_patient_count = 0 %>
-
-        <% districts.each do |_, data| %>
-          <% report = data[:report] %>
-          <% state_patient_count += report[:district_patient_count].to_i %>
-
-          <% drugs_by_category.each do |drug_category, drugs| %>
-            <% (drugs || []).each do |drug| %>
-              <% consumed = report[:total_drug_consumption]&.dig(drug_category, drug, :consumed) %>
-              <% state_totals[drug.id] += consumed.to_i if consumed.present? && consumed != "error" %>
-            <% end %>
-            <% base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
-            <% state_base_totals[drug_category] += base_total.to_i if base_total.present? && base_total != "error" %>
-          <% end %>
-        <% end %>
+        <% state_data = state_aggregate(districts, drugs_by_category) %>
 
         <tbody class="state-group">
           <tr class="row-total font-weight-bold warning" data-sort-method="none">
@@ -123,24 +98,23 @@
                 data-toggle="tooltip"
                 data-placement="top"
                 data-trigger="hover focus click"
-                data-original-title='<%= "#{state}: #{state_totals.values.sum} units, #{state_patient_count} patients" %>'>
+                data-original-title='<%= "#{state}: #{state_data[:totals].values.sum} units, #{state_data[:patient_count]} patients" %>'>
               <%= state %><br><span> subtotal </span>
             </td>
-            <td class="type-number text-center" data-sort-value="<%= state_patient_count %>">
-              <%= state_patient_count.positive? ? state_patient_count : '0' %>
+            <td class="type-number text-center" data-sort-value="<%= state_data[:patient_count] %>">
+              <%= state_data[:patient_count].positive? ? state_data[:patient_count] : '0' %>
             </td>
-
             <% drugs_by_category.each do |_, drugs| %>
               <% (drugs || []).each do |drug| %>
-                <% consumed = state_totals[drug.id] %>
-                <td class="<%= consumed.zero? ? 'type-blank' : 'type-number text-center' %>" data-sort-value="<%= consumed %>">
+                <% consumed = state_data[:totals][drug.id] %>
+                <td class="<%= consumed.zero? ? 'type-blank' : 'type-number text-center' %>"
+                    data-sort-value="<%= consumed %>">
                   <%= consumed.zero? ? '&#8212;'.html_safe : consumed %>
                 </td>
               <% end %>
             <% end %>
-
             <% drugs_by_category.each do |drug_category, _drugs| %>
-              <% base_total = state_base_totals[drug_category] %>
+              <% base_total = state_data[:base_totals][drug_category] %>
               <td class="<%= base_total.zero? ? 'type-blank' : 'type-number text-center' %>"
                   data-sort-value="<%= base_total %>"
                   data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
@@ -165,7 +139,6 @@
               <td class="type-number text-center" data-sort-value="<%= report[:district_patient_count].to_i %>">
                 <%= report[:district_patient_count].present? ? report[:district_patient_count] : '<span class="type-blank">?</span>'.html_safe %>
               </td>
-
               <% drugs_by_category.each do |drug_category, drugs| %>
                 <% (drugs || []).each do |drug| %>
                   <% consumed = report[:total_drug_consumption]&.dig(drug_category, drug, :consumed) %>
@@ -187,21 +160,19 @@
                   <% end %>
                 <% end %>
               <% end %>
-
               <% drugs_by_category.each do |drug_category, _drugs| %>
-                  <% base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
-                  <td class="<%= base_total.nil? || base_total == 0 ? 'type-blank' : 'type-number text-center' %>"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      data-placement="top"
-                      data-trigger="hover focus click"
-                      data-template="<%= render 'wide_tooltip_template' %>"
-                      data-original-title="<%= render 'base_doses_tooltip', report: report&.dig(:total_drug_consumption, drug_category, :base_doses) %>"
-                      data-sort-value="<%= base_total.to_i %>"
-                      data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
-                    <%= base_total.present? && base_total != "error" ? base_total : '&#8212;'.html_safe %>
-                  </td>
-                <% end %>
+                <% base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total) %>
+                <td class="<%= base_total.nil? || base_total == 0 ? 'type-blank' : 'type-number text-center' %>"
+                    data-html="true"
+                    data-toggle="tooltip"
+                    data-placement="top"
+                    data-template="<%= render 'wide_tooltip_template' %>"
+                    data-original-title="<%= render 'base_doses_tooltip', report: report&.dig(:total_drug_consumption, drug_category, :base_doses) %>"
+                    data-sort-value="<%= base_total.to_i %>"
+                    data-sort-column-key="<%= "#{drug_category}_base_doses" %>">
+                  <%= base_total.present? && base_total != "error" ? base_total : '&#8212;'.html_safe %>
+                </td>
+              <% end %>
             </tr>
           <% end %>
         </tbody>

@@ -11,8 +11,35 @@ module DrugStockHelper
     params[:zone].present? || params[:size].present?
   end
 
+  def grouped_district_reports(district_reports)
+    district_reports.group_by { |district, _| district.state }.sort_by { |state, _| state }
+  end
+
+  def state_aggregate(districts, drugs_by_category)
+    totals = Hash.new(0)
+    base_totals = Hash.new(0)
+    patient_count = 0
+
+    districts.each do |_, data|
+      report = data[:report]
+      patient_count += report[:district_patient_count].to_i
+
+      drugs_by_category.each do |drug_category, drugs|
+        (drugs || []).each do |drug|
+          consumed = report[:total_drug_consumption]&.dig(drug_category, drug, :consumed)
+          totals[drug.id] += consumed.to_i if consumed.present? && consumed != "error"
+        end
+
+        base_total = report[:total_drug_consumption]&.dig(drug_category, :base_doses, :total)
+        base_totals[drug_category] += base_total.to_i if base_total.present? && base_total != "error"
+      end
+    end
+
+    {totals: totals, base_totals: base_totals, patient_count: patient_count}
+  end
+
   def accessible_organization_facilities
-    if CountryConfig.current_country?("Bangladesh")
+    if CountryConfig.current[:nhf_enabled]
       Organization.joins(facility_groups: :facilities).where(facilities: {id: @accessible_facilities}).distinct.pluck(:slug).include?("nhf")
     else
       true
@@ -20,7 +47,7 @@ module DrugStockHelper
   end
 
   def accessible_organization_districts
-    if CountryConfig.current_country?("Bangladesh")
+    if CountryConfig.current[:nhf_enabled]
       @districts = FacilityGroup
         .includes(:facilities)
         .joins(:organization)

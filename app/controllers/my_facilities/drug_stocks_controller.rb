@@ -1,6 +1,7 @@
 class MyFacilities::DrugStocksController < AdminController
-  include FlipperHelper
+  before_action :set_all_districts_params, only: [:drug_stocks, :drug_consumption]
   include DrugStockHelper
+  include FlipperHelper
   include Pagination
   include MyFacilitiesFiltering
   include SetForEndOfMonth
@@ -116,9 +117,9 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def prepare_district_reports(report_type)
-    @all_districts_params = params[:facility_group] == "all-districts"
     @for_end_of_month_display = @for_end_of_month.strftime("%b-%Y")
-    if access_all_districts_overview?
+    if access_all_districts_overview?(@all_districts_params)
+
       @districts = accessible_organization_districts
 
       @district_reports = {}
@@ -145,6 +146,10 @@ class MyFacilities::DrugStocksController < AdminController
         @report = @query.public_send(report_type)
       end
     end
+  end
+
+  def set_all_districts_params
+    @all_districts_params = params[:facility_group] == "all-districts"
   end
 
   def drug_stock_enabled_facilities

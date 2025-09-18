@@ -67,7 +67,7 @@ module MyFacilitiesFiltering
     end
 
     def scoped_facility_groups
-      all_district_overview_enabled? ? @facility_groups : @selected_facility_group
+      all_district_overview_enabled?(@all_districts_params) ? @facility_groups : @selected_facility_group
     end
 
     def facilities_by_zone(facilities)
