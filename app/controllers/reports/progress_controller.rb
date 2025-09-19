@@ -5,6 +5,7 @@ class Reports::ProgressController < AdminController
   before_action :require_feature_flag
   before_action :set_period
   before_action :find_region
+  before_action :set_dr_rai_vars, only: [:show]
   around_action :set_reporting_time_zone
 
   def show
@@ -65,5 +66,12 @@ class Reports::ProgressController < AdminController
   def set_period
     period_params = report_params[:period].presence || Reports.default_period.attributes
     @period = Period.new(period_params)
+  end
+
+  def set_dr_rai_vars
+    @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
+
+    option_keys = %i[ selected_quarter with_non_contactable ]
+    @dr_rai_options = params.select { |k, _| option_keys.include?(k) }
   end
 end

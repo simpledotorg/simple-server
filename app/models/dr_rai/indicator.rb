@@ -51,27 +51,35 @@ class DrRai::Indicator < ApplicationRecord
     DrRai::Target::TYPES[target_type_frontend]
   end
 
-  def numerator(region, the_period = period)
+  def numerator(region, the_period = period, with_non_contactable: nil)
     0 unless is_supported?(region)
-    numerators(region)[the_period]
+    numerators(region, all: with_non_contactable)[the_period]
   end
 
-  def denominator(region, the_period = period)
+  def denominator(region, the_period = period, with_non_contactable: nil)
     0 unless is_supported?(region)
-    denominators(region)[the_period]
+    denominators(region, all: with_non_contactable)[the_period]
   end
 
-  def numerators(region)
+  def numerators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      [t, data[numerator_key]]
+      unless all.nil?
+        [t, data[numerator_key(all: all)]]
+      else
+        [t, data[numerator_key]]
+      end
     end.to_h
   end
 
-  def denominators(region)
+  def denominators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      [t, data[denominator_key]]
+      unless all.nil?
+        [t, data[denominator_key(all: all)]]
+      else
+        [t, data[denominator_key]]
+      end
     end.to_h
   end
 
