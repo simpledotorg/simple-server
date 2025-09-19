@@ -2,19 +2,19 @@
   id="<%= id.to_s %>"
   data-period="<%= period.to_s %>"
   class="pt-20px px-20px mt-8px mx-0px grid-mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-         justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm p-relative" style="padding-bottom: 24px;">
+         justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm p-relative pb-24px">
   <div>
     <%= title %>
     <%= summary %>
   </div>
   <div class="p-relative">
-    <div class="h-320px" style="width: calc(100% + 12px); margin-left: -6px;">
+    <div class="h-320px wider-charts">
       <canvas></canvas>
     </div>
   </div>
     <% if footer.present? %>
-    <div style="position: absolute; bottom: 9px; left: 0px; right: 0px; display: flex; justify-content: center;">
-      <div style="font-size: 13px; border-radius: 20px; overflow: hidden; display: inline;">
+    <div class="p-absolute l-0 w-100 b-8px d-flex justify-center">
+      <div class="fs-13px d-inline">
         <%= footer %>
       </div>
     </div>
