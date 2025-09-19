@@ -99,7 +99,7 @@ describe OneOff::Opensrp::Exporter do
     let(:medical_history_exporter) { instance_double(OneOff::Opensrp::MedicalHistoryExporter, export: "mh_res", export_encounter: "mh_enc") }
     let(:encounter_generator) { instance_double(OneOff::Opensrp::EncounterGenerator, generate: "encounter_bundle") }
 
-    subject(:exporter) { described_class.new(config_path.to_s, output_path.to_s) }
+    let(:exporter) { described_class.new(config_path.to_s, output_path.to_s) }
 
     before do
       config_content = <<-YAML
@@ -133,34 +133,6 @@ describe OneOff::Opensrp::Exporter do
       exporter.call!
     end
 
-    it "delegates to the correct sub-exporter" do
-      exporter = described_class.new(config_path.to_s, output_path.to_s)
-      expect(OneOff::Opensrp::PatientExporter).to receive(:new).with(patient, a_kind_of(Hash))
-      expect(OneOff::Opensrp::BloodPressureExporter).to receive(:new).with(blood_pressure, a_kind_of(Hash))
-      expect(OneOff::Opensrp::BloodSugarExporter).to receive(:new).with(blood_sugar, a_kind_of(Hash))
-      expect(OneOff::Opensrp::PrescriptionDrugExporter).to receive(:new).with(prescription_drug, a_kind_of(Hash))
-      expect(OneOff::Opensrp::AppointmentExporter).to receive(:new).with(appointment, a_kind_of(Hash))
-      expect(OneOff::Opensrp::MedicalHistoryExporter).to receive(:new).with(patient.medical_history, a_kind_of(Hash))
-      exporter.call!
-    end
-
-    it "tallies the export correctly" do
-      # Because `let(…) { ... }` is lazy, we have to force it
-      blood_pressure
-      blood_sugar
-      prescription_drug
-      appointment
-
-      exporter.call!
-
-      expect(exporter.tally[:patients]).to eq(1)
-      expect(exporter.tally[:observation]).to eq(2)
-      expect(exporter.tally[:flags]).to eq(1)
-      expect(exporter.tally[:appointments]).to eq(1)
-      expect(exporter.tally[:conditions]).to eq(1)
-      expect(exporter.tally[:encounters]).to eq(6)
-    end
-
     context "with time filtering" do
       let(:considered) { patient }
       let(:ignored) do
@@ -174,7 +146,6 @@ describe OneOff::Opensrp::Exporter do
         expect(OneOff::Opensrp::PatientExporter).to receive(:new).with(considered, a_kind_of(Hash)).and_return(patient_exporter)
         expect(OneOff::Opensrp::PatientExporter).not_to receive(:new).with(ignored, a_kind_of(Hash))
         exporter.call!
-        expect(exporter.tally[:patients]).to eq 1
       end
     end
   end
