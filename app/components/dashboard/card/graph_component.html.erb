@@ -1,18 +1,24 @@
 <div
   id="<%= id.to_s %>"
   data-period="<%= period.to_s %>"
-  class="pt-20px px-20px mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
-         justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm">
+  class="pt-20px px-20px mt-8px mx-0px grid-mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
+         justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm p-relative" style="padding-bottom: 24px;">
   <div>
     <%= title %>
     <%= summary %>
   </div>
-  <div class="p-relative mb-12px">
-    <div class="h-320px mr-16px mb-12px ml-13px">
+  <div class="p-relative">
+    <div class="h-320px" style="width: calc(100% + 12px); margin-left: -6px;">
       <canvas></canvas>
     </div>
-    <%= footer %>
   </div>
+    <% if footer.present? %>
+    <div style="position: absolute; bottom: 9px; left: 0px; right: 0px; display: flex; justify-content: center;">
+      <div style="font-size: 13px; border-radius: 20px; overflow: hidden; display: inline;">
+        <%= footer %>
+      </div>
+    </div>
+    <% end %>
 
 
   <script> DashboardReports().ReportsGraph("<%= id %>", <%= data.to_json.html_safe %>)</script>
