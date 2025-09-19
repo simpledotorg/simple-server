@@ -14,7 +14,7 @@ RSpec.describe DrugStockHelper, type: :helper do
   end
 
   describe "#filter_params" do
-    it "returns true if params[:zone] or params[:size] is present" do
+    it "returns true if zone or size is present" do
       allow(helper).to receive(:params).and_return({zone: "summer gardens"})
       expect(helper.filter_params).to be true
 
@@ -22,7 +22,7 @@ RSpec.describe DrugStockHelper, type: :helper do
       expect(helper.filter_params).to be true
     end
 
-    it "returns false if both params[:zone] and params[:size] are blank" do
+    it "returns false if both zone and size are blank" do
       allow(helper).to receive(:params).and_return({})
       expect(helper.filter_params).to be false
     end
@@ -31,12 +31,10 @@ RSpec.describe DrugStockHelper, type: :helper do
   describe "#patient_count_for" do
     let(:report) { {district_patient_count: 7, facilities_total_patient_count: 10} }
 
-    it "returns district_patient_count if filter_params false" do
+    it "returns correct patient count based on filter_params" do
       allow(helper).to receive(:filter_params).and_return(false)
       expect(helper.patient_count_for(report)).to eq(7)
-    end
 
-    it "returns facilities_total_patient_count if filter_params true" do
       allow(helper).to receive(:filter_params).and_return(true)
       expect(helper.patient_count_for(report)).to eq(10)
     end
@@ -51,12 +49,10 @@ RSpec.describe DrugStockHelper, type: :helper do
     end
     let(:drug) { drugs_by_category["hypertension_arb"].first }
 
-    it "returns total_drugs_in_stock if filter_params false" do
+    it "returns correct drug stock based on filter_params" do
       allow(helper).to receive(:filter_params).and_return(false)
       expect(helper.drug_stock_for(report, drug)).to eq(5)
-    end
 
-    it "sums per facility if filter_params true" do
       allow(helper).to receive(:filter_params).and_return(true)
       expect(helper.drug_stock_for(report, drug)).to eq(5)
     end
@@ -75,7 +71,7 @@ RSpec.describe DrugStockHelper, type: :helper do
       }
     end
 
-    it "aggregates totals, patient_days, and patient_count" do
+    it "aggregates totals, patient_days, and patient_count correctly" do
       result = helper.aggregate_state_totals(districts, drugs_by_category)
       expect(result).to eq(
         totals: {"979467" => 10, "316764" => 0, "329528" => 5},
@@ -100,7 +96,7 @@ RSpec.describe DrugStockHelper, type: :helper do
       }
     end
 
-    it "aggregates totals, base_totals, and patient_count" do
+    it "aggregates totals, base_totals, and patient_count correctly" do
       result = helper.state_aggregate(districts, drugs_by_category)
       expect(result[:patient_count]).to eq(5)
       expect(result[:totals].values.sum).to eq(2)
@@ -111,14 +107,14 @@ RSpec.describe DrugStockHelper, type: :helper do
   describe "#grouped_district_reports" do
     let(:district_reports) do
       [
-        [double("district", state: "B"), {}],
-        [double("district", state: "A"), {}]
+        [double("district", state: "MP"), {}],
+        [double("district", state: "Goa"), {}]
       ]
     end
 
     it "groups by state and sorts alphabetically" do
       result = helper.grouped_district_reports(district_reports)
-      expect(result.map(&:first)).to eq(["A", "B"])
+      expect(result.map(&:first)).to eq(["Goa", "MP"])
     end
   end
 
@@ -128,12 +124,10 @@ RSpec.describe DrugStockHelper, type: :helper do
     context "with slug present" do
       before { allow(helper).to receive(:drug_stock_tracking_slug).and_return("nhf") }
 
-      it "returns true if slug included" do
+      it "returns true if slug included, false if not" do
         allow(Organization).to receive_message_chain(:joins, :where, :distinct, :pluck).and_return(["nhf"])
         expect(helper.accessible_organization_facilities).to eq(true)
-      end
 
-      it "returns false if slug not included" do
         allow(Organization).to receive_message_chain(:joins, :where, :distinct, :pluck).and_return(["other"])
         expect(helper.accessible_organization_facilities).to eq(false)
       end
@@ -146,27 +140,24 @@ RSpec.describe DrugStockHelper, type: :helper do
   end
 
   describe "#facility_group_dropdown_title" do
-    let(:group) { double("FacilityGroup", name: "Group") }
+    let(:group) { double("FacilityGroup", name: "Allahbad") }
 
-    context "can_view_all_districts_nav? true" do
+    context "when can_view_all_districts_nav? is true" do
       before { allow(helper).to receive(:can_view_all_districts_nav?).and_return(true) }
 
-      it "returns 'All districts' if overview true" do
+      it "returns correct title based on overview and presence of group" do
         expect(helper.facility_group_dropdown_title(facility_group: group, overview: true)).to eq("All districts")
-      end
-
-      it "returns group name if overview false" do
-        expect(helper.facility_group_dropdown_title(facility_group: group, overview: false)).to eq("Group")
-      end
-
-      it "returns 'Select Districts' if facility_group nil" do
+        expect(helper.facility_group_dropdown_title(facility_group: group, overview: false)).to eq("Allahbad")
         expect(helper.facility_group_dropdown_title(facility_group: nil, overview: false)).to eq("Select Districts")
       end
     end
 
-    it "returns group name if can_view_all_districts_nav? false" do
-      allow(helper).to receive(:can_view_all_districts_nav?).and_return(false)
-      expect(helper.facility_group_dropdown_title(facility_group: group)).to eq("Group")
+    context "when can_view_all_districts_nav? is false" do
+      before { allow(helper).to receive(:can_view_all_districts_nav?).and_return(false) }
+
+      it "returns group name" do
+        expect(helper.facility_group_dropdown_title(facility_group: group)).to eq("Allahbad")
+      end
     end
   end
 
@@ -186,7 +177,7 @@ RSpec.describe DrugStockHelper, type: :helper do
     end
     let(:first_drugs_by_category) { drugs_by_category }
 
-    it "aggregates totals, patient_days, and patient_count" do
+    it "aggregates totals, patient_days, and patient_count correctly" do
       allow(helper).to receive(:filter_params).and_return(true)
       result = helper.aggregate_district_drug_stock(district_reports, first_drugs_by_category)
       expect(result[:totals]["979467"]).to eq(3)
@@ -210,7 +201,7 @@ RSpec.describe DrugStockHelper, type: :helper do
       }
     end
 
-    it "aggregates totals, base_totals, and patient_count" do
+    it "aggregates totals, base_totals, and patient_count correctly" do
       result = helper.aggregate_drug_consumption(district_reports, drugs_by_category)
       expect(result[:patient_count]).to eq(6)
       expect(result[:totals].values.sum).to eq(2)
