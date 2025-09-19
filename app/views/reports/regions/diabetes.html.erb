@@ -21,9 +21,6 @@
   <%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(args) %>
 </div>
 
-
-
-
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
   <h4 class="mt-5 mb-32px">Medications</h4>
   <%= render Dashboard::MedicationDispensationComponent.new(args) %>
@@ -54,7 +51,6 @@
     current_admin: current_admin
   ) %>
 
-
 <% else %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsTableComponent.new(
     region: @region,
@@ -81,7 +77,9 @@
       page: @page
   ) %>
 <% end %>
+
 <%= render "reports/regions/diabetes_footnotes" %>
+
 <script>
   window.addEventListener("DOMContentLoaded", () => {
     const checkboxes = document.querySelectorAll('input[type="checkbox"]');
