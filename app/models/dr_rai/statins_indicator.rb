@@ -20,11 +20,11 @@ module DrRai
       "percent"
     end
 
-    def numerator_key
+    def numerator_key all: nil
       :patients_prescribed_statins
     end
 
-    def denominator_key
+    def denominator_key all: nil
       :eligible_patients
     end
 
