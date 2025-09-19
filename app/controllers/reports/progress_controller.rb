@@ -71,7 +71,7 @@ class Reports::ProgressController < AdminController
   def set_dr_rai_vars
     @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
 
-    option_keys = %i[ selected_quarter with_non_contactable ]
+    option_keys = %i[selected_quarter with_non_contactable]
     @dr_rai_options = params.select { |k, _| option_keys.include?(k) }
   end
 end

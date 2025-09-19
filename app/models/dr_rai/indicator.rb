@@ -64,10 +64,10 @@ class DrRai::Indicator < ApplicationRecord
   def numerators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      unless all.nil?
-        [t, data[numerator_key(all: all)]]
-      else
+      if all.nil?
         [t, data[numerator_key]]
+      else
+        [t, data[numerator_key(all: all)]]
       end
     end.to_h
   end
@@ -75,10 +75,10 @@ class DrRai::Indicator < ApplicationRecord
   def denominators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      unless all.nil?
-        [t, data[denominator_key(all: all)]]
-      else
+      if all.nil?
         [t, data[denominator_key]]
+      else
+        [t, data[denominator_key(all: all)]]
       end
     end.to_h
   end
