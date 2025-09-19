@@ -12,12 +12,16 @@ module DrRai
       "percent"
     end
 
-    def numerator_key
+    def numerator_key all: nil
+      return "patients_called" if all
+
       "contactable_patients_called"
     end
 
-    def denominator_key
-      "overdue_patients"
+    def denominator_key all: nil
+      return "overdue_patients" if all
+
+      "contactable_overdue_patients"
     end
 
     def unit
