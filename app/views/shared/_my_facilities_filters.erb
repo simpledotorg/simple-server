@@ -1,35 +1,48 @@
-<% if @selected_facility_group %>
-  <div class="dropdown show mb-8px mr-8px">
-    <a
-      id="dropdownMenuLink"
-      class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
-      href="#"
-      role="button"
-      data-toggle="dropdown"
-      data-display="static"
-      aria-haspopup="true"
-      aria-expanded="false"
-    >
-      <%= @selected_facility_group.name %>
-    </a>
-    <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
-      <form id="query-filters">
-        <% @facility_groups.each do |facility_group| %>
-          <button
-            class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group.name == facility_group.name %>"
-            value="<%= facility_group.slug %>"
-            name="facility_group"
-            type="submit"
-            form="query-filters"
-            onclick="$('#selected-facility-group').remove(); $('#selected-size').remove(); $('#selected-zone').remove();"
-          >
-            <%= facility_group.name %>
-          </button>
-        <% end %>
-      </form>
-    </div>
+<% if @selected_facility_group || can_view_all_districts_nav? %>
+<div class="dropdown show mb-8px mr-8px">
+  <a
+    id="dropdownMenuLink"
+    class="btn btn-sm btn-outline btn-secondary dropdown-toggle"
+    href="#"
+    role="button"
+    data-toggle="dropdown"
+    data-display="static"
+    aria-haspopup="true"
+    aria-expanded="false"
+  >
+    <%= facility_group_dropdown_title(
+      facility_group: @selected_facility_group,
+      overview: @all_districts_params
+    ) %>
+  </a>
+
+  <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
+    <form id="query-filters" action="<%= request.path %>" method="get">
+      <% if can_view_all_districts_nav? %>
+        <button
+          class="dropdown-item <%= "active" if @all_districts_params %>"
+          type="submit"
+          onclick="$('#selected-facility-group').val('all-districts'); $('#selected-size').remove(); $('#selected-zone').remove();"
+        >
+          All districts
+        </button>
+        <div class="dropdown-divider"></div>
+      <% end %>
+
+      <% @facility_groups.each do |facility_group| %>
+        <button
+          class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group&.slug == facility_group.slug %>"
+          type="submit"
+          onclick="$('#selected-facility-group').val('<%= facility_group.slug %>'); $('#selected-size').remove(); $('#selected-zone').remove();"
+        >
+          <%= facility_group.name %>
+        </button>
+      <% end %>
+    </form>
   </div>
+</div>
 <% end %>
+
 <div class="dropdown show mb-8px mr-8px">
   <a
     id="dropdownMenuLink"
@@ -75,6 +88,7 @@
     </form>
   </div>
 </div>
+
 <div class="dropdown show mb-8px mr-8px">
   <a
     id="dropdownMenuLink"
@@ -118,10 +132,11 @@
     <% end %>
   </div>
 </div>
+
 <input
   id="selected-facility-group"
   name="facility_group"
-  value="<%= @selected_facility_group.slug %>"
+  value="<%= @selected_facility_group&.slug || params[:facility_group] || "" %>"
   form="query-filters"
   hidden
 >
@@ -146,11 +161,18 @@
   form="query-filters"
   hidden
 >
+
 <% if current_admin.feature_enabled?(:my_facilities_csv) %>
   <% if action_name.to_sym.in?([:bp_controlled, :bp_not_controlled, :missed_visits]) %>
     <div class="mb-8px mr-8px d-flex flex-grow-1 justify-content-sm-end">
-      <%= link_to "<button class='btn btn-sm btn-outline-primary' >Download data</button>".html_safe, my_facilities_csv_maker_path(type: type, facility_group: @selected_facility_group, zone: @selected_zones, size: @selected_facility_sizes), { method: :get} %>
+      <%= link_to "<button class='btn btn-sm btn-outline-primary' >Download data</button>".html_safe,
+                  my_facilities_csv_maker_path(
+                    type: type,
+                    facility_group: @selected_facility_group,
+                    zone: @selected_zones,
+                    size: @selected_facility_sizes
+                  ),
+                  { method: :get } %>
     </div>
   <% end %>
 <% end %>
-
