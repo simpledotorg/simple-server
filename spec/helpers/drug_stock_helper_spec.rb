@@ -162,7 +162,7 @@ RSpec.describe DrugStockHelper, type: :helper do
   end
 
   describe "#aggregate_district_drug_stock" do
-    let(:district_reports) do
+    let(:reports_to_aggregate) do
       {
         double("district") => {
           report: {
@@ -179,7 +179,7 @@ RSpec.describe DrugStockHelper, type: :helper do
 
     it "aggregates totals, patient_days, and patient_count correctly" do
       allow(helper).to receive(:filter_params).and_return(true)
-      result = helper.aggregate_district_drug_stock(district_reports, first_drugs_by_category)
+      result = helper.aggregate_district_drug_stock(reports_to_aggregate, first_drugs_by_category)
       expect(result[:totals]["979467"]).to eq(3)
       expect(result[:patient_days]["hypertension_arb"]).to eq(4)
       expect(result[:patient_count]).to eq(10)
