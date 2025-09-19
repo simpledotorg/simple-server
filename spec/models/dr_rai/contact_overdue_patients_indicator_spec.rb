@@ -41,10 +41,10 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       indicator = DrRai::ContactOverduePatientsIndicator.new
 
       period = Period.new(type: :quarter, value: this_month.to_period.to_quarter_period.value.to_s)
-      facility_1_numerator = indicator.numerator(region, period)
-      facility_1_denominator = indicator.denominator(region, period)
+      facility_1_numerator = indicator.numerator(region, period, with_non_contactable: true)
+      facility_1_denominator = indicator.denominator(region, period, with_non_contactable: true)
 
-      expect(facility_1_numerator).to eq 4
+      expect(facility_1_numerator).to eq 6
       expect(facility_1_denominator).to eq 4
     end
   end
