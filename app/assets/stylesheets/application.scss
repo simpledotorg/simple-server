@@ -810,9 +810,11 @@ span.inactive {
 .grid-2-cols {
   grid-template-columns: 1fr 1fr;
 }
+
 .grid-3-cols {
   grid-template-columns: 1fr 1fr 1fr;
 }
+
 @media (max-width: 990px) {
   .grid-2-cols,
   .grid-3-cols {
@@ -838,6 +840,7 @@ span.inactive {
 .gap-16px {
   gap: 16px;
 }
+
 .min-w-0 {
   min-width: 0;
 }
