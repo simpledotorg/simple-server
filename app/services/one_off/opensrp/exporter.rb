@@ -9,19 +9,19 @@ module OneOff
 
         def initialize config_file
           data = YAML.load_file(config_file).deep_symbolize_keys.with_indifferent_access
-          time_boundaries = data["time_boundaries"]
+          time_boundaries = data[:time_boundaries]
 
           @report_start = if has_report_start?(data)
-            time_boundaries["report_start"]
+            time_boundaries[:report_start]
           else
             DateTime.parse("2020-01-01")
           end
           @report_end = if has_report_end?(data)
-            time_boundaries["report_end"]
+            time_boundaries[:report_end]
           else
             DateTime.now
           end
-          @facilities = data["facilities"]
+          @facilities = data[:facilities]
           @time_bound = using_time_boundaries? data
           @time_window = @report_start..@report_end
         end
@@ -31,15 +31,15 @@ module OneOff
         end
 
         def using_time_boundaries?(config)
-          config.has_key? "time_boundaries"
+          config.has_key? :time_boundaries
         end
 
         def has_report_start?(config)
-          using_time_boundaries?(config) && config["time_boundaries"].has_key?("report_start")
+          using_time_boundaries?(config) && config[:time_boundaries].has_key?(:report_start)
         end
 
         def has_report_end?(config)
-          using_time_boundaries?(config) && config["time_boundaries"].has_key?("report_end")
+          using_time_boundaries?(config) && config[:time_boundaries].has_key?(:report_end)
         end
       end
 
@@ -212,11 +212,38 @@ module OneOff
 
       def write_audit_trail patients
         CSV.open("audit_trail.csv", "w") do |csv|
-          csv << create_audit_record(facilities_to_export, patients.first).keys
+          csv << create_audit_record(@config.facilities, patients.first).keys
           patients.each do |patient|
-            csv << create_audit_record(facilities_to_export, patient).values
+            csv << create_audit_record(@config.facilities, patient).values
           end
         end
+      end
+
+      def create_audit_record(facilities, patient)
+        return {} if patient.nil?
+
+        {
+          patient_id: patient.id,
+          sri_lanka_personal_health_number: patient.business_identifiers.where(identifier_type: "sri_lanka_personal_health_number")&.first&.identifier,
+          patient_bp_passport_number: patient.business_identifiers.where(identifier_type: "simple_bp_passport")&.first&.identifier,
+          patient_name: patient.full_name,
+          patient_gender: patient.gender,
+          patient_date_of_birth: patient.date_of_birth || patient.age_updated_at - patient.age.years,
+          patient_address: patient.address ? patient.address.street_address : "",
+          patient_telephone: patient.phone_numbers.pluck(:number).join(";"),
+          patient_facility: facilities[patient.assigned_facility_id][:name],
+          patient_preferred_language: "Sinhala",
+          patient_active: patient.status_active?,
+          patient_deceased: patient.status_dead?,
+          condition: ("HTN" if patient.medical_history.hypertension_yes?) || ("DM" if patient.medical_history.diabetes_yes?),
+          blood_pressure: patient.latest_blood_pressure&.values_at(:systolic, :diastolic)&.join("/"),
+          bmi: nil,
+          appointment_date: patient.appointments.order(device_updated_at: :desc).where(status: "scheduled")&.first&.device_updated_at&.to_date&.iso8601,
+          medication: patient.prescription_drugs.order(device_updated_at: :desc).where(is_deleted: false)&.first&.values_at(:name, :dosage)&.join(" "),
+          glucose_measure: patient.latest_blood_sugar&.blood_sugar_value.then { |bs| "%.2f" % bs if bs },
+          glucose_measure_type: patient.latest_blood_sugar&.blood_sugar_type,
+          call_outcome: patient.appointments.order(device_updated_at: :desc)&.first&.call_results&.order(device_created_at: :desc)&.first&.result_type
+        }
       end
 
       private

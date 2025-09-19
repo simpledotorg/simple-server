@@ -79,7 +79,13 @@ describe OneOff::Opensrp::Exporter do
     let(:config_path) { Rails.root.join("tmp", "test_config.yml") }
     let(:output_path) { Rails.root.join("tmp", "test_output.json") }
 
-    let(:patient) { create(:patient, registration_facility: facility, recorded_at: Date.parse("2001-06-15")) }
+    let(:patient) do
+      create(:patient,
+        registration_facility: facility,
+        assigned_facility: facility,
+        recorded_at: Date.parse("2001-06-15"))
+    end
+
     %i[ blood_pressure blood_sugar prescription_drug appointment ].each do |association|
       the_date = Date.parse("2001-07-01")
       let(association) { create(association, patient: patient, recorded_at: the_date, created_at: the_date) }
@@ -128,6 +134,7 @@ describe OneOff::Opensrp::Exporter do
     end
 
     it "delegates to the correct sub-exporter" do
+      exporter = described_class.new(config_path.to_s, output_path.to_s)
       expect(OneOff::Opensrp::PatientExporter).to receive(:new).with(patient, a_kind_of(Hash))
       expect(OneOff::Opensrp::BloodPressureExporter).to receive(:new).with(blood_pressure, a_kind_of(Hash))
       expect(OneOff::Opensrp::BloodSugarExporter).to receive(:new).with(blood_sugar, a_kind_of(Hash))
@@ -156,7 +163,12 @@ describe OneOff::Opensrp::Exporter do
 
     context "with time filtering" do
       let(:considered) { patient }
-      let(:ignored) { create(:patient, registration_facility: facility, recorded_at: Date.parse("1999-09-09")) }
+      let(:ignored) do
+        create(:patient,
+          registration_facility: facility,
+          assigned_facility: facility,
+          recorded_at: Date.parse("1999-09-09"))
+      end
 
       it "does not select patients outside the time window" do
         expect(OneOff::Opensrp::PatientExporter).to receive(:new).with(considered, a_kind_of(Hash)).and_return(patient_exporter)
