@@ -15,7 +15,6 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
     }
   end
 
-
   before do
     stub_request = ActionDispatch::TestRequest.create
     stub_request.path = "/reports/regions/block/#{region}"
