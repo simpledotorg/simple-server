@@ -116,7 +116,7 @@ module OneOff
           patient
             .blood_pressures
             .where(recorded_at: @config.time_window)
-          .or(patient
+            .or(patient
             .blood_pressures
             .where(updated_at: @config.time_window))
         else
@@ -137,7 +137,7 @@ module OneOff
           patient
             .blood_sugars
             .where(recorded_at: @config.time_window)
-          .or(patient
+            .or(patient
             .blood_sugars
             .where(updated_at: @config.time_window))
         else
@@ -161,7 +161,7 @@ module OneOff
           patient
             .prescription_drugs
             .where(created_at: @config.time_window)
-          .or(patient
+            .or(patient
             .prescription_drugs
             .where(updated_at: @config.time_window))
         else
@@ -181,7 +181,7 @@ module OneOff
           patient
             .appointments
             .where(created_at: @config.time_window)
-          .or(patient
+            .or(patient
             .appointments
             .where(updated_at: @config.time_window))
         else

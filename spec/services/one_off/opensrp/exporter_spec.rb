@@ -86,7 +86,7 @@ describe OneOff::Opensrp::Exporter do
         recorded_at: Date.parse("2001-06-15"))
     end
 
-    %i[ blood_pressure blood_sugar prescription_drug appointment ].each do |association|
+    %i[blood_pressure blood_sugar prescription_drug appointment].each do |association|
       the_date = Date.parse("2001-07-01")
       let(association) { create(association, patient: patient, recorded_at: the_date, created_at: the_date) }
     end
