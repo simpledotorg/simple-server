@@ -813,6 +813,7 @@ span.inactive {
 .grid-3-cols {
   grid-template-columns: 1fr 1fr 1fr;
 }
+
 @media (max-width: 990px) {
   .grid-2-cols,
   .grid-3-cols {
