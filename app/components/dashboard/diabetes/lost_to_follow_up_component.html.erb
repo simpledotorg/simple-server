@@ -1,4 +1,4 @@
-<div id="diabetes-ltfu-trend"  class="d-lg-flex w-lg-50 pl-lg-2">
+<div id="diabetes-ltfu-trend"  class="d-lg-flex min-w-0">
   <%= render Dashboard::Card::GraphComponent.new(id: "lostToFollowUpTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(title: "Lost to follow-up", subtitle: t("diabetes_lost_to_follow_up_copy.reports_card_subtitle")) do |title| %>
       <%= title.tooltip({ "Numerator" => t("diabetes_lost_to_follow_up_copy.numerator"),
