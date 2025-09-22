@@ -16,6 +16,6 @@ module FlipperHelper
   end
 
   def can_view_all_districts_nav?
-    Flipper.enabled?("all_district_overview") && accessible_organization_facilities
+    Flipper.enabled?(:all_district_overview, current_admin) && accessible_organization_facilities
   end
 end
