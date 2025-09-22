@@ -473,6 +473,6 @@ class Reports::RegionsController < AdminController
     @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
 
     option_keys = %i[selected_quarter with_non_contactable]
-    @dr_rai_options = params.select { |k, _| option_keys.include?(k) }
+    @dr_rai_options = params.slice(*option_keys)
   end
 end
