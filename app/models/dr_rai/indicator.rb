@@ -22,7 +22,7 @@ class DrRai::Indicator < ApplicationRecord
 
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
-    Reports::RegionSummary.group_by(grouping: :quarter, data: data)[region.slug]
+    Reports::RegionSummaryAggregator.new(data).quarterly(with: :sum)[region.slug]
   end
 
   def period
