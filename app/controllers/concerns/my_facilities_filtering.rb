@@ -50,7 +50,11 @@ module MyFacilitiesFiltering
     end
 
     def set_selected_facility_group
-      @selected_facility_group = params[:facility_group] ? @facility_groups.find_by(slug: params[:facility_group]) : (@facility_groups&.first&.protocol_drugs&.where(stock_tracked: true)&.any? ? @facility_groups&.first : @facility_groups&.second)
+      @selected_facility_group = if params[:facility_group]
+        @facility_groups.find_by(slug: params[:facility_group])
+      else
+        (@facility_groups&.first&.protocol_drugs&.where(stock_tracked: true)&.any? ? @facility_groups&.first : @facility_groups&.second)
+      end
     end
 
     def set_selected_zones
