@@ -20,7 +20,7 @@
     <form id="query-filters" action="<%= request.path %>" method="get">
       <% if can_view_all_districts_nav? %>
         <button
-          class="dropdown-item <%= "active" if @all_districts_params %>"
+          class="dropdown-item <%= 'active' if district_handling( @all_districts_params) %>""
           type="submit"
           onclick="$('#selected-facility-group').val('all-districts'); $('#selected-size').remove(); $('#selected-zone').remove();"
         >
@@ -31,7 +31,7 @@
 
       <% @facility_groups.each do |facility_group| %>
         <button
-          class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group&.slug == facility_group.slug %>"
+          class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group&.slug == facility_group.slug && !district_handling( @all_districts_params) %>"
           type="submit"
           onclick="$('#selected-facility-group').val('<%= facility_group.slug %>'); $('#selected-size').remove(); $('#selected-zone').remove();"
         >

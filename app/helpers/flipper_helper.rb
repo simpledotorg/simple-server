@@ -8,11 +8,11 @@ module FlipperHelper
   end
 
   def all_district_overview_enabled?(all_districts_params)
-    all_district_overview_feature_enabled? && all_districts_params
+    all_district_overview_feature_enabled? && all_districts_params == "all-districts"
   end
 
   def access_all_districts_overview?(all_districts_params)
-    all_district_overview_enabled?(all_districts_params) && accessible_organization_facilities.present?
+    all_district_overview_enabled?(all_districts_params[:facility_group]) && accessible_organization_facilities.present?
   end
 
   def can_view_all_districts_nav?
