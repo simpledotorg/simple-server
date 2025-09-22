@@ -419,8 +419,8 @@
     })
 
     // show action delete overlay, takes several seconds to process
-    $('.dropdown-item.delete').on("click", (e) => {
-      $(".deleting-overlay").removeClass('d-none');  // show overlay
+    $('.dropdown-item.delete').on("click", function(e) {
+      $(this).closest('.action-card').find('.deleting-overlay').removeClass('d-none'); // show overlay only for this card
     });
   });
 </script>
