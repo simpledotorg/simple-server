@@ -108,7 +108,7 @@ module DrugStockHelper
   end
 
   def district_handling(all_districts_params)
-    all_districts_params.present? && all_districts_params[:facility_group] == "all-districts"
+    all_districts_params&.dig(:facility_group) == "all-districts" && all_district_overview_feature_enabled? && accessible_organization_facilities
   end
 
   def facility_group_dropdown_title(facility_group:, overview: false)
