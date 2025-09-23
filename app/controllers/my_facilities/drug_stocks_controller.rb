@@ -149,7 +149,8 @@ class MyFacilities::DrugStocksController < AdminController
   end
 
   def set_all_districts_params
-    @all_districts_params = params[:facility_group] == "all-districts"
+    @all_districts_params ||= {}
+    @all_districts_params[:facility_group] = params[:facility_group] || "all-districts"
   end
 
   def drug_stock_enabled_facilities
