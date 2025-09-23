@@ -59,12 +59,12 @@ en:
   bp_not_controlled_copy:
     reports_card_subtitle: "Hypertension patients with BP ≥140/90 at their last visit in the last 3 months"
     numerator: "Patients with BP ≥140/90 at their last visit in the last 3 months"
-  htn_cascade_copy: 
+  htn_cascade_copy:
     title: Hypertension treatment cascade
     reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled till %{period}"
   bs_below_200_copy:
-    reports_card_title: "Blood sugar < 200"
-    reports_card_title_fbs: "Blood sugar < 126"
+    reports_card_title: "Blood sugar <200"
+    reports_card_title_fbs: "Blood sugar <126"
     reports_card_title_dm: "Blood Sugar <200"
     reports_card_title_dm_bs: "Blood sugar <200"
     reports_card_title_dm_fbs: "Blood sugar controlled"
@@ -76,7 +76,7 @@ en:
     numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"
     numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
     report_card_lower_bar: "blood sugar <200"
-    report_card_lower_bar_fbs:  "FBS <126mg/dL or HbA1c <7%"
+    report_card_lower_bar_fbs: "FBS <126mg/dL or HbA1c <7%"
     reports_card_subtitle_dm: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar <200 at their last visit in the last 3 months."
     reports_card_subtitle_dm_fbs: "Diabetes patients at %{region_name} registered >3 months ago with FBS <126 mg/dL or HbA1c <7% at their last visit in the last 3 months."
     rbs_ppbs:
@@ -86,10 +86,9 @@ en:
     hba1c:
       numerator: "Patients with HbA1c <7.0 at their last visit in the last 3 months"
   bs_over_200_copy:
-    reports_card_title: "Blood sugar 200-299 or ≥300"
-    reports_card_title_fbs: "Blood sugar 126-199 or ≥200"
+    reports_card_title: "Blood sugar ≥200"
+    reports_card_title_fbs: "Blood sugar ≥126"
     reports_card_title_dm: "Blood sugar ≥200"
-    reports_card_title_dm_bs: "Blood sugar <200"
     reports_card_title_dm_fbs: "Blood sugar uncontrolled"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
     reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS ≥126mg/dL or HbA1c ≥7% at their last visit in the last 3 months"
@@ -122,7 +121,7 @@ en:
       numerator_dm_fbs: "Patients with FBS 126-199mg/dL or HbA1c 7%-8.9% at their last visit in the last 3 months"
       reports_card_subtitle: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar ≥300 at their last visit in the last 3 months."
       reports_card_subtitle_fbs: "Diabetes patients at %{region_name} registered >3 months ago with FBS ≥200mg/dL or HbA1c ≥9% at their last visit in the last 3 months."
-      report_card_lower_bar:  "blood sugar ≥300"
+      report_card_lower_bar: "blood sugar ≥300"
       summary: "patients with a blood sugar ≥300 from"
       summary_fbs: "patients with FBS ≥200mg/dL or HbA1c ≥9% from"
       rbs_ppbs:
@@ -208,12 +207,12 @@ en:
     reports_card_subtitle: "Hypertension patients that are overdue at the start of the month"
     numerator: "Patients that are overdue at the start of the month."
     denominator: "Hypertension patients assigned to %{region_name}. Deleted, dead and lost to follow-up patients are excluded."
-  overdue_patients_called: 
-      reports_card_subtitle: "Total overdue hypertension patients called during the month"
-      numerator: "Unique patients with at least one ‘Result of call...’ marked during the month."
-      numerator_note: "Note: This number includes patients that become overdue during the month and received a call, they may not be part of the denominator."
-      denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
-  overdue_patients_call_activity: 
+  overdue_patients_called:
+    reports_card_subtitle: "Total overdue hypertension patients called during the month"
+    numerator: "Unique patients with at least one ‘Result of call...’ marked during the month."
+    numerator_note: "Note: This number includes patients that become overdue during the month and received a call, they may not be part of the denominator."
+    denominator: "Hypertension patients assigned to %{region_name} that are overdue at the start of the month. Deleted, dead and lost to follow-up are excluded."
+  overdue_patients_call_activity:
     reports_card_subtitle: "The number of overdue hypertension patients called during the month"
     patients_called: "Unique patients with at least one ‘Result of call...’ marked during the month."
     percent_called_numerator: "Unique patients with at least one ‘Result of call...’ marked by user during the month."
@@ -334,10 +333,10 @@ en:
       import_description: |
         # API spec for %{app_brand_name} Server
         This API spec documents the Import API for partner organizations that want to send their data to %{app_brand_name}. The API payloads are based on modified versions of [FHIR](http://hl7.org/fhir/R4/) specification resources.
-        
+
         ## Authorization
         Authorization is done via OAuth 2.0, using the [Client Credential flow](https://www.oauth.com/oauth2-servers/access-tokens/client-credentials/). At the end of this flow, clients will receive an access token which is attached to all the requests to import data.
-        
+
         We recommend using popular open source [OAuth client libraries](https://oauth.net/code/) that will perform the flow in order to obtain the access token.
 
       description: |
