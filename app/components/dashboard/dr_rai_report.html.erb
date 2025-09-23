@@ -21,7 +21,8 @@
               <div class="dropdown-menu dropdown-menu-right">
                 <%# <a class="dropdown-item edit" href="#">Edit</a> %>
                 <%# <div class="dropdown-divider"></div> %>
-                <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
+                <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete", data: { action: "click->dr-rai#delete" } %>
+
               </div>
             </div>
           <% end %>
@@ -44,6 +45,10 @@
                 <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
               </div>
             </div>
+          </div>
+          <div class="deleting-overlay d-none">
+              <i class=" fa-solid fa-spinner-third fa-spin fa-fast-spin"></i>
+              <p >Removing action, this page will refresh shortly...</p>
           </div>
         </div>
       <% end %>
@@ -410,7 +415,14 @@
 
       // Close the offcanvas
       $('.bs-canvas-close').trigger('click')
+
     })
+
+    // show action delete overlay, takes several seconds to process
+    $('.dropdown-item.delete').on("click", (e) => {
+      $(".deleting-overlay").removeClass('d-none');  // show overlay
+    });
   });
 </script>
+
 <% end %>
