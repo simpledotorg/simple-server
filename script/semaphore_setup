@@ -8,7 +8,7 @@ source ~/.toolbox/toolbox
 cache clear
 
 export DD_PROFILING_NO_EXTENSION=true
-sem-version ruby 2.7.4
+sem-version ruby 2.7.8
 sem-service start postgres 14
 sem-service start redis 5
 
