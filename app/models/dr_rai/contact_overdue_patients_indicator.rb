@@ -37,7 +37,7 @@ module DrRai
     end
 
     def is_supported?(region)
-      true
+      !datasource(region).empty?
     end
   end
 end
