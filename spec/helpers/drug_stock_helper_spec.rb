@@ -146,9 +146,20 @@ RSpec.describe DrugStockHelper, type: :helper do
       before { allow(helper).to receive(:can_view_all_districts_nav?).and_return(true) }
 
       it "returns correct title based on overview and presence of group" do
-        expect(helper.facility_group_dropdown_title(facility_group: group, overview: true)).to eq("All districts")
-        expect(helper.facility_group_dropdown_title(facility_group: group, overview: false)).to eq("Allahbad")
-        expect(helper.facility_group_dropdown_title(facility_group: nil, overview: false)).to eq("Select Districts")
+        expect(helper.facility_group_dropdown_title(
+          facility_group: group,
+          overview: {facility_group: "all-districts"}
+        )).to eq("All districts")
+
+        expect(helper.facility_group_dropdown_title(
+          facility_group: group,
+          overview: {facility_group: "some-other"}
+        )).to eq("Allahbad")
+
+        expect(helper.facility_group_dropdown_title(
+          facility_group: nil,
+          overview: {facility_group: "some-other"}
+        )).to eq("Select Districts")
       end
     end
 

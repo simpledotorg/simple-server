@@ -22,7 +22,7 @@ class DrRai::Indicator < ApplicationRecord
 
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
-    Reports::RegionSummary.group_by(grouping: :quarter, data: data)[region.slug]
+    Reports::RegionSummaryAggregator.new(data).quarterly(with: :rollup)[region.slug]
   end
 
   def period
@@ -51,27 +51,27 @@ class DrRai::Indicator < ApplicationRecord
     DrRai::Target::TYPES[target_type_frontend]
   end
 
-  def numerator(region, the_period = period)
+  def numerator(region, the_period = period, with_non_contactable: nil)
     0 unless is_supported?(region)
-    numerators(region)[the_period]
+    numerators(region, all: with_non_contactable)[the_period]
   end
 
-  def denominator(region, the_period = period)
+  def denominator(region, the_period = period, with_non_contactable: nil)
     0 unless is_supported?(region)
-    denominators(region)[the_period]
+    denominators(region, all: with_non_contactable)[the_period]
   end
 
-  def numerators(region)
+  def numerators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      [t, data[numerator_key]]
+      [t, data[numerator_key(all: all)]]
     end.to_h
   end
 
-  def denominators(region)
+  def denominators(region, all: nil)
     [] unless is_supported?(region)
     datasource(region).map do |t, data|
-      [t, data[denominator_key]]
+      [t, data[denominator_key(all: all)]]
     end.to_h
   end
 

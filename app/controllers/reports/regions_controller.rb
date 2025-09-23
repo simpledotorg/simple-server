@@ -4,7 +4,7 @@ class Reports::RegionsController < AdminController
   include RegionSearch
 
   before_action :set_period, except: [:index, :fastindex]
-  before_action :set_dr_rai_periods, only: [:show, :diabetes]
+  before_action :set_dr_rai_vars, only: [:show, :diabetes]
   before_action :set_page, only: [:show, :details, :diabetes]
   before_action :set_per_page, only: [:show, :details, :diabetes]
   before_action :find_region, except: [:index, :fastindex]
@@ -469,7 +469,10 @@ class Reports::RegionsController < AdminController
     ((numerator.to_f / denominator) * 100).round(2)
   end
 
-  def set_dr_rai_periods
+  def set_dr_rai_vars
     @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
+
+    option_keys = %i[selected_quarter with_non_contactable]
+    @dr_rai_options = params.slice(*option_keys)
   end
 end

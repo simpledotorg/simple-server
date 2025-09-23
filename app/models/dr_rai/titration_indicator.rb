@@ -16,11 +16,11 @@ module DrRai
       "percent"
     end
 
-    def numerator_key
+    def numerator_key all: nil
       :titrated_count
     end
 
-    def denominator_key
+    def denominator_key all: nil
       :follow_up_count
     end
 

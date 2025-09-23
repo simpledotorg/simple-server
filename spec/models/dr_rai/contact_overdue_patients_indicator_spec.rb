@@ -1,6 +1,32 @@
 require "rails_helper"
 
 RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
+  describe "#is_supported?" do
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+    let(:indicator) { DrRai::ContactOverduePatientsIndicator.new }
+
+    context "when region has data" do
+      before do
+        allow(indicator).to receive(:datasource).with(region).and_return({"some" => "data"})
+      end
+
+      it "works" do
+        expect(indicator.is_supported?(region)).to be_truthy
+      end
+    end
+
+    context "when region has no data" do
+      before do
+        allow(indicator).to receive(:datasource).with(region).and_return({})
+      end
+
+      it "is unsupported" do
+        expect(indicator.is_supported?(region)).to be_falsey
+      end
+    end
+  end
+
   describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }
@@ -41,10 +67,10 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       indicator = DrRai::ContactOverduePatientsIndicator.new
 
       period = Period.new(type: :quarter, value: this_month.to_period.to_quarter_period.value.to_s)
-      facility_1_numerator = indicator.numerator(region, period)
-      facility_1_denominator = indicator.denominator(region, period)
+      facility_1_numerator = indicator.numerator(region, period, with_non_contactable: true)
+      facility_1_denominator = indicator.denominator(region, period, with_non_contactable: true)
 
-      expect(facility_1_numerator).to eq 4
+      expect(facility_1_numerator).to eq 6
       expect(facility_1_denominator).to eq 4
     end
   end
