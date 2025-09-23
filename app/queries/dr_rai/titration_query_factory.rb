@@ -1,48 +1,28 @@
 module DrRai
   class TitrationQueryFactory < QueryFactory
+    INSERTER_SQL = "insert into public.dr_rai_data_titrations (month_date, facility_name, follow_up_count, titrated_count, titration_rate)".freeze
+
+    CONFLICT_HANDLER_SQL = <<~SQL
+      on conflict (month_date, facility_name) do
+        update
+          set
+            follow_up_count = excluded.follow_up_count,
+            titrated_count = excluded.titrated_count,
+            titration_rate = excluded.titration_rate,
+            updated_at = now(); -- ...for good bookkeeping
+    SQL
+
     def inserter
-      base_query do
-        "insert into public.dr_rai_data_titrations (month_date, facility_name, follow_up_count, titrated_count, titration_rate)"
-      end
+      base_query(INSERTER_SQL, "") { |enhancement| enhancement }
     end
 
     def updater
-      <<-SQL
-      merge into public.dr_rai_data_titrations as existing
-      using (#{base_query { "" }}) as incoming
-      on existing.month_date = incoming.month_date and existing.facility_name = incoming.facility_name
-      when not matched
-        insert (
-          month_date,
-          facility_name,
-          follow_up_count,
-          titrated_count,
-          titration_rate,
-          created_at,
-          updated_at
-        )
-        values (
-          incoming.month_date,
-          incoming.facility_name,
-          incoming.follow_up_count,
-          incoming.titrated_count,
-          incoming.titration_rate,
-          now(), -- for created_at
-          now(), -- for updated_at
-        )
-      when matched and existing.titration_rate != incoming.titration_rate
-        update
-          set
-            follow_up_count = incoming.follow_up_count,
-            titrated_count = incoming.titrated_count,
-            titration_rate = incoming.titration_rate,
-            updated_at = now(); -- ...for good bookkeeping
-      SQL
+      base_query(INSERTER_SQL, CONFLICT_HANDLER_SQL) { |enhancement| enhancement }
     end
 
     private
 
-    def base_query
+    def base_query inserter, conflict_handler
       <<~SQL
         with facility_titrations as (
           select
@@ -88,12 +68,13 @@ module DrRai
           group by month_date
         )
 
-        #{yield}
+        #{yield inserter}
         (
           select * from selected_facility_titrations
           union all
           select * from averages
-        );
+        )
+        #{yield conflict_handler};
       SQL
     end
   end
