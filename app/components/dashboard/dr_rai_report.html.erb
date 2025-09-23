@@ -45,6 +45,10 @@
               </div>
             </div>
           </div>
+          <div class="deleting-overlay d-none">
+              <i class=" fa-solid fa-spinner-third fa-spin fa-fast-spin"></i>
+              <p >Removing action, this page will refresh shortly...</p>
+          </div>
         </div>
       <% end %>
     <% else %>
@@ -410,7 +414,14 @@
 
       // Close the offcanvas
       $('.bs-canvas-close').trigger('click')
+
     })
+
+    // show action delete overlay, takes several seconds to process
+    $('.dropdown-item.delete').on("click", function(e) {
+      $(this).closest('.action-card').find('.deleting-overlay').removeClass('d-none'); // show overlay only for this card
+    });
   });
 </script>
+
 <% end %>
