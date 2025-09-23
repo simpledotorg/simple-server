@@ -1,6 +1,32 @@
 require "rails_helper"
 
 RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
+  describe "#is_supported?" do
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+    let(:indicator) { DrRai::ContactOverduePatientsIndicator.new }
+
+    context "when region has data" do
+      before do
+        allow(indicator).to receive(:datasource).with(region).and_return({"some" => "data"})
+      end
+
+      it "works" do
+        expect(indicator.is_supported?(region)).to be_truthy
+      end
+    end
+
+    context "when region has no data" do
+      before do
+        allow(indicator).to receive(:datasource).with(region).and_return({})
+      end
+
+      it "is unsupported" do
+        expect(indicator.is_supported?(region)).to be_falsey
+      end
+    end
+  end
+
   describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }
