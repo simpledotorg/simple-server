@@ -24,6 +24,7 @@ RSpec.describe "my_facilities/drug_stocks/drug_stocks.html.erb", type: :view do
   end
 
   before do
+    assign(:all_districts_params, {facility_group: "all-districts"})
     assign(:current_admin, current_admin)
     assign(:for_end_of_month_display, "Aug-2025")
     assign(:for_end_of_month, Date.new(2025, 8, 31))

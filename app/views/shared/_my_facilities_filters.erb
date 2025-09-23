@@ -19,25 +19,27 @@
   <div class="dropdown-menu mh-350px oy-scroll" aria-labelledby="dropdownMenuLink">
     <form id="query-filters" action="<%= request.path %>" method="get">
       <% if can_view_all_districts_nav? %>
-        <button
-          class="dropdown-item <%= "active" if @all_districts_params %>"
-          type="submit"
-          onclick="$('#selected-facility-group').val('all-districts'); $('#selected-size').remove(); $('#selected-zone').remove();"
-        >
-          All districts
-        </button>
-        <div class="dropdown-divider"></div>
-      <% end %>
+      <button
+        class="dropdown-item <%= 'active' if district_handling(@all_districts_params) %>"
+        type="submit"
+        onclick="$('#selected-facility-group').val('all-districts'); $('#selected-size').remove(); $('#selected-zone').remove();"
+      >
+        All districts
+      </button>
+      <div class="dropdown-divider"></div>
+    <% end %>
 
-      <% @facility_groups.each do |facility_group| %>
-        <button
-          class="dropdown-item query-filter-zone <%= "active" if @selected_facility_group&.slug == facility_group.slug %>"
-          type="submit"
-          onclick="$('#selected-facility-group').val('<%= facility_group.slug %>'); $('#selected-size').remove(); $('#selected-zone').remove();"
-        >
-          <%= facility_group.name %>
-        </button>
-      <% end %>
+    <% all_district_selected = district_handling(@all_districts_params) %>
+
+    <% @facility_groups.each do |facility_group| %>
+      <button
+        class="dropdown-item query-filter-zone <%= 'active' if !all_district_selected && @selected_facility_group&.slug == facility_group.slug %>"
+        type="submit"
+        onclick="$('#selected-facility-group').val('<%= facility_group.slug %>'); $('#selected-size').remove(); $('#selected-zone').remove();"
+      >
+        <%= facility_group.name %>
+      </button>
+    <% end %>
     </form>
   </div>
 </div>
