@@ -7082,6 +7082,13 @@ CREATE UNIQUE INDEX index_dr_rai_data_statins_on_month_date_and_aggregate_root O
 
 
 --
+-- Name: index_dr_rai_data_titrations_on_month_date_and_facility_name; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dr_rai_data_titrations_on_month_date_and_facility_name ON public.dr_rai_data_titrations USING btree (month_date, facility_name);
+
+
+--
 -- Name: index_dr_rai_targets_on_dr_rai_indicators_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8778,6 +8785,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250813064810'),
 ('20250814092225'),
 ('20250827134615'),
-('20250828111954');
+('20250828111954'),
+('20250923223358');
 
 

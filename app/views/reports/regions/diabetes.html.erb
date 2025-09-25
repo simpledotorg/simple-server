@@ -5,7 +5,7 @@
 <%= render "header" %>
 
 <% if Flipper.enabled?(:dr_rai_reports, current_admin) && @region.facility_region? %>
-  <%= render Dashboard::DrRaiReport.new(@dr_rai_periods, @region.slug, params[:selected_quarter]) %>
+  <%= render Dashboard::DrRaiReport.new(@dr_rai_periods, @region.slug, @dr_rai_options) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px"></h4>

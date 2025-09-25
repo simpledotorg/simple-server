@@ -6,7 +6,8 @@
     <div class="actions-periods-navigation">
       <% periods.each do |period| %>
         <%= link_to human_readable(period), "#{request.path}?#{request.query_parameters.merge(selected_quarter: period.value.to_s).to_param}", class: classes_for_period(period) %>
-      <% end %>
+      <% end %>        
+      <p id="period-nav-loading" class="loading d-none"><i class="fa-solid fa-spinner-third fa-spin fa-fast-spin mr-8px"></i>Loading</p>
     </div>
   <% end %>
   <div class="actions-block<%= ' empty' unless action_plans.present? %>">
@@ -44,6 +45,10 @@
                 <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
               </div>
             </div>
+          </div>
+          <div class="deleting-overlay d-none">
+              <i class=" fa-solid fa-spinner-third fa-spin fa-fast-spin"></i>
+              <p >Removing action, this page will refresh shortly...</p>
           </div>
         </div>
       <% end %>
@@ -410,7 +415,19 @@
 
       // Close the offcanvas
       $('.bs-canvas-close').trigger('click')
+
     })
+
+    // show action delete overlay, takes several seconds to process
+    $('.dropdown-item.delete').on("click", function(e) {
+      $(this).closest('.action-card').find('.deleting-overlay').removeClass('d-none'); // show overlay only for this card
+    });
+
+    // show loading on action plan period navigation
+    $('.period-button').on("click", function(e) {
+      $('#period-nav-loading').removeClass('d-none');
+    });
   });
 </script>
+
 <% end %>
