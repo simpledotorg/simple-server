@@ -583,6 +583,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
 }
 
 .deleting-overlay {
+  display: none; // flex element
   position: absolute;
   top: 0;
   left: 0;
@@ -592,7 +593,6 @@ $font-condensed: "Roboto Condensed", sans-serif;
   color: white;
   background: rgba(77, 78, 54, 0.65);
   border-radius: 4px;
-  display: flex;
   justify-content: center;
   align-items: center;
   opacity: 1;
