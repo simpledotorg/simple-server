@@ -31,25 +31,52 @@ RSpec.describe Reports::View, {type: :model, reporting_spec: true} do
     end
   end
 
-  describe ".get_refresh_months" do
-    it "returns current and previous month when current day is odd" do
-      travel_to Date.new(2023, 6, 15) do
-        expected_months = [Date.new(2023, 6, 1), Date.new(2023, 5, 1)]
-        expect(described_class.get_refresh_months).to eq(expected_months)
-      end
+  describe ".fetch_refresh_month_for_date" do
+    it "returns current and previous month when date is odd" do
+      date_of_refresh = Date.new(2023, 6, 15)
+      expect(described_class.fetch_refresh_month_for_date(date_of_refresh)).to eq(Date.new(2023, 5, 1))
     end
 
-    it "returns current month and month offset when current day is even" do
-      travel_to Date.new(2023, 6, 16) do
-        expected_months = [Date.new(2023, 6, 1), Date.new(2022, 9, 1)]
-        expect(described_class.get_refresh_months).to eq(expected_months)
-      end
+    it "returns current month and month offset when date is even" do
+      date_of_refresh = Date.new(2023, 6, 16)
+      expect(described_class.fetch_refresh_month_for_date(date_of_refresh)).to eq(Date.new(2022, 9, 1))
     end
 
     it "handles month transitions correctly for odd days" do
-      travel_to Date.new(2023, 1, 1) do
-        expected_months = [Date.new(2023, 1, 1), Date.new(2022, 12, 1)]
-        expect(described_class.get_refresh_months).to eq(expected_months)
+      date_of_refresh = Date.new(2023, 1, 1)
+      expect(described_class.fetch_refresh_month_for_date(date_of_refresh)).to eq(Date.new(2022, 12, 1))
+    end
+  end
+
+  describe ".get_refresh_months" do
+    context "when refresh frequency is not set" do
+      before { ENV.delete("REPORTING_REFRESH_FREQUENCY") }
+
+      it "defaults to daily logic" do
+        travel_to(Date.new(2025, 9, 24)) do
+          expect(described_class.get_refresh_months).to eq([Date.new(2025, 9, 1), Date.new(2024, 8, 1)])
+        end
+      end
+    end
+
+    context "when refresh frequency is set to weekly" do
+      before { ENV["REPORTING_REFRESH_FREQUENCY"] = "weekly" }
+
+      it "returns the correct refresh months" do
+        travel_to(Date.new(2025, 9, 24)) do
+          expected_months = [Date.new(2025, 8, 1), Date.new(2024, 11, 1), Date.new(2024, 10, 1), Date.new(2024, 9, 1), Date.new(2024, 8, 1), Date.new(2025, 9, 1)]
+          expect(described_class.get_refresh_months).to match_array(expected_months)
+        end
+      end
+    end
+
+    context "when refresh frequency is set to something else" do
+      before { ENV["REPORTING_REFRESH_FREQUENCY"] = "something else" }
+
+      it "defaults to daily logic" do
+        travel_to(Date.new(2025, 9, 24)) do
+          expect(described_class.get_refresh_months).to eq([Date.new(2025, 9, 1), Date.new(2024, 8, 1)])
+        end
       end
     end
   end
