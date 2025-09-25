@@ -39,7 +39,7 @@ module Reports
       if ENV["REPORTING_REFRESH_FREQUENCY"]&.downcase == "weekly"
         start_date = current_date - 7.days
         refresh_months = []
-        (start_date..current_date).each{|refresh_date| refresh_months << fetch_refresh_month_for_date(refresh_date)}
+        (start_date..current_date).each { |refresh_date| refresh_months << fetch_refresh_month_for_date(refresh_date) }
         refresh_months << current_date.beginning_of_month
         refresh_months.uniq
       else
