@@ -36,10 +36,22 @@ module Reports
 
     def self.get_refresh_months
       current_date = Date.today
-      current_day = current_date.day
-      current_month = current_date.beginning_of_month
-      month_offset = (current_day / 2) + 1
-      current_day.odd? ? [current_month, current_month.prev_month] : [current_month, current_month - month_offset.month]
+      if ENV["REPORTING_REFRESH_FREQUENCY"]&.downcase == "weekly"
+        start_date = current_date - 7.days
+        refresh_months = []
+        (start_date..current_date).each{|refresh_date| refresh_months << fetch_refresh_month_for_date(refresh_date)}
+        refresh_months << current_date.beginning_of_month
+        refresh_months.uniq
+      else
+        [current_date.beginning_of_month, fetch_refresh_month_for_date(current_date)].uniq
+      end
+    end
+
+    def self.fetch_refresh_month_for_date(date_of_refresh)
+      month_of_refresh = date_of_refresh.beginning_of_month
+      day_of_month = date_of_refresh.day
+      month_offset = (day_of_month / 2) + 1
+      day_of_month.odd? ? month_of_refresh.prev_month : (month_of_refresh - month_offset.month)
     end
   end
 end
