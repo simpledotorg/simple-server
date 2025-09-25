@@ -33,7 +33,7 @@ describe Dashboard::Diabetes::BsOver200GraphComponent, type: :component do
 
     it "has the updated labels" do
       render_inline(bs_over200_graph_component)
-      expect(page.find(:css, "h3").text.strip).to eq("Blood sugar 126-199 or ≥200")
+      expect(page.find(:css, "h3").text.strip).to eq("Blood sugar ≥126")
       expect(page.find("#bsOver200PatientsTrend").find(:xpath, "div/p").text.strip).to eq("Diabetes patients in Test District with FBS ≥126mg/dL or HbA1c ≥7% at their last visit in the last 3 months")
       expect(Capybara.string(page.find("#bsOver200PatientsTrend i")[:title]).all("p")[0].text).to eq("Blood sugar 126-199 numerator: Patients with FBS 126-199mg/dL, or HbA1c 7%-8.9% at their last visit in the last 3 months")
       expect(Capybara.string(page.find("#bsOver200PatientsTrend i")[:title]).all("p")[1].text).to eq("Blood sugar ≥200 numerator: Patients with FBS ≥200mg/dL, or HbA1c ≥9% at their last visit in the last 3 months")
