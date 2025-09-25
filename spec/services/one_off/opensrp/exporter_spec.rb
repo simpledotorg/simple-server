@@ -134,6 +134,7 @@ describe OneOff::Opensrp::Exporter do
     end
 
     context "with time filtering" do
+      let(:exporter) { described_class.new(config_path.to_s, output_path.to_s) }
       let(:considered) { patient }
       let(:ignored) do
         create(:patient,
