@@ -99,7 +99,6 @@ describe OneOff::Opensrp::Exporter do
     let(:medical_history_exporter) { instance_double(OneOff::Opensrp::MedicalHistoryExporter, export: "mh_res", export_encounter: "mh_enc") }
     let(:encounter_generator) { instance_double(OneOff::Opensrp::EncounterGenerator, generate: "encounter_bundle") }
 
-
     before do
       config_content = <<-YAML
       time_boundaries:
