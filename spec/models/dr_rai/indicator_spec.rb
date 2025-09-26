@@ -10,6 +10,10 @@ RSpec.describe DrRai::Indicator, type: :model do
     end
   end
 
+  describe "#quarterlies" do
+
+  end
+
   describe "#has_action_plans?" do
     around do |xmpl|
       Timecop.freeze("June 22 2022 22:22 GMT") { xmpl.run }
