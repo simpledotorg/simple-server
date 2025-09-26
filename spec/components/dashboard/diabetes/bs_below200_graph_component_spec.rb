@@ -20,7 +20,7 @@ describe Dashboard::Diabetes::BsBelow200GraphComponent, type: :component do
 
   it "has the required labels" do
     render_inline(bs_below200_graph_component)
-    expect(page.find(:css, "h3").text.strip).to eq("Blood sugar < 200")
+    expect(page.find(:css, "h3").text.strip).to eq("Blood sugar <200")
     expect(page.find("#bsBelow200PatientsTrend").find(:xpath, "div/p").text.strip).to eq("Diabetes patients in Test District with blood sugar <200 at their last visit in the last 3 months")
     expect(Capybara.string(page.find("#bsBelow200PatientsTrend i")[:title]).first("p").text).to eq("Numerator: Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months")
     expect(page.find("#bsBelow200PatientsTrend").find(:xpath, "div/div[2]/div/p[1]").text).to match(/patients with a blood sugar <200 from/)
@@ -31,7 +31,7 @@ describe Dashboard::Diabetes::BsBelow200GraphComponent, type: :component do
 
     it "has the updated labels" do
       render_inline(bs_below200_graph_component)
-      expect(page.find(:css, "h3").text.strip).to eq("Blood sugar < 126")
+      expect(page.find(:css, "h3").text.strip).to eq("Blood sugar <126")
       expect(page.find("#bsBelow200PatientsTrend").find(:xpath, "div/p").text.strip).to eq("Diabetes patients in Test District with FBS <126 mg/dL or HbA1c <7% at their last visit in the last 3 months")
       expect(Capybara.string(page.find("#bsBelow200PatientsTrend i")[:title]).first("p").text).to eq("Numerator: Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months")
       expect(page.find("#bsBelow200PatientsTrend").find(:xpath, "div/div[2]/div/p[1]").text).to match(/patients with a blood sugar <126mg\/dL from/)
