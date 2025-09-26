@@ -102,9 +102,9 @@ module OneOff
 
         relation = Patient.where(assigned_facility_id: from_facilities)
         if @config.patients.empty?
-          return relation
+          relation
         else
-          return relation.where(id: @config.patients)
+          relation.where(id: @config.patients)
         end
       end
 
