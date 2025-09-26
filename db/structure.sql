@@ -245,7 +245,7 @@ PARTITION BY LIST (month_date);
 -- Name: reporting_patient_states_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
 --
 
-CREATE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
+CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
     LANGUAGE plpgsql
     AS $_$
       BEGIN
@@ -424,13 +424,13 @@ CREATE FUNCTION simple_reporting.reporting_patient_states_table_function(date) R
           )
 
         LEFT OUTER JOIN public.reporting_patient_blood_pressures bps
-          ON p.id = bps.patient_id AND cal.month = bps.month AND cal.year = bps.year
+          ON p.id = bps.patient_id AND cal.month_date = bps.month_date
 
         LEFT OUTER JOIN public.reporting_patient_blood_sugars bss
-          ON p.id = bss.patient_id AND cal.month = bss.month AND cal.year = bss.year
+          ON p.id = bss.patient_id AND cal.month_date = bss.month_date
 
         LEFT OUTER JOIN public.reporting_patient_visits visits
-          ON p.id = visits.patient_id AND cal.month = visits.month AND cal.year = visits.year
+          ON p.id = visits.patient_id AND cal.month_date = visits.month_date
 
         LEFT OUTER JOIN public.medical_histories mh
           ON p.id = mh.patient_id AND mh.deleted_at IS NULL
@@ -8144,6 +8144,12 @@ CREATE INDEX reporting_patient_states_titrated ON public.reporting_patient_state
 
 CREATE UNIQUE INDEX reporting_prescriptions_patient_month_date ON public.reporting_prescriptions USING btree (patient_id, month_date);
 
+--
+-- Name: reporting_prescriptions_month_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX reporting_prescriptions_month_date ON public.reporting_prescriptions USING btree (month_date);
+
 
 --
 -- Name: user_authentications_master_users_authenticatable_uniq_index; Type: INDEX; Schema: public; Owner: -
@@ -8786,6 +8792,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250814092225'),
 ('20250827134615'),
 ('20250828111954'),
-('20250923223358');
-
+('20250923223358'),
+('20250924101441'),
+('20250924102156');
 
