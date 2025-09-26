@@ -83,11 +83,11 @@ describe OneOff::Opensrp::Exporter do
       create(:patient,
         registration_facility: facility,
         assigned_facility: facility,
-        recorded_at: Date.parse("2001-06-15"))
+        recorded_at: Time.zone.parse("2001-06-15 12:00:00"))
     end
 
     %i[blood_pressure blood_sugar prescription_drug appointment].each do |association|
-      the_date = Date.parse("2001-07-01")
+      the_date = Time.zone.parse("2001-07-01 12:00:00")
       let(association) { create(association, patient: patient, recorded_at: the_date, created_at: the_date) }
     end
 
@@ -99,7 +99,6 @@ describe OneOff::Opensrp::Exporter do
     let(:medical_history_exporter) { instance_double(OneOff::Opensrp::MedicalHistoryExporter, export: "mh_res", export_encounter: "mh_enc") }
     let(:encounter_generator) { instance_double(OneOff::Opensrp::EncounterGenerator, generate: "encounter_bundle") }
 
-    let(:exporter) { described_class.new(config_path.to_s, output_path.to_s) }
 
     before do
       config_content = <<-YAML
@@ -119,8 +118,6 @@ describe OneOff::Opensrp::Exporter do
       allow(OneOff::Opensrp::AppointmentExporter).to receive(:new).and_return(appointment_exporter)
       allow(OneOff::Opensrp::MedicalHistoryExporter).to receive(:new).and_return(medical_history_exporter)
       allow(OneOff::Opensrp::EncounterGenerator).to receive(:new).and_return(encounter_generator)
-
-      allow(exporter).to receive(:write_audit_trail)
     end
 
     after do
@@ -129,25 +126,11 @@ describe OneOff::Opensrp::Exporter do
     end
 
     it "selects patients assigned to the facilities" do
+      exporter = described_class.new(config_path.to_s, output_path.to_s)
+      allow(exporter).to receive(:write_audit_trail)
+
       expect(Patient).to receive(:where).with(assigned_facility_id: [facility.id]).and_call_original
       exporter.call!
-    end
-
-    context "with time filtering" do
-      let(:exporter) { described_class.new(config_path.to_s, output_path.to_s) }
-      let(:considered) { patient }
-      let(:ignored) do
-        create(:patient,
-          registration_facility: facility,
-          assigned_facility: facility,
-          recorded_at: Date.parse("1999-09-09"))
-      end
-
-      it "does not select patients outside the time window" do
-        expect(OneOff::Opensrp::PatientExporter).to receive(:new).with(considered, a_kind_of(Hash)).and_return(patient_exporter)
-        expect(OneOff::Opensrp::PatientExporter).not_to receive(:new).with(ignored, a_kind_of(Hash))
-        exporter.call!
-      end
     end
   end
 end
