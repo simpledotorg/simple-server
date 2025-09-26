@@ -5,7 +5,7 @@ module OneOff
     # Base class which acts as an entry point for the rake task.
     class Exporter
       class Config
-        attr_reader :report_start, :report_end, :facilities, :time_window
+        attr_reader :report_start, :report_end, :facilities, :time_window, :patients
 
         def initialize config_file
           data = YAML.load_file(config_file).deep_symbolize_keys.with_indifferent_access
@@ -24,6 +24,7 @@ module OneOff
           @facilities = data[:facilities]
           @time_bound = using_time_boundaries? data
           @time_window = @report_start..@report_end
+          @patients = get_patients data
         end
 
         def time_bound?
@@ -40,6 +41,10 @@ module OneOff
 
         def has_report_end?(config)
           using_time_boundaries?(config) && config[:time_boundaries].has_key?(:report_end)
+        end
+
+        def get_patients config
+          config[:patients] || []
         end
       end
 
@@ -95,7 +100,12 @@ module OneOff
       def select_patients from_facilities: []
         raise "No facility selected for export" if from_facilities.empty?
 
-        Patient.where(assigned_facility_id: from_facilities)
+        relation = Patient.where(assigned_facility_id: from_facilities)
+        if @config.patients.empty?
+          return relation
+        else
+          return relation.where(id: @config.patients)
+        end
       end
 
       def export_patient_details patient

@@ -17,12 +17,19 @@ describe OneOff::Opensrp::Exporter do
           organization_id: d3363aea-66ad-4370-809a-8e4436a4218f
           care_team_id: 1c8100b5-222b-4815-ba4d-3ebde537c6ce
           location_id: ABC01230123
+      patients:
+        - p1
+        - p2
       YAML
       File.write config_path, config_content
     end
 
     after do
       File.delete(config_path) if File.exist?(config_path)
+    end
+
+    it "parses :patients" do
+      expect(the_config.patients).to match_array(["p1", "p2"])
     end
 
     it "parses :report_start" do
