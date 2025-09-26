@@ -20,6 +20,10 @@
 .l-0 {
   left: 0;
 }
+.b-8px {
+  bottom: 8px;
+}
+
 // Pointer events
 .pe-none {
   pointer-events: none;
@@ -263,6 +267,9 @@
 .fs-12px {
   font-size: 12px;
 }
+.fs-13px {
+  font-size: 13px;
+}
 .fs-14px {
   font-size: 14px;
 }
@@ -356,7 +363,7 @@
   color: $orange;
 }
 .c-orange-darker {
-  color: $orange-dark-new
+  color: $orange-dark-new;
 }
 
 .c-amber {
@@ -681,6 +688,9 @@
     padding-top: 20px;
     padding-bottom: 20px;
   }
+  .pb-24px {
+    padding-bottom: 24px;
+  }
   // Typography
   .fs-lg-12px {
     font-size: 12px;
@@ -764,11 +774,11 @@
   display: flex;
   margin-top: 32px;
   position: relative;
-  
+
   p {
     padding: 2px 8px;
   }
-  
+
   .coverage-modal {
     position: absolute;
     width: 100%;
@@ -809,4 +819,9 @@
 .coverage-estimated {
   text-align: center;
   margin-top: 4px;
+}
+
+.wider-charts {
+  width: calc(100% + 12px);
+  margin-left: -6px;
 }
