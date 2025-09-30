@@ -10,7 +10,7 @@ module Reports
     }, _prefix: :htn_care_state
 
     def self.materialized?
-      true
+      false
     end
 
     def self.partitioned?

@@ -121,7 +121,7 @@ RSpec.describe RefreshReportingViews do
       allow(Reports::PatientState).to receive(:table_name).and_return("reporting_patient_states")
       expect(Metrics).to receive(:benchmark_and_gauge).with(
         "reporting_views_refresh_duration_seconds",
-        {view: "reporting_patient_states"}
+        {view: "reporting_patient_states", partitioned_refresh: false}
       ).and_yield
 
       result = refresher.send(:benchmark_and_statsd, "Reports::PatientState") { "test_result" }
@@ -141,7 +141,7 @@ RSpec.describe RefreshReportingViews do
     it "handles 'all' operation correctly" do
       expect(Metrics).to receive(:benchmark_and_gauge).with(
         "reporting_views_refresh_duration_seconds",
-        {view: "all"}
+        {view: "all", partitioned_refresh: false}
       ).and_yield
 
       refresher.send(:benchmark_and_statsd, "all") { "test_result" }

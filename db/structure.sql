@@ -3594,9 +3594,7 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
 -- Name: reporting_patient_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE MATERIALIZED VIEW public.reporting_patient_states AS
- SELECT DISTINCT ON (p.id, cal.month_date) p.id AS patient_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS recorded_at,
+CREATE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
     p.status,
     p.gender,
     p.age,
@@ -3727,10 +3725,10 @@ CREATE MATERIALIZED VIEW public.reporting_patient_states AS
 
 
 --
--- Name: MATERIALIZED VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
+-- Name: VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON MATERIALIZED VIEW public.reporting_patient_states IS 'Monthly summary of a patient''s information and health indicators. This table has one row per patient, per month, from the month of the patient''s registration.';
+COMMENT ON VIEW public.reporting_patient_states IS 'Monthly summary of a patient''s information and health indicators. This table has one row per patient, per month, from the month of the patient''s registration.';
 
 
 --
@@ -7843,28 +7841,6 @@ CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON publi
 
 CREATE INDEX index_reporting_patient_follow_ups_on_facility_id ON public.reporting_patient_follow_ups USING btree (facility_id);
 
-
---
--- Name: index_reporting_patient_states_on_age; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_reporting_patient_states_on_age ON public.reporting_patient_states USING btree (age);
-
-
---
--- Name: index_reporting_patient_states_on_gender; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_reporting_patient_states_on_gender ON public.reporting_patient_states USING btree (gender);
-
-
---
--- Name: index_reporting_patient_states_on_gender_and_age; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_reporting_patient_states_on_gender_and_age ON public.reporting_patient_states USING btree (gender, age);
-
-
 --
 -- Name: index_teleconsultations_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
@@ -8032,77 +8008,6 @@ CREATE UNIQUE INDEX patient_blood_pressures_patient_id_month_date ON public.repo
 
 CREATE UNIQUE INDEX patient_blood_sugars_month_date_patient_id ON public.reporting_patient_blood_sugars USING btree (month_date, patient_id);
 
-
---
--- Name: patient_states_assigned_block; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_assigned_block ON public.reporting_patient_states USING btree (assigned_block_region_id);
-
-
---
--- Name: patient_states_assigned_district; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_assigned_district ON public.reporting_patient_states USING btree (assigned_district_region_id);
-
-
---
--- Name: patient_states_assigned_facility; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_assigned_facility ON public.reporting_patient_states USING btree (assigned_facility_region_id);
-
-
---
--- Name: patient_states_assigned_state; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_assigned_state ON public.reporting_patient_states USING btree (assigned_state_region_id);
-
-
---
--- Name: patient_states_care_state; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_care_state ON public.reporting_patient_states USING btree (hypertension, htn_care_state, htn_treatment_outcome_in_last_3_months);
-
-
---
--- Name: patient_states_month_date_assigned_facility; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_month_date_assigned_facility ON public.reporting_patient_states USING btree (month_date, assigned_facility_id);
-
-
---
--- Name: patient_states_month_date_assigned_facility_region; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_month_date_assigned_facility_region ON public.reporting_patient_states USING btree (month_date, assigned_facility_region_id);
-
-
---
--- Name: patient_states_month_date_patient_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX patient_states_month_date_patient_id ON public.reporting_patient_states USING btree (month_date, patient_id);
-
-
---
--- Name: patient_states_month_date_registration_facility; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_month_date_registration_facility ON public.reporting_patient_states USING btree (month_date, registration_facility_id);
-
-
---
--- Name: patient_states_month_date_registration_facility_region; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX patient_states_month_date_registration_facility_region ON public.reporting_patient_states USING btree (month_date, registration_facility_region_id);
-
-
 --
 -- Name: patient_visits_patient_id_month_date; Type: INDEX; Schema: public; Owner: -
 --
@@ -8122,21 +8027,6 @@ CREATE UNIQUE INDEX raw_to_clean_medicines_unique_name_and_dosage ON public.raw_
 --
 
 CREATE UNIQUE INDEX reporting_patient_follow_ups_unique_index ON public.reporting_patient_follow_ups USING btree (patient_id, user_id, facility_id, month_date);
-
-
---
--- Name: reporting_patient_states_bp_facility_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX reporting_patient_states_bp_facility_id ON public.reporting_patient_states USING btree (bp_facility_id);
-
-
---
--- Name: reporting_patient_states_titrated; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX reporting_patient_states_titrated ON public.reporting_patient_states USING btree (titrated);
-
 
 --
 -- Name: reporting_prescriptions_patient_month_date; Type: INDEX; Schema: public; Owner: -
@@ -8794,5 +8684,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250828111954'),
 ('20250923223358'),
 ('20250924101441'),
-('20250924102156');
+('20250924102156'),
+('20250925094123');
 
