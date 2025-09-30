@@ -74,10 +74,10 @@
   <% end %>
 </div>
 <% unless is_lite_version? %>
-<div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
+<div class="sidepanel bs-canvas position-fixed" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
-    <button class="bs-canvas-close float-left close" aria-label="Close">
+    <button id="action-plan--sidebar-close" class="bs-canvas-close float-left close" aria-label="Close">
       <i class="fa-solid fa-xmark-large"></i>
     </button>
   </div>
@@ -199,53 +199,38 @@
 
     const toHide = [], toReveal = []
 
+    // core elements
+    const $sidepanel = $('#dr-rai--sidebar');
+    const $sidepanelCloseButton = $(`#action-plan--sidebar-close`);
+
+    // functions
+    // show sidebarpanel
+    function showSidepanel() {
+      $sidepanel.addClass('is-open');
+      $sidepanelCloseButton.attr('aria-expanded', "true");
+      $(`[data-toggle="canvas"][data-target="#dr-rai--sidebar"]`).attr('aria-expanded', "true");
+    }
+    // hide sidepanel
+    function hideSidepanel() {
+      $sidepanel.removeClass('is-open');
+      $sidepanelCloseButton.attr('aria-expanded', "false");
+      $(`[data-toggle="canvas"][data-target="#dr-rai--sidebar"]`).attr('aria-expanded', "false");
+    }
+
     // Opening the offcanvas
-    $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function() {
-      var canvas = $(this).data('target'),
-          opts = $.extend({}, bsDefaults, $(canvas).data()),
-          prop = $(canvas).hasClass('bs-canvas-right') ? 'margin-right' : 'margin-left'
+    $('[data-toggle="canvas"]').on('click', function (e) {
+      e.preventDefault();
+      const canvas = $(this).data('target');
+      const $panel = $(canvas);
 
-      if (opts.width === '100%') {
-        opts.offset = false
-      }
-
-      $(canvas).css('width', opts.width)
-      if (opts.offset && bsMain.length) {
-        bsMain.css(prop, opts.width)
-      }
-
-      $(canvas + ' .bs-canvas-close').attr('aria-expanded', "true")
-      $('[data-toggle="canvas"][data-target="' + canvas + '"]').attr('aria-expanded', "true")
-      if (opts.overlay && bsOverlay.length)
-        bsOverlay.addClass('show')
-      return false
-    })
+      showSidepanel();
+    });
 
     // Closing the offcanvas
-    $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
+    $('.bs-canvas-close').on('click', function() {
       var canvas, aria
-      if ($(this).hasClass('bs-canvas-close')) {
-        canvas = $(this).closest('.bs-canvas')
-        aria = $(this).add($('[data-toggle="canvas"][data-target="#' + canvas.attr('id') + '"]'))
-        if (bsMain.length) {
-          bsMain.css(($(canvas).hasClass('bs-canvas-right') ? 'margin-right' : 'margin-left'), '')
-        }
-      } else {
-        canvas = $('.bs-canvas')
-        aria = $('.bs-canvas-close, [data-toggle="canvas"]')
-        if (bsMain.length) {
-          bsMain.css({
-            'margin-left': '',
-            'margin-right': ''
-          })
-        }
-      }
-      canvas.css('width', '')
-      aria.attr('aria-expanded', "false")
-      if (bsOverlay.length) {
-        bsOverlay.removeClass('show')
-      }
-      return false
+      hideSidepanel();
+      return false // is this needed?
     })
 
     // ===================
@@ -418,7 +403,7 @@
 
     })
 
-    // show action delete overlay, takes several seconds to process
+    // show action delete overlay
     $('.dropdown-item.delete').on("click", function(e) {
       $(this).closest('.action-card').find('.deleting-overlay').addClass('d-flex'); // show overlay only for this card, needs flex
     });
