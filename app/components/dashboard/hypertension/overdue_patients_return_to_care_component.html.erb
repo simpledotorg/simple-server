@@ -1,6 +1,6 @@
-<div id="overdue-patients-return-to-care-trend" class="d-lg-flex w-lg-50 pr-lg-2">
+<div id="overdue-patients-return-to-care-trend" class="d-lg-flex" style="min-width: 100%;">
   <%= render Dashboard::Card::GraphComponent.new(id: "overdueReturnToCareTrend", data: graph_data, period: @period) do |c| %>
-    <%= c.title(title: "Called overdue patients that returned to care".html_safe, subtitle: t("overdue_patients_return_to_care.reports_card_subtitle")) do |title| %>
+    <%= c.title(title: "Overdue patients that returned to care".html_safe, subtitle: t("overdue_patients_return_to_care.reports_card_subtitle")) do |title| %>
       <%= title.tooltip({ "Numerator" => t("overdue_patients_return_to_care.numerator"),
                             "divider" => "",
                             "Denominator" => t("overdue_patients_return_to_care.denominator", region_name: @region.name) }) %>

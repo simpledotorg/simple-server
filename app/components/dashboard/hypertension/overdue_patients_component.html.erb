@@ -1,4 +1,4 @@
-<div id="overdue-trend" class="d-lg-flex w-lg-50 pr-lg-2">
+<div id="overdue-trend" class="d-lg-flex" style="min-width: 100%;">
   <%= render Dashboard::Card::GraphComponent.new(id: "overdueTrend", data: graph_data, period: @period) do |c| %>
     <%= c.title(title: "Overdue patients", subtitle: t("overdue_patients.reports_card_subtitle")) do |title| %>
       <%= title.tooltip({ "Numerator" => t("overdue_patients.numerator"),

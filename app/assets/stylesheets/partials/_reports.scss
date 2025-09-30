@@ -753,6 +753,11 @@
     border-bottom: none;
   }
 }
+@media screen and (min-width: 100px) {
+  .d-xl-flex {
+    display: flex;
+  }
+}
 .legend-label {
   display: inline-block;
   height: 15px;
