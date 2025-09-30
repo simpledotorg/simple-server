@@ -125,7 +125,7 @@ class RefreshReportingViews
     name = "reporting_views_refresh_duration_seconds"
     result = nil
     options_hash = {view: view}
-    options_hash[:partitioned_refresh] = true if partitioned_refresh
+    options_hash[:partitioned_refresh] = partitioned_refresh ? true : false
     Metrics.benchmark_and_gauge(name, options_hash) do
       result = yield
     end
