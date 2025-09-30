@@ -247,9 +247,20 @@
   box-shadow: -8px 0 0 0 rgba(0, 0, 0, 0.08), -4px 0 8px rgba(0, 0, 0, 0.05);
   overflow-y: scroll;
   background: #ffffff;
+  transition: all 125ms ease-out;
+  transition-behavior: allow-discrete;
+  transform: translateX(100%);
+  right: 0;
+  top:0;
+  height: 100dvh;
+  width: 450px;
 }
 
+.sidepanel.is-open {
+  transform: translateX(0);
+}
 @scope (.sidepanel) {
+
   .header {
     background-color: white;
     display: flex;
