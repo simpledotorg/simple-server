@@ -1,5 +1,4 @@
 @import "partials/variables";
-$font-condensed: "Roboto Condensed", sans-serif;
 
 // Action plan
 .actions-block {
@@ -544,37 +543,10 @@ $font-condensed: "Roboto Condensed", sans-serif;
   }
 }
 
-.bs-canvas-overlay {
-  opacity: 0;
-  z-index: -1;
-}
-
-.bs-canvas-overlay.show {
-  opacity: 0.85;
-  z-index: 1100;
-}
-
 .bs-canvas {
-  top: 0;
-  width: 0;
-  z-index: 1110;
+  z-index: 1000;
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-.bs-canvas-left {
-  left: 0;
-}
-
-.bs-canvas-right {
-  right: 0;
-}
-
-.bs-canvas-anim {
-  transition: all 0.4s ease-out;
-  -webkit-transition: all 0.4s ease-out;
-  -moz-transition: all 0.4s ease-out;
-  -ms-transition: all 0.4s ease-out;
 }
 
 .fa-spin {
