@@ -78,6 +78,7 @@ RSpec.describe FacilityStatsService do
 
       all_facilities = [small_facility1, small_facility2, medium_facility1,
         medium_facility2, large_facility1, large_facility2]
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((december - 5.months).to_date, december.to_date))
       refresh_views
 
       stats_by_size = with_reporting_time_zone {

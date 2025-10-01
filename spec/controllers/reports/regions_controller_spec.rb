@@ -252,6 +252,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.advance(months: -4).to_date, Date.new(2020, 6, 1)))
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -269,6 +270,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       patient = create(:patient, registration_facility: @facility, recorded_at: jan_2020.advance(months: -4))
       create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.advance(months: -4).to_date, Date.new(2020, 6, 1)))
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -288,7 +290,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       patient_1 = create(:patient, registration_facility: @facility, recorded_at: "September 01 2019 00:00:00 UTC", registration_user: cvho)
       create(:bp_with_encounter, :under_control, recorded_at: "December 10th 2019", patient: patient_1, facility: @facility, user: cvho)
       create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility, user: cvho)
-
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 6, 1), Date.new(2020, 6, 1)))
       refresh_views
 
       block = @facility.region.block_region
@@ -492,6 +494,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
       patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -1))
       create(:bp_with_encounter, :under_control, recorded_at: jan_2020.advance(months: -1), patient: patient, facility: @facility)
       create(:bp_with_encounter, :hypertensive, recorded_at: jan_2020, facility: @facility)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.advance(months: -1).to_date, Date.new(2020, 6, 1)))
       refresh_views
 
       Timecop.freeze("June 1 2020") do
@@ -507,6 +510,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
     it "can retrieve quarterly cohort data" do
       patient = create(:patient, registration_facility: @facility, registration_user: cvho, recorded_at: jan_2020.advance(months: -2))
       create(:bp_with_encounter, :under_control, recorded_at: jan_2020 + 1.day, patient: patient, facility: @facility)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.advance(months: -2).to_date, Date.new(2020, 6, 1)))
       refresh_views
 
       Timecop.freeze("June 1 2020") do

@@ -62,6 +62,7 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       create(:call_result, patient: facility_1_patient_with_out_phone, device_created_at: this_month + 27.days)
       create(:call_result, patient: facility_1_patient_removed_from_list, device_created_at: this_month + 4.days)
 
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(5.months.ago.to_date, Date.today))
       RefreshReportingViews.new(views: views).call
 
       indicator = DrRai::ContactOverduePatientsIndicator.new
