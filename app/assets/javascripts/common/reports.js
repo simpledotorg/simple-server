@@ -16,6 +16,7 @@ function dashboardReportsChartJSColors() {
     mediumGrey: "rgba(173, 178, 184, 1)",
     lightGrey: "rgba(240, 242, 245, 0.9)",
     white: "rgba(255, 255, 255, 1)",
+    lightAmber: "rgba(250, 190, 70, 0.5)",
     amber: "rgba(250, 190, 70, 1)",
     darkAmber: "rgba(223, 165, 50, 1)",
     transparent: "rgba(0, 0, 0, 0)",
@@ -23,12 +24,23 @@ function dashboardReportsChartJSColors() {
     darkTeal: "rgba(34,140,125,1)",
     maroon: "rgba(71, 0, 0, 1)",
     darkMaroon: "rgba(60,0,0,1)",
-    orange: 'rgb(223,104,15)',
-    lightOrange: 'rgba(255,156,8,0.15)',
+    // orange: 'rgb(223,104,15)',
+    // lightOrange: 'rgba(255,156,8,0.15)',
     overdueCalledChartLineDarkYellow: "rgba(228, 180, 57, 1)",
     overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
     overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
     overdueCalledChartFillLightRed: "rgba(255,146,122,0.2)",
+
+    // New color scheme
+    // greens
+    // yellow
+    // orange
+    lightOrange: "rgba(230, 137, 70, 0.1)",
+    orange: "#ed6300"
+    // red
+    // blue
+    // purple
+
   };
 }
 
@@ -342,8 +354,8 @@ DashboardReports = () => {
             {
               label: "Lost to follow-up",
               data: Object.values(data.ltfuPatientsRate),
-              backgroundColor: colors.lightBlue,
-              borderColor: colors.darkBlue,
+              backgroundColor: colors.lightRed,
+              borderColor: colors.darkRed,
             },
           ],
         },
@@ -1015,8 +1027,8 @@ Reports = function ({
           {
             label: "BP uncontrolled",
             data: Object.values(uncontrolledGraphRate),
-            backgroundColor: colors.lightRed,
-            borderColor: colors.mediumRed,
+            backgroundColor: colors.lightYellow,
+            borderColor: colors.amber,
           },
         ],
       },
@@ -1103,8 +1115,8 @@ Reports = function ({
           {
             label: "Missed visits",
             data: Object.values(missedVisitsGraphRate),
-            backgroundColor: colors.lightBlue,
-            borderColor: colors.mediumBlue,
+            backgroundColor: colors.lightOrange,
+            borderColor: colors.orange,
           },
         ],
       },
