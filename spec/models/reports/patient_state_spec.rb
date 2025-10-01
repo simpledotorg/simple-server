@@ -44,7 +44,6 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       it "marks a dead patient dead" do
         dead_patient = create(:patient, status: :dead)
         described_class.partitioned_refresh(Date.today.beginning_of_month)
-        # described_class.refresh
         with_reporting_time_zone do
           expect(described_class.where(htn_care_state: "dead").pluck(:patient_id)).to include(dead_patient.id)
         end
@@ -568,12 +567,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         relation.order(month_date: :asc)
       end
 
-      before do 
-        refresh_months = []
-        (Date.today - 2.years..Date.today).each { |refresh_date| refresh_months << refresh_date.beginning_of_month }
-        allow(described_class).to receive(:get_refresh_months).and_return(refresh_months.uniq)
+      before do
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 2.years, Date.today))
       end
-      
+
       it "should have a record for every month between registration and now" do
         with_reporting_time_zone do
           now = june_2021[:now]
@@ -646,10 +643,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         with_reporting_time_zone { example.run }
       end
 
-      before do 
-        refresh_months = []
-        (Date.today - 6.months..Date.today).each { |refresh_date| refresh_months << refresh_date.beginning_of_month }
-        allow(described_class).to receive(:get_refresh_months).and_return(refresh_months.uniq)
+      before do
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 6.months, Date.today))
       end
 
       it "contains the details of the latest blood sugar measurement for a given month" do

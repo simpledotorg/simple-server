@@ -38,7 +38,7 @@ describe MonthlyStateData::DiabetesDataExporter do
     create(:appointment, facility: @facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
 
     @months = @period.downto(5).reverse.map(&:to_s)
-
+    allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today))
     RefreshReportingViews.refresh_v2
   end
 

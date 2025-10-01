@@ -34,6 +34,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         controlled.each { |patient| create(:bp_with_encounter, :under_control, patient: patient, facility: facility, user: supervisor) }
       end
       Timecop.freeze("January 15th 2021") do
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
         refresh_views
         get :bp_controlled, params: {}
       end
@@ -85,6 +86,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       end
 
       Timecop.freeze("January 15th 2021") do
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
         refresh_views
         get :bp_not_controlled, params: {}
       end
@@ -151,6 +153,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
         patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility, patient: p) }
       end
       Timecop.freeze("January 15th 2021") do
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.today))
         refresh_views
         get :csv_maker, params: {type: "controlled_patients"}
       end
