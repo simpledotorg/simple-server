@@ -9,7 +9,7 @@ class DiscardMatViewReportingPatientStates < ActiveRecord::Migration[6.1]
     execute <<~SQL
       CREATE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
     SQL
-    
+
     execute <<~SQL
       CREATE MATERIALIZED VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS
       WITH monthly_registration_patient_states AS (

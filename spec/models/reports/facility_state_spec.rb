@@ -569,7 +569,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, registration_facility: facility_1)
       create(:patient, registration_facility: facility_1, device_created_at: 3.months.ago)
 
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today ))
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_registrations))
@@ -589,7 +589,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, assigned_facility: facility_1)
       create(:patient, assigned_facility: facility_1, device_created_at: 3.months.ago)
 
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today ))
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_assigned_patients))
