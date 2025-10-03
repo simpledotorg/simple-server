@@ -41,6 +41,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       create_list(:patient, 2, :hypertension, recorded_at: six_months_ago, gender: :female, registration_user: user, registration_facility: facility)
       create_list(:patient, 3, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
       create_list(:patient, 1, :hypertension_and_diabetes, recorded_at: two_years_ago, gender: :transgender, registration_user: user, registration_facility: facility)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
       refresh_views
       total = described_class.totals(facility)
       expect(total.monthly_registrations_htn_or_dm).to eq(8)
@@ -93,6 +94,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago)
 
+    allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     RefreshReportingViews.call
 
     two_years_ago_expected = {
@@ -208,6 +210,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+    allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     refresh_views
     total = described_class.totals(facility)
     dashboard_data_six_months_ago = Reports::FacilityState.find_by(facility_id: facility.id, month_date: six_months_ago.to_date.to_s)

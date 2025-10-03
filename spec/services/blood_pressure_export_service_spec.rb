@@ -26,7 +26,7 @@ RSpec.describe BloodPressureExportService, type: :model do
         facility_set_2 = [facility_1, facility_3, facility_4]
 
         allow(I18n).to receive(:default_locale).and_return("en-IN")
-
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 12, 1), Date.new(2021, 5, 1)))
         refresh_views
 
         result_1 = described_class.new(start_period: start_period, end_period: end_period, facilities: facility_set_1).call

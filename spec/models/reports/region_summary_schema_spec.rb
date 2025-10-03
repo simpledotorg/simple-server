@@ -37,6 +37,7 @@ describe Reports::RegionSummarySchema, type: :model do
       facility_1_uncontrolled.map do |patient|
         create(:bp_with_encounter, :hypertensive, facility: facility_1, patient: patient, recorded_at: 15.days.ago)
       end
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today, Date.today + 2.years))
     end
 
     refresh_views
@@ -53,7 +54,10 @@ describe Reports::RegionSummarySchema, type: :model do
   end
 
   it "can return earliest patient recorded at" do
-    Timecop.freeze(jan_2020) { create(:patient, assigned_facility: facility, registration_user: user) }
+    Timecop.freeze(jan_2020) {
+      create(:patient, assigned_facility: facility, registration_user: user)
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today, Date.today + 1.month))
+    }
 
     refresh_views
 
@@ -266,6 +270,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -294,6 +299,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -315,6 +321,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -336,6 +343,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -357,6 +365,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -376,6 +385,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -395,6 +405,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
         schema = described_class.new([facility_1.region, region], periods: range)
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
@@ -417,6 +428,7 @@ describe Reports::RegionSummarySchema, type: :model do
           create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_1_patients[3], facility: facility_1, recorded_at: jan_2020 + 2.months)
           create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients[4], facility: facility_1, recorded_at: jan_2020 + 2.months)
           create(:blood_sugar, :with_encounter, :hba1c, :bs_below_200, patient: facility_1_patients[5], facility: facility_1, recorded_at: jan_2020 + 2.months)
+          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
           refresh_views
           schema = described_class.new([facility_1.region, region], periods: range)
           expect(schema.diabetes_patients_by_risk_state_and_type(risk_state: :bs_below_200, types: [:fasting, :random])[facility_1.region.slug]["Mar 2020".to_period]).to eq(2)
@@ -449,7 +461,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :hba1c, :bs_200_to_300, patient: facility_2_patients.first, facility: facility_2, recorded_at: jan_2020 + 3.months)
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_200_to_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
-
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -484,6 +496,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_over_300, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 3.months))
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -518,6 +531,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_below_200, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2020.to_date + 6.months))
         refresh_views
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
         (("Jan 2019".to_period)..("Mar 2019".to_period)).each do |period|
@@ -580,6 +594,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:prescription_drug, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:appointment, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 6.months))
         refresh_views
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
 
@@ -607,6 +622,8 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "diabetes_treatment_outcome_breakdown_rates" do
+      before { allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 4.months)) }
+
       it "returns the breakdown of different blood sugar types of the diabetes outcome - bs <200 " do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
@@ -699,6 +716,8 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "diabetes_treatment_outcome_breakdown_counts" do
+      before { allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 4.months)) }
+
       it "returns the breakdown of different blood sugar types of the diabetes outcome - bs <200 " do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 3.months)
@@ -803,6 +822,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :post_prandial, :bs_below_200, patient: facility_2_patients.second, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :fasting, :bs_200_to_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 7.months))
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -836,6 +856,7 @@ describe Reports::RegionSummarySchema, type: :model do
         create(:blood_sugar, :with_encounter, :fasting, :bs_over_300, patient: facility_2_patients.third, facility: facility_2, recorded_at: jan_2020 + 2.months)
         create(:blood_sugar, :with_encounter, :hba1c, :bs_over_300, patient: facility_2_patients.fourth, facility: facility_2, recorded_at: jan_2020 + 3.months)
 
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, jan_2020.to_date + 7.months))
         refresh_views
 
         schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -902,6 +923,7 @@ describe Reports::RegionSummarySchema, type: :model do
       create(:patient, :hypertension_and_diabetes, registration_facility: facility_2, recorded_at: feb_2019)
       create(:patient, :hypertension_and_diabetes, registration_facility: facility_2, recorded_at: mar_2019)
 
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 4.months))
       refresh_views
 
       schema = described_class.new([facility_1.region, facility_2.region, region], periods: range)
@@ -953,6 +975,8 @@ describe Reports::RegionSummarySchema, type: :model do
         Reports::OverduePatient
         Reports::FacilityState].freeze
     }
+
+    before { allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today)) }
 
     describe "#patients_called_rates" do
       it "should return percentage of calls made to overdue patients" do
