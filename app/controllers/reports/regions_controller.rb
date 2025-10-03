@@ -470,7 +470,7 @@ class Reports::RegionsController < AdminController
   end
 
   def set_dr_rai_vars
-    @dr_rai_periods = Period.quarters_between(10.months.ago, 2.months.from_now)
+    @dr_rai_periods = Period.quarters_between(9.months.ago, 3.months.from_now)
 
     option_keys = %i[selected_quarter with_non_contactable]
     @dr_rai_options = params.slice(*option_keys)
