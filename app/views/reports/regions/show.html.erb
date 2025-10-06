@@ -91,8 +91,6 @@
   <% end %>
 <% end %>
 
-
-
 <%= render "header" %>
 
 <% if Flipper.enabled?(:dr_rai_reports, current_admin) && @region.facility_region? %>
@@ -104,13 +102,9 @@
 
 <% if Flipper.enabled?(:patients_protected, current_admin) %>
 <h4 class="mt-5 mb-32px">Program overview</h4>
-<div class="d-lg-flex flex-lg-wrap">
-  <div class="d-lg-flex flex-fill">
-    <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
-      region: @region,
-      period: @period)) %>
-  </div>
-</div>
+  <%= render(Dashboard::Hypertension::PatientsProtectedComponent.new(
+    region: @region,
+    period: @period)) %>
 <% end %>
 
 <h4 class="mt-5 mb-32px">Program management indicators</h4>
