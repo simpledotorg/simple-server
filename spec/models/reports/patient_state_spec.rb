@@ -14,7 +14,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   it "does not include deleted patients" do
     create(:patient)
     deleted_patient = create(:patient, deleted_at: june_2021[:over_3_months_ago])
-    described_class.refresh
+    described_class.partitioned_refresh(Date.today.beginning_of_month)
     with_reporting_time_zone do
       expect(described_class.count).not_to eq 0
       expect(described_class.where(patient_id: deleted_patient.id)).to be_empty
@@ -43,7 +43,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
     describe "htn_care_state" do
       it "marks a dead patient dead" do
         dead_patient = create(:patient, status: :dead)
-        described_class.refresh
+        described_class.partitioned_refresh(Date.today.beginning_of_month)
         with_reporting_time_zone do
           expect(described_class.where(htn_care_state: "dead").pluck(:patient_id)).to include(dead_patient.id)
         end
@@ -567,6 +567,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         relation.order(month_date: :asc)
       end
 
+      before do
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 2.years, Date.today))
+      end
+
       it "should have a record for every month between registration and now" do
         with_reporting_time_zone do
           now = june_2021[:now]
@@ -637,6 +641,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
     describe "patient diabetes state" do
       around do |example|
         with_reporting_time_zone { example.run }
+      end
+
+      before do
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 6.months, Date.today))
       end
 
       it "contains the details of the latest blood sugar measurement for a given month" do
