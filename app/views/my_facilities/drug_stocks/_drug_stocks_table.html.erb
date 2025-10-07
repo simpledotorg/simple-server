@@ -57,7 +57,7 @@
 
     <tbody>
       <tr class="row-total" data-sort-method="none">
-        <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="All facilities: <%= "#{@report&.dig(:total_patient_count)} patients" %>">
+        <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus" data-original-title="All facilities: <%= "#{@report&.dig(:total_patient_count)} patients" %>">
           All
         </td>
         <% if can_view_all_districts_nav? %>
@@ -79,7 +79,7 @@
           <% end %>
           <% unless drug_category == "diabetes" %>
             <% if patient_days&.present? %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                 data-template="<%= render "wide_tooltip_template" %>"
                 data-original-title="<%= render "drug_stocks_tooltip", report: @report&.dig(:total_patient_days, drug_category) %>"
                 data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
@@ -95,7 +95,7 @@
       </tr>
 
       <tr data-sort-method="none">
-        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
           data-original-title='District: <%= "#{@report&.dig(:district_patient_count)} patients" %>'>
           <% if @district_region&.id.present? %>
             <%= link_to(reports_region_path(@district_region, report_scope: "district"), class: "allow-wrap") do %>
@@ -133,7 +133,7 @@
           <% end %>
           <% unless drug_category == "diabetes" %>
             <% if patient_days&.present? %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                 data-template="<%= render "wide_tooltip_template" %>"
                 data-original-title="<%= render "drug_stocks_tooltip", report: district_patient_days_report&.dig(drug_category) %>"
                 data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
@@ -151,7 +151,7 @@
       <% @blocks&.each do |block| %>
         <tr data-sort-method="none">
           <% block_patient_days_report = @report&.dig(:patient_days_by_block_id, block&.id) %>
-          <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+          <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
             data-original-title='<%= "#{block&.name}: #{@report&.dig(:patient_count_by_block_id, block&.id)} patients" %>'>
             <%= link_to(reports_region_path(block, report_scope: "block"), class: "allow-wrap") do %>
               <%= block&.name %>
@@ -176,7 +176,7 @@
             <% end %>
             <% unless drug_category == "diabetes" %>
               <% if patient_days&.present? %>
-                <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-template="<%= render "wide_tooltip_template" %>"
                   data-original-title="<%= render "drug_stocks_tooltip", report: block_patient_days_report&.dig(drug_category) %>"
                   data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
@@ -193,7 +193,7 @@
       <% end %>
 
       <tr class="row-total" data-sort-method="none">
-        <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click" data-original-title="All facilities: <%= "#{@report&.dig(:facilities_total_patient_count)} patients" %>">
+        <td class="type-title" colspan="2" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus" data-original-title="All facilities: <%= "#{@report&.dig(:facilities_total_patient_count)} patients" %>">
           Facilities subtotal
         </td>
         <% if can_view_all_districts_nav? %>
@@ -215,7 +215,7 @@
           <% end %>
           <% unless drug_category == "diabetes" %>
             <% if patient_days&.present? %>
-              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                 data-template="<%= render "wide_tooltip_template" %>"
                 data-original-title="<%= render "drug_stocks_tooltip", report: @report&.dig(:facilities_total_patient_days, drug_category) %>"
                 data-sort-column-key=<%= "#{drug_category}_patient_days" %>>
@@ -233,7 +233,7 @@
       <% @facilities&.each do |facility| %>
         <tr>
           <% facility_patient_days_report = @report&.dig(:patient_days_by_facility_id, facility&.id) %>
-          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
             data-original-title='<%= "#{facility&.name}: #{@report&.dig(:patient_count_by_facility_id, facility&.id)} patients" %>'>
             <%= link_to(reports_region_path(facility, report_scope: "facility"), class: "allow-wrap") do %>
               <%= facility&.name %>
@@ -270,7 +270,7 @@
             <% end %>
             <% unless drug_category == "diabetes" %>
               <% if patient_days&.present? %>
-                <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                <td class="type-percent" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-template="<%= render "wide_tooltip_template" %>"
                   data-original-title="<%= render "drug_stocks_tooltip", report: facility_patient_days_report&.dig(drug_category) %>"
                   data-sort-column-key=<%= "#{drug_category}_patient_days" %>>

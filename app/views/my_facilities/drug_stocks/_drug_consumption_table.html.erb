@@ -62,7 +62,7 @@
 
     <tbody>
       <tr class="row-total" data-sort-method="none">
-        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
             title="" data-original-title="All facilities: <%= "#{@report[:total_patient_count]} patients" %>">
           All
         </td>
@@ -78,7 +78,7 @@
               <td class="type-blank"><span>&#8212;</span></td>
             <% else %>
               <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top"
-                  data-trigger="hover focus click" data-original-title="<%= render 'drug_consumption_tooltip', report: @report.dig(:total_drug_consumption, drug_category, drug) %>"
+                  data-trigger="hover focus" data-original-title="<%= render 'drug_consumption_tooltip', report: @report.dig(:total_drug_consumption, drug_category, drug) %>"
                   data-sort-column-key=<%= drug.id %>>
                 <%= consumed %>
               </td>
@@ -91,7 +91,7 @@
             <td class="type-blank"><span>?</span></td>
           <% else %>
             <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top"
-                data-trigger="hover focus click"
+                data-trigger="hover focus"
                 data-template="<%= render 'wide_tooltip_template' %>"
                 data-original-title="<%= render 'base_doses_tooltip', report: @report.dig(:total_drug_consumption, drug_category, :base_doses) %>"
                 data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
@@ -104,7 +104,7 @@
 
       <tr data-sort-method="none">
         <% report = @report[:district_drug_consumption] %>
-        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
             data-original-title='District: <%= "#{@report[:district_patient_count]} patients" %>'>
           <%= link_to(reports_region_path(@district_region, report_scope: "district"), class: "allow-wrap") do %>
             <%= drug_stock_region_label(@district_region).titleize %>
@@ -119,7 +119,7 @@
             <% if consumed.nil? || consumed == "error" %>
               <td class="type-blank"><span>?</span></td>
             <% else %>
-              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-template="<%= render 'wide_tooltip_template' %>"
                   data-original-title="<%= render 'drug_consumption_tooltip', report: report.dig(drug_category, drug) %>"
                   data-sort-column-key=<%= drug.id %>>
@@ -133,7 +133,7 @@
           <% if total.nil? || total == "error" %>
             <td class="type-blank"><span>?</span></td>
           <% else %>
-            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                 data-template="<%= render 'wide_tooltip_template' %>"
                 data-original-title="<%= render 'base_doses_tooltip', report: report.dig(drug_category, :base_doses) %>"
                 data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
@@ -147,7 +147,7 @@
       <% @blocks.each do |block| %>
         <tr data-sort-method="none">
           <% block_report = @report[:drug_consumption_by_block_id][block.id] %>
-          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
               data-original-title='<%= "#{block.name}: #{@report[:patient_count_by_block_id][block.id]} patients" %>'>
             <%= link_to(reports_region_path(block, report_scope: "block"), class: "allow-wrap") do %>
               <%= block.name %>
@@ -162,7 +162,7 @@
               <% if consumed.nil? || consumed == "error" %>
                 <td class="type-blank"><span>?</span></td>
               <% else %>
-                <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                     data-template="<%= render 'wide_tooltip_template' %>"
                     data-original-title="<%= render 'drug_consumption_tooltip', report: block_report[drug_category][drug] %>"
                     data-sort-column-key=<%= drug.id %>>
@@ -176,7 +176,7 @@
             <% if total.nil? || total == "error" %>
               <td class="type-blank"><span>?</span></td>
             <% else %>
-              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-template="<%= render 'wide_tooltip_template' %>"
                   data-original-title="<%= render 'base_doses_tooltip', report: block_report[drug_category][:base_doses] %>"
                   data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
@@ -189,7 +189,7 @@
       <% end %>
 
       <tr class="row-total" data-sort-method="none">
-        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+        <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
             title="" data-original-title="All facilities: <%= "#{@report[:patient_count]} patients" %>">
           Facilities subtotal
         </td>
@@ -204,7 +204,7 @@
             <% elsif consumed.nil? %>
               <td class="type-blank"><span>&#8212;</span></td>
             <% else %>
-              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-original-title="<%= render 'drug_consumption_tooltip', report: @report.dig(:facilities_total_drug_consumption, drug_category, drug) %>"
                   data-sort-column-key=<%= drug.id %>>
                 <%= consumed %>
@@ -217,7 +217,7 @@
           <% if total.nil? || total == "error" %>
             <td class="type-blank"><span>?</span></td>
           <% else %>
-            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+            <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                 data-template="<%= render 'wide_tooltip_template' %>"
                 data-original-title="<%= render 'base_doses_tooltip', report: @report.dig(:all_drug_consumption, drug_category, :base_doses) %>"
                 data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
@@ -231,7 +231,7 @@
       <% @facilities.each do |facility| %>
         <tr>
           <% facility_report = @report[:drug_consumption_by_facility_id][facility.id] %>
-          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+          <td class="type-title" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
               title="" data-original-title='<%= "#{facility.name}: #{@report[:patient_count_by_facility_id][facility.id]} patients" %>'>
             <%= link_to(reports_region_path(facility, report_scope: "facility"), class: "allow-wrap") do %>
               <%= facility.name %>
@@ -246,7 +246,7 @@
               <% if consumed.nil? || consumed == "error" %>
                 <td class="type-blank"><span>?</span></td>
               <% else %>
-                <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+                <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                     data-template="<%= render 'wide_tooltip_template' %>"
                     data-original-title="<%= render 'drug_consumption_tooltip', report: facility_report[drug_category][drug] %>"
                     data-sort-column-key=<%= drug.id %>>
@@ -260,7 +260,7 @@
             <% if total.nil? || total == "error" %>
               <td class="type-blank"><span>?</span></td>
             <% else %>
-              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus click"
+              <td class="type-number text-center" data-html="true" data-toggle="tooltip" data-placement="top" data-trigger="hover focus"
                   data-template="<%= render 'wide_tooltip_template' %>"
                   data-original-title="<%= render 'base_doses_tooltip', report: facility_report[drug_category][:base_doses] %>"
                   data-sort-column-key=<%= "#{drug_category}_base_doses" %>>
