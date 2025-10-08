@@ -65,19 +65,28 @@ RSpec.describe DrugStockHelper, type: :helper do
           report: {
             total_drugs_in_stock: {"979467" => 10, "316764" => 0, "329528" => 5},
             total_patient_days: {"hypertension_arb" => {patient_days: 3}, "hypertension_ccb" => {patient_days: 1}},
-            district_patient_count: 7
+            district_patient_count: 7,
+            patient_days_report: {
+              "hypertension_arb" => {patient_days: 1},
+              "hypertension_ccb" => {patient_days: 0}
+            }
           }
         }
       }
     end
 
-    it "aggregates totals, patient_days, and patient_count correctly" do
+    it "aggregates totals, patient_days, patient_count, and patient_days_report correctly" do
       result = helper.aggregate_state_totals(districts, drugs_by_category)
-      expect(result).to eq(
-        totals: {"979467" => 10, "316764" => 0, "329528" => 5},
-        patient_days: {"hypertension_arb" => 3, "hypertension_ccb" => 1},
-        patient_count: 7
-      )
+
+      expect(result[:totals]).to eq({"979467" => 10, "316764" => 0, "329528" => 5})
+      expect(result[:patient_count]).to eq(7)
+      expect(result[:patient_days]).to eq({"hypertension_arb" => 1, "hypertension_ccb" => 0})
+
+      report_arb = result[:patient_days_report]["hypertension_arb"]
+      report_ccb = result[:patient_days_report]["hypertension_ccb"]
+
+      expect(report_arb[:patient_days]).to eq(1)
+      expect(report_ccb[:patient_days]).to eq(0)
     end
   end
 
