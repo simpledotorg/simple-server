@@ -84,6 +84,7 @@ RSpec.feature "Admin User page functionality", type: :feature do
       edit_page.edit_registration_facility(facility_hoshiarpur.name)
 
       # user should be displayed in hoshiarpur as we have edited its registration facility
+      sleep(5)
       visit admin_users_path
       user_page.select_district(facility_hoshiarpur.district)
       expect(user_page.get_all_user(facility_hoshiarpur.name)).to eq(1)
