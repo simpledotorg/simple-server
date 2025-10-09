@@ -132,33 +132,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).not_to include("Metabase: Drug stock report")
         end
 
-        it "shows Metabase: Statin Report link for Bangladesh" do
+        it "shows Metabase: Statin Report link" do
           sign_in(cvho.email_authentication)
-          allow(CountryConfig).to receive(:current_country?).and_return(false)
-          allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
-
-          last_month_last_date = Date.today.last_month.end_of_month.to_s
           get :show, params: {id: facility_group.slug, report_scope: "district"}
-
           expect(response.body).to include("Metabase: Statin Report")
           expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_STATIN_REPORT_URL", ""))
-          expect(response.body).to include("from_date")
-          expect(response.body).to include(last_month_last_date)
-          expect(response.body).to include("selected_district=#{region.name}")
-        end
-
-        it "shows Metabase: Statin Report link for other countries" do
-          sign_in(cvho.email_authentication)
-          allow(CountryConfig).to receive(:current_country?).and_return(false)
-          allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(false)
-
-          get :show, params: {id: facility_group.slug, report_scope: "district"}
-
-          expect(response.body).to include("Metabase: Statin Report")
-          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_STATIN_REPORT_URL", ""))
-          expect(response.body).to include(region.name)
-          expect(response.body).not_to include("from_date")
-          expect(response.body).not_to include("selected_district=")
         end
       end
     end
@@ -173,34 +151,11 @@ RSpec.describe Reports::RegionsController, type: :controller do
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
       end
 
-      it "shows Metabase: Statin Report for Bangladesh and Ethiopia" do
+      it "shows Metabase: Statin Report link" do
         sign_in(cvho.email_authentication)
-        allow(CountryConfig).to receive(:current_country?).and_return(false)
-        allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
-
-        last_month_last_date = Date.today.last_month.end_of_month.to_s
         get :show, params: {id: organization.slug, report_scope: "division"}
-
         expect(response.body).to include("Metabase: Statin Report")
         expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
-        expect(response.body).to include("from_date")
-        expect(response.body).to include(last_month_last_date)
-        expect(response.body).to include("selected_state=#{region.name}")
-      end
-
-      it "shows Metabase: Statin Report for other countries" do
-        sign_in(cvho.email_authentication)
-        allow(CountryConfig).to receive(:current_country?).and_return(false)
-        allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(false)
-        allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(false)
-
-        get :show, params: {id: organization.slug, report_scope: "division"}
-
-        expect(response.body).to include("Metabase: Statin Report")
-        expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
-        expect(response.body).to include(region.name)
-        expect(response.body).not_to include("from_date")
-        expect(response.body).not_to include("selected_state=")
       end
 
       context "and the feature flag is disabled" do
@@ -210,6 +165,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
           expect(response.body).to_not include("Metabase: Titration report")
           expect(response.body).to_not include("Metabase: Systolic BP reading report")
+          expect(response.body).to_not include("Metabase: Statin Report")
           expect(response.body).to_not include("https://metabase.example.com/titration?state_name=")
           expect(response.body).to_not include("https://metabase.example.com/systolic?state_name=")
           expect(response.body).to_not include("https://metabase.example.com/bp_fudging_division?state_name=")
