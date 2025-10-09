@@ -59,7 +59,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Quick links")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
-          expect(response.body).to include(ENV.fetch("METABASE_STATIN_REPORT_URL", ""))
+          expect(response.body).to include("Metabase: Statin Report")
         end
 
         it "shows the Metabase: Drug stock report link for Ethiopia" do
