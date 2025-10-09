@@ -153,7 +153,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
       it "shows Metabase: Statin Report link" do
         sign_in(cvho.email_authentication)
-        get :show, params: {id: organization.slug, report_scope: "division"}
+        get :show, params: {id: organization.slug, report_scope: "state"}
         expect(response.body).to include("Metabase: Statin Report")
         expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
       end
