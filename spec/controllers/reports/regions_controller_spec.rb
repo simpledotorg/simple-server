@@ -59,6 +59,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Quick links")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include("Metabase: Statin Report")
         end
 
         it "shows the Metabase: Drug stock report link for Ethiopia" do
@@ -130,6 +131,35 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).not_to include("Drug stock report")
           expect(response.body).not_to include("Metabase: Drug stock report")
         end
+
+        it "shows Metabase: Statin Report link for Bangladesh" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
+
+          last_month_last_date = Date.today.last_month.end_of_month.to_s
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+
+          expect(response.body).to include("Metabase: Statin Report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_STATIN_REPORT_URL", ""))
+          expect(response.body).to include("from_date")
+          expect(response.body).to include(last_month_last_date)
+          expect(response.body).to include("selected_district=#{region.name}")
+        end
+
+        it "shows Metabase: Statin Report link for other countries" do
+          sign_in(cvho.email_authentication)
+          allow(CountryConfig).to receive(:current_country?).and_return(false)
+          allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(false)
+
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+
+          expect(response.body).to include("Metabase: Statin Report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_STATIN_REPORT_URL", ""))
+          expect(response.body).to include(region.name)
+          expect(response.body).not_to include("from_date")
+          expect(response.body).not_to include("selected_district=")
+        end
       end
     end
 
@@ -141,6 +171,36 @@ RSpec.describe Reports::RegionsController, type: :controller do
         state.region.update(region_type: "state")
         allow(region).to receive(:state_region?).and_return(true)
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
+      end
+
+      it "shows Metabase: Statin Report for Bangladesh and Ethiopia" do
+        sign_in(cvho.email_authentication)
+        allow(CountryConfig).to receive(:current_country?).and_return(false)
+        allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(true)
+
+        last_month_last_date = Date.today.last_month.end_of_month.to_s
+        get :show, params: {id: organization.slug, report_scope: "division"}
+
+        expect(response.body).to include("Metabase: Statin Report")
+        expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
+        expect(response.body).to include("from_date")
+        expect(response.body).to include(last_month_last_date)
+        expect(response.body).to include("selected_state=#{region.name}")
+      end
+
+      it "shows Metabase: Statin Report for other countries" do
+        sign_in(cvho.email_authentication)
+        allow(CountryConfig).to receive(:current_country?).and_return(false)
+        allow(CountryConfig).to receive(:current_country?).with("Bangladesh").and_return(false)
+        allow(CountryConfig).to receive(:current_country?).with("Ethiopia").and_return(false)
+
+        get :show, params: {id: organization.slug, report_scope: "division"}
+
+        expect(response.body).to include("Metabase: Statin Report")
+        expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
+        expect(response.body).to include(region.name)
+        expect(response.body).not_to include("from_date")
+        expect(response.body).not_to include("selected_state=")
       end
 
       context "and the feature flag is disabled" do
