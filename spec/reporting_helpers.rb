@@ -14,6 +14,12 @@ module ReportingHelpers
     reporting_dates(2021, 6)
   end
 
+  def self.get_refresh_months_between_dates(start_date, end_date)
+    refresh_months = []
+    (start_date..end_date).each { |refresh_date| refresh_months << refresh_date.beginning_of_month }
+    refresh_months.uniq
+  end
+
   def reporting_dates(year = Date.today.year, month = Date.today.month)
     # We explicitly set the times in the reporting TZ here, but don't use the block helper because its a hassle w/
     # all the local vars we need

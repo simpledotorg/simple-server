@@ -19,6 +19,7 @@ RSpec.describe Reports::QuarterlyFacilityState, {type: :model, reporting_spec: t
     create(:patient, assigned_facility: facility, recorded_at: q4_2020)
     create(:patient, assigned_facility: facility, recorded_at: q1_2021)
 
+    allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((june_2021[:now] - 9.months).to_date, june_2021[:now].to_date))
     RefreshReportingViews.refresh_v2
     with_reporting_time_zone do
       expect(

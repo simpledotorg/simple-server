@@ -273,6 +273,7 @@ describe Patient, type: :model do
           create(:blood_pressure, :with_encounter, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: over_a_year_ago)
           with_reporting_time_zone do # We don't actually need this, but its a nice sanity check
+            allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, end_of_month.to_date))
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
@@ -302,6 +303,7 @@ describe Patient, type: :model do
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: a_month_from_now)
 
           with_reporting_time_zone do
+            allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, a_month_from_now.to_date))
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient_1)
@@ -332,6 +334,7 @@ describe Patient, type: :model do
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
 
           with_reporting_time_zone do
+            allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, end_of_month.to_date))
             refresh_views
 
             expect(described_class.ltfu_as_of(beginning_of_month)).not_to include(not_ltfu_patient)
@@ -417,6 +420,7 @@ describe Patient, type: :model do
 
           create(:blood_pressure, :with_encounter, patient: not_ltfu_patient, recorded_at: under_a_year_ago)
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: over_a_year_ago)
+          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, end_of_month.to_date))
           refresh_views
 
           expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)
@@ -445,6 +449,7 @@ describe Patient, type: :model do
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: a_month_from_now)
 
           with_reporting_time_zone do
+            allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, a_month_from_now.to_date))
             refresh_views
 
             expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient_1)
@@ -473,6 +478,7 @@ describe Patient, type: :model do
           ltfu_patient = create(:patient, recorded_at: over_a_year_ago)
 
           with_reporting_time_zone do
+            allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(beginning_of_month.to_date, end_of_month.to_date))
             refresh_views
 
             expect(described_class.not_ltfu_as_of(beginning_of_month)).to include(not_ltfu_patient)

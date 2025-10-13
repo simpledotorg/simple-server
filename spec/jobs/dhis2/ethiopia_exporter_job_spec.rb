@@ -121,7 +121,9 @@ describe Dhis2::EthiopiaExporterJob do
     it "returns the data segregated by enrollment time" do
       Timecop.freeze("April 25th 2024") do
         create_list(:patient, 3, :hypertension, :under_care)
-        Reports::PatientState.refresh
+        ReportingHelpers.get_refresh_months_between_dates(2.years.ago.to_date, Date.today).each do |refresh_month|
+          Reports::PatientState.partitioned_refresh(refresh_month)
+        end
       end
       patients = Reports::PatientState.all.to_a
       output = described_class.new.send(:segregate_and_format_enrollment_data, patients)
