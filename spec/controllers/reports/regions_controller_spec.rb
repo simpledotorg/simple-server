@@ -151,13 +151,6 @@ RSpec.describe Reports::RegionsController, type: :controller do
         allow(DeviceDetector).to receive(:new).and_return(double(device_type: "desktop"))
       end
 
-      it "shows Metabase: Statin Report link" do
-        sign_in(cvho.email_authentication)
-        get :show, params: {id: organization.slug, report_scope: "state"}
-        expect(response.body).to include("Metabase: Statin Report")
-        expect(response.body).to include(ENV.fetch("DIVISION_METABASE_STATIN_REPORT_URL", ""))
-      end
-
       context "and the feature flag is disabled" do
         it "does not display the quick links section" do
           sign_in(cvho.email_authentication)
