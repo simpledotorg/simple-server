@@ -83,7 +83,7 @@
       </thead>
 
       <% grouped.each do |state, districts| %>
-        <% state_data = aggregate_state_totals(districts, first_drugs_by_category) %>
+        <% state_data = aggregate_state_totals(districts, first_drugs_by_category, state) %>
         <% state_totals = state_data[:totals] %>
         <% state_patient_days = state_data[:patient_days] %>
         <% state_patient_count = state_data[:patient_count] %>
@@ -105,9 +105,19 @@
               <% end %>
               <% unless drug_category == "diabetes" %>
                 <% if state_patient_days[drug_category].present? %>
-                  <td class="type-percent">
-                    <em class="<%= patient_days_css_class(state_patient_days[drug_category]) %>"><%= state_patient_days[drug_category] %></em>
-                  </td>
+                <td class="type-percent"
+                  data-html="true"
+                  data-toggle="tooltip"
+                  data-placement="top"
+                  data-trigger="hover focus click"
+                  data-template="<%= render 'wide_tooltip_template' %>"
+                  data-original-title="<%= render 'drug_stocks_tooltip', report: state_data[:patient_days_report][drug_category] %>"
+                  data-sort-value="<%= state_patient_days[drug_category] %>">
+                <em class="<%= patient_days_css_class(state_patient_days[drug_category]) %>">
+                  <%= state_patient_days[drug_category] %>
+                </em>
+              </td>
+
                 <% else %>
                   <td class="type-blank"><span>&#8212;</span></td>
                 <% end %>

@@ -21,7 +21,7 @@ RSpec.describe Reports::OverduePatient, {type: :model, reporting_spec: true} do
     it "should not include dead patients" do
       create(:patient)
       dead_patient = create(:patient, status: "dead")
-      Reports::PatientState.refresh
+      Reports::PatientState.partitioned_refresh(Date.today)
       described_class.refresh
 
       with_reporting_time_zone do
