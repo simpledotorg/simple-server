@@ -30,7 +30,7 @@ module DrugStockHelper
     end
   end
 
-  def aggregate_state_totals(districts, drugs_by_category)
+  def aggregate_state_totals(districts, drugs_by_category, state = nil)
     totals = Hash.new(0)
     patient_days = Hash.new(0)
     patient_count = 0
@@ -43,14 +43,56 @@ module DrugStockHelper
         drugs.each do |drug|
           totals[drug.rxnorm_code] += drug_stock_for(report, drug)
         end
-
-        if report.dig(:total_patient_days, drug_category, :patient_days)
-          patient_days[drug_category] += report.dig(:total_patient_days, drug_category, :patient_days).to_i
-        end
       end
     end
 
-    {totals: totals, patient_days: patient_days, patient_count: patient_count}
+    patient_days_report = {}
+    drugs_by_category.each do |drug_category, drugs|
+      state_coeffs = state ? Reports::DrugStockCalculation.new(
+        state: state,
+        protocol_drugs: drugs,
+        drug_category: drug_category,
+        current_drug_stocks: districts.map { |_, d| d[:report][:drugs] }.flatten,
+        patient_count: patient_count
+      ).patient_days_coefficients(state) : {}
+
+      load_coefficient = state_coeffs[:load_coefficient] || 1
+      new_patient_coefficient = state_coeffs.dig(:drug_categories, drug_category, :new_patient_coefficient) || 1
+
+      adjusted_stock_sum = drugs.sum do |drug|
+        coefficient = state_coeffs.dig(:drug_categories, drug_category, drug.rxnorm_code) || 1
+        totals[drug.rxnorm_code].to_f * coefficient
+      end
+
+      patient_days[drug_category] = if patient_count.positive?
+        (adjusted_stock_sum / (patient_count * load_coefficient * new_patient_coefficient)).to_i
+      else
+        0
+      end
+
+      stocks = drugs.map do |drug|
+        {
+          protocol_drug: drug,
+          in_stock: totals[drug.rxnorm_code].to_i,
+          coefficient: state_coeffs.dig(:drug_categories, drug_category, drug.rxnorm_code) || 1
+        }
+      end
+
+      patient_days_report[drug_category] = {
+        stocks_on_hand: stocks,
+        patient_count: patient_count,
+        load_coefficient: load_coefficient,
+        new_patient_coefficient: new_patient_coefficient,
+        patient_days: patient_days[drug_category]
+      }
+    end
+
+    {
+      totals: totals,
+      patient_days: patient_days,
+      patient_count: patient_count,
+      patient_days_report: patient_days_report
+    }
   end
 
   def grouped_district_reports(district_reports)
