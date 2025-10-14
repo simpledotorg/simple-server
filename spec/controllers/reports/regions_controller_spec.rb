@@ -59,6 +59,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).to include("Quick links")
           expect(response.body).to include("Metabase: Titration report")
           expect(response.body).to include("Metabase: BP fudging report")
+          expect(response.body).to include("Metabase: Statin Report")
         end
 
         it "shows the Metabase: Drug stock report link for Ethiopia" do
@@ -130,6 +131,13 @@ RSpec.describe Reports::RegionsController, type: :controller do
           expect(response.body).not_to include("Drug stock report")
           expect(response.body).not_to include("Metabase: Drug stock report")
         end
+
+        it "shows Metabase: Statin Report link" do
+          sign_in(cvho.email_authentication)
+          get :show, params: {id: facility_group.slug, report_scope: "district"}
+          expect(response.body).to include("Metabase: Statin Report")
+          expect(response.body).to include(ENV.fetch("DISTRICT_METABASE_STATIN_REPORT_URL", ""))
+        end
       end
     end
 
@@ -150,6 +158,7 @@ RSpec.describe Reports::RegionsController, type: :controller do
 
           expect(response.body).to_not include("Metabase: Titration report")
           expect(response.body).to_not include("Metabase: Systolic BP reading report")
+          expect(response.body).to_not include("Metabase: Statin Report")
           expect(response.body).to_not include("https://metabase.example.com/titration?state_name=")
           expect(response.body).to_not include("https://metabase.example.com/systolic?state_name=")
           expect(response.body).to_not include("https://metabase.example.com/bp_fudging_division?state_name=")
