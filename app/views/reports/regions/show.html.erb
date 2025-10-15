@@ -3,6 +3,7 @@
 <% end %>
 <% if @is_desktop && Flipper.enabled?(:quick_link_for_metabase, current_admin) %>
   <% last_month = Date.today.last_month.strftime("%b-%Y") %>
+  <% last_month_last_date = (Date.today.last_month.end_of_month).to_s %>
 
   <% if @region.facility_region? %>
     <div class="float-right desktop">
@@ -10,7 +11,6 @@
       <% district = @region.source.facility_group.slug %>
       <% size = @region.source.facility_size.presence || '' %>
       <% zone = @region.source.zone %>
-      <% last_month_last_date = (Date.today.last_month.end_of_month).to_s %>
 
       <% if CountryConfig.current_country?("Ethiopia") %>
         <div>
@@ -35,6 +35,11 @@
       <div>
         ⚡ <a href="<%= ENV.fetch('METABASE_BP_FUDGING_URL', '') %><%= @region.name %>" target="_blank">
           Metabase: BP fudging report
+        </a>
+      </div>
+      <div>
+        ⚡ <a href="<%= ENV.fetch('METABASE_STATIN_REPORT_URL', '') %><%= @region.name %>" target="_blank">
+          Metabase: Statin Report
         </a>
       </div>
     </div>
@@ -67,6 +72,11 @@
           Metabase: Systolic BP reading report
         </a></div>
       <% end %>
+      <div>
+        ⚡ <a href="<%= ENV.fetch('DISTRICT_METABASE_STATIN_REPORT_URL', '') %><%= @region.name %>" target="_blank">
+                Metabase: Statin Report
+          </a>
+      </div>
     </div>
   <% elsif @region.state_region? %>
     <div class="float-right desktop">
@@ -87,6 +97,11 @@
       <div>⚡ <a href="<%= ENV.fetch('DIVISION_METABASE_BP_FUDGING_URL', '') %><%= @region.name %>" target="_blank">
         Metabase: BP fudging report
       </a></div>
+      <div>
+        ⚡ <a href="<%= ENV.fetch('DIVISION_METABASE_STATIN_REPORT_URL', '') %><%= @region.name %>" target="_blank">
+                Metabase: Statin Report 
+          </a>
+      </div>
     </div>
   <% end %>
 <% end %>
