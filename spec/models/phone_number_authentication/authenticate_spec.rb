@@ -55,6 +55,19 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         expect(result.error_message).to be_nil
       end
 
+      it "returns success with 000000 even when stored OTP is expired" do
+        user = FactoryBot.create(:user, password: "5489")
+        # Simulate an expired OTP in the database
+        user.phone_number_authentication.update!(otp: "123456", otp_expires_at: 1.hour.ago)
+        expect(user.otp_valid?).to be false
+
+        result = PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+          password: "5489",
+          phone_number: user.phone_number)
+        expect(result).to be_success
+        expect(result.error_message).to be_nil
+      end
+
       it "generates access token when using 000000" do
         user = FactoryBot.create(:user, password: "5489")
         user.phone_number_authentication.update!(otp: "987654", otp_expires_at: 1.hour.from_now)

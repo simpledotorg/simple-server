@@ -55,7 +55,7 @@ class PhoneNumberAuthentication
       elsif !otp_valid?
         track_failed_attempt
         failure("login.error_messages.invalid_otp")
-      elsif !authentication.otp_valid?
+      elsif !otp_not_expired?
         track_failed_attempt
         failure("login.error_messages.expired_otp")
       elsif !authentication.authenticate(password)
@@ -67,8 +67,17 @@ class PhoneNumberAuthentication
     end
 
     def otp_valid?
-      return true if Flipper.enabled?(:fixed_otp) && otp == "000000"
+      return true if using_fixed_otp?
       authentication.otp == otp
+    end
+
+    def otp_not_expired?
+      return true if using_fixed_otp?
+      authentication.otp_valid?
+    end
+
+    def using_fixed_otp?
+      Flipper.enabled?(:fixed_otp) && otp == "000000"
     end
 
     def failure(message_key, opts = {})
