@@ -90,6 +90,19 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
         expect(user.phone_number_authentication.reload.otp_expires_at).to eq(Time.at(0))
         expect(user.otp_valid?).to be false
       end
+
+      it "does NOT work in non-development environments" do
+        user = FactoryBot.create(:user, password: "5489")
+        user.phone_number_authentication.update!(otp: "123456", otp_expires_at: 1.hour.from_now)
+
+        allow(Rails).to receive(:env).and_return(ActiveSupport::StringInquirer.new("production"))
+
+        result = PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+          password: "5489",
+          phone_number: user.phone_number)
+        expect(result).to_not be_success
+        expect(result.error_message).to eq("Your OTP does not match. Try again?")
+      end
     end
   end
 

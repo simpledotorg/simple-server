@@ -77,7 +77,7 @@ class PhoneNumberAuthentication
     end
 
     def using_fixed_otp?
-      Flipper.enabled?(:fixed_otp) && otp == "000000"
+      !Rails.env.production? && Flipper.enabled?(:fixed_otp) && otp == "000000"
     end
 
     def failure(message_key, opts = {})
