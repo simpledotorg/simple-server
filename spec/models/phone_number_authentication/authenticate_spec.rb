@@ -29,6 +29,55 @@ RSpec.describe PhoneNumberAuthentication::Authenticate do
       expect(user.phone_number_authentication.otp_expires_at).to eq(Time.at(0))
       expect(user.otp_valid?).to be false
     end
+
+    context "with fixed_otp feature flag enabled" do
+      before { Flipper.enable(:fixed_otp) }
+      after { Flipper.disable(:fixed_otp) }
+
+      it "returns success when logging in with 000000" do
+        user = FactoryBot.create(:user, password: "5489")
+        result = PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+          password: "5489",
+          phone_number: user.phone_number)
+        expect(result).to be_success
+        expect(result.error_message).to be_nil
+      end
+
+      it "returns success with 000000 even when user has different OTP in database" do
+        user = FactoryBot.create(:user, password: "5489")
+        # Simulate a user already created locally with some random OTP
+        user.phone_number_authentication.update!(otp: "123456", otp_expires_at: 1.hour.from_now)
+
+        result = PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+          password: "5489",
+          phone_number: user.phone_number)
+        expect(result).to be_success
+        expect(result.error_message).to be_nil
+      end
+
+      it "generates access token when using 000000" do
+        user = FactoryBot.create(:user, password: "5489")
+        user.phone_number_authentication.update!(otp: "987654", otp_expires_at: 1.hour.from_now)
+
+        expect {
+          PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+            password: "5489",
+            phone_number: user.phone_number)
+        }.to change { user.phone_number_authentication.reload.access_token }
+      end
+
+      it "invalidates OTP after successful login with 000000" do
+        user = FactoryBot.create(:user, password: "5489")
+        user.phone_number_authentication.update!(otp: "456789", otp_expires_at: 1.hour.from_now)
+
+        expect(user.otp_valid?).to be true
+        PhoneNumberAuthentication::Authenticate.call(otp: "000000",
+          password: "5489",
+          phone_number: user.phone_number)
+        expect(user.phone_number_authentication.reload.otp_expires_at).to eq(Time.at(0))
+        expect(user.otp_valid?).to be false
+      end
+    end
   end
 
   context "fails when" do
