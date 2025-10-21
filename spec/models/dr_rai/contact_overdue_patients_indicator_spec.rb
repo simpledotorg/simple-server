@@ -80,7 +80,7 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       facility_1_denominator = indicator.denominator(region, period, with_non_contactable: true)
 
       expect(facility_1_numerator).to eq 6
-      expect(facility_1_denominator).to eq 5  # 5 patients total: 3 contactable + 1 without phone + 1 removed from list
+      expect(facility_1_denominator).to eq 5 # 5 patients total: 3 contactable + 1 without phone + 1 removed from list
     end
   end
 end
