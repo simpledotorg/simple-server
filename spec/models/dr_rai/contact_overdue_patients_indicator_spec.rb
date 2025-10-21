@@ -52,15 +52,23 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
     it "return the count of contactable patients called" do
       facility_1_contactable_patients = create_list(:patient, 3, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
       facility_1_patient_with_out_phone = create(:patient, :hypertension, :without_phone_number, assigned_facility: facility_1, recorded_at: five_months_ago)
-      facility_1_patient_removed_from_list = create(:patient, :hypertension, :removed_from_overdue_list, assigned_facility: facility_1, recorded_at: five_months_ago)
+      facility_1_patient_removed_from_list = create(:patient, :hypertension, assigned_facility: facility_1, recorded_at: five_months_ago)
+
+      # Create appointments for all patients
       facility_1_contactable_patients.each do |the_patient|
         create(:appointment, patient: the_patient, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
       end
-      create(:call_result, patient: facility_1_contactable_patients.first, device_created_at: this_month + 15.days)
-      create(:call_result, patient: facility_1_contactable_patients.second, device_created_at: this_month + 1.days)
-      create(:call_result, patient: facility_1_contactable_patients.third, device_created_at: two_months_ago + 1.days)
-      create(:call_result, patient: facility_1_patient_with_out_phone, device_created_at: this_month + 27.days)
-      create(:call_result, patient: facility_1_patient_removed_from_list, device_created_at: this_month + 4.days)
+      create(:appointment, patient: facility_1_patient_with_out_phone, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
+      create(:appointment, patient: facility_1_patient_removed_from_list, scheduled_date: one_month_ago, facility: facility_1, device_created_at: two_months_ago)
+
+      # Create call results - deterministic result_type to avoid flakiness
+      create(:call_result, patient: facility_1_contactable_patients.first, device_created_at: this_month + 15.days, result_type: :agreed_to_visit)
+      create(:call_result, patient: facility_1_contactable_patients.second, device_created_at: this_month + 1.days, result_type: :agreed_to_visit)
+      create(:call_result, patient: facility_1_contactable_patients.third, device_created_at: two_months_ago + 1.days, result_type: :agreed_to_visit)
+      create(:call_result, patient: facility_1_patient_with_out_phone, device_created_at: this_month + 27.days, result_type: :agreed_to_visit)
+      # Patient removed from overdue list has 2 call results: one initial removal, one follow-up
+      create(:call_result, patient: facility_1_patient_removed_from_list, device_created_at: one_month_ago, result_type: :removed_from_overdue_list, remove_reason: :not_responding)
+      create(:call_result, patient: facility_1_patient_removed_from_list, device_created_at: this_month + 4.days, result_type: :agreed_to_visit)
 
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(5.months.ago.to_date, Date.today))
       RefreshReportingViews.new(views: views).call
@@ -72,7 +80,7 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
       facility_1_denominator = indicator.denominator(region, period, with_non_contactable: true)
 
       expect(facility_1_numerator).to eq 6
-      expect(facility_1_denominator).to eq 4
+      expect(facility_1_denominator).to eq 5  # 5 patients total: 3 contactable + 1 without phone + 1 removed from list
     end
   end
 end
