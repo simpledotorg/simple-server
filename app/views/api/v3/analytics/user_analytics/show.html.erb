@@ -19,7 +19,7 @@
   </head>
   <body>
     <div id="home-page">
-      <% if Flipper.enabled?(:dr_rai_reports, current_user) && Flipper.enabled?(:dr_rai_progress) && @region.facility_region? %>
+      <% if Flipper.enabled?(:dr_rai_progress) && @region.facility_region? %>
         <% dr_rai_component = Dashboard::DrRaiReport.new(nil, @region.slug, @dr_rai_options, true) %>
         <% unless dr_rai_component.action_plans.empty? %>
         <div class="mb-8px p-16px bgc-white bs-card">
