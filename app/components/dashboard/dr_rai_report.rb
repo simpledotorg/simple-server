@@ -3,16 +3,16 @@ class Dashboard::DrRaiReport < ApplicationComponent
   attr_reader :periods, :region
   attr_accessor :selected_period
 
-  def initialize(periods, region_slug, options, lite = false)
+  def initialize(periods, region_slug, options = {}, lite = false)
     @lite = lite
     @periods = periods
     @region = Region.find_by(slug: region_slug)
-    @selected_period = if options[:selected_quarter].nil?
+    @selected_period = if options&.dig(:selected_quarter).nil?
       Period.new(type: :quarter, value: current_period.value.to_s)
     else
-      Period.new(type: :quarter, value: options[:selected_quarter])
+      Period.new(type: :quarter, value: options&.dig(:selected_quarter))
     end
-    @with_non_contactable = options[:with_non_contactable].present?
+    @with_non_contactable = options&.dig(:with_non_contactable).present?
   end
 
   def indicators
