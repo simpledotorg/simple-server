@@ -39,6 +39,14 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       render_inline(described_class.new(periods, region, rai_options))
       expect(page).to have_text("Q2 2024")
     end
+
+    it "handles nil options without error and defaults to the current period" do
+      allow(Period).to receive(:current).and_return(quarter1)
+      expect {
+        render_inline(described_class.new(periods, region, nil))
+      }.not_to raise_error
+      expect(page).to have_text("Q1 2024")
+    end
   end
 
   describe "#classes_for_period" do
