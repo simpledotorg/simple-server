@@ -63,10 +63,10 @@ class Api::V4::Models::Questionnaires::DSLVersion1Dot2
           id: {"$ref" => "#/definitions/uuid"},
           link_id: {type: :string},
           text: {type: :string},
-          view_type: {type: :string, enum: %w[month_year_picker]},
+          view_type: {type: :string, enum: %w[month_year_picker date_picker]},
           view_format: {
             type: :string,
-            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\""
+            description: "A pattern parseable by Kotlin's DateTimeFormatter for rendering dates on Android apps. For ex: \"MMM yyyy\" or \"dd/MM/yyyy\""
           },
           validations: {
             type: :object,
