@@ -1,4 +1,7 @@
 class Api::V4::CvdRisksController < Api::V4::SyncController
+  include Api::V3::SyncEncounterObservation
+  include Api::V3::RetroactiveDataEntry
+
   def sync_from_user
     __sync_from_user__(cvd_risk_params)
   end
