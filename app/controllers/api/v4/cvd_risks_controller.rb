@@ -1,4 +1,7 @@
 class Api::V4::CvdRisksController < Api::V4::SyncController
+  include Api::V3::SyncEncounterObservation
+  include Api::V3::RetroactiveDataEntry
+
   def sync_from_user
     __sync_from_user__(cvd_risk_params)
   end
@@ -15,6 +18,7 @@ class Api::V4::CvdRisksController < Api::V4::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
+      set_patient_recorded_at(payload)
       record_params = Api::V4::CvdRiskTransformer
         .from_request(payload)
 
