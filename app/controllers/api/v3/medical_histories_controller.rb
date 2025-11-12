@@ -24,7 +24,12 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
         .merge(metadata)
 
       medical_history = MedicalHistory.merge(record_params)
-      {record: medical_history}
+      
+      if medical_history.errors.any?
+        {errors_hash: errors_hash(medical_history)}
+      else
+        {record: medical_history}
+      end
     end
   end
 
@@ -48,6 +53,8 @@ class Api::V3::MedicalHistoriesController < Api::V3::SyncController
         :smoking,
         :smokeless_tobacco,
         :cholesterol,
+        :htn_diagnosed_at,
+        :dm_diagnosed_at,
         :created_at,
         :updated_at
       )

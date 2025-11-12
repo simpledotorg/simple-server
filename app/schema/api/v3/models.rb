@@ -310,6 +310,8 @@ class Api::V3::Models
          smoking: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          smokeless_tobacco: {type: :string, enum: MedicalHistory::MEDICAL_HISTORY_ANSWERS.keys},
          cholesterol_value: {type: :number},
+         htn_diagnosed_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         dm_diagnosed_at: {"$ref" => "#/definitions/nullable_timestamp"},
          deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
          created_at: {"$ref" => "#/definitions/timestamp"},
          updated_at: {"$ref" => "#/definitions/timestamp"}
