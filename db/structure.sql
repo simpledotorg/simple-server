@@ -642,7 +642,9 @@ CREATE TABLE public.medical_histories (
     receiving_treatment_for_diabetes text,
     smoking text,
     cholesterol integer,
-    smokeless_tobacco character varying
+    smokeless_tobacco character varying,
+    htn_diagnosed_at timestamp without time zone,
+    dm_diagnosed_at timestamp without time zone
 );
 
 
@@ -1516,6 +1518,7 @@ CREATE TABLE public.patients (
     deleted_by_user_id uuid,
     deleted_reason character varying,
     assigned_facility_id uuid,
+    diagnosed_confirmed_at timestamp without time zone,
     eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
 );
 
@@ -8557,5 +8560,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250923223358'),
 ('20250924101441'),
 ('20250924102156'),
-('20250925094123');
-
+('20250925094123'),
+('20251112085230'),
+('20251112091000');
