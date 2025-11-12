@@ -46,7 +46,6 @@ class MedicalHistory < ApplicationRecord
     prior_heart_attack_yes? || prior_stroke_yes?
   end
 
-
   def validate_immutable_diagnosis_dates
     if will_save_change_to_htn_diagnosed_at? && htn_diagnosed_at_was.present?
       errors.add(:htn_diagnosed_at, "Hypertension diagnosis date has already been recorded and cannot be changed.")
