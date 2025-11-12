@@ -170,8 +170,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
       it "sets patient's diagnosed_confirmed_at to earliest of diagnosis timestamps when provided" do
         early = 8.days.ago
         late = 3.days.ago
-        params[:medical_histories][0][:htn_diagnosed_at] = late
-        params[:medical_histories][0][:dm_diagnosed_at] = early
+        params[:medical_histories][0][:htn_diagnosed_at] = late.rfc3339
+        params[:medical_histories][0][:dm_diagnosed_at] = early.rfc3339
 
         post :sync_from_user, params: params
 
