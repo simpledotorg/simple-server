@@ -34,7 +34,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
             smoking: "no",
             smokeless_tobacco: "no",
             htn_diagnosed_at: 2.years.ago, # Trying to change existing date
-            dm_diagnosed_at: 1.year.ago,    # Trying to change existing date
+            dm_diagnosed_at: 1.year.ago, # Trying to change existing date
             created_at: existing_medical_history.created_at,
             updated_at: Time.current
           }]
@@ -46,10 +46,10 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
 
         expect(response.status).to eq 200
         parsed_body = JSON.parse(response.body)
-        
+
         expect(parsed_body["errors"]).to be_present
         expect(parsed_body["errors"].length).to eq 1
-        
+
         error = parsed_body["errors"].first
         expect(error["id"]).to eq existing_medical_history.id
         expect(error["htn_diagnosed_at"]).to include("has already been recorded and cannot be changed")
@@ -93,7 +93,7 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
             smoking: "no",
             smokeless_tobacco: "no",
             htn_diagnosed_at: existing_medical_history.htn_diagnosed_at, # Same date
-            dm_diagnosed_at: existing_medical_history.dm_diagnosed_at,   # Same date
+            dm_diagnosed_at: existing_medical_history.dm_diagnosed_at, # Same date
             created_at: existing_medical_history.created_at,
             updated_at: Time.current
           }]
