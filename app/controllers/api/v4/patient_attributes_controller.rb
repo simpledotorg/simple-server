@@ -1,4 +1,7 @@
 class Api::V4::PatientAttributesController < Api::V4::SyncController
+  include Api::V3::SyncEncounterObservation
+  include Api::V3::RetroactiveDataEntry
+
   def sync_from_user
     __sync_from_user__(patient_attributes_params)
   end
@@ -19,6 +22,7 @@ class Api::V4::PatientAttributesController < Api::V4::SyncController
     if validator.check_invalid?
       {errors_hash: validator.errors_hash}
     else
+      set_patient_recorded_at(payload_attribute_params)
       record_params = Api::V4::PatientAttributeTransformer
         .from_request(payload_attribute_params)
         .merge(metadata)
