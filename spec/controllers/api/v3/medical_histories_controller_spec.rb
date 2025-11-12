@@ -183,9 +183,17 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         expect(response.status).to eq 200
         parsed_body = JSON.parse(response.body)
         expect(parsed_body["errors"][0]["schema"][0]).to start_with(
-          "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
+          "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown, suspected in schema"
         )
         expect(patient.reload.medical_history).to eq(nil)
+      end
+
+      it "accepts 'suspected' as a valid hypertension value" do
+        params[:medical_histories][0][:hypertension] = "suspected"
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        expect(patient.reload.medical_history.hypertension).to eq("suspected")
       end
     end
   end

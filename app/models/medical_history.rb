@@ -21,7 +21,8 @@ class MedicalHistory < ApplicationRecord
   MEDICAL_HISTORY_ANSWERS = {
     yes: "yes",
     no: "no",
-    unknown: "unknown"
+    unknown: "unknown",
+    suspected: "suspected"
   }.freeze
 
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
