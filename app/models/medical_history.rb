@@ -21,7 +21,8 @@ class MedicalHistory < ApplicationRecord
   MEDICAL_HISTORY_ANSWERS = {
     yes: "yes",
     no: "no",
-    unknown: "unknown"
+    unknown: "unknown",
+    suspected: "suspected"
   }.freeze
 
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
@@ -37,7 +38,32 @@ class MedicalHistory < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  validate :validate_immutable_diagnosis_dates, on: :update
+
+  after_save :update_patient_diagnosed_confirmed_at
+
   def indicates_hypertension_risk?
     prior_heart_attack_yes? || prior_stroke_yes?
+  end
+
+  def validate_immutable_diagnosis_dates
+    if will_save_change_to_htn_diagnosed_at? && htn_diagnosed_at_was.present?
+      errors.add(:htn_diagnosed_at, "Hypertension diagnosis date has already been recorded and cannot be changed.")
+    end
+
+    if will_save_change_to_dm_diagnosed_at? && dm_diagnosed_at_was.present?
+      errors.add(:dm_diagnosed_at, "Diabetes diagnosis date has already been recorded and cannot be changed.")
+    end
+  end
+
+  def update_patient_diagnosed_confirmed_at
+    return if patient.blank?
+
+    earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
+    return if earliest.blank?
+
+    if patient.diagnosed_confirmed_at.nil?
+      patient.update_columns(diagnosed_confirmed_at: earliest)
+    end
   end
 end
