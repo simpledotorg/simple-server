@@ -4,7 +4,8 @@ class Questionnaire < ApplicationRecord
   enum questionnaire_type: {
     monthly_screening_reports: "monthly_screening_reports",
     monthly_supplies_reports: "monthly_supplies_reports",
-    drug_stock_reports: "drug_stock_reports"
+    drug_stock_reports: "drug_stock_reports",
+    cbac_form: "cbac_form"
   }
 
   validates :dsl_version, uniqueness: {

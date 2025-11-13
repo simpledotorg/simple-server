@@ -34,7 +34,7 @@ RSpec.describe "Questionnaires sync", type: :request do
       get sync_route, params: {process_token: process_token_without_resync, dsl_version: dsl_version}, headers: headers_with_resync_token
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(3)
+      expect(response_body[response_key].count).to eq(4)
       expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
     end
 
@@ -48,7 +48,7 @@ RSpec.describe "Questionnaires sync", type: :request do
         headers: headers_with_resync_token
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(3)
+      expect(response_body[response_key].count).to eq(4)
       expect(parse_process_token(response_body)[:resync_token]).to eq(resync_token)
     end
 
@@ -59,7 +59,7 @@ RSpec.describe "Questionnaires sync", type: :request do
       get sync_route, params: {process_token: process_token_with_resync, dsl_version: dsl_version}, headers: headers_with_resync_token
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(2)
+      expect(response_body[response_key].count).to eq(3)
     end
 
     it "syncs normally if resync_token in headers is the same as the one in process_token" do
@@ -68,7 +68,7 @@ RSpec.describe "Questionnaires sync", type: :request do
 
       get sync_route, params: {process_token: process_token_with_resync, dsl_version: dsl_version}, headers: headers_with_resync_token
       response_body = JSON(response.body)
-      expect(response_body[response_key].count).to eq(2)
+      expect(response_body[response_key].count).to eq(3)
     end
   end
 
@@ -81,23 +81,23 @@ RSpec.describe "Questionnaires sync", type: :request do
       get sync_route, params: {process_token: process_token_without_resync, dsl_version: dsl_version}, headers: headers
       response_body = JSON(response.body)
 
-      expect(response_body[response_key].count).to eq(3)
+      expect(response_body[response_key].count).to eq(4)
       expect(parse_process_token(response_body)[:resync_token]).to eq(nil)
 
       get sync_route, params: {process_token: JSON(response.body)["process_token"], dsl_version: dsl_version}, headers: headers
-      expect(JSON(response.body)[response_key].count).to eq(2)
+      expect(JSON(response.body)[response_key].count).to eq(3)
     end
   end
 
   it "does a force-resync when mismatch between locale in header and process token" do
     get sync_route, params: {dsl_version: dsl_version}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
-    expect(JSON(response.body)["questionnaires"].count).to eq 3
+    expect(JSON(response.body)["questionnaires"].count).to eq 4
     process_token = JSON(response.body)["process_token"]
 
     get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "en-IN"}.merge(headers)
-    expect(JSON(response.body)["questionnaires"].count).to eq 2
+    expect(JSON(response.body)["questionnaires"].count).to eq 3
 
     get sync_route, params: {dsl_version: dsl_version, process_token: process_token}, headers: {"Accept-Language" => "hi-IN"}.merge(headers)
-    expect(JSON(response.body)["questionnaires"].count).to eq 3
+    expect(JSON(response.body)["questionnaires"].count).to eq 4
   end
 end
