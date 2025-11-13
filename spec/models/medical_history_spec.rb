@@ -20,7 +20,7 @@ describe MedicalHistory, type: :model do
     end
   end
 
-  describe "Behavior" do
+  describe "Behavior" do  
     it_behaves_like "a record that is deletable"
   end
 
@@ -51,15 +51,15 @@ describe MedicalHistory, type: :model do
     let(:patient) { create(:patient, diagnosed_confirmed_at: nil) }
 
     it "sets to htn_diagnosed_at when only HTN is present" do
-      t = 3.days.ago
-      create(:medical_history, patient: patient, htn_diagnosed_at: t, dm_diagnosed_at: nil)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(t.to_i)
+      htn_time = 3.days.ago
+      create(:medical_history, patient: patient, htn_diagnosed_at: htn_time, dm_diagnosed_at: nil)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
     end
 
     it "sets to dm_diagnosed_at when only DM is present" do
-      t = 5.days.ago
-      create(:medical_history, patient: patient, htn_diagnosed_at: nil, dm_diagnosed_at: t)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(t.to_i)
+      dm_time = 5.days.ago
+      create(:medical_history, patient: patient, htn_diagnosed_at: nil, dm_diagnosed_at: dm_time)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(dm_time.to_i)
     end
 
     it "sets to the earliest of HTN and DM when both present" do
