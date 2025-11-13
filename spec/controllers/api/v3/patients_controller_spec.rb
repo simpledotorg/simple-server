@@ -134,6 +134,27 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
         expect(Patient.count).to eq 1
         expect(Patient.first.registration_user).to eq request_user
       end
+
+      context "when skip_facility_authorization is set in merge_if_valid" do
+        it "allows syncing patients with assigned facility from a different facility group" do
+          other_facility_group = create(:facility_group)
+          other_registration_facility = create(:facility, facility_group: other_facility_group)
+          other_assigned_facility = create(:facility, facility_group: other_facility_group)
+
+          patient = build(:patient, registration_facility: other_registration_facility, assigned_facility: other_assigned_facility)
+          patient_payload = build_patient_payload(patient).merge(
+            registration_facility_id: other_registration_facility.id,
+            assigned_facility_id: other_assigned_facility.id
+          )
+
+          post(:sync_from_user, params: {patients: [patient_payload]}, as: :json)
+
+          expect(response).to have_http_status(200)
+          expect(Patient.count).to eq 1
+          expect(Patient.first.registration_facility).to eq other_registration_facility
+          expect(Patient.first.assigned_facility).to eq other_assigned_facility
+        end
+      end
     end
 
     describe "updates patients" do
