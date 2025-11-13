@@ -21,8 +21,7 @@ class MedicalHistory < ApplicationRecord
   MEDICAL_HISTORY_ANSWERS = {
     yes: "yes",
     no: "no",
-    unknown: "unknown",
-    suspected: "suspected"
+    unknown: "unknown"
   }.freeze
 
   enum prior_heart_attack: MEDICAL_HISTORY_ANSWERS, _prefix: true
@@ -30,11 +29,11 @@ class MedicalHistory < ApplicationRecord
   enum chronic_kidney_disease: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum receiving_treatment_for_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum receiving_treatment_for_diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
-  enum diabetes: MEDICAL_HISTORY_ANSWERS, _prefix: true
-  enum hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
-  enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum smoking: MEDICAL_HISTORY_ANSWERS, _prefix: true
   enum smokeless_tobacco: MEDICAL_HISTORY_ANSWERS, _prefix: true
+  enum diabetes: MEDICAL_HISTORY_ANSWERS.merge(suspected: "suspected"), _prefix: true
+  enum hypertension: MEDICAL_HISTORY_ANSWERS.merge(suspected: "suspected"), _prefix: true
+  enum diagnosed_with_hypertension: MEDICAL_HISTORY_ANSWERS.merge(suspected: "suspected"), _prefix: true
 
   scope :for_sync, -> { with_discarded }
 

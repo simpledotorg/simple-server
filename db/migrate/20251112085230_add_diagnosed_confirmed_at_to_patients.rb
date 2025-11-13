@@ -4,9 +4,9 @@ class AddDiagnosedConfirmedAtToPatients < ActiveRecord::Migration[6.1]
 
     execute <<~SQL.squish
       UPDATE patients
-      SET diagnosed_confirmed_at = device_created_at
+      SET diagnosed_confirmed_at = recorded_at
       WHERE diagnosed_confirmed_at IS NULL
-        AND device_created_at IS NOT NULL;
+        AND recorded_at IS NOT NULL;
     SQL
   end
 
