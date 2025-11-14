@@ -7,8 +7,8 @@ class AddDiagnosisTimestampsToMedicalHistories < ActiveRecord::Migration[6.1]
       MedicalHistory.includes(:patient).find_each(batch_size: 1000) do |mh|
         next unless mh.patient
 
-        htn_time = (mh.diagnosed_with_hypertension == "yes" || mh.hypertension == "yes") ? mh.patient.recorded_at : nil
-        dm_time  = (mh.diabetes == "yes") ? mh.patient.recorded_at : nil
+        htn_time = mh.diagnosed_with_hypertension == "yes" || mh.hypertension == "yes" ? mh.patient.recorded_at : nil
+        dm_time = mh.diabetes == "yes" ? mh.patient.recorded_at : nil
 
         next unless htn_time || dm_time
 
