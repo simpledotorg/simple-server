@@ -20,7 +20,7 @@ describe MedicalHistory, type: :model do
     end
   end
 
-  describe "Behavior" do  
+  describe "Behavior" do
     it_behaves_like "a record that is deletable"
   end
 
