@@ -5,14 +5,13 @@
   Home
 </h1>
 <div class="d-grid grid-2-cols gap-16px">
-  <div class="">
+  <div>
     <%= render "shared/user_approvals" %>
-    <%#= render "upcoming_improvements" %>
-
   </div>
-  <div class="d-flex flex-column gap-16px">
+  <div class="d-flex flex-column gap-16px grid-col-2" style="order: 0;">
     <%= render "recent_updates" %>
     <%= render 'shared/my_facilities/facilities_by_size' %>
     <%= render 'shared/my_facilities/inactive_facilities' %>
+    <%#= render "upcoming_improvements" %>
   </div>
 </div>
