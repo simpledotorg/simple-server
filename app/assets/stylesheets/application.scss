@@ -848,7 +848,7 @@ span.inactive {
 @media (max-width: 990px) {
   .grid-col-1,
   .grid-col-2 {
-    grid-column: auto; /* or 1 / -1 to span full width */
+    grid-column: auto;
   }
 }
 
