@@ -545,6 +545,10 @@ span.inactive {
   position: relative;
 }
 
+.card-margin-0 {
+  margin: 0;
+}
+
 @include media-breakpoint-down(lg) {
   .card {
     height: auto !important;
@@ -748,6 +752,7 @@ span.inactive {
 }
 
 .o-65 { opacity: 0.65; }
+.o-85 { opacity: 0.85; }
 
 .card-chip-container {
   white-space: nowrap;
@@ -834,6 +839,16 @@ span.inactive {
   .col-span-2,
   .col-span-3 {
     grid-column: span 1;
+  }
+}
+
+.grid-col-1 { grid-column: 1; }
+.grid-col-2 { grid-column: 2; }
+
+@media (max-width: 990px) {
+  .grid-col-1,
+  .grid-col-2 {
+    grid-column: auto;
   }
 }
 
