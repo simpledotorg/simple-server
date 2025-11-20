@@ -58,6 +58,7 @@ FactoryBot.define do
 
     trait :without_medical_history do
       medical_history { nil }
+      diagnosed_confirmed_at { nil }
     end
 
     trait :denied do
