@@ -47,7 +47,7 @@ class Api::V3::PatientsController < Api::V3::SyncController
   end
 
   def merge_if_valid(single_patient_params)
-    validator_params = single_patient_params.merge(request_user_id: current_user.id, skip_facility_authorization: true)
+    validator_params = single_patient_params.merge(request_user_id: current_user.id)
     validator = Api::V3::PatientPayloadValidator.new(validator_params)
 
     if validator.check_invalid?

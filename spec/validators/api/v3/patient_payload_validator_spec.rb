@@ -128,21 +128,6 @@ describe Api::V3::PatientPayloadValidator, type: :model do
         expect(valid_payload.valid?).to be true
         expect(invalid_payload.valid?).to be false
       end
-
-      context "when skip_facility_authorization is true" do
-        it "skips assigned facility authorization validation" do
-          invalid_facility_payload = build_patient_payload(patient).deep_merge(
-            "assigned_facility_id" => invalid_facility.id,
-            "request_user_id" => user.id,
-            "skip_facility_authorization" => true
-          )
-          payload = Api::V3::PatientPayloadValidator.new(invalid_facility_payload)
-          payload.validate
-
-          expect(payload.valid?).to be true
-          expect(payload.errors[:assigned_facility_does_not_belong_to_user]).to be_blank
-        end
-      end
     end
 
     context "when schema validations are disabled" do
