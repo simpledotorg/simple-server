@@ -876,7 +876,6 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   end
 
   context "screening" do
-
     it "doesn't considers the patient if it's only screened" do
       diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
       screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
