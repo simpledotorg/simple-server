@@ -48,7 +48,7 @@ describe MedicalHistory, type: :model do
   end
 
   describe "diagnosed_confirmed_at computation on patient" do
-    let(:patient) { create(:patient, diagnosed_confirmed_at: nil) }
+    let(:patient) { create(:patient, :without_medical_history, diagnosed_confirmed_at: nil) }
 
     it "sets to htn_diagnosed_at when only HTN is present" do
       htn_time = 3.days.ago
@@ -137,12 +137,12 @@ describe MedicalHistory, type: :model do
       expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
     end
 
-    it "does not update to an earlier date once diagnosed_confirmed_at is set" do
+    it "updates to an earlier date if a new diagnosis predates the existing confirmed date" do
       current = 5.days.ago
       earlier = 15.days.ago
       patient.update!(diagnosed_confirmed_at: current)
       create(:medical_history, patient: patient, htn_diagnosed_at: earlier, dm_diagnosed_at: nil)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(current.to_i)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
     end
   end
 
