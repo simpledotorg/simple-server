@@ -137,12 +137,14 @@ describe MedicalHistory, type: :model do
       expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
     end
 
-    it "updates to an earlier date if a new diagnosis predates the existing confirmed date" do
+    it "does NOT update diagnosed_confirmed_at even if a new earlier diagnosis is given" do
       current = 5.days.ago
       earlier = 15.days.ago
+
       patient.update!(diagnosed_confirmed_at: current)
-      create(:medical_history, patient: patient, htn_diagnosed_at: earlier, dm_diagnosed_at: nil)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
+      create(:medical_history, patient: patient, htn_diagnosed_at: earlier)
+
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(current.to_i)
     end
   end
 
