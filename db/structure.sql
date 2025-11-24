@@ -1557,8 +1557,8 @@ CREATE MATERIALIZED VIEW public.latest_blood_pressures_per_patient_per_months AS
         date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS month,
         date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS quarter,
         date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS year
-    FROM blood_pressures JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
-    LEFT JOIN medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
+    FROM public.blood_pressures JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
+    LEFT JOIN public.medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
     WHERE blood_pressures.deleted_at IS NULL
     ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
     WITH NO DATA;
