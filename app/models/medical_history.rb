@@ -59,10 +59,9 @@ class MedicalHistory < ApplicationRecord
     return if patient.blank?
 
     if htn_diagnosed_at.present? || dm_diagnosed_at.present?
+      return if patient.diagnosed_confirmed_at.present?
       earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
-      if earliest.present? && patient.diagnosed_confirmed_at.nil?
-        patient.update_columns(diagnosed_confirmed_at: earliest)
-      end
+      patient.update_columns(diagnosed_confirmed_at: earliest)
       return
     end
 
