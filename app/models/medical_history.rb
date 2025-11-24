@@ -58,6 +58,14 @@ class MedicalHistory < ApplicationRecord
   def update_patient_diagnosed_confirmed_at
     return if patient.blank?
 
+    if htn_diagnosed_at.present? || dm_diagnosed_at.present?
+      earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
+      if earliest.present? && (patient.diagnosed_confirmed_at.nil? || earliest < patient.diagnosed_confirmed_at)
+        patient.update_columns(diagnosed_confirmed_at: earliest)
+      end
+      return
+    end
+
     if htn_diagnosed_at.nil? && dm_diagnosed_at.nil?
       return if hypertension_suspected? || diabetes_suspected?
 
@@ -66,14 +74,7 @@ class MedicalHistory < ApplicationRecord
           patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
         end
       end
-      return
-    end
-
-    earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
-    return if earliest.blank?
-
-    if patient.diagnosed_confirmed_at.nil?
-      patient.update_columns(diagnosed_confirmed_at: earliest)
+      nil
     end
   end
 end
