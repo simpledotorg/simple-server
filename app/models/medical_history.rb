@@ -60,7 +60,7 @@ class MedicalHistory < ApplicationRecord
 
     if htn_diagnosed_at.present? || dm_diagnosed_at.present?
       earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
-      if earliest.present? && (patient.diagnosed_confirmed_at.nil? || earliest < patient.diagnosed_confirmed_at)
+      if earliest.present? && patient.diagnosed_confirmed_at.nil?
         patient.update_columns(diagnosed_confirmed_at: earliest)
       end
       return
