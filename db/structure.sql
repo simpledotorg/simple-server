@@ -236,7 +236,8 @@ CREATE TABLE simple_reporting.reporting_patient_states (
     diabetes_treatment_outcome_in_last_3_months text,
     diabetes_treatment_outcome_in_last_2_months text,
     diabetes_treatment_outcome_in_quarter text,
-    titrated boolean
+    titrated boolean,
+    diagnosed_confirmed_at timestamp without time zone
 )
 PARTITION BY LIST (month_date);
 
@@ -333,12 +334,12 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
           visits.visited_facility_ids,
 
           -- Relative time calculations
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+          (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
           AS months_since_registration,
 
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
-          (cal.quarter - DATE_PART('quarter', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
+          (cal.quarter - DATE_PART('quarter', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
           AS quarters_since_registration,
 
           visits.months_since_visit,
@@ -358,8 +359,8 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
           CASE
             WHEN p.status = 'dead' THEN 'dead'
             WHEN (
-              (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-              (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
+              (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+              (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
               OR visits.months_since_visit < 12
             ) THEN 'under_care'
             ELSE 'lost_to_follow_up'
@@ -412,14 +413,15 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
             current_meds.enalapril > past_meds.enalapril OR
             current_meds.chlorthalidone > past_meds.chlorthalidone OR
             current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide
-          ) AS titrated
+          ) AS titrated,
+          p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS diagnosed_confirmed_at
 
         FROM public.patients p
         JOIN public.reporting_months cal
           ON cal.month_date = $1
-          AND p.recorded_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
+          AND p.diagnosed_confirmed_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
           AND ((
-            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.recorded_at)), 'YYYY-MM'::text) <=
+            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.diagnosed_confirmed_at)), 'YYYY-MM'::text) <=
             to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))
           )
 
@@ -447,7 +449,8 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
         INNER JOIN public.reporting_facilities assigned_facility
           ON assigned_facility.facility_id = p.assigned_facility_id
 
-        WHERE p.deleted_at IS NULL;
+        WHERE p.deleted_at IS NULL
+        AND p.diagnosed_confirmed_at IS NOT NULL;
       END;
       $_$;
 
@@ -642,7 +645,9 @@ CREATE TABLE public.medical_histories (
     receiving_treatment_for_diabetes text,
     smoking text,
     cholesterol integer,
-    smokeless_tobacco character varying
+    smokeless_tobacco character varying,
+    htn_diagnosed_at timestamp without time zone,
+    dm_diagnosed_at timestamp without time zone
 );
 
 
@@ -1516,6 +1521,7 @@ CREATE TABLE public.patients (
     deleted_by_user_id uuid,
     deleted_reason character varying,
     assigned_facility_id uuid,
+    diagnosed_confirmed_at timestamp without time zone,
     eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
 );
 
@@ -1525,27 +1531,37 @@ CREATE TABLE public.patients (
 --
 
 CREATE MATERIALIZED VIEW public.latest_blood_pressures_per_patient_per_months AS
- SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-    blood_pressures.patient_id,
-    patients.registration_facility_id,
-    patients.assigned_facility_id,
-    patients.status AS patient_status,
-    blood_pressures.facility_id AS bp_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-    timezone('UTC'::text, timezone('UTC'::text, patients.recorded_at)) AS patient_recorded_at,
-    blood_pressures.systolic,
-    blood_pressures.diastolic,
-    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
-    medical_histories.hypertension AS medical_history_hypertension,
-    (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS month,
-    (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS quarter,
-    (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS year
-   FROM ((public.blood_pressures
-     JOIN public.patients ON ((patients.id = blood_pressures.patient_id)))
-     LEFT JOIN public.medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
-  WHERE ((blood_pressures.deleted_at IS NULL) AND (patients.deleted_at IS NULL))
-  ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-  WITH NO DATA;
+    WITH registered_patients AS (
+        SELECT DISTINCT id,
+            registration_facility_id,
+            assigned_facility_id,
+            status,
+            recorded_at
+        FROM public.patients
+        WHERE deleted_at IS NULL
+        AND diagnosed_confirmed_at IS NOT NULL
+    )
+    SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text), (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text)) 
+        blood_pressures.id AS bp_id,
+        blood_pressures.patient_id AS patient_id,
+        registered_patients.registration_facility_id AS registration_facility_id,
+        registered_patients.assigned_facility_id AS assigned_facility_id,
+        registered_patients.status as patient_status,
+        blood_pressures.facility_id AS bp_facility_id,
+        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+        timezone('UTC'::text, timezone('UTC'::text, registered_patients.recorded_at)) AS patient_recorded_at,
+        blood_pressures.systolic AS systolic,
+        blood_pressures.diastolic AS diastolic,
+        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
+        medical_histories.hypertension as medical_history_hypertension,
+        date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS month,
+        date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS quarter,
+        date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS year
+    FROM public.blood_pressures JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
+    LEFT JOIN public.medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
+    WHERE blood_pressures.deleted_at IS NULL
+    ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
+    WITH NO DATA;
 
 
 --
@@ -3594,7 +3610,7 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
 -- Name: reporting_patient_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
+CREATE OR REPLACE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
 
 --
 -- Name: VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
@@ -8557,5 +8573,9 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250923223358'),
 ('20250924101441'),
 ('20250924102156'),
-('20250925094123');
-
+('20250925094123'),
+('20251112085230'),
+('20251112091000'),
+('20251119095624'),
+('20251119133109'),
+('20251120141950');
