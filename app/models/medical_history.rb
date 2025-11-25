@@ -56,6 +56,7 @@ class MedicalHistory < ApplicationRecord
   end
 
   def update_patient_diagnosed_confirmed_at
+    return unless patient
     return if patient.diagnosed_confirmed_at.present?
 
     if htn_diagnosed_at.present? || dm_diagnosed_at.present?
