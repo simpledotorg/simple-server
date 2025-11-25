@@ -46,11 +46,11 @@ class MedicalHistory < ApplicationRecord
   end
 
   def validate_immutable_diagnosis_dates
-    if will_save_change_to_htn_diagnosed_at? && htn_diagnosed_at_was.present?
+    if will_save_change_to_htn_diagnosed_at? && htn_diagnosed_at_was.present? && htn_diagnosed_at != htn_diagnosed_at_was
       errors.add(:htn_diagnosed_at, "Hypertension diagnosis date has already been recorded and cannot be changed.")
     end
 
-    if will_save_change_to_dm_diagnosed_at? && dm_diagnosed_at_was.present?
+    if will_save_change_to_dm_diagnosed_at? && dm_diagnosed_at_was.present? && dm_diagnosed_at != dm_diagnosed_at_was
       errors.add(:dm_diagnosed_at, "Diabetes diagnosis date has already been recorded and cannot be changed.")
     end
   end
