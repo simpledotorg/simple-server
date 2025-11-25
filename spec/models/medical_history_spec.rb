@@ -188,5 +188,27 @@ describe MedicalHistory, type: :model do
       history = create(:medical_history, patient: patient, htn_diagnosed_at: nil, dm_diagnosed_at: nil)
       expect(history.update(htn_diagnosed_at: 3.days.ago)).to be true
     end
+
+    it "does not raise an error if htn_diagnosed_at is updated with the same value" do
+      date = 5.days.ago
+      history = create(:medical_history, patient: patient, htn_diagnosed_at: date)
+
+      expect {
+        history.update(htn_diagnosed_at: date)
+      }.to_not change { history.reload.htn_diagnosed_at }
+
+      expect(history.errors[:htn_diagnosed_at]).to be_empty
+    end
+
+    it "does not raise an error if dm_diagnosed_at is updated with the same value" do
+      date = 5.days.ago
+      history = create(:medical_history, patient: patient, dm_diagnosed_at: date)
+
+      expect {
+        history.update(dm_diagnosed_at: date)
+      }.to_not change { history.reload.dm_diagnosed_at }
+
+      expect(history.errors[:dm_diagnosed_at]).to be_empty
+    end
   end
 end
