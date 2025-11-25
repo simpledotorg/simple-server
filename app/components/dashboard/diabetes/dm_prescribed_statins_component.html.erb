@@ -1,0 +1,11 @@
+<div id="dm-prescribed-statins" class="d-lg-flex min-w-0">
+  <%= render Dashboard::Card::GraphComponent.new(id: "dmPrescribedStatinsTrend", data: graph_data, period: period) do |c| %>
+    <%= c.title(
+      title: "DM patients &ge;40y prescribed statins".html_safe,
+      subtitle: "Diabetes patients in #{region.name} ≥40 years old that were prescribed statins at their latest visit in the last 12 months.") do |title| %>
+      <%= title.tooltip({ "Numerator" => "Patients prescribed statins at their latest visit.",
+                          "Denominator" => "Diabetes patients assigned to #{region.name} that are ≥40 years old. Dead and lost to follow-up patients are excluded." }) %>
+    <% end %>
+  <% end %>
+</div>
+
