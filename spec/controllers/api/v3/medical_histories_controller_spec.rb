@@ -195,7 +195,8 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         expect(response.status).to eq 200
         parsed_body = JSON.parse(response.body)
         expect(parsed_body["errors"][0]["schema"][0]).to start_with(
-          "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
+          "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown30
+         in schema"
         )
         expect(patient.reload.medical_history).to eq(nil)
       end
