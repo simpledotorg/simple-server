@@ -77,8 +77,9 @@ class MedicalHistory < ApplicationRecord
     end
   end
 
-  private 
-    def timestamps_equal?(a, b)
-      a&.change(usec: 0) == b&.change(usec: 0)
-    end
+  private
+
+  def timestamps_equal?(a, b)
+    a&.change(usec: 0) == b&.change(usec: 0)
+  end
 end
