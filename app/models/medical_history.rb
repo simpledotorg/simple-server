@@ -46,11 +46,11 @@ class MedicalHistory < ApplicationRecord
   end
 
   def validate_immutable_diagnosis_dates
-    if htn_diagnosed_at_was.present? && htn_diagnosed_at != htn_diagnosed_at_was
+    if htn_diagnosed_at_was.present? && !timestamps_equal?(htn_diagnosed_at, htn_diagnosed_at_was)
       errors.add(:htn_diagnosed_at, "Hypertension diagnosis date has already been recorded and cannot be changed.")
     end
 
-    if dm_diagnosed_at_was.present? && dm_diagnosed_at != dm_diagnosed_at_was
+    if dm_diagnosed_at_was.present? && !timestamps_equal?(dm_diagnosed_at, dm_diagnosed_at_was)
       errors.add(:dm_diagnosed_at, "Diabetes diagnosis date has already been recorded and cannot be changed.")
     end
   end
@@ -76,4 +76,9 @@ class MedicalHistory < ApplicationRecord
       nil
     end
   end
+
+  private 
+    def timestamps_equal?(a, b)
+      a&.change(usec: 0) == b&.change(usec: 0)
+    end
 end
