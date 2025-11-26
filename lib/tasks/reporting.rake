@@ -27,12 +27,12 @@ namespace :reporting do
       latest_blood_pressures_per_patients
     ].freeze
     views_to_refresh =
-    if args[:views].present?
-      # Expecting a comma-separated list: "view1,view2"
-      [args[:views], *args.extras].map(&:strip)
-    else
-      default_views
-    end
+      if args[:views].present?
+        # Expecting a comma-separated list: "view1,view2"
+        [args[:views], *args.extras].map(&:strip)
+      else
+        default_views
+      end
     views_to_refresh.each do |view_name|
       puts "Refreshing materialized view: #{view_name} "
       ActiveRecord::Base.connection.exec_query("REFRESH MATERIALIZED VIEW #{view_name}")
