@@ -418,12 +418,8 @@ class RemoveScreenedPatientsFromReportingPatientStates < ActiveRecord::Migration
             LEFT OUTER JOIN public.reporting_patient_visits visits
               ON p.id = visits.patient_id AND cal.month_date = visits.month_date
 
-            LEFT OUTER JOIN LATERAL (
-              SELECT DISTINCT ON (patient_id) *
-              FROM public.medical_histories
-              WHERE patient_id = p.id AND deleted_at IS NULL
-              ORDER BY patient_id, device_updated_at DESC
-            ) mh ON true
+            LEFT OUTER JOIN public.medical_histories mh
+            ON p.id = mh.patient_id AND mh.deleted_at IS NULL
 
             LEFT OUTER JOIN public.reporting_prescriptions current_meds
               ON current_meds.patient_id = p.id AND cal.month_date = current_meds.month_date
@@ -438,7 +434,6 @@ class RemoveScreenedPatientsFromReportingPatientStates < ActiveRecord::Migration
               ON assigned_facility.facility_id = p.assigned_facility_id
 
             WHERE p.deleted_at IS NULL
-            ORDER BY p.id;
           END;
           $_$;
     SQL
