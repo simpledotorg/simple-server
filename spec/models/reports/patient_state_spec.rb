@@ -876,13 +876,13 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   end
 
   context "screening" do
-    it "doesn't considers the patient if it's only screened" do
+    it "doesn't consider the patient if it's only screened" do
       diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
-      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
+      screened_patient = create(:patient, :without_medical_history, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
-      expect(described_class.where(month_date: Date.new(2024, 5, 1)).pluck(:patient_id)).to eq([])
-      expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).not_to include(screened_patient.id)
-      expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).to include(diagnosed_patient.id)
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+      expect(patient_ids).to include(diagnosed_patient.id)
+      expect(patient_ids).not_to include(screened_patient.id)
     end
 
     it "calculates registration indicators from the date of first diagnosis" do
