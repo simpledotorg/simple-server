@@ -22,4 +22,10 @@ namespace :dr_rai do
     args.with_defaults(from_date: 1.year.ago.to_date.to_s, to_date: Date.today.to_s)
     populate_dr_rai_data(args[:from_date], args[:to_date], into: DrRai::Data::Statin)
   end
+
+  desc "Populate BP Fudging data"
+  task :populate_bp_fudging_data, [:from_date, :to_date] => :environment do |_, args|
+    args.with_defaults(from_date: 1.year.ago.to_date.to_s, to_date: Date.today.to_s)
+    populate_dr_rai_data(args[:from_date], args[:to_date], into: DrRai::Data::BpFudging)
+  end
 end
