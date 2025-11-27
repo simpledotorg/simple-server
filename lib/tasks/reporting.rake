@@ -26,6 +26,7 @@ namespace :reporting do
       latest_blood_pressures_per_patient_per_quarters
       latest_blood_pressures_per_patients
       blood_pressures_per_facility_per_days
+      reporting_patient_blood_pressures
     ].freeze
     views_to_refresh =
       if args[:views].present?
