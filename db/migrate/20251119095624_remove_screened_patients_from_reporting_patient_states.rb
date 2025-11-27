@@ -433,7 +433,7 @@ class RemoveScreenedPatientsFromReportingPatientStates < ActiveRecord::Migration
             INNER JOIN public.reporting_facilities assigned_facility
               ON assigned_facility.facility_id = p.assigned_facility_id
 
-            WHERE p.deleted_at IS NULL
+            WHERE p.deleted_at IS NULL;
           END;
           $_$;
     SQL
