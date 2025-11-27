@@ -91,7 +91,13 @@ end
 every :day, at: local("03:00 am"), roles: [:cron] do
   from = 1.month.ago.to_date.to_s
   to = Date.today.to_s
-  rake "dr_rai:populate_titration_data[#{from}, #{to}]"
+  %w[
+    titration
+    statins
+    bp_fudging
+  ].each do |indicator|
+    rake "dr_rai:populate_#{indicator}_data[#{from}, #{to}]"
+  end
 end
 
 every :day, at: local("01:00 am"), roles: [:cron] do
