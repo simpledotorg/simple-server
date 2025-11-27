@@ -163,20 +163,24 @@ describe MedicalHistory, type: :model do
 
   describe "immutable diagnosis dates" do
     let(:patient) { create(:patient) }
-    it "prevents changing htn_diagnosed_at once set" do
-      history = create(:medical_history, patient: patient, htn_diagnosed_at: 5.days.ago)
-      expect {
-        history.update(htn_diagnosed_at: 1.day.ago)
-      }.to_not change { history.reload.htn_diagnosed_at }
-      expect(history.errors[:htn_diagnosed_at]).to include("Hypertension diagnosis date has already been recorded and cannot be changed.")
+    it "silently preserves htn_diagnosed_at once set" do
+      original_date = 5.days.ago
+      history = create(:medical_history, patient: patient, htn_diagnosed_at: original_date)
+      result = history.update(htn_diagnosed_at: 1.day.ago)
+
+      expect(result).to be true
+      expect(history.errors).to be_blank
+      expect(history.reload.htn_diagnosed_at.to_i).to eq(original_date.to_i)
     end
 
-    it "prevents changing dm_diagnosed_at once set" do
-      history = create(:medical_history, patient: patient, dm_diagnosed_at: 5.days.ago)
-      expect {
-        history.update(dm_diagnosed_at: 1.day.ago)
-      }.to_not change { history.reload.dm_diagnosed_at }
-      expect(history.errors[:dm_diagnosed_at]).to include("Diabetes diagnosis date has already been recorded and cannot be changed.")
+    it "silently preserves dm_diagnosed_at once set" do
+      original_date = 5.days.ago
+      history = create(:medical_history, patient: patient, dm_diagnosed_at: original_date)
+      result = history.update(dm_diagnosed_at: 1.day.ago)
+
+      expect(result).to be true
+      expect(history.errors).to be_blank
+      expect(history.reload.dm_diagnosed_at.to_i).to eq(original_date.to_i)
     end
 
     it "allows setting the other diagnosis when one is already set" do
