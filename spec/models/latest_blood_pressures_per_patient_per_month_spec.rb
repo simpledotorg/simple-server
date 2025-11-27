@@ -154,16 +154,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
 
   context "screening" do
     it "should not include blood pressures of patients under screening" do
-      patient = create(:patient, diagnosed_confirmed_at: nil)
-      MedicalHistory.where(patient_id: patient.id).delete_all
-      screened_medical_history = build(:medical_history, patient: patient)
-      screened_medical_history.hypertension = "no"
-      screened_medical_history.diabetes = "suspected"
-      screened_medical_history.htn_diagnosed_at = nil
-      screened_medical_history.dm_diagnosed_at = nil
-      screened_medical_history.save!
-      patient.reload
-      patient.update_columns(diagnosed_confirmed_at: nil) if patient.diagnosed_confirmed_at.present?
+      patient = build(:patient, :without_medical_history)
       create(:blood_pressure, patient: patient)
       LatestBloodPressuresPerPatientPerMonth.refresh
       expect(LatestBloodPressuresPerPatientPerMonth.where(patient_id: patient.id).count).to eq(0)
