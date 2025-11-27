@@ -29,6 +29,8 @@ function dashboardReportsChartJSColors() {
     overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
     overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
     overdueCalledChartFillLightRed: "rgba(255,146,122,0.2)",
+    lightPink: "rgb(223 78 223 / 0.1)",
+    mediumPink: "rgb(223 78 223)",
   };
 }
 
@@ -219,6 +221,23 @@ DashboardReports = () => {
         //     },
         //   },
         // },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    dmPrescribedStatinsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.prescribedStatinsRate),
+          datasets: [
+            {
+              label: "Patients prescribed statins",
+              backgroundColor: colors.lightPink,
+              borderColor: colors.mediumPink,
+              data: Object.values(data.prescribedStatinsRate),
+            },
+          ],
+        },
       };
       return withBaseLineConfig(config);
     },

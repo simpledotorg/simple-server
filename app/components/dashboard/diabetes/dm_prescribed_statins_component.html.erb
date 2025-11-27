@@ -6,6 +6,24 @@
       <%= title.tooltip({ "Numerator" => "Patients prescribed statins at their latest visit.",
                           "Denominator" => "Diabetes patients assigned to #{region.name} that are ≥40 years old. Dead and lost to follow-up patients are excluded." }) %>
     <% end %>
+    <%= c.summary do %>
+      <div class="mb-12px d-lg-flex align-lg-center">
+        <p class="c-print-black graph-percent fs-28px" data-key="prescribedStatinsRate" data-format="percentage"></p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="prescribedStatinsNumerator" data-format="numberWithCommas"></span>
+            patients prescribed statins
+            <span data-key="startDate"></span>
+          </p>
+          <p class="m-0px c-grey-dark c-print-black">
+            of
+            <span data-key="cumulativeAssignedPatientsUnderCareOver40yearsOld" data-format="numberWithCommas"></span>
+            patients ≥40 years old registered till
+            <span data-key="endDate"></span>
+          </p>
+        </div>
+      </div>
+    <%end%>
   <% end %>
 </div>
 
