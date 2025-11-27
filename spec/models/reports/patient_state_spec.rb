@@ -878,7 +878,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   context "screening" do
     it "doesn't consider the patient if it's only screened" do
       diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
-      screened_patient = create(:patient, :without_medical_history, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
+      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil, medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected))
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
       patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
       expect(patient_ids).to include(diagnosed_patient.id)
