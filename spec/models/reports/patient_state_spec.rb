@@ -885,6 +885,56 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       expect(patient_ids).not_to include(screened_patient.id)
     end
 
+    it "prefers the most-recent medical_history when determining screened vs diagnosed (latest = suspected -> excluded)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+      )
+
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "suspected",
+        htn_diagnosed_at: nil
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+
+      expect(patient_ids).not_to include(patient.id)
+    end
+
+    it "prefers the most-recent medical_history and includes patient when the latest MH has a diagnosis date (latest = diagnosed -> included)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+      )
+
+      diagnosed_date = Date.new(2024, 5, 1)
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "yes",
+        htn_diagnosed_at: diagnosed_date
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+
+      expect(patient_ids).to include(patient.id)
+
+      row = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
+      expect(row.diagnosed_confirmed_at.to_date).to eq(diagnosed_date)
+    end
+
     it "calculates registration indicators from the date of first diagnosis" do
       diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
