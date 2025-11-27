@@ -46,23 +46,40 @@ class MedicalHistory < ApplicationRecord
   end
 
   def validate_immutable_diagnosis_dates
-    if will_save_change_to_htn_diagnosed_at? && htn_diagnosed_at_was.present?
+    if htn_diagnosed_at_was.present? && !timestamps_equal?(htn_diagnosed_at, htn_diagnosed_at_was)
       errors.add(:htn_diagnosed_at, "Hypertension diagnosis date has already been recorded and cannot be changed.")
     end
 
-    if will_save_change_to_dm_diagnosed_at? && dm_diagnosed_at_was.present?
+    if dm_diagnosed_at_was.present? && !timestamps_equal?(dm_diagnosed_at, dm_diagnosed_at_was)
       errors.add(:dm_diagnosed_at, "Diabetes diagnosis date has already been recorded and cannot be changed.")
     end
   end
 
   def update_patient_diagnosed_confirmed_at
-    return if patient.blank?
+    return unless patient
+    return if patient.diagnosed_confirmed_at.present?
 
-    earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
-    return if earliest.blank?
-
-    if patient.diagnosed_confirmed_at.nil?
+    if htn_diagnosed_at.present? || dm_diagnosed_at.present?
+      earliest = [htn_diagnosed_at, dm_diagnosed_at].compact.min
       patient.update_columns(diagnosed_confirmed_at: earliest)
+      return
     end
+
+    if htn_diagnosed_at.nil? && dm_diagnosed_at.nil?
+      return if hypertension_suspected? || diabetes_suspected?
+
+      if (hypertension_yes? || hypertension_no?) || (diabetes_yes? || diabetes_no?)
+        if patient.diagnosed_confirmed_at.nil? && patient.recorded_at.present?
+          patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
+        end
+      end
+      nil
+    end
+  end
+
+  private
+
+  def timestamps_equal?(a, b)
+    a&.change(usec: 0) == b&.change(usec: 0)
   end
 end
