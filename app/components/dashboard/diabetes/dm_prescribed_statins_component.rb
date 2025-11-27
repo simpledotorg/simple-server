@@ -30,9 +30,9 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
   end
 
   def fake_period_info(key)
-    # Generate fake period data for the last 12 months
+    # Generate fake period data for the last 18 months
     # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..11).reverse_each.map do |i|
+    (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
       period_key = period_date.strftime('%b-%Y')
       date_value = case key
@@ -53,9 +53,9 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
   end
 
   def fake_rates
-    # Generate fake rates between 28-62% for the last 12 months
+    # Generate fake rates between 28-62% for the last 18 months
     # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..11).reverse_each.map do |i|
+    (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
       period_key = period_date.strftime('%b-%Y')
       [period_key, rand(28.0..62.0).round]
@@ -65,7 +65,7 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
   def fake_numerators
     # Generate fake numerators (patients prescribed statins)
     # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..11).reverse_each.map do |i|
+    (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
       period_key = period_date.strftime('%b-%Y')
       [period_key, rand(50..200)]
@@ -75,7 +75,7 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
   def fake_adjusted_patients
     # Generate fake adjusted patient counts
     # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..11).reverse_each.map do |i|
+    (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
       period_key = period_date.strftime('%b-%Y')
       [period_key, rand(200..500)]
