@@ -41,13 +41,12 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         }
       end
 
-      it "returns 200 with validation errors when trying to change existing diagnosis dates" do
+      it "returns 200 and silently preserves existing diagnosis dates" do
         post :sync_from_user, params: params
 
         expect(response.status).to eq 200
         parsed_body = JSON.parse(response.body)
-        expect(parsed_body["errors"]).to be_present
-        expect(parsed_body["errors"].first.values.join).to include("cannot be changed")
+        expect(parsed_body["errors"]).to be_blank
       end
 
       it "does not update the diagnosis dates" do
