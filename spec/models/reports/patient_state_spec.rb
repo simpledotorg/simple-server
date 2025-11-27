@@ -877,9 +877,31 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
   context "screening" do
     it "doesn't considers the patient if it's only screened" do
-      diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
-      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
+      diagnosed_patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 5, 1),
+        diagnosed_confirmed_at: Date.new(2024, 5, 1)
+      )
+      create(:medical_history, patient: diagnosed_patient, hypertension: "yes", diabetes: "no")
+
+      screened_patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil
+      )
+
+      MedicalHistory.where(patient_id: screened_patient.id).delete_all
+      screened_medical_history = build(:medical_history, patient: screened_patient)
+      screened_medical_history.hypertension = "suspected"
+      screened_medical_history.diabetes = "no"
+      screened_medical_history.htn_diagnosed_at = nil
+      screened_medical_history.dm_diagnosed_at = nil
+      screened_medical_history.save!
+      screened_patient.reload
+      screened_patient.update_columns(diagnosed_confirmed_at: nil) if screened_patient.diagnosed_confirmed_at.present?
+
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
+
       expect(described_class.where(month_date: Date.new(2024, 5, 1)).pluck(:patient_id)).to eq([])
       expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).not_to include(screened_patient.id)
       expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).to include(diagnosed_patient.id)
