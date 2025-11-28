@@ -37,7 +37,7 @@ describe Reports::PatientBloodPressure, {type: :model, reporting_spec: true} do
   context "screening" do
     it "doesn't include blood pressures of screened patients" do
       patient = create(:patient, diagnosed_confirmed_at: nil)
-      create(:blood_pressure, patient: patient, recorded_at: 1.month.ago)
+      create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "no")
 
       refresh_views
       results = Reports::PatientBloodPressure.where(patient_id: patient.id)
