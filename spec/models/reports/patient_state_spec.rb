@@ -876,13 +876,63 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
   end
 
   context "screening" do
-    it "doesn't considers the patient if it's only screened" do
+    it "doesn't consider the patient if it's only screened" do
       diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
-      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
+      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil, medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected))
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
-      expect(described_class.where(month_date: Date.new(2024, 5, 1)).pluck(:patient_id)).to eq([])
-      expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).not_to include(screened_patient.id)
-      expect(described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)).to include(diagnosed_patient.id)
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+      expect(patient_ids).to include(diagnosed_patient.id)
+      expect(patient_ids).not_to include(screened_patient.id)
+    end
+
+    it "prefers the most-recent medical_history when determining screened vs diagnosed (latest = suspected -> excluded)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+      )
+
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "suspected",
+        htn_diagnosed_at: nil
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+
+      expect(patient_ids).not_to include(patient.id)
+    end
+
+    it "prefers the most-recent medical_history and includes patient when the latest MH has a diagnosis date (latest = diagnosed -> included)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+      )
+
+      diagnosed_date = Date.new(2024, 5, 1)
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "yes",
+        htn_diagnosed_at: diagnosed_date
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+
+      expect(patient_ids).to include(patient.id)
+
+      row = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
+      expect(row.diagnosed_confirmed_at.to_date).to eq(diagnosed_date)
     end
 
     it "calculates registration indicators from the date of first diagnosis" do
