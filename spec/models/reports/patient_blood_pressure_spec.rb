@@ -46,8 +46,8 @@ describe Reports::PatientBloodPressure, {type: :model, reporting_spec: true} do
 
     it "calculates the registration indicators based on the diagnosis date" do
       patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
-      blood_pressure_1 = create(:blood_pressure, patient: patient, recorded_at: Date.new(2024, 5, 1))
-      blood_pressure_2 = create(:blood_pressure, patient: patient, recorded_at: Date.new(2024, 6, 1))
+      create(:blood_pressure, patient: patient, recorded_at: Date.new(2024, 5, 1))
+      create(:blood_pressure, patient: patient, recorded_at: Date.new(2024, 6, 1))
       refresh_views
       june_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
       july_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 7, 1))
