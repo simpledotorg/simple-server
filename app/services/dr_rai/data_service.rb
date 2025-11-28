@@ -30,7 +30,7 @@ module DrRai
     private
 
     def inserting?
-      @klazz.where(month_date: @timeline).count == 0
+      @klazz.insert_window(@timeline).count == 0
     end
   end
 end
