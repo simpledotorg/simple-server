@@ -135,7 +135,7 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
     it "stores and updates medical_history_hypertension" do
       patient_1 = create(:patient)
       patient_2 = create(:patient, :without_hypertension)
-      patient_3 = create(:patient, :without_medical_history)
+      patient_3 = create(:patient, :without_medical_history, diagnosed_confirmed_at: Date.today)
 
       create(:blood_pressure, patient: patient_1)
       create(:blood_pressure, patient: patient_2)
@@ -149,6 +149,15 @@ RSpec.describe LatestBloodPressuresPerPatientPerMonth, type: :model do
       expect(bp_per_month_2.medical_history_hypertension).to eq("no")
       bp_per_month_3 = LatestBloodPressuresPerPatientPerMonth.find_by!(patient_id: patient_3.id)
       expect(bp_per_month_3.medical_history_hypertension).to be_nil
+    end
+  end
+
+  context "screening" do
+    it "should not include blood pressures of patients under screening" do
+      patient = create(:patient, diagnosed_confirmed_at: nil)
+      create(:blood_pressure, patient: patient)
+      LatestBloodPressuresPerPatientPerMonth.refresh
+      expect(LatestBloodPressuresPerPatientPerMonth.where(patient_id: patient.id).count).to eq(0)
     end
   end
 end
