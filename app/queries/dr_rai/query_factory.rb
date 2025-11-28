@@ -19,6 +19,8 @@ module DrRai
           instance = DrRai::TitrationQueryFactory.new(from, to)
         elsif klazz <= Data::Statin
           instance = DrRai::StatinsQueryFactory.new(from, to)
+        elsif klazz <= Data::BpFudging
+          instance = DrRai::BpFudgingQueryFactory.new(from, to)
         else
           raise "Unsupported"
         end
