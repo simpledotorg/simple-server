@@ -2,7 +2,7 @@
   <%= render Dashboard::Card::GraphComponent.new(id: "dmControlledBPTrend", data: graph_data, period: period) do |c| %>
     <%= c.title(
       title: "DM patients with controlled BP",
-      subtitle: "Diabetes patients in #{region.name} with controlled BP at their latest visit in the last 3 months (#{bp_control_date_range})") do |title| %>
+      subtitle: "Diabetes patients in #{region.name} with controlled BP at their latest visit in the last 3 months (#{bp_control_date_range}).") do |title| %>
       <%= title.tooltip({ "Numerator" => "Patients with controlled BP at their latest visit in the last 3 months.",
                           "Denominator" => "Diabetes patients assigned to  #{region.name}, registered before the last 3 months. Dead and lost to follow-up patients are excluded." }) %>
       <%= title.ltfu_toggle(id: 'DMcontrolleBPGraphLtfuToggle', enabled: with_ltfu) %>
