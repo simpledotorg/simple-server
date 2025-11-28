@@ -1100,6 +1100,44 @@ ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
 
 
 --
+-- Name: dr_rai_data_bp_fudgings; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_data_bp_fudgings (
+    id bigint NOT NULL,
+    state character varying,
+    district character varying,
+    slug character varying,
+    quarter character varying,
+    numerator integer,
+    denominator integer,
+    ratio numeric(5,2),
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    updated_at timestamp(6) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+);
+
+
+--
+-- Name: dr_rai_data_bp_fudgings_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_data_bp_fudgings_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_data_bp_fudgings_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_data_bp_fudgings_id_seq OWNED BY public.dr_rai_data_bp_fudgings.id;
+
+
+--
 -- Name: dr_rai_data_statins; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8557,5 +8595,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250923223358'),
 ('20250924101441'),
 ('20250924102156'),
-('20250925094123');
+('20250925094123'),
+('20251125090819');
+
 
