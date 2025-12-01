@@ -212,4 +212,32 @@ describe Reports::PatientBloodSugar, {type: :model, reporting_spec: true} do
       [june_2021[:one_month_ago].to_date, patients.fourth.id, hba1c_bs_300.id, risk_states[:bs_over_300]]
     )
   end
+
+  context "screening" do
+    it "doesn't include blood pressures of screened patients" do
+      patient = create(:patient, :without_medical_history, diagnosed_confirmed_at: nil)
+      create(:blood_sugar, patient: patient, recorded_at: 1.month.ago)
+
+      refresh_views
+      results = Reports::PatientBloodSugar.where(patient_id: patient.id)
+      expect(results).to be_empty
+    end
+
+    it "calculates the registration indicators based on the diagnosis date" do
+      patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
+      create(:blood_sugar, patient: patient, recorded_at: Date.new(2024, 5, 1))
+      create(:blood_sugar, patient: patient, recorded_at: Date.new(2024, 6, 1))
+      refresh_views
+      june_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
+      july_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 7, 1))
+      august_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 8, 1))
+      expect(june_record.patient_registered_at).to eq(patient.diagnosed_confirmed_at)
+      expect(june_record.months_since_registration).to eq(0)
+      expect(july_record.months_since_registration).to eq(1)
+      expect(august_record.months_since_registration).to eq(2)
+      expect(june_record.quarters_since_registration).to eq(0)
+      expect(july_record.quarters_since_registration).to eq(1)
+      expect(august_record.quarters_since_registration).to eq(1)
+    end
+  end
 end

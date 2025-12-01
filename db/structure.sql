@@ -3323,16 +3323,16 @@ CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
             END
             ELSE NULL::text
         END AS blood_sugar_risk_state,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
    FROM ((public.blood_sugars bs
      LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL))))
+     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
   WHERE (bs.deleted_at IS NULL)
   ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
   WITH NO DATA;
@@ -8630,4 +8630,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251119133109'),
 ('20251120141950'),
 ('20251126052630'),
-('20251127104720');
+('20251127104720'),
+('20251201094315');
