@@ -87,7 +87,6 @@ class MedicalHistory < ApplicationRecord
           write_attribute(:htn_diagnosed_at, htn_diagnosed_at_was)
         when :diabetes
           write_attribute(:dm_diagnosed_at, dm_diagnosed_at_was)
-        when :diagnosed_with_hypertension
         end
 
         Rails.logger.info("[MedicalHistory] Prevented change of #{attr} from #{prev_s} -> #{curr_s} for medical_history_id=#{id || "new"}")
