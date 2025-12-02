@@ -38,6 +38,7 @@ class MedicalHistory < ApplicationRecord
 
   scope :for_sync, -> { with_discarded }
 
+  before_validation :backfill_diagnosed_dates
   before_validation :silently_enforce_medical_history_rules
 
   after_save :update_patient_diagnosed_confirmed_at
@@ -49,8 +50,19 @@ class MedicalHistory < ApplicationRecord
   private
 
   def silently_enforce_medical_history_rules
-    enforce_one_way_enums_silently
     enforce_date_rules_silently
+    enforce_one_way_enums_silently
+  end
+
+  def backfill_diagnosed_dates
+    return if htn_diagnosed_at.present? || dm_diagnosed_at.present?
+    return if hypertension_suspected? || diabetes_suspected?
+
+    source = patient&.recorded_at
+    return unless source.present?
+
+    self.htn_diagnosed_at ||= source if hypertension_yes?
+    self.dm_diagnosed_at ||= source if diabetes_yes?
   end
 
   def enforce_one_way_enums_silently
@@ -67,20 +79,20 @@ class MedicalHistory < ApplicationRecord
         next if %w[yes no suspected].include?(curr_s)
       end
 
-      if prev_s == "no" && curr_s == "yes"
-        date_field =
-          case attr
-          when :hypertension then :htn_diagnosed_at
-          when :diabetes then :dm_diagnosed_at
-          end
+      if %w[yes no].include?(prev_s)
+        write_attribute(attr, prev_s)
 
-        if date_field && send(date_field).present?
-          next
+        case attr
+        when :hypertension
+          write_attribute(:htn_diagnosed_at, htn_diagnosed_at_was)
+        when :diabetes
+          write_attribute(:dm_diagnosed_at, dm_diagnosed_at_was)
+        when :diagnosed_with_hypertension
         end
-      end
 
-      write_attribute(attr, prev_s)
-      Rails.logger.info("[MedicalHistory] Silently reverted #{attr} from #{curr_s} -> #{prev_s} for medical_history_id=#{id || "new"}")
+        Rails.logger.info("[MedicalHistory] Prevented change of #{attr} from #{prev_s} -> #{curr_s} for medical_history_id=#{id || "new"}")
+        next
+      end
     end
   end
 
@@ -118,12 +130,9 @@ class MedicalHistory < ApplicationRecord
     if htn_diagnosed_at.nil? && dm_diagnosed_at.nil?
       return if hypertension_suspected? || diabetes_suspected?
 
-      if (hypertension_yes? || hypertension_no?) || (diabetes_yes? || diabetes_no?)
-        if patient.diagnosed_confirmed_at.nil? && patient.recorded_at.present?
-          patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
-        end
+      if patient.diagnosed_confirmed_at.nil? && patient.recorded_at.present?
+        patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
       end
-      nil
     end
   end
 
