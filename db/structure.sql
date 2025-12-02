@@ -4393,6 +4393,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_calls AS
    FROM (((public.call_results cr
      JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, cr.device_created_at)), 'YYYY-MM'::text) = to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
      JOIN public.appointments a ON (((cr.appointment_id = a.id) AND (a.deleted_at IS NULL))))
+     JOIN public.patients p ON (p.id = a.patient_id AND ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL)))
      JOIN public.reporting_facilities appointment_facility ON ((a.facility_id = appointment_facility.facility_id)))
   WHERE (cr.deleted_at IS NULL)
   ORDER BY a.patient_id, cal.month_date, cr.device_created_at DESC
@@ -8631,4 +8632,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251120141950'),
 ('20251126052630'),
 ('20251127104720'),
-('20251201094315');
+('20251201094315'),
+('20251202062322');
