@@ -70,6 +70,16 @@ describe MedicalHistory, type: :model do
     end
 
     context "when both diagnosis timestamps are nil" do
+      it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is yes" do
+        create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: nil)
+        expect(MedicalHistory.last.htn_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+      end
+
+      it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is yes" do
+        create(:medical_history, patient: patient, diabetes: "yes", dm_diagnosed_at: nil)
+        expect(MedicalHistory.last.dm_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+      end
+
       it "remains nil when only hypertension is suspected" do
         create(:medical_history, patient: patient, htn_diagnosed_at: nil, dm_diagnosed_at: nil, hypertension: "suspected")
         expect(patient.reload.diagnosed_confirmed_at).to be_nil
