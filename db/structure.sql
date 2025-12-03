@@ -3468,7 +3468,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
     p.quarter_string,
     p.assigned_facility_id,
     p.registration_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_recorded_at,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_recorded_at,
     e.id AS encounter_id,
     e.facility_id AS encounter_facility_id,
     timezone('UTC'::text, timezone('UTC'::text, e.recorded_at)) AS encounter_recorded_at,
@@ -3492,8 +3492,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             ELSE NULL::uuid
         END], NULL::uuid) AS visited_facility_ids,
     timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
     (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS months_since_visit,
     (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
    FROM (((( SELECT p_1.id,
@@ -3519,6 +3519,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             p_1.deleted_by_user_id,
             p_1.deleted_reason,
             p_1.assigned_facility_id,
+            p_1.diagnosed_confirmed_at,
             cal.month_date,
             cal.month,
             cal.quarter,
@@ -3526,7 +3527,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             cal.month_string,
             cal.quarter_string
            FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
      LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS recorded_at,
             encounters.id,
             encounters.facility_id,
@@ -3587,7 +3588,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
           WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
           ORDER BY appointments.device_created_at DESC
          LIMIT 1) app ON (true))
-  WHERE (p.deleted_at IS NULL)
+  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
   ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC
   WITH NO DATA;
 
@@ -8633,4 +8634,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251126052630'),
 ('20251127104720'),
 ('20251201094315'),
-('20251202062322');
+('20251202062322'),
+('20251203093958');
