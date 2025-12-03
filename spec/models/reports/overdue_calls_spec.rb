@@ -5,7 +5,7 @@ describe Reports::OverdueCalls, {type: :model, reporting_spec: true} do
     facility = create(:facility)
     patient = create(:patient, diagnosed_confirmed_at: Date.new(2024, 6, 1))
     user_1 = create(:user, registration_facility: facility)
-    appointment_1 = create(:appointment, patient: patient,facility: facility, device_created_at: Date.new(2024, 6, 1), user: user_1)
+    appointment_1 = create(:appointment, patient: patient, facility: facility, device_created_at: Date.new(2024, 6, 1), user: user_1)
     create(:call_result, appointment: appointment_1, device_created_at: Date.new(2024, 6, 1), user: user_1)
     RefreshReportingViews.refresh_v2
     expect(described_class.where(patient_id: patient.id, month_date: Date.new(2024, 6, 1)).count).to eq(1)
@@ -15,7 +15,7 @@ describe Reports::OverdueCalls, {type: :model, reporting_spec: true} do
     facility = create(:facility)
     patient = create(:patient, :without_medical_history, diagnosed_confirmed_at: nil)
     user_1 = create(:user, registration_facility: facility)
-    appointment_1 = create(:appointment, patient: patient,facility: facility, device_created_at: Date.new(2024, 6, 1), user: user_1)
+    appointment_1 = create(:appointment, patient: patient, facility: facility, device_created_at: Date.new(2024, 6, 1), user: user_1)
     create(:call_result, appointment: appointment_1, device_created_at: Date.new(2024, 6, 1), user: user_1)
     RefreshReportingViews.refresh_v2
     expect(described_class.where(patient_id: patient.id).count).to eq(0)

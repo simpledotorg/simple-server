@@ -38,8 +38,8 @@ class UpdateReportingOverdueCallsToVersion2 < ActiveRecord::Migration[6.1]
         WITH NO DATA;
     SQL
 
-    add_index "reporting_overdue_calls", ["appointment_facility_region_id"], name: "index_overdue_calls_appointment_facility"   
-    add_index "reporting_overdue_calls", ["call_result_created_at"], name: "index_overdue_calls_call_result_created_at"   
+    add_index "reporting_overdue_calls", ["appointment_facility_region_id"], name: "index_overdue_calls_appointment_facility"
+    add_index "reporting_overdue_calls", ["call_result_created_at"], name: "index_overdue_calls_call_result_created_at"
     add_index "reporting_overdue_calls", ["month_date", "patient_id"], name: "overdue_calls_month_date_patient_id", unique: true
 
     execute <<~SQL
@@ -352,8 +352,8 @@ class UpdateReportingOverdueCallsToVersion2 < ActiveRecord::Migration[6.1]
         WITH NO DATA;
     SQL
 
-    add_index "reporting_overdue_calls", ["appointment_facility_region_id"], name: "index_overdue_calls_appointment_facility"   
-    add_index "reporting_overdue_calls", ["call_result_created_at"], name: "index_overdue_calls_call_result_created_at"   
+    add_index "reporting_overdue_calls", ["appointment_facility_region_id"], name: "index_overdue_calls_appointment_facility"
+    add_index "reporting_overdue_calls", ["call_result_created_at"], name: "index_overdue_calls_call_result_created_at"
     add_index "reporting_overdue_calls", ["month_date", "patient_id"], name: "overdue_calls_month_date_patient_id", unique: true
 
     execute <<~SQL
