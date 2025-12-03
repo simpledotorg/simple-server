@@ -5,7 +5,7 @@ class DrRai::ActionPlan < ApplicationRecord
   belongs_to :dr_rai_target, class_name: "DrRai::Target"
   belongs_to :region
 
-  validates :statement, presence: true
+  validates :statement, presence: true, if: :target_uses_statement?
 
   def indicator
     dr_rai_indicator
@@ -44,5 +44,9 @@ class DrRai::ActionPlan < ApplicationRecord
   def unprocessible?
     denominator.negative? ||
       numerator.nil?
+  end
+
+  def target_uses_statement?
+    DrRai::Target::NEEDS_STATEMENT.include?(indicator.type)
   end
 end
