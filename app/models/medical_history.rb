@@ -131,7 +131,6 @@ class MedicalHistory < ApplicationRecord
         (dm_diagnosed_at if valid_dm_date)
       ].compact.min
       patient.update_columns(diagnosed_confirmed_at: earliest)
-      nil
     end
   end
 
