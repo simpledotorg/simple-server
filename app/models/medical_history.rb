@@ -61,8 +61,13 @@ class MedicalHistory < ApplicationRecord
     source = patient&.recorded_at
     return unless source.present?
 
-    self.htn_diagnosed_at ||= source if hypertension_yes?
-    self.dm_diagnosed_at ||= source if diabetes_yes?
+    if %w[yes no].include?(hypertension&.to_s)
+      self.htn_diagnosed_at ||= source
+    end
+
+    if %w[yes no].include?(diabetes&.to_s)
+      self.dm_diagnosed_at ||= source
+    end
   end
 
   def enforce_one_way_enums_silently
@@ -96,8 +101,10 @@ class MedicalHistory < ApplicationRecord
   end
 
   def enforce_date_rules_silently
-    self.htn_diagnosed_at = nil unless %w[yes no].include?(hypertension&.to_s)
-    self.dm_diagnosed_at = nil unless %w[yes no].include?(diabetes&.to_s)
+    if hypertension_suspected? || diabetes_suspected?
+      self.htn_diagnosed_at = nil
+      self.dm_diagnosed_at = nil
+    end
 
     if htn_diagnosed_at_was.present? && !timestamps_equal?(htn_diagnosed_at, htn_diagnosed_at_was)
       write_attribute(:htn_diagnosed_at, htn_diagnosed_at_was)
@@ -113,6 +120,7 @@ class MedicalHistory < ApplicationRecord
   def update_patient_diagnosed_confirmed_at
     return unless patient
     return if patient.diagnosed_confirmed_at.present?
+    return if hypertension_suspected? || diabetes_suspected?
 
     valid_htn_date = htn_diagnosed_at.present? && %w[yes no].include?(hypertension&.to_s)
     valid_dm_date = dm_diagnosed_at.present? && %w[yes no].include?(diabetes&.to_s)
@@ -123,15 +131,6 @@ class MedicalHistory < ApplicationRecord
         (dm_diagnosed_at if valid_dm_date)
       ].compact.min
       patient.update_columns(diagnosed_confirmed_at: earliest)
-      return
-    end
-
-    if htn_diagnosed_at.nil? && dm_diagnosed_at.nil?
-      return if hypertension_suspected? || diabetes_suspected?
-
-      if patient.diagnosed_confirmed_at.nil? && patient.recorded_at.present?
-        patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
-      end
     end
   end
 
