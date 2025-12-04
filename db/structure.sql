@@ -3638,8 +3638,8 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
             cal.month_string,
             cal.quarter_string
            FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))
-          WHERE (p_1.deleted_at IS NULL)) p
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))
+          WHERE (p_1.deleted_at IS NULL AND p_1.diagnosed_confirmed_at IS NOT NULL)) p
      LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
             actual.dosage AS actual_dosage,
             clean.medicine AS clean_name,
@@ -8635,4 +8635,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251127104720'),
 ('20251201094315'),
 ('20251202062322'),
-('20251203093958');
+('20251203093958'),
+('20251204092000');
