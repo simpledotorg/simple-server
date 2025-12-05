@@ -13,7 +13,7 @@ module DrRai
     end
 
     def target_type_frontend
-      "percent"
+      "boolean"
     end
 
     def numerator_key all: nil
