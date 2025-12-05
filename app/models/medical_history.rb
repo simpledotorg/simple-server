@@ -101,10 +101,8 @@ class MedicalHistory < ApplicationRecord
   end
 
   def enforce_date_rules_silently
-    if hypertension_suspected? || diabetes_suspected?
-      self.htn_diagnosed_at = nil
-      self.dm_diagnosed_at = nil
-    end
+    self.htn_diagnosed_at = nil unless %w[yes no].include?(hypertension&.to_s)
+    self.dm_diagnosed_at = nil unless %w[yes no].include?(diabetes&.to_s)
 
     if htn_diagnosed_at_was.present? && !timestamps_equal?(htn_diagnosed_at, htn_diagnosed_at_was)
       write_attribute(:htn_diagnosed_at, htn_diagnosed_at_was)
@@ -120,7 +118,6 @@ class MedicalHistory < ApplicationRecord
   def update_patient_diagnosed_confirmed_at
     return unless patient
     return if patient.diagnosed_confirmed_at.present?
-    return if hypertension_suspected? || diabetes_suspected?
 
     valid_htn_date = htn_diagnosed_at.present? && %w[yes no].include?(hypertension&.to_s)
     valid_dm_date = dm_diagnosed_at.present? && %w[yes no].include?(diabetes&.to_s)
