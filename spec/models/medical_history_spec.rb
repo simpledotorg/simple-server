@@ -47,145 +47,78 @@ describe MedicalHistory, type: :model do
     end
   end
 
-  describe "creation (app sends both dates when available)" do
-    let(:patient) { create(:patient, :without_medical_history, diagnosed_confirmed_at: nil) }
-    let(:htn_time) { 3.days.ago.change(usec: 0) }
-    let(:dm_time) { 2.days.ago.change(usec: 0) }
-
-    it "creates when hypertension: yes, diabetes: no -> persists both dates sent by app" do
-      mh = create(:medical_history, patient: patient, hypertension: "yes", diabetes: "no",
-                  htn_diagnosed_at: htn_time, dm_diagnosed_at: dm_time)
-      expect(mh.htn_diagnosed_at.to_i).to eq(htn_time.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(dm_time.to_i)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
-    end
-
-    it "creates when hypertension: no, diabetes: yes -> persists both dates sent by app" do
-      mh = create(:medical_history, patient: patient, hypertension: "no", diabetes: "yes",
-                  htn_diagnosed_at: htn_time, dm_diagnosed_at: dm_time)
-      expect(mh.htn_diagnosed_at.to_i).to eq(htn_time.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(dm_time.to_i)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
-    end
-
-    it "creates when hypertension: no, diabetes: no -> persists both dates sent by app" do
-      mh = create(:medical_history, patient: patient, hypertension: "no", diabetes: "no",
-                  htn_diagnosed_at: htn_time, dm_diagnosed_at: dm_time)
-      expect(mh.htn_diagnosed_at.to_i).to eq(htn_time.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(dm_time.to_i)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
-    end
-
-    it "creates when hypertension: yes, diabetes: yes -> persists both dates sent by app" do
-      mh = create(:medical_history, patient: patient, hypertension: "yes", diabetes: "yes",
-                  htn_diagnosed_at: htn_time, dm_diagnosed_at: dm_time)
-      expect(mh.htn_diagnosed_at.to_i).to eq(htn_time.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(dm_time.to_i)
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
-    end
-  end
-
   describe "#backfill_diagnosed_dates" do
-    let(:patient) { create(:patient, :without_medical_history, diagnosed_confirmed_at: nil) }
+    let(:patient) { create(:patient, :without_medical_history, recorded_at: 5.days.ago.change(usec: 0), diagnosed_confirmed_at: nil) }
 
-    it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is yes and both timestamps nil" do
-      patient.update!(recorded_at: 5.days.ago.change(usec: 0))
+    it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is yes and dates are nil (old APK flow)" do
       mh = create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
       expect(mh.htn_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
     end
 
-    it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is yes and both timestamps nil" do
-      patient.update!(recorded_at: 5.days.ago.change(usec: 0))
+    it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is yes and dates are nil (old APK flow)" do
       mh = create(:medical_history, patient: patient, diabetes: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
       expect(mh.dm_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
     end
 
-    it "does not backfill if patient.recorded_at is nil" do
-      patient.update!(recorded_at: nil)
-      mh = create(:medical_history, patient: patient, hypertension: "yes", diabetes: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
+    it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is no and dates are nil (old APK flow)" do
+      mh = create(:medical_history, patient: patient, hypertension: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
+      expect(mh.htn_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    end
+
+    it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is no and dates are nil (old APK flow)" do
+      mh = create(:medical_history, patient: patient, diabetes: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
+      expect(mh.dm_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    end
+
+    it "does not backfill for suspected statuses" do
+      mh = create(:medical_history, patient: patient, hypertension: "suspected", htn_diagnosed_at: nil)
       expect(mh.htn_diagnosed_at).to be_nil
-      expect(mh.dm_diagnosed_at).to be_nil
-    end
-
-    it "does not persist dates when hypertension is suspected (even if app sends them)" do
-      mh = create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "no",
-                  htn_diagnosed_at: 3.days.ago.change(usec: 0), dm_diagnosed_at: 2.days.ago.change(usec: 0))
-      expect(mh.htn_diagnosed_at).to be_nil
-      expect(mh.dm_diagnosed_at).to be_nil
-      expect(patient.reload.diagnosed_confirmed_at).to be_nil
-    end
-
-    it "does not persist dates when diabetes is suspected (even if app sends them)" do
-      mh = create(:medical_history, patient: patient, hypertension: "no", diabetes: "suspected",
-                  htn_diagnosed_at: 3.days.ago.change(usec: 0), dm_diagnosed_at: 2.days.ago.change(usec: 0))
-      expect(mh.htn_diagnosed_at).to be_nil
-      expect(mh.dm_diagnosed_at).to be_nil
-      expect(patient.reload.diagnosed_confirmed_at).to be_nil
-    end
-  end
-
-  describe "updates (app sends both dates when available)" do
-    let(:patient) { create(:patient) }
-    let(:old_htn) { 10.days.ago.change(usec: 0) }
-    let(:old_dm) { 9.days.ago.change(usec: 0) }
-    let(:new_htn) { 3.days.ago.change(usec: 0) }
-    let(:new_dm) { 2.days.ago.change(usec: 0) }
-
-    it "does not overwrite existing dates when both already present (flipping yes/no combos)" do
-      mh = create(:medical_history, patient: patient,
-                   hypertension: "yes", diabetes: "no",
-                   htn_diagnosed_at: old_htn, dm_diagnosed_at: old_dm)
-      mh.assign_attributes(hypertension: "no", diabetes: "yes",
-        htn_diagnosed_at: new_htn, dm_diagnosed_at: new_dm)
-      mh.valid?
-      expect(mh.htn_diagnosed_at.to_i).to eq(old_htn.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(old_dm.to_i)
-    end
-
-    it "when suspected -> confirmed, accepts new dates if server had none" do
-      mh = create(:medical_history, patient: patient,
-                   hypertension: "suspected", diabetes: "no",
-                   htn_diagnosed_at: nil, dm_diagnosed_at: nil)
-      mh.assign_attributes(hypertension: "yes", diabetes: "no",
-        htn_diagnosed_at: new_htn, dm_diagnosed_at: new_dm)
-      mh.valid?
-      expect(mh.htn_diagnosed_at.to_i).to eq(new_htn.to_i)
-      expect(mh.dm_diagnosed_at.to_i).to eq(new_dm.to_i)
     end
   end
 
   describe "#update_patient_diagnosed_confirmed_at" do
-    let(:patient) { create(:patient, :without_medical_history, diagnosed_confirmed_at: nil) }
+    let(:patient) { create(:patient, :without_medical_history, recorded_at: 5.days.ago.change(usec: 0), diagnosed_confirmed_at: nil) }
 
-    it "sets patient.diagnosed_confirmed_at to earliest of provided dates when no suspected" do
-      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "yes",
-             htn_diagnosed_at: 4.days.ago.change(usec: 0), dm_diagnosed_at: 3.days.ago.change(usec: 0))
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(4.days.ago.change(usec: 0).to_i)
+    it "sets patient.diagnosed_confirmed_at to htn_diagnosed_at when only HTN date present (other suspected)" do
+      htn_time = 3.days.ago.change(usec: 0)
+      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "suspected", htn_diagnosed_at: htn_time, dm_diagnosed_at: nil)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
     end
 
-    it "does not set diagnosed_confirmed_at when any suspected present" do
-      create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "yes",
+    it "sets patient.diagnosed_confirmed_at to dm_diagnosed_at when only DM date present (other suspected)" do
+      dm_time = 5.days.ago.change(usec: 0)
+      create(:medical_history, patient: patient, diabetes: "no", hypertension: "suspected", htn_diagnosed_at: nil, dm_diagnosed_at: dm_time)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(dm_time.to_i)
+    end
+
+    it "sets patient.diagnosed_confirmed_at to earliest date when both dates present" do
+      htn = 4.days.ago.change(usec: 0)
+      dm = 7.days.ago.change(usec: 0)
+      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "no", htn_diagnosed_at: htn, dm_diagnosed_at: dm)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(dm.to_i)
+    end
+
+    it "does not set diagnosed_confirmed_at when both conditions are suspected" do
+      create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "suspected",
              htn_diagnosed_at: 4.days.ago.change(usec: 0), dm_diagnosed_at: 3.days.ago.change(usec: 0))
       expect(patient.reload.diagnosed_confirmed_at).to be_nil
     end
 
-    it "does not overwrite an already-set diagnosed_confirmed_at" do
-      earlier = 10.days.ago.change(usec: 0)
-      patient.update_columns(diagnosed_confirmed_at: earlier)
-      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "no",
-             dm_diagnosed_at: 2.days.ago.change(usec: 0), htn_diagnosed_at: 1.day.ago.change(usec: 0))
+    it "does not overwrite existing patient.diagnosed_confirmed_at" do
+      earlier = 2.days.ago.change(usec: 0)
+      patient.update!(diagnosed_confirmed_at: earlier)
+      create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: 5.days.ago.change(usec: 0))
       expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
     end
   end
 
-  describe "immutable diagnosis dates" do
+  describe "immutable diagnosis dates and transitions" do
     let(:patient) { create(:patient) }
 
     it "silently preserves htn_diagnosed_at once set" do
       original_date = 5.days.ago.change(usec: 0)
-      history = create(:medical_history, patient: patient, htn_diagnosed_at: original_date)
+      history = create(:medical_history, patient: patient, htn_diagnosed_at: original_date, hypertension: "yes")
       result = history.update(htn_diagnosed_at: 1.day.ago.change(usec: 0))
-
       expect(result).to be true
       expect(history.errors).to be_blank
       expect(history.reload.htn_diagnosed_at.to_i).to eq(original_date.to_i)
@@ -193,40 +126,42 @@ describe MedicalHistory, type: :model do
 
     it "silently preserves dm_diagnosed_at once set" do
       original_date = 5.days.ago.change(usec: 0)
-      history = create(:medical_history, patient: patient, dm_diagnosed_at: original_date)
+      history = create(:medical_history, patient: patient, dm_diagnosed_at: original_date, diabetes: "yes")
       result = history.update(dm_diagnosed_at: 1.day.ago.change(usec: 0))
-
       expect(result).to be true
       expect(history.errors).to be_blank
       expect(history.reload.dm_diagnosed_at.to_i).to eq(original_date.to_i)
     end
 
-    it "allows setting the other diagnosis when one is already set" do
-      history = create(:medical_history, patient: patient, htn_diagnosed_at: 5.days.ago.change(usec: 0), dm_diagnosed_at: nil)
+    it "allows setting the other diagnosis when one is already set (confirmed + suspected)" do
+      history = create(:medical_history,
+        patient: patient,
+        hypertension: "yes",
+        diabetes: "suspected",
+        htn_diagnosed_at: 5.days.ago.change(usec: 0),
+        dm_diagnosed_at: nil)
       expect(history.update(dm_diagnosed_at: 2.days.ago.change(usec: 0))).to be true
     end
 
     it "allows setting either when both are nil" do
-      history = create(:medical_history, patient: patient, htn_diagnosed_at: nil, dm_diagnosed_at: nil)
+      history = create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "suspected", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
       expect(history.update(htn_diagnosed_at: 3.days.ago.change(usec: 0))).to be true
     end
 
-    it "does not raise an error if htn_diagnosed_at is updated with the same value" do
-      date = 5.days.ago.change(usec: 0)
-      history = create(:medical_history, patient: patient, htn_diagnosed_at: date)
+    it "does not allow flipping confirmed yes/no when dates are already present (preserves old dates on save)" do
+      old_htn = 10.days.ago.change(usec: 0)
+      old_dm = 9.days.ago.change(usec: 0)
+      mh = create(:medical_history, patient: patient,
+                  hypertension: "yes", diabetes: "no",
+                  htn_diagnosed_at: old_htn, dm_diagnosed_at: old_dm)
 
-      result = history.update(htn_diagnosed_at: date)
-      expect(result).to be true
-      expect(history.reload.htn_diagnosed_at.to_i).to eq(date.to_i)
-    end
-
-    it "does not raise an error if dm_diagnosed_at is updated with the same value" do
-      date = 5.days.ago.change(usec: 0)
-      history = create(:medical_history, patient: patient, dm_diagnosed_at: date)
-
-      result = history.update(dm_diagnosed_at: date)
-      expect(result).to be true
-      expect(history.reload.dm_diagnosed_at.to_i).to eq(date.to_i)
+      mh.assign_attributes(hypertension: "no", diabetes: "yes", htn_diagnosed_at: 1.day.ago.change(usec: 0), dm_diagnosed_at: 1.day.ago.change(usec: 0))
+      expect(mh.valid?).to be_truthy
+      mh.save!
+      expect(mh.reload.hypertension).to eq("yes")
+      expect(mh.reload.diabetes).to eq("no")
+      expect(mh.reload.htn_diagnosed_at.to_i).to eq(old_htn.to_i)
+      expect(mh.reload.dm_diagnosed_at.to_i).to eq(old_dm.to_i)
     end
   end
 end
