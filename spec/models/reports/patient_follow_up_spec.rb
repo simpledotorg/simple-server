@@ -173,4 +173,44 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
 
     expect(described_class.count).to eq(1)
   end
+
+  context "screening" do
+    it "doesn't include screened patients" do
+      screened_patient = create(:patient, :without_medical_history, diagnosed_confirmed_at: nil, )
+      described_class.refresh
+      expect(described_class.where(patient_id: screened_patient.id).count).to eq(0)
+    end
+
+    it "includes blood pressure after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
+      old_bp = create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
+      new_bp = create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
+      described_class.refresh
+      expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_bp.id])
+    end
+
+    it "includes blood sugars after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
+      old_bs = create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
+      new_bs = create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
+      described_class.refresh
+      expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_bs.id])
+    end
+
+    it "includes appointments after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
+      old_appointment = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
+      new_appointment = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
+      described_class.refresh
+      expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_appointment.id])
+    end
+
+    it "includes prescriptions after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
+      old_prescription = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
+      new_prescription = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
+      described_class.refresh
+      expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_prescription.id])
+    end
+  end
 end
