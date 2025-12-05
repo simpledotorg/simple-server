@@ -31,6 +31,7 @@ namespace :reporting do
       reporting_overdue_calls
       reporting_facility_states
       reporting_patient_visits
+      reporting_prescriptions
     ].freeze
     views_to_refresh =
       if args[:views].present?
