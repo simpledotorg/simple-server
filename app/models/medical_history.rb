@@ -61,8 +61,13 @@ class MedicalHistory < ApplicationRecord
     source = patient&.recorded_at
     return unless source.present?
 
-    self.htn_diagnosed_at ||= source if hypertension_yes?
-    self.dm_diagnosed_at ||= source if diabetes_yes?
+    if %w[yes no].include?(hypertension&.to_s)
+      self.htn_diagnosed_at ||= source
+    end
+
+    if %w[yes no].include?(diabetes&.to_s)
+      self.dm_diagnosed_at ||= source
+    end
   end
 
   def enforce_one_way_enums_silently
@@ -123,15 +128,6 @@ class MedicalHistory < ApplicationRecord
         (dm_diagnosed_at if valid_dm_date)
       ].compact.min
       patient.update_columns(diagnosed_confirmed_at: earliest)
-      return
-    end
-
-    if htn_diagnosed_at.nil? && dm_diagnosed_at.nil?
-      return if hypertension_suspected? || diabetes_suspected?
-
-      if patient.diagnosed_confirmed_at.nil? && patient.recorded_at.present?
-        patient.update_columns(diagnosed_confirmed_at: patient.recorded_at)
-      end
     end
   end
 
