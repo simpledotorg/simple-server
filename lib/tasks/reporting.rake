@@ -32,6 +32,7 @@ namespace :reporting do
       reporting_patient_visits
       reporting_prescriptions
       reporting_patient_follow_ups
+      reporting_facility_appointment_scheduled_days
       reporting_facility_states
       reporting_facility_monthly_follow_ups_and_registrations
     ].freeze
