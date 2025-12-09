@@ -151,4 +151,18 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  context "screening" do
+    it "doesn't include screened patients" do
+      DrugLookup::MedicinePurpose.create(name: "Amlodipine", hypertension: true, diabetes: false)
+      DrugLookup::RawToCleanMedicine.create({raw_name: "Amlo", raw_dosage: "5mg", rxcui: 123})
+      DrugLookup::CleanMedicineToDosage.create({medicine: "Amlodipine", dosage: 5, rxcui: 123})
+
+      patient = create(:patient, :without_medical_history, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
+      add_drug(patient, "Amlo", "5mg", Date.new(2024, 7, 1))
+
+      described_class.refresh
+      expect(described_class.find_by(patient: patient)).to be_nil
+    end
+  end
 end
