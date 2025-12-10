@@ -185,7 +185,7 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     let(:six_days_ago) { 6.days.ago.to_date }
     let(:four_days_ago) { 4.days.ago.to_date }
     it "doesn't include screened patients" do
-      screened_patient = create(:patient, :without_medical_history, recorded_at: six_days_ago, diagnosed_confirmed_at: nil, assigned_facility: facility)
+      create(:patient, :without_medical_history, recorded_at: six_days_ago, diagnosed_confirmed_at: nil, assigned_facility: facility)
       described_class.refresh
       result = described_class.find_by(facility_id: facility, visit_date: six_days_ago)
       expect(result.daily_registrations_htn_or_dm).to eq(0)
