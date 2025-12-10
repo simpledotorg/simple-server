@@ -61,7 +61,7 @@ RSpec.describe BulkApiImport::FhirConditionImporter do
       ).import.slice(:hypertension, :diabetes)
 
       expect(first_medical_history_state).to include(diabetes: "no", hypertension: "yes")
-      expect(second_medical_history_state).not_to include(diabetes: "yes", hypertension: "no")
+      expect(second_medical_history_state.symbolize_keys).to include(diabetes: "yes", hypertension: "yes")
     end
   end
 

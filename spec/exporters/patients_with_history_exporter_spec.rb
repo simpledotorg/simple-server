@@ -333,7 +333,7 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
 
   before do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
-    patient.medical_history.update!(hypertension: "no", diabetes: "yes")
+    patient.medical_history.update!(hypertension: "yes", diabetes: "no")
     MaterializedPatientSummary.refresh
   end
 
