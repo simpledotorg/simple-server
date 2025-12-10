@@ -180,4 +180,52 @@ RSpec.describe Reports::FacilityDailyFollowUpAndRegistration, {type: :model, rep
     expect(daily_statistics_today.daily_follow_ups_htn_or_dm).to eq(1)
     expect(daily_statistics_yesterday.daily_registrations_htn_or_dm).to eq(1)
   end
+
+  context "screening" do
+    let(:six_days_ago) { 6.days.ago.to_date }
+    let(:four_days_ago) { 4.days.ago.to_date }
+    it "doesn't include screened patients" do
+      screened_patient = create(:patient, :without_medical_history, recorded_at: six_days_ago, diagnosed_confirmed_at: nil, assigned_facility: facility)
+      described_class.refresh
+      result = described_class.find_by(facility_id: facility, visit_date: six_days_ago)
+      expect(result.daily_registrations_htn_or_dm).to eq(0)
+      expect(result.daily_follow_ups_htn_or_dm).to eq(0)
+    end
+
+    it "includes blood pressure after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: six_days_ago, diagnosed_confirmed_at: four_days_ago, registration_user: user, registration_facility: facility)
+      create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: six_days_ago)
+      create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: four_days_ago)
+      described_class.refresh
+      expect(described_class.find_by(facility_id: facility, visit_date: six_days_ago).daily_registrations_htn_only).to eq(0)
+      expect(described_class.find_by(facility_id: facility, visit_date: four_days_ago).daily_registrations_htn_only).to eq(1)
+    end
+
+    it "includes blood sugars after date of diagnosis" do
+      diagnosed_patient = create(:patient, :diabetes, recorded_at: six_days_ago, diagnosed_confirmed_at: four_days_ago, registration_user: user, registration_facility: facility)
+      create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: six_days_ago)
+      create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: four_days_ago)
+      described_class.refresh
+      expect(described_class.find_by(facility_id: facility, visit_date: six_days_ago).daily_registrations_dm_only).to eq(0)
+      expect(described_class.find_by(facility_id: facility, visit_date: four_days_ago).daily_registrations_dm_only).to eq(1)
+    end
+
+    it "includes appointments after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: six_days_ago, diagnosed_confirmed_at: four_days_ago, registration_user: user, registration_facility: facility)
+      create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: six_days_ago)
+      create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: four_days_ago)
+      described_class.refresh
+      expect(described_class.find_by(facility_id: facility, visit_date: six_days_ago).daily_registrations_htn_only).to eq(0)
+      expect(described_class.find_by(facility_id: facility, visit_date: four_days_ago).daily_registrations_htn_only).to eq(1)
+    end
+
+    it "includes prescriptions after date of diagnosis" do
+      diagnosed_patient = create(:patient, :hypertension, recorded_at: six_days_ago, diagnosed_confirmed_at: four_days_ago, registration_user: user, registration_facility: facility)
+      create(:prescription_drug, patient: diagnosed_patient, user: user, facility: facility, recorded_at: six_days_ago)
+      create(:prescription_drug, patient: diagnosed_patient, user: user, facility: facility, recorded_at: four_days_ago)
+      described_class.refresh
+      expect(described_class.find_by(facility_id: facility, visit_date: six_days_ago).daily_registrations_htn_only).to eq(0)
+      expect(described_class.find_by(facility_id: facility, visit_date: four_days_ago).daily_registrations_htn_only).to eq(1)
+    end
+  end
 end

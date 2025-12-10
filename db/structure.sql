@@ -2987,8 +2987,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             bp.recorded_at AS visited_at,
             (EXTRACT(doy FROM ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), bs.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -2999,8 +2999,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             bs.recorded_at AS visited_at,
             (EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), pd.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3011,8 +3011,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             pd.device_created_at AS visited_at,
             (EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), app.creation_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3023,19 +3023,19 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             app.device_created_at AS visited_at,
             (EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), registered_patients AS (
-         SELECT DISTINCT ON (((EXTRACT(doy FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), p.registration_facility_id, p.id) p.id AS patient_id,
+         SELECT DISTINCT ON (((EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), p.registration_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             p.id AS visit_id,
             'Registration'::text AS visit_type,
             p.registration_facility_id AS facility_id,
             p.registration_user_id AS user_id,
-            p.recorded_at AS visited_at,
-            (EXTRACT(doy FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
+            p.diagnosed_confirmed_at AS visited_at,
+            (EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM public.patients p
-          WHERE ((p.deleted_at IS NULL) AND (p.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (p.diagnosed_confirmed_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
             follow_up_blood_pressures.patient_gender,
@@ -8640,4 +8640,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251203093958'),
 ('20251204092000'),
 ('20251205091911'),
-('20251208104102');
+('20251208104102'),
+('20251210061204');
