@@ -81,10 +81,10 @@ class MedicalHistory < ApplicationRecord
       curr_s = curr.to_s
 
       if prev_s == "suspected"
-        next if %w[yes no suspected].include?(curr_s)
+        next
       end
 
-      if %w[yes no].include?(prev_s)
+      if %w[yes no].include?(prev_s) && curr_s == "suspected"
         write_attribute(attr, prev_s)
 
         case attr
@@ -94,7 +94,9 @@ class MedicalHistory < ApplicationRecord
           write_attribute(:dm_diagnosed_at, dm_diagnosed_at_was)
         end
 
-        Rails.logger.info("[MedicalHistory] Prevented change of #{attr} from #{prev_s} -> #{curr_s} for medical_history_id=#{id || "new"}")
+        Rails.logger.info(
+          "[MedicalHistory] Prevented change of #{attr} from #{curr_s} -> #{prev_s} for medical_history_id=#{id || "new"}"
+        )
         next
       end
     end

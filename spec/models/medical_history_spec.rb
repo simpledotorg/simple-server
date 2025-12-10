@@ -158,8 +158,8 @@ describe MedicalHistory, type: :model do
       mh.assign_attributes(hypertension: "no", diabetes: "yes", htn_diagnosed_at: 1.day.ago.change(usec: 0), dm_diagnosed_at: 1.day.ago.change(usec: 0))
       expect(mh.valid?).to be_truthy
       mh.save!
-      expect(mh.reload.hypertension).to eq("yes")
-      expect(mh.reload.diabetes).to eq("no")
+      expect(mh.reload.hypertension).to eq("no")
+      expect(mh.reload.diabetes).to eq("yes")
       expect(mh.reload.htn_diagnosed_at.to_i).to eq(old_htn.to_i)
       expect(mh.reload.dm_diagnosed_at.to_i).to eq(old_dm.to_i)
     end
