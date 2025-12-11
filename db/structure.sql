@@ -1254,7 +1254,7 @@ CREATE TABLE public.dr_rai_targets (
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    dr_rai_indicators_id bigint NOT NULL,
+    dr_rai_indicators_id bigint,
     period character varying
 );
 
@@ -8596,6 +8596,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924101441'),
 ('20250924102156'),
 ('20250925094123'),
-('20251125090819');
-
+('20251125090819'),
+('20251211073126');
 
