@@ -9,11 +9,7 @@ default: &default
 
 development:
   <<: *default
-  database: my_development
-  username: postgres
-  password: password
-  host: localhost
-
+  database: simple-server_development
 
 profiling:
   <<: *default
@@ -25,4 +21,3 @@ test:
 
 production:
   <<: *default
-  
