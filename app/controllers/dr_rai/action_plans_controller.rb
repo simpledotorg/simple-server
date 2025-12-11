@@ -63,7 +63,6 @@ class DrRai::ActionPlansController < AdminController
     @target = DrRai::Target.create!(
       type: dr_rai_action_plan_params[:target_type],
       period: period,
-      indicator: @indicator,
       numeric_value: dr_rai_action_plan_params[:target_value]
     )
   end
