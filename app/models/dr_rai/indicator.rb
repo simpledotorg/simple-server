@@ -17,16 +17,9 @@ class DrRai::Indicator < ApplicationRecord
   # There should only ever be one instance of any indicator in the db
   validates :type, uniqueness: true
 
-  has_one :target, class_name: "DrRai::Target", dependent: :destroy, foreign_key: "dr_rai_indicators_id"
-  accepts_nested_attributes_for :target
-
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
     Reports::RegionSummaryAggregator.new(data).quarterly(with: :sum)[region.slug]
-  end
-
-  def period
-    Period.new(type: :quarter, value: target.period)
   end
 
   def has_action_plans?(region, period)
@@ -51,26 +44,30 @@ class DrRai::Indicator < ApplicationRecord
     DrRai::Target::TYPES[target_type_frontend]
   end
 
-  def numerator(region, the_period = period, with_non_contactable: nil)
+  def numerator(region, the_period, with_non_contactable: nil)
     return 0 unless is_supported?(region)
     numerators(region, all: with_non_contactable)[the_period]
   end
 
-  def denominator(region, the_period = period, with_non_contactable: nil)
+  def denominator(region, the_period, with_non_contactable: nil)
     return 0 unless is_supported?(region)
     denominators(region, all: with_non_contactable)[the_period]
   end
 
   def numerators(region, all: nil)
-    return [] unless is_supported?(region)
-    datasource(region).map do |t, data|
+    return {} unless is_supported?(region)
+    data_source = datasource(region)
+    return {} if data_source.nil?
+    data_source.map do |t, data|
       [t, data[numerator_key(all: all)]]
     end.to_h
   end
 
   def denominators(region, all: nil)
-    return [] unless is_supported?(region)
-    datasource(region).map do |t, data|
+    return {} unless is_supported?(region)
+    data_source = datasource(region)
+    return {} if data_source.nil?
+    data_source.map do |t, data|
       [t, data[denominator_key(all: all)]]
     end.to_h
   end
