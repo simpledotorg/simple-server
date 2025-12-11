@@ -17,4 +17,36 @@ namespace :reporting do
       end
     end
   end
+
+  desc "Do a refresh of said materialized views"
+  task :initial_materialized_view_refresh, [:views] => :environment do |_, args|
+    # Default list
+    default_views = %w[
+      latest_blood_pressures_per_patient_per_months
+      latest_blood_pressures_per_patient_per_quarters
+      latest_blood_pressures_per_patients
+      blood_pressures_per_facility_per_days
+      reporting_patient_blood_pressures
+      reporting_patient_blood_sugars
+      reporting_overdue_calls
+      reporting_patient_visits
+      reporting_prescriptions
+      reporting_patient_follow_ups
+      reporting_facility_appointment_scheduled_days
+      reporting_facility_states
+      reporting_facility_daily_follow_ups_and_registrations
+      reporting_facility_monthly_follow_ups_and_registrations
+    ].freeze
+    views_to_refresh =
+      if args[:views].present?
+        # Expecting a comma-separated list: "view1,view2"
+        [args[:views], *args.extras].map(&:strip)
+      else
+        default_views
+      end
+    views_to_refresh.each do |view_name|
+      puts "Refreshing materialized view: #{view_name} "
+      ActiveRecord::Base.connection.exec_query("REFRESH MATERIALIZED VIEW #{view_name}")
+    end
+  end
 end
