@@ -2,7 +2,6 @@ FactoryBot.define do
   factory :target, class: "DrRai::Target" do
     completed { false }
     period { "Q1-2021" }
-    indicator { contact_overdue_patients_indicator }
 
     trait :numeric do
       type { "DrRai::NumericTarget" }
