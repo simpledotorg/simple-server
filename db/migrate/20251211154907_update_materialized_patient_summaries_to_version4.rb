@@ -455,7 +455,7 @@ class UpdateMaterializedPatientSummariesToVersion4 < ActiveRecord::Migration[6.1
           WITH NO DATA;
     SQL
 
-    add_index :materialized_patient_summaries, [:id], unique: true, name: 'index_materialized_patient_summaries_on_id'
+    add_index :materialized_patient_summaries, [:id], unique: true, name: "index_materialized_patient_summaries_on_id"
   end
 
   def down
@@ -914,6 +914,6 @@ class UpdateMaterializedPatientSummariesToVersion4 < ActiveRecord::Migration[6.1
           WITH NO DATA;
     SQL
 
-    add_index :materialized_patient_summaries, [:id], unique: true, name: 'index_materialized_patient_summaries_on_id'
+    add_index :materialized_patient_summaries, [:id], unique: true, name: "index_materialized_patient_summaries_on_id"
   end
 end
