@@ -26,6 +26,7 @@ namespace :reporting do
       latest_blood_pressures_per_patient_per_quarters
       latest_blood_pressures_per_patients
       blood_pressures_per_facility_per_days
+      materialized_patient_summaries
       reporting_patient_blood_pressures
       reporting_patient_blood_sugars
       reporting_overdue_calls
