@@ -13,6 +13,8 @@ class Api::V3::MedicalHistoryPayloadValidator < Api::V3::PayloadValidator
     :smoking,
     :smokeless_tobacco,
     :cholesterol,
+    :htn_diagnosed_at,
+    :dm_diagnosed_at,
     :created_at,
     :updated_at
   )
