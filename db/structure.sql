@@ -2193,7 +2193,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
      LEFT JOIN latest_blood_pressures ON ((latest_blood_pressures.patient_id = p.id)))
      LEFT JOIN latest_blood_sugars ON ((latest_blood_sugars.patient_id = p.id)))
      LEFT JOIN next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-  WHERE (p.deleted_at IS NULL)
+  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
   WITH NO DATA;
 
 
@@ -8641,4 +8641,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251204092000'),
 ('20251205091911'),
 ('20251208104102'),
-('20251210061204');
+('20251210061204'),
+('20251211154907');
