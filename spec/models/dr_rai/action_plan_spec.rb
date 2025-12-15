@@ -4,7 +4,7 @@ RSpec.describe DrRai::ActionPlan, type: :model do
   describe "#denominator" do
     context "for numeric targets" do
       let(:indicator) { DrRai::ContactOverduePatientsIndicator.create }
-      let(:target) { DrRai::NumericTarget.create(indicator: indicator, numeric_value: 20) }
+      let(:target) { DrRai::NumericTarget.create(numeric_value: 20, period: "Q1-2025") }
       let(:district_with_facilities) { setup_district_with_facilities }
       let(:region) { district_with_facilities[:region] }
 
@@ -20,12 +20,12 @@ RSpec.describe DrRai::ActionPlan, type: :model do
 
   describe "#progress" do
     let(:indicator) { DrRai::ContactOverduePatientsIndicator.create }
-    let(:target) { DrRai::NumericTarget.create(indicator: indicator, numeric_value: 20, period: "Q1-2025") }
+    let(:target) { DrRai::NumericTarget.create(numeric_value: 20, period: "Q1-2025") }
     let(:district_with_facilities) { setup_district_with_facilities }
     let(:region) { district_with_facilities[:region] }
 
     before do
-      allow_any_instance_of(DrRai::ContactOverduePatientsIndicator).to receive(:numerator).with(anything).and_return(9)
+      allow_any_instance_of(DrRai::ContactOverduePatientsIndicator).to receive(:numerator).with(anything, anything).and_return(9)
     end
 
     it "calculates pecentage to 2 decimal places" do
