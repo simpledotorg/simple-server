@@ -7602,6 +7602,13 @@ CREATE INDEX index_patients_on_recorded_at ON public.patients USING btree (recor
 
 
 --
+-- Name: index_patients_on_diagnosed_confirmed_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patients_on_diagnosed_confirmed_at ON public.patients USING btree (diagnosed_confirmed_at);
+
+
+--
 -- Name: index_patients_on_registration_facility_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8643,4 +8650,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251205091911'),
 ('20251208104102'),
 ('20251210061204'),
-('20251211154907');
+('20251211154907'),
+('20251215113615');
