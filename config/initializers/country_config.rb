@@ -77,14 +77,15 @@ class CountryConfig
       supported_genders: %w[male female],
       patient_line_list_show_zone: false,
       appointment_reminders_channel: "Messaging::Mobitel::Sms",
-      sorted_facility_sizes: %w[large medium small community teaching_hospital national_hospital],
+      sorted_facility_sizes: %w[large medium small community teaching_hospital national_hospital arogya_wellness_centre],
       facility_sizes: {
         community: "community",
         small: "small",
         medium: "medium",
         large: "large",
         national_hospital: "national_hospital",
-        teaching_hospital: "teaching_hospital"
+        teaching_hospital: "teaching_hospital",
+        arogya_wellness_centre: "arogya_wellness_centre"
       }
     },
     US: {
