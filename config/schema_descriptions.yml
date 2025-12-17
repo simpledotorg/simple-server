@@ -194,6 +194,7 @@ reporting_patient_states:
     diabetes_treatment_outcome_in_last_2_months: "For the visiting period of the last 2 months, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?"
     diabetes_treatment_outcome_in_quarter: "For the visiting period of the current quarter, is this patient's diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?"
     titrated: "True, if the patient had an increase in dosage of any hypertension drug in a visit this month."
+    diagnosed_confirmed_at: "Time (in UTC) at which the patient had it's first diagnosis completed, also differentiating him from screened patients."
 reporting_facilities:
   description: "List of Simple facililities with size, type, and geographical information. These facilities are used to segment reports by region."
   columns:

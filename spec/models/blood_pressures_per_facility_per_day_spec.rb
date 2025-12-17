@@ -52,5 +52,13 @@ RSpec.describe BloodPressuresPerFacilityPerDay, type: :model do
     it "doesn't have a row for facility_without_bp" do
       expect(described_class.all.pluck(:facility_id)).not_to include(facility_without_bp.id)
     end
+
+    context "screening" do
+      it "doesn't include blood pressures of screened patients" do
+        screened_patient = create(:patient, registration_facility: facility_with_bp, diagnosed_confirmed_at: nil)
+        create(:blood_pressure, facility: facility_with_bp, recorded_at: days.first, patient: screened_patient)
+        expect(described_class.where(year: 1.day.ago.year, day: 1.day.ago.yday).first.bp_count).to eq(2)
+      end
+    end
   end
 end

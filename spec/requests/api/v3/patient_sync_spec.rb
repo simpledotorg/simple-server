@@ -6,7 +6,7 @@ RSpec.describe "Patients sync", type: :request do
 
   let(:sync_route) { "/api/v3/patients/sync" }
 
-  let(:build_payload) { -> { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility)) } }
+  let(:build_payload) { -> { build_patient_payload(FactoryBot.build(:patient, registration_facility: request_user.facility, diagnosed_confirmed_at: nil)) } }
   let(:build_invalid_payload) { -> { build_invalid_patient_payload } }
   let(:update_payload) { ->(record) { updated_patient_payload record } }
 

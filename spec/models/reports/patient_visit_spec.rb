@@ -116,4 +116,32 @@ RSpec.describe Reports::PatientVisit, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  context "screening" do
+    it "does not include screened patients" do
+      patient = create(:patient, :without_medical_history, diagnosed_confirmed_at: nil)
+      create(:appointment, patient: patient, recorded_at: 1.month.ago)
+
+      described_class.refresh
+      expect(described_class.find_by(patient_id: patient.id)).to be_nil
+    end
+
+    it "calculates the registration indicators based on the diagnosis date" do
+      patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
+      create(:appointment, patient: patient, recorded_at: Date.new(2024, 5, 1))
+      create(:appointment, patient: patient, recorded_at: Date.new(2024, 6, 1))
+
+      described_class.refresh
+      june_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
+      july_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 7, 1))
+      august_record = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 8, 1))
+      expect(june_record.patient_recorded_at).to eq(patient.diagnosed_confirmed_at)
+      expect(june_record.months_since_registration).to eq(0)
+      expect(july_record.months_since_registration).to eq(1)
+      expect(august_record.months_since_registration).to eq(2)
+      expect(june_record.quarters_since_registration).to eq(0)
+      expect(july_record.quarters_since_registration).to eq(1)
+      expect(august_record.quarters_since_registration).to eq(1)
+    end
+  end
 end

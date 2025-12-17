@@ -236,4 +236,20 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     expect(described_class.find_by(month_date: Period.current, facility: facility).htn_appts_scheduled_0_to_14_days).to eq 1
     expect(described_class.find_by(month_date: Period.current, facility: facility).diabetes_appts_scheduled_0_to_14_days).to eq 1
   end
+
+  context "screening" do
+    it "does not include screened patients" do
+      facility = create(:facility)
+      patient = create(:patient, :without_medical_history, recorded_at: 1.month.ago, diagnosed_confirmed_at: nil, assigned_facility: facility)
+      create(:appointment,
+        facility: facility,
+        patient: patient,
+        scheduled_date: 10.days.from_now,
+        device_created_at: Time.current)
+
+      RefreshReportingViews.refresh_v2
+
+      expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
+    end
+  end
 end

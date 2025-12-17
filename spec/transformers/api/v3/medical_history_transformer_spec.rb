@@ -34,6 +34,22 @@ describe Api::V3::MedicalHistoryTransformer do
       end
     end
 
+    context "when hypertension is 'suspected'" do
+      let(:medical_history_params) do
+        {
+          id: SecureRandom.uuid,
+          patient_id: SecureRandom.uuid,
+          hypertension: "suspected",
+          diagnosed_with_hypertension: "suspected"
+        }
+      end
+
+      it "passes along the suspected hypertension values" do
+        expect(transformed_params[:hypertension]).to eq("suspected")
+        expect(transformed_params[:diagnosed_with_hypertension]).to eq("suspected")
+      end
+    end
+
     context "when hypertension is not provided" do
       let(:medical_history_params) do
         {
@@ -46,6 +62,20 @@ describe Api::V3::MedicalHistoryTransformer do
       it "sets hypertension fields to yes" do
         expect(transformed_params[:hypertension]).to eq("yes")
         expect(transformed_params[:diagnosed_with_hypertension]).to eq("yes")
+      end
+    end
+
+    context "when diabetes is 'suspected'" do
+      let(:medical_history_params) do
+        {
+          id: SecureRandom.uuid,
+          patient_id: SecureRandom.uuid,
+          diabetes: "suspected"
+        }
+      end
+
+      it "passes along the suspected diabetes values" do
+        expect(transformed_params[:diabetes]).to eq("suspected")
       end
     end
   end

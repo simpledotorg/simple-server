@@ -206,8 +206,8 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
       registration_facility.facility_type,
       registration_facility.district,
       registration_facility.state,
-      "no",
       "yes",
+      "no",
       bp_1_follow_up.days_overdue,
       I18n.l(bp_1.recorded_at.to_date),
       quarter_string(bp_1.recorded_at.to_date),
@@ -333,7 +333,6 @@ RSpec.describe PatientsWithHistoryExporter, type: :model do
 
   before do
     allow(Rails.application.config.country).to receive(:[]).with(:patient_line_list_show_zone).and_return(true)
-    patient.medical_history.update!(hypertension: "no", diabetes: "yes")
     MaterializedPatientSummary.refresh
   end
 

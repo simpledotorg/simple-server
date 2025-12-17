@@ -330,4 +330,12 @@ describe MaterializedPatientSummary, type: :model do
       end
     end
   end
+
+  context "screening" do
+    it "does not include screened patients" do
+      patient.update!(diagnosed_confirmed_at: nil)
+      refresh_view
+      expect(described_class.count).to eq(0)
+    end
+  end
 end

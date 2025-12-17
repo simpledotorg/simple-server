@@ -167,6 +167,18 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
         expect(history.receiving_treatment_for_diabetes).to eq(expected_values[:receiving_treatment_for_diabetes])
       end
 
+      it "sets patient's diagnosed_confirmed_at to earliest of diagnosis timestamps when provided" do
+        early = 8.days.ago
+        late = 3.days.ago
+        params[:medical_histories][0][:htn_diagnosed_at] = late.rfc3339
+        params[:medical_histories][0][:dm_diagnosed_at] = early.rfc3339
+
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(early.to_i)
+      end
+
       it "leaves values at nil when not provided" do
         params[:medical_histories][0].delete(:receiving_treatment_for_diabetes)
 
@@ -186,6 +198,14 @@ RSpec.describe Api::V3::MedicalHistoriesController, type: :controller do
           "The property '#/receiving_treatment_for_diabetes' value \"probably\" did not match one of the following values: yes, no, unknown in schema"
         )
         expect(patient.reload.medical_history).to eq(nil)
+      end
+
+      it "accepts 'suspected' as a valid hypertension value" do
+        params[:medical_histories][0][:hypertension] = "suspected"
+        post :sync_from_user, params: params
+
+        expect(response.status).to eq 200
+        expect(patient.reload.medical_history.hypertension).to eq("suspected")
       end
     end
   end

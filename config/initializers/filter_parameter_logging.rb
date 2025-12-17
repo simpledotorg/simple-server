@@ -22,6 +22,7 @@ module ParameterFiltering
     status
     updated_at
     v2
+    diagnosed_confirmed_at
   ].freeze
 
   ALLOWED_REGEX = /(^|_)ids?|#{Regexp.union(ALLOWED_ATTRIBUTES)}/.freeze
