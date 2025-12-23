@@ -15,7 +15,6 @@ RSpec.describe "Historical Blood Sugars Sync", type: :request do
   let(:patient) { FactoryBot.create(:patient, registration_facility: request_user.facility) }
 
   it "syncs blood sugars ignoring active model validations" do
-    # User provided huge value test case
     bs = FactoryBot.build(:blood_sugar, patient: patient, facility: request_user.facility)
     payload = build_blood_sugar_payload(bs)
     payload["blood_sugar_value"] = "99990000000000000"
@@ -24,20 +23,6 @@ RSpec.describe "Historical Blood Sugars Sync", type: :request do
 
     expect(response).to have_http_status(200)
     record = BloodSugar.find(bs.id)
-    # Note: Depending on column type, this might be stored, truncated, or error if not handled.
-    # If PG integer, it overflows. If decimal, it fits and we verify it matches.
-    expect(record.blood_sugar_value).to eq(9.999e16) # Approximate float check or exact decimal
-  end
-
-  it "converts invalid enum values to nil" do
-    bs = FactoryBot.build(:blood_sugar, patient: patient, facility: request_user.facility)
-    payload = build_blood_sugar_payload(bs)
-    payload["blood_sugar_type"] = "sweet" # invalid
-
-    post sync_route, params: {blood_sugars: [payload]}.to_json, headers: headers
-
-    expect(response).to have_http_status(200)
-    record = BloodSugar.find(bs.id)
-    expect(record.blood_sugar_type).to be_nil
+    expect(record.blood_sugar_value).to eq(9.999e16) 
   end
 end

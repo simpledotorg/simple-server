@@ -148,11 +148,6 @@ Rails.application.routes.draw do
           get "sync", to: "blood_sugars#sync_to_user"
           post "sync", to: "blood_sugars#sync_from_user"
         end
-
-        scope "/encounters" do
-          get "sync", to: "encounters#sync_to_user"
-          post "sync", to: "encounters#sync_from_user"
-        end
       end
 
       resource :help, only: [:show], controller: "help"
