@@ -80,4 +80,18 @@ RSpec.describe Reports::View, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  describe "#partitioned_refresh" do
+    let(:refresh_month) { Date.new(2024, 6, 1) }
+
+    it "executes the correct SQL to refresh the partition" do
+      [Reports::PatientState, Reports::FacilityMonthlyFollowUpAndRegistration].each do |klass|
+        expect(ActiveRecord::Base.connection).to receive(:exec_query).with(
+          "CALL simple_reporting.add_shard_to_table('#{refresh_month}', '#{klass.table_name}')"
+        )
+
+        klass.partitioned_refresh(refresh_month)
+      end
+    end
+  end
 end

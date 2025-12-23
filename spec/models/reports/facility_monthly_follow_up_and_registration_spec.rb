@@ -225,4 +225,10 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     expect(total.monthly_follow_ups_htn_only + total.monthly_follow_ups_htn_and_dm).to eq(dashboard_htn_follow_ups)
     expect(total.monthly_follow_ups_dm_only + total.monthly_follow_ups_htn_and_dm).to eq(dashboard_dm_follow_ups)
   end
+
+  describe "#partitioned?" do
+    it "returns true" do
+      expect(described_class.partitioned?).to be(true)
+    end
+  end
 end
