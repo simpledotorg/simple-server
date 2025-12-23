@@ -23,7 +23,7 @@ RSpec.describe "Historical Encounters Sync", type: :request do
       facility: request_user.facility
     )
 
-    payload = build_encounter_payload(encounter)
+    payload = build_encounters_payload(encounter)
 
     payload["encountered_on"] = Date.tomorrow
 
@@ -32,6 +32,8 @@ RSpec.describe "Historical Encounters Sync", type: :request do
       headers: headers
 
     expect(response).to have_http_status(:ok)
-    expect(Encounter.exists?(encounter.id)).to be(true)
+    puts "DEBUG: Response Body: #{response.body}"
+    json = JSON.parse(response.body)
+    expect(Encounter.exists?(json["processed"].first)).to be(true)
   end
 end
