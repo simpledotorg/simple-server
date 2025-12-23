@@ -28,8 +28,8 @@ RSpec.describe "Historical Encounters Sync", type: :request do
     payload["encountered_on"] = Date.tomorrow
 
     post sync_route,
-         params: { encounters: [payload] }.to_json,
-         headers: headers
+      params: {encounters: [payload]}.to_json,
+      headers: headers
 
     expect(response).to have_http_status(:ok)
     expect(Encounter.exists?(encounter.id)).to be(true)

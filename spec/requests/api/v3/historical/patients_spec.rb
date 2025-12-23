@@ -29,8 +29,8 @@ RSpec.describe "Historical Patients Sync", type: :request do
     payload["status"] = "zombie"
 
     post sync_route,
-         params: { patients: [payload] }.to_json,
-         headers: headers
+      params: {patients: [payload]}.to_json,
+      headers: headers
 
     expect(response).to have_http_status(:ok)
     expect(JSON(response.body)["processed"]).to include(patient.id)

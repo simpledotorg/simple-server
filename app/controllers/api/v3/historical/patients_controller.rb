@@ -55,7 +55,7 @@ module Api
           process_phone_numbers(patient, phone_numbers)
           process_business_identifiers(patient, identifiers)
 
-          { record: patient }
+          {record: patient}
         end
 
         def process_address(patient, attrs)
@@ -81,7 +81,11 @@ module Api
         def process_business_identifiers(patient, identifiers)
           identifiers.each do |attrs|
             if attrs[:metadata].is_a?(String)
-              attrs[:metadata] = JSON.parse(attrs[:metadata]) rescue attrs[:metadata]
+              attrs[:metadata] = begin
+                JSON.parse(attrs[:metadata])
+              rescue
+                attrs[:metadata]
+              end
             end
 
             identifier =

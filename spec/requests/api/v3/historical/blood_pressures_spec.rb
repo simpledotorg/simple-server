@@ -15,12 +15,12 @@ RSpec.describe "Historical Blood Pressures Sync", type: :request do
   it "syncs blood pressures via historical sync without enforcing validation rules" do
     bp = FactoryBot.build(:blood_pressure, patient: patient, facility: request_user.facility, systolic: 350)
     payload = build_blood_pressure_payload(bp)
-    payload['systolic'] = 350
+    payload["systolic"] = 350
 
-    post sync_route, params: { blood_pressures: [payload] }.to_json, headers: headers
+    post sync_route, params: {blood_pressures: [payload]}.to_json, headers: headers
 
     expect(response).to have_http_status(200)
-    expect(JSON(response.body)['errors']).to be_empty
+    expect(JSON(response.body)["errors"]).to be_empty
 
     record = BloodPressure.find(bp.id)
     expect(record.systolic).to eq(350)

@@ -18,9 +18,9 @@ RSpec.describe "Historical Blood Sugars Sync", type: :request do
     # User provided huge value test case
     bs = FactoryBot.build(:blood_sugar, patient: patient, facility: request_user.facility)
     payload = build_blood_sugar_payload(bs)
-    payload['blood_sugar_value'] = "99990000000000000"
+    payload["blood_sugar_value"] = "99990000000000000"
 
-    post sync_route, params: { blood_sugars: [payload] }.to_json, headers: headers
+    post sync_route, params: {blood_sugars: [payload]}.to_json, headers: headers
 
     expect(response).to have_http_status(200)
     record = BloodSugar.find(bs.id)
@@ -32,9 +32,9 @@ RSpec.describe "Historical Blood Sugars Sync", type: :request do
   it "converts invalid enum values to nil" do
     bs = FactoryBot.build(:blood_sugar, patient: patient, facility: request_user.facility)
     payload = build_blood_sugar_payload(bs)
-    payload['blood_sugar_type'] = 'sweet' # invalid
+    payload["blood_sugar_type"] = "sweet" # invalid
 
-    post sync_route, params: { blood_sugars: [payload] }.to_json, headers: headers
+    post sync_route, params: {blood_sugars: [payload]}.to_json, headers: headers
 
     expect(response).to have_http_status(200)
     record = BloodSugar.find(bs.id)

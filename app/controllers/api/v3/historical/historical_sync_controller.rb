@@ -44,7 +44,7 @@ module Api
           error(record_params[:id], "missing_required_field", e.message)
         rescue ActiveRecord::StatementInvalid => e
           error(record_params[:id], "database_error", e.message)
-        rescue StandardError => e
+        rescue => e
           error(record_params[:id], "unknown_error", e.message)
         end
 
@@ -53,7 +53,7 @@ module Api
         end
 
         def error(id, type, message)
-          { errors_hash: { id: id, error_type: type, message: message } }
+          {errors_hash: {id: id, error_type: type, message: message}}
         end
 
         def disable_audit_logs?
@@ -67,10 +67,10 @@ module Api
           enum_cols = record.class.defined_enums
 
           safe_attrs = attributes.each_with_object({}) do |(key, value), result|
-            if enum_cols.key?(key.to_s) && !enum_cols[key.to_s].key?(value)
-              result[key] = nil
+            result[key] = if enum_cols.key?(key.to_s) && !enum_cols[key.to_s].key?(value)
+              nil
             else
-              result[key] = value
+              value
             end
           end
 

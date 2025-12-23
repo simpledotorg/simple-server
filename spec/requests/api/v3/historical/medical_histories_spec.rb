@@ -24,8 +24,8 @@ RSpec.describe "Historical Medical Histories Sync", type: :request do
     payload["hypertension"] = "sometimes"
 
     post sync_route,
-         params: { medical_histories: [payload] }.to_json,
-         headers: headers
+      params: {medical_histories: [payload]}.to_json,
+      headers: headers
 
     expect(response).to have_http_status(:ok)
 

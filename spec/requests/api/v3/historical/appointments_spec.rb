@@ -15,13 +15,13 @@ RSpec.describe "Historical Appointments Sync", type: :request do
   it "syncs appointments ignoring active model validations" do
     app = FactoryBot.build(:appointment, patient: patient, facility: request_user.facility)
     payload = build_appointment_payload(app)
-    payload['status'] = "not_started"
-    payload['cancel_reason'] = nil
+    payload["status"] = "not_started"
+    payload["cancel_reason"] = nil
 
-    post sync_route, params: { appointments: [payload] }.to_json, headers: headers
+    post sync_route, params: {appointments: [payload]}.to_json, headers: headers
 
     expect(response).to have_http_status(200)
     record = Appointment.find(app.id)
-    expect(record.status).to be_nil 
+    expect(record.status).to be_nil
   end
 end

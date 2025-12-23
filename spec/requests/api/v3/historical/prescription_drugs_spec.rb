@@ -22,12 +22,12 @@ RSpec.describe "Historical Prescription Drugs Sync", type: :request do
     pd = FactoryBot.build(:prescription_drug, patient: patient, facility: request_user.facility)
     payload = build_prescription_drug_payload(pd)
 
-    payload["is_protocol_drug"] = "true" 
-    payload["frequency"] = "once_a_day"     
+    payload["is_protocol_drug"] = "true"
+    payload["frequency"] = "once_a_day"
 
     post sync_route,
-         params: { prescription_drugs: [payload] }.to_json,
-         headers: headers
+      params: {prescription_drugs: [payload]}.to_json,
+      headers: headers
 
     expect(response).to have_http_status(:ok)
 
