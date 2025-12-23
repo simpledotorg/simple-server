@@ -8,6 +8,10 @@ module Reports
       true
     end
 
+    def self.partitioned?
+      true
+    end
+
     NON_COUNT_FIELDS = %i[
       block_region_id
       district_region_id
