@@ -118,6 +118,44 @@ Rails.application.routes.draw do
         get "generate_id", to: "encounters#generate_id"
       end
 
+      namespace :historical do
+        scope "/patients" do
+          get "sync", to: "patients#sync_to_user"
+          post "sync", to: "patients#sync_from_user"
+        end
+
+        scope "/medical_histories" do
+          get "sync", to: "medical_histories#sync_to_user"
+          post "sync", to: "medical_histories#sync_from_user"
+        end
+
+        scope "/blood_pressures" do
+          get "sync", to: "blood_pressures#sync_to_user"
+          post "sync", to: "blood_pressures#sync_from_user"
+        end
+
+        scope "/prescription_drugs" do
+          get "sync", to: "prescription_drugs#sync_to_user"
+          post "sync", to: "prescription_drugs#sync_from_user"
+        end
+
+        scope "/appointments" do
+          get "sync", to: "appointments#sync_to_user"
+          post "sync", to: "appointments#sync_from_user"
+        end
+
+        scope "/blood_sugars" do
+          get "sync", to: "blood_sugars#sync_to_user"
+          post "sync", to: "blood_sugars#sync_from_user"
+        end
+
+        scope "/encounters" do
+          get "sync", to: "encounters#sync_to_user"
+          post "sync", to: "encounters#sync_from_user"
+          get "generate_id", to: "encounters#generate_id"
+        end
+      end
+
       resource :help, only: [:show], controller: "help"
 
       namespace :analytics do
