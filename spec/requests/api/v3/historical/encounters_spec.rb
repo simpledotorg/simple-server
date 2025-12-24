@@ -31,7 +31,7 @@ RSpec.describe "Historical Encounters Sync", type: :request do
 
     payload = build_encounters_payload(encounter)
 
-    payload["encountered_on"] = Date.tomorrow
+    payload["encountered_on"] = Date.new(2024, 1, 1)
 
     post sync_route,
       params: {encounters: [payload]}.to_json,

@@ -83,8 +83,6 @@ module Api
           true
         end
 
-        # Assigns attributes safely, converting invalid enum values to nil
-        # instead of raising ArgumentError
         def safe_assign_attributes(record, attributes)
           attributes = attributes.to_h if attributes.respond_to?(:to_h)
           enum_cols = record.class.defined_enums
