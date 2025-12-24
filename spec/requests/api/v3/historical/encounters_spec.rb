@@ -51,7 +51,11 @@ RSpec.describe "Historical Encounters Sync", type: :request do
       facility: request_user.facility
     )
 
+    bp = FactoryBot.build(:blood_pressure, patient: patient, facility: request_user.facility)
+    bp_payload = bp.attributes.with_payload_keys
+
     payload = build_encounters_payload(encounter)
+    payload["observations"] = {"blood_pressures" => [bp_payload]}
 
     bp = payload["observations"]["blood_pressures"].first
     bp.delete("user_id")
