@@ -23,6 +23,6 @@ RSpec.describe "Historical Blood Sugars Sync", type: :request do
 
     expect(response).to have_http_status(200)
     record = BloodSugar.find(bs.id)
-    expect(record.blood_sugar_value).to eq(9.999e16) 
+    expect(record.blood_sugar_value).to eq(9.999e16)
   end
 end
