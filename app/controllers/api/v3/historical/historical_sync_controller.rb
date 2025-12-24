@@ -52,6 +52,29 @@ module Api
           raise NotImplementedError
         end
 
+        def model
+          controller_name.classify.constantize
+        end
+
+        def process_token
+          if params[:process_token].present?
+            JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
+          else
+            {}
+          end
+        end
+
+        def max_limit
+          1000
+        end
+
+        def limit
+          return ENV["DEFAULT_NUMBER_OF_RECORDS"].to_i unless params[:limit].present?
+
+          params_limit = params[:limit].to_i
+          params_limit < max_limit ? params_limit : max_limit
+        end
+
         def error(id, type, message)
           {errors_hash: {id: id, error_type: type, message: message}}
         end
