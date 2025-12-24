@@ -112,8 +112,6 @@ module Api
             status: :ok
         end
 
-        private
-
         def stub_syncing_from_user
           unless Flipper.enabled?("sync_encounters")
             render json: {processed: [], errors: []}, status: :ok
