@@ -1,26 +1,26 @@
 require "rails_helper"
 
+class HistoricalSyncTestModel
+  include ActiveModel::Model
+
+  attr_accessor :id, :name, :status, :role
+
+  def self.defined_enums
+    {
+      "status" => {"active" => "active", "inactive" => "inactive"},
+      "role" => {"user" => "user", "admin" => "admin"}
+    }
+  end
+
+  def assign_attributes(attrs)
+    attrs.each { |key, value| public_send("#{key}=", value) }
+  end
+end
+
 RSpec.describe Api::V3::Historical::HistoricalSyncController, type: :controller do
   controller(Api::V3::Historical::HistoricalSyncController) do
     def test_safe_assign(record, attrs)
       send(:safe_assign_attributes, record, attrs)
-    end
-  end
-
-  class HistoricalSyncTestModel
-    include ActiveModel::Model
-
-    attr_accessor :id, :name, :status, :role
-
-    def self.defined_enums
-      {
-        "status" => {"active" => "active", "inactive" => "inactive"},
-        "role" => {"user" => "user", "admin" => "admin"}
-      }
-    end
-
-    def assign_attributes(attrs)
-      attrs.each { |key, value| public_send("#{key}=", value) }
     end
   end
 
