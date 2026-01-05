@@ -1,0 +1,65 @@
+module Api
+  module V3
+    module Historical
+      class BloodSugarsController < HistoricalSyncController
+        include Api::V3::RetroactiveDataEntry
+
+        def sync_from_user
+          __sync_from_user__(blood_sugars_params)
+        end
+
+        def sync_to_user
+          __sync_to_user__("blood_sugars")
+        end
+
+        private
+
+        def model_sync_scope
+          super.for_v3
+        end
+
+        def transform_to_response(blood_sugar)
+          Api::V3::BloodSugarTransformer.to_response(blood_sugar)
+        end
+
+        def merge_if_valid(blood_sugar_params)
+          set_patient_recorded_at(blood_sugar_params)
+
+          transformed_params = Api::V3::Transformer.from_request(blood_sugar_params)
+
+          blood_sugar = BloodSugar.find_or_initialize_by(id: transformed_params[:id])
+          safe_assign_attributes(blood_sugar, transformed_params)
+
+          if blood_sugar.save(validate: false)
+            {record: blood_sugar}
+          else
+            {
+              errors_hash: {
+                id: transformed_params[:id],
+                error_type: "save_failed",
+                message: blood_sugar.errors.full_messages.join(", ")
+              }
+            }
+          end
+        end
+
+        def blood_sugars_params
+          params.require(:blood_sugars).map do |blood_sugar_params|
+            blood_sugar_params.permit(
+              :id,
+              :blood_sugar_type,
+              :blood_sugar_value,
+              :patient_id,
+              :facility_id,
+              :user_id,
+              :created_at,
+              :updated_at,
+              :recorded_at,
+              :deleted_at
+            )
+          end
+        end
+      end
+    end
+  end
+end
