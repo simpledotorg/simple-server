@@ -23,6 +23,7 @@ class Api::V3::PatientPayloadValidator < Api::V3::PayloadValidator
     :reminder_consent,
     :deleted_reason,
     :skip_facility_authorization,
+    :diagnosed_confirmed_at,
     :eligible_for_reassignment
   )
 
