@@ -5,11 +5,11 @@ class Api::V3::LegacyDataDumpsController < APIController
     if legacy_dump.save
       log_success(legacy_dump)
 
-      render json: { id: legacy_dump.id, status: "ok" }, status: :ok
+      render json: {id: legacy_dump.id, status: "ok"}, status: :ok
     else
       log_failure(legacy_dump)
 
-      render json: { errors: legacy_dump.errors.full_messages }, status: :unprocessable_entity
+      render json: {errors: legacy_dump.errors.full_messages}, status: :unprocessable_entity
     end
   end
 

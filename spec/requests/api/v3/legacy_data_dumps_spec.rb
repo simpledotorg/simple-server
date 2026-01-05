@@ -82,8 +82,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
     it "creates a legacy data dump successfully" do
       expect {
         post "/api/v3/legacy_data_dumps",
-             params: valid_payload.to_json,
-             headers: headers
+          params: valid_payload.to_json,
+          headers: headers
       }.to change(LegacyMobileDataDump, :count).by(1)
 
       expect(response).to have_http_status(:ok)
@@ -94,8 +94,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
 
     it "stores the raw payload with all legacy data" do
       post "/api/v3/legacy_data_dumps",
-           params: valid_payload.to_json,
-           headers: headers
+        params: valid_payload.to_json,
+        headers: headers
 
       dump = LegacyMobileDataDump.last
 
@@ -110,8 +110,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
 
     it "records the user who made the dump" do
       post "/api/v3/legacy_data_dumps",
-           params: valid_payload.to_json,
-           headers: headers
+        params: valid_payload.to_json,
+        headers: headers
 
       dump = LegacyMobileDataDump.last
       expect(dump.user).to eq(request_user)
@@ -119,8 +119,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
 
     it "records the mobile version from headers" do
       post "/api/v3/legacy_data_dumps",
-           params: valid_payload.to_json,
-           headers: headers
+        params: valid_payload.to_json,
+        headers: headers
 
       dump = LegacyMobileDataDump.last
       expect(dump.mobile_version).to eq("2024.1.0")
@@ -129,8 +129,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
     it "records the dump date" do
       freeze_time do
         post "/api/v3/legacy_data_dumps",
-             params: valid_payload.to_json,
-             headers: headers
+          params: valid_payload.to_json,
+          headers: headers
 
         dump = LegacyMobileDataDump.last
         expect(dump.dump_date).to be_within(1.second).of(Time.current)
@@ -141,8 +141,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
       invalid_headers = headers.merge("HTTP_AUTHORIZATION" => "Bearer invalid_token")
 
       post "/api/v3/legacy_data_dumps",
-           params: valid_payload.to_json,
-           headers: invalid_headers
+        params: valid_payload.to_json,
+        headers: invalid_headers
 
       expect(response).to have_http_status(:unauthorized)
     end
@@ -151,8 +151,8 @@ RSpec.describe "Legacy Data Dumps", type: :request do
       invalid_headers = headers.except("HTTP_X_FACILITY_ID")
 
       post "/api/v3/legacy_data_dumps",
-           params: valid_payload.to_json,
-           headers: invalid_headers
+        params: valid_payload.to_json,
+        headers: invalid_headers
 
       expect(response).to have_http_status(:bad_request)
     end
