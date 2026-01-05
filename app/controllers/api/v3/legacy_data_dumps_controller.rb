@@ -19,7 +19,7 @@ class Api::V3::LegacyDataDumpsController < APIController
     {
       raw_payload: raw_payload,
       dump_date: Time.current,
-      user_id: user_id,
+      user: current_user,
       mobile_version: mobile_version
     }
   end
@@ -28,14 +28,8 @@ class Api::V3::LegacyDataDumpsController < APIController
     params.require(:legacy_data_dump).to_unsafe_h
   end
 
-  def user_id
-    params.dig(:legacy_data_dump, :user) ||
-      request.headers["X-USER-ID"]
-  end
-
   def mobile_version
-    params.dig(:legacy_data_dump, :mobile_version) ||
-      request.headers["X-APP-VERSION"]
+    request.headers["HTTP_X_APP_VERSION"]
   end
 
   def log_success(legacy_dump)
