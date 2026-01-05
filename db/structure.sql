@@ -614,6 +614,21 @@ CREATE TABLE public.facilities (
 
 
 --
+-- Name: legacy_mobile_data_dumps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legacy_mobile_data_dumps (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    raw_payload jsonb NOT NULL,
+    dump_date timestamp without time zone NOT NULL,
+    user_id uuid NOT NULL,
+    mobile_version character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: medical_histories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6298,6 +6313,14 @@ ALTER TABLE ONLY public.facilities
 
 
 --
+-- Name: legacy_mobile_data_dumps legacy_mobile_data_dumps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT legacy_mobile_data_dumps_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: facility_business_identifiers facility_business_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7141,6 +7164,20 @@ CREATE UNIQUE INDEX index_facilities_on_slug ON public.facilities USING btree (s
 --
 
 CREATE INDEX index_facilities_on_updated_at ON public.facilities USING btree (updated_at);
+
+
+--
+-- Name: index_legacy_mobile_data_dumps_on_dump_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_dump_date ON public.legacy_mobile_data_dumps USING btree (dump_date);
+
+
+--
+-- Name: index_legacy_mobile_data_dumps_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_user_id ON public.legacy_mobile_data_dumps USING btree (user_id);
 
 
 --
@@ -8345,6 +8382,14 @@ ALTER TABLE ONLY public.facilities
 
 
 --
+-- Name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT fk_rails_a1b2c3d4e5 FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
 -- Name: dr_rai_action_plans fk_rails_c6db95d644; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8597,5 +8642,5 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924102156'),
 ('20250925094123'),
 ('20251125090819'),
-('20251211073126');
-
+('20251211073126'),
+('20260105123000');

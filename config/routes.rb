@@ -123,6 +123,8 @@ Rails.application.routes.draw do
       namespace :analytics do
         resource :user_analytics, only: [:show]
       end
+
+      resources :legacy_data_dumps, only: [:create]
     end
 
     namespace :v4, path: "v4" do
