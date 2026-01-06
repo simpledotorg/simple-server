@@ -10,5 +10,6 @@ class CreateLegacyMobileDataDumps < ActiveRecord::Migration[6.1]
     end
 
     add_index :legacy_mobile_data_dumps, :dump_date
+    add_index :legacy_mobile_data_dumps, :user_id
   end
 end

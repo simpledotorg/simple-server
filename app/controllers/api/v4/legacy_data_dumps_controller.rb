@@ -1,4 +1,4 @@
-class Api::V3::LegacyDataDumpsController < APIController
+class Api::V4::LegacyDataDumpsController < APIController
   def create
     legacy_dump = LegacyMobileDataDump.new(legacy_dump_params)
 
@@ -18,14 +18,14 @@ class Api::V3::LegacyDataDumpsController < APIController
   def legacy_dump_params
     {
       raw_payload: raw_payload,
-      dump_date: Time.current,
+      dump_date: Time.current.utc,
       user: current_user,
       mobile_version: mobile_version
     }
   end
 
   def raw_payload
-    params.require(:legacy_data_dump).to_unsafe_h
+    params.to_unsafe_h
   end
 
   def mobile_version
