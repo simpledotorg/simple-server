@@ -25,7 +25,9 @@ class Api::V4::LegacyDataDumpsController < APIController
   end
 
   def raw_payload
-    params.to_unsafe_h
+    {
+      "patients" => params.require(:patients)
+    }
   end
 
   def mobile_version
