@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "shared_examples/diagnosed_confirmed_at_sync_spec"
 
 describe Patient, type: :model do
   let(:reporting_timezone) { Period::REPORTING_TIME_ZONE }
@@ -131,6 +132,7 @@ describe Patient, type: :model do
 
   describe "Behavior" do
     it_behaves_like "a record that is deletable"
+    it_behaves_like "a record that syncs diagnosed_confirmed_at"
   end
 
   context "Scopes" do
