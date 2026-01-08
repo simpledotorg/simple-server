@@ -87,6 +87,25 @@ describe MedicalHistory, type: :model do
       create(:medical_history, patient_id: patient.id, patient: nil, hypertension: "yes", htn_diagnosed_at: htn_time)
       expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
     end
+
+    it "sets patient.diagnosed_confirmed_at to dm_diagnosed_at when only DM date present (other suspected)" do
+      dm_time = 5.days.ago.change(usec: 0)
+      create(:medical_history, patient: patient, diabetes: "no", hypertension: "suspected", htn_diagnosed_at: nil, dm_diagnosed_at: dm_time)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(dm_time.to_i)
+    end
+
+    it "sets patient.diagnosed_confirmed_at to earliest date when both dates present" do
+      htn = 4.days.ago.change(usec: 0)
+      dm = 7.days.ago.change(usec: 0)
+      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "no", htn_diagnosed_at: htn, dm_diagnosed_at: dm)
+      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(dm.to_i)
+    end
+
+    it "does not set diagnosed_confirmed_at when both conditions are suspected" do
+      create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "suspected",
+             htn_diagnosed_at: 4.days.ago.change(usec: 0), dm_diagnosed_at: 3.days.ago.change(usec: 0))
+      expect(patient.reload.diagnosed_confirmed_at).to be_nil
+    end
   end
 
   describe "immutable diagnosis dates and transitions" do
