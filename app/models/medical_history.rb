@@ -1,5 +1,6 @@
 class MedicalHistory < ApplicationRecord
   include Mergeable
+  include DiagnosedConfirmedAtSync
 
   belongs_to :patient, optional: true
   belongs_to :user, optional: true
@@ -40,8 +41,6 @@ class MedicalHistory < ApplicationRecord
 
   before_validation :backfill_diagnosed_dates
   before_validation :silently_enforce_medical_history_rules
-
-  after_save :update_patient_diagnosed_confirmed_at
 
   def indicates_hypertension_risk?
     prior_heart_attack_yes? || prior_stroke_yes?
@@ -114,22 +113,6 @@ class MedicalHistory < ApplicationRecord
     if dm_diagnosed_at_was.present? && !timestamps_equal?(dm_diagnosed_at, dm_diagnosed_at_was)
       write_attribute(:dm_diagnosed_at, dm_diagnosed_at_was)
       Rails.logger.info("[MedicalHistory] Silently preserved existing dm_diagnosed_at for id=#{id || "new"}")
-    end
-  end
-
-  def update_patient_diagnosed_confirmed_at
-    return unless patient
-    return if patient.diagnosed_confirmed_at.present?
-
-    valid_htn_date = htn_diagnosed_at.present? && %w[yes no].include?(hypertension&.to_s)
-    valid_dm_date = dm_diagnosed_at.present? && %w[yes no].include?(diabetes&.to_s)
-
-    if valid_htn_date || valid_dm_date
-      earliest = [
-        (htn_diagnosed_at if valid_htn_date),
-        (dm_diagnosed_at if valid_dm_date)
-      ].compact.min
-      patient.update_columns(diagnosed_confirmed_at: earliest)
     end
   end
 
