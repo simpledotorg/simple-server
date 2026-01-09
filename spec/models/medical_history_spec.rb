@@ -1,4 +1,5 @@
 require "rails_helper"
+require_relative "shared_examples/diagnosed_confirmed_at_sync_spec"
 
 describe MedicalHistory, type: :model do
   describe "Associations" do
@@ -77,11 +78,13 @@ describe MedicalHistory, type: :model do
   end
 
   describe "#update_patient_diagnosed_confirmed_at" do
+    it_behaves_like "a record that syncs diagnosed_confirmed_at"
+
     let(:patient) { create(:patient, :without_medical_history, recorded_at: 5.days.ago.change(usec: 0), diagnosed_confirmed_at: nil) }
 
-    it "sets patient.diagnosed_confirmed_at to htn_diagnosed_at when only HTN date present (other suspected)" do
+    it "sets patient.diagnosed_confirmed_at when patient is not yet associated (race condition)" do
       htn_time = 3.days.ago.change(usec: 0)
-      create(:medical_history, patient: patient, hypertension: "yes", diabetes: "suspected", htn_diagnosed_at: htn_time, dm_diagnosed_at: nil)
+      create(:medical_history, patient_id: patient.id, patient: nil, hypertension: "yes", htn_diagnosed_at: htn_time)
       expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(htn_time.to_i)
     end
 
@@ -102,13 +105,6 @@ describe MedicalHistory, type: :model do
       create(:medical_history, patient: patient, hypertension: "suspected", diabetes: "suspected",
              htn_diagnosed_at: 4.days.ago.change(usec: 0), dm_diagnosed_at: 3.days.ago.change(usec: 0))
       expect(patient.reload.diagnosed_confirmed_at).to be_nil
-    end
-
-    it "does not overwrite existing patient.diagnosed_confirmed_at" do
-      earlier = 2.days.ago.change(usec: 0)
-      patient.update!(diagnosed_confirmed_at: earlier)
-      create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: 5.days.ago.change(usec: 0))
-      expect(patient.reload.diagnosed_confirmed_at.to_i).to eq(earlier.to_i)
     end
   end
 
