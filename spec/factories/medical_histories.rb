@@ -82,6 +82,13 @@ FactoryBot.define do
     trait :without_smokeless_tobacco do
       smokeless_tobacco { nil }
     end
+
+    trait :screened do
+      hypertension { "suspected" }
+      diabetes { "suspected" }
+      htn_diagnosed_at { nil }
+      dm_diagnosed_at { nil }
+    end
   end
 end
 
