@@ -5,11 +5,6 @@ class RemoveScreenedPatientsFromReportingPatientStates < ActiveRecord::Migration
     SQL
 
     execute <<~SQL
-      UPDATE simple_reporting.reporting_patient_states SET diagnosed_confirmed_at = recorded_at
-      WHERE diagnosed_confirmed_at IS NULL AND recorded_at IS NOT NULL;
-    SQL
-
-    execute <<~SQL
       CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
         LANGUAGE plpgsql
         AS $_$
