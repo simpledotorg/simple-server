@@ -26,7 +26,7 @@ RSpec.describe DrRai::Indicator, type: :model do
         create(:action_plan,
           region: region,
           dr_rai_indicator: the_indicator,
-          dr_rai_target: create(:target, :percentage, indicator: the_indicator, period: this_period.value.to_s))
+          dr_rai_target: create(:target, :percentage, period: this_period.value.to_s))
       end
 
       context "in that period" do

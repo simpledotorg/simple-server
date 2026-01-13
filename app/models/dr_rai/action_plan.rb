@@ -16,7 +16,8 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   def numerator
-    indicator.numerator(region)
+    target_period = Period.new(type: :quarter, value: target.period)
+    indicator.numerator(region, target_period)
   end
 
   def denominator

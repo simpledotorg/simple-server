@@ -103,8 +103,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       context "ltfu tests ported from patient_spec.rb" do
         it "picks up the beginning interval of ltfu for 12 months ago correctly" do
-          under_care_patient = create(:patient, recorded_at: june_2021[:long_ago])
-          ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago])
+          under_care_patient = create(:patient, recorded_at: june_2021[:long_ago], diagnosed_confirmed_at: june_2021[:long_ago])
+          ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago], diagnosed_confirmed_at: june_2021[:long_ago])
 
           create(:blood_pressure, :with_encounter, patient: under_care_patient, recorded_at: june_2021[:under_12_months_ago])
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: june_2021[:over_12_months_ago])
@@ -128,8 +128,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
 
         it "picks up the ending interval of ltfu for now correctly" do
-          under_care_patient = create(:patient, recorded_at: june_2021[:long_ago])
-          ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago])
+          under_care_patient = create(:patient, recorded_at: june_2021[:long_ago], diagnosed_confirmed_at: june_2021[:long_ago])
+          ltfu_patient = create(:patient, recorded_at: june_2021[:long_ago], diagnosed_confirmed_at: june_2021[:long_ago])
 
           create(:blood_pressure, :with_encounter, patient: under_care_patient, recorded_at: june_2021[:end_of_month] - 1.minute)
           create(:blood_pressure, :with_encounter, patient: ltfu_patient, recorded_at: june_2021[:end_of_month] + 1.minute)
@@ -153,8 +153,8 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         end
 
         it "registration cutoffs for a year ago" do
-          under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago])
-          ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
+          under_care_patient = create(:patient, recorded_at: june_2021[:under_12_months_ago], diagnosed_confirmed_at: june_2021[:under_12_months_ago])
+          ltfu_patient = create(:patient, recorded_at: june_2021[:over_12_months_ago], diagnosed_confirmed_at: june_2021[:over_12_months_ago])
 
           RefreshReportingViews.refresh_v2
           with_reporting_time_zone do
@@ -435,10 +435,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
     describe "months_since_registration" do
       it "computes it correctly" do
-        patient_1 = create(:patient, recorded_at: june_2021[:under_12_months_ago])
-        patient_2 = create(:patient, recorded_at: june_2021[:over_12_months_ago])
-        patient_3 = create(:patient, recorded_at: june_2021[:now])
-        patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago])
+        patient_1 = create(:patient, recorded_at: june_2021[:under_12_months_ago], diagnosed_confirmed_at: june_2021[:under_12_months_ago])
+        patient_2 = create(:patient, recorded_at: june_2021[:over_12_months_ago], diagnosed_confirmed_at: june_2021[:over_12_months_ago])
+        patient_3 = create(:patient, recorded_at: june_2021[:now], diagnosed_confirmed_at: june_2021[:now])
+        patient_4 = create(:patient, recorded_at: june_2021[:over_3_months_ago], diagnosed_confirmed_at: june_2021[:over_3_months_ago])
 
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
@@ -452,10 +452,10 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
     describe "quarters_since_registration" do
       it "computes it correctly" do
-        patient_1 = create(:patient, recorded_at: june_2021[:now] - 23.months)
-        patient_2 = create(:patient, recorded_at: june_2021[:now] - 13.months)
-        patient_3 = create(:patient, recorded_at: june_2021[:now] - 4.months)
-        patient_4 = create(:patient, recorded_at: june_2021[:now])
+        patient_1 = create(:patient, recorded_at: june_2021[:now] - 23.months, diagnosed_confirmed_at: june_2021[:now] - 23.months)
+        patient_2 = create(:patient, recorded_at: june_2021[:now] - 13.months, diagnosed_confirmed_at: june_2021[:now] - 13.months)
+        patient_3 = create(:patient, recorded_at: june_2021[:now] - 4.months, diagnosed_confirmed_at: june_2021[:now] - 4.months)
+        patient_4 = create(:patient, recorded_at: june_2021[:now], diagnosed_confirmed_at: june_2021[:now])
 
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
@@ -587,7 +587,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
             # 10 months ago    controlled bp taken
             # 8  months ago    visit but no bp (drugs)
             # 5  months ago    uncontrolled bp taken
-            patient = create(:patient, recorded_at: two_years_ago)
+            patient = create(:patient, recorded_at: two_years_ago, diagnosed_confirmed_at: two_years_ago)
             create(:bp_with_encounter, :under_control, patient: patient, recorded_at: ten_months_ago)
             create(:prescription_drug, patient: patient, device_created_at: eight_months_ago)
             create(:bp_with_encounter, :hypertensive, patient: patient, recorded_at: five_months_ago)
@@ -648,7 +648,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "contains the details of the latest blood sugar measurement for a given month" do
-        patient = create(:patient, recorded_at: 3.months.ago)
+        patient = create(:patient, recorded_at: 3.months.ago, diagnosed_confirmed_at: 3.months.ago)
         blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
         blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 2.days.ago)
         blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
@@ -670,7 +670,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "contains the details of the latest blood sugar measurement from previous months if there is none in the given month" do
-        patient = create(:patient, recorded_at: 6.months.ago)
+        patient = create(:patient, recorded_at: 6.months.ago, diagnosed_confirmed_at: 6.months.ago)
         blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 4.months.ago)
         blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 2.months.ago)
         blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
@@ -689,7 +689,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "contains the blood sugar risk state based on the latest blood sugar measurement" do
-        patients = create_list(:patient, 4, recorded_at: 6.months.ago)
+        patients = create_list(:patient, 4, recorded_at: 6.months.ago, diagnosed_confirmed_at: 6.months.ago)
         [[patients.first, :random],
           [patients.second, :post_prandial],
           [patients.third, :fasting],
@@ -733,7 +733,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       end
 
       it "contains a count of months and quarters since the latest blood sugar measurement" do
-        patient = create(:patient, recorded_at: 6.months.ago)
+        patient = create(:patient, recorded_at: 6.months.ago, diagnosed_confirmed_at: 6.months.ago)
         blood_sugar_1 = create(:blood_sugar, patient: patient, recorded_at: 4.months.ago)
         blood_sugar_2 = create(:blood_sugar, patient: patient, recorded_at: 1.months.ago)
         blood_sugar_3 = create(:blood_sugar, patient: patient, recorded_at: Time.now)
@@ -872,6 +872,82 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
       )
 
       described_class.partitioned_refresh(refresh_month)
+    end
+  end
+
+  context "screening" do
+    it "doesn't consider the patient if it's only screened" do
+      diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
+      screened_patient = create(:patient, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil, medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected))
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+      expect(patient_ids).to include(diagnosed_patient.id)
+      expect(patient_ids).not_to include(screened_patient.id)
+    end
+
+    it "prefers the most-recent medical_history when determining screened vs diagnosed (latest = suspected -> excluded)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+      )
+
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "suspected",
+        htn_diagnosed_at: nil
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+
+      expect(patient_ids).not_to include(patient.id)
+    end
+
+    it "prefers the most-recent medical_history and includes patient when the latest MH has a diagnosis date (latest = diagnosed -> included)" do
+      patient = create(
+        :patient,
+        recorded_at: Date.new(2024, 6, 1),
+        diagnosed_confirmed_at: nil,
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected, device_updated_at: 2.days.ago)
+      )
+
+      diagnosed_date = Date.new(2024, 5, 1)
+      create(
+        :medical_history,
+        patient: patient,
+        device_updated_at: 1.day.ago,
+        device_created_at: 1.day.ago - 1.minute,
+        hypertension: "yes",
+        htn_diagnosed_at: diagnosed_date
+      )
+
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
+      expect(patient_ids).to include(patient.id)
+
+      row = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
+      expect(row.diagnosed_confirmed_at.to_date).to eq(diagnosed_date)
+    end
+
+    it "calculates registration indicators from the date of first diagnosis" do
+      diagnosed_patient = create(:patient, recorded_at: Date.new(2024, 5, 1), diagnosed_confirmed_at: Date.new(2024, 6, 1))
+      described_class.partitioned_refresh(Date.new(2024, 6, 1))
+      described_class.partitioned_refresh(Date.new(2024, 7, 1))
+      described_class.partitioned_refresh(Date.new(2024, 8, 1))
+      june_record = described_class.find_by(patient_id: diagnosed_patient.id, month_date: Date.new(2024, 6, 1))
+      july_record = described_class.find_by(patient_id: diagnosed_patient.id, month_date: Date.new(2024, 7, 1))
+      august_record = described_class.find_by(patient_id: diagnosed_patient.id, month_date: Date.new(2024, 8, 1))
+      expect(june_record.months_since_registration).to eq(0)
+      expect(july_record.months_since_registration).to eq(1)
+      expect(august_record.months_since_registration).to eq(2)
+      expect(june_record.quarters_since_registration).to eq(0)
+      expect(july_record.quarters_since_registration).to eq(1)
+      expect(august_record.quarters_since_registration).to eq(1)
     end
   end
 end
