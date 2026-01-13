@@ -2,7 +2,8 @@ class DrRai::Target < ApplicationRecord
   TYPES = {
     "percent" => "DrRai::PercentageTarget",
     "numeric" => "DrRai::NumericTarget",
-    "boolean" => "DrRai::BooleanTarget"
+    "boolean" => "DrRai::BooleanTarget",
+    "custom" => "DrRai::CustomTarget"
   }
 
   NEEDS_STATEMENT = %w[ percent numeric ].map { |t| TYPES[t] }.freeze

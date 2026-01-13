@@ -39,6 +39,43 @@ class DrRai::ActionPlan < ApplicationRecord
     indicator.action_passive
   end
 
+  def current_ratio
+    return nil unless custom_target?
+    datasource = indicator.datasource(region)
+    return nil unless datasource
+    period = Period.new(type: :quarter, value: target.period)
+    data = datasource[period]
+    data&.dig(:ratio)
+  end
+
+  def previous_ratio
+    return nil unless custom_target?
+    datasource = indicator.datasource(region)
+    return nil unless datasource
+    period = Period.new(type: :quarter, value: target.period)
+    previous_period = period.previous
+    data = datasource[previous_period]
+    data&.dig(:ratio)
+  end
+
+  def ratio_change_percentage
+    return nil unless custom_target?
+    return nil if current_ratio.nil? || previous_ratio.nil?
+    return nil if previous_ratio == 0
+    ((current_ratio - previous_ratio) / previous_ratio * 100).round
+  end
+
+  def is_better?
+    return nil unless custom_target?
+    return nil if current_ratio.nil? || previous_ratio.nil?
+    # For BP Fudging, lower ratio is better
+    current_ratio < previous_ratio
+  end
+
+  def custom_target?
+    target.type == "DrRai::CustomTarget"
+  end
+
   private
 
   def unprocessible?
