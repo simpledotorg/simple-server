@@ -11,7 +11,9 @@ module DiagnosedConfirmedAtSync
     patient = extract_patient
     return unless patient
 
-    mh = patient.medical_history
+    mh = MedicalHistory.where(patient_id: patient.id, deleted_at: nil)
+                       &.order(device_updated_at: :desc)
+                       &.first
     return unless mh
 
     valid_htn = mh.htn_diagnosed_at.present? && %w[yes no].include?(mh.hypertension)
