@@ -55,17 +55,14 @@ class MedicalHistory < ApplicationRecord
 
   def backfill_diagnosed_dates
     return if htn_diagnosed_at.present? || dm_diagnosed_at.present?
-    return if hypertension_suspected? || diabetes_suspected?
-
-    source = patient&.recorded_at
-    return unless source.present?
+    return unless device_created_at.present?
 
     if %w[yes no].include?(hypertension&.to_s)
-      self.htn_diagnosed_at ||= source
+      self.htn_diagnosed_at = device_created_at
     end
 
     if %w[yes no].include?(diabetes&.to_s)
-      self.dm_diagnosed_at ||= source
+      self.dm_diagnosed_at = device_created_at
     end
   end
 

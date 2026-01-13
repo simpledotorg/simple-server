@@ -49,30 +49,31 @@ describe MedicalHistory, type: :model do
   end
 
   describe "#backfill_diagnosed_dates" do
+    let(:device_created_at) { 3.days.ago.change(usec: 0) }
     let(:patient) { create(:patient, :without_medical_history, recorded_at: 5.days.ago.change(usec: 0), diagnosed_confirmed_at: nil) }
 
-    it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is yes and dates are nil (old APK flow)" do
-      mh = create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
-      expect(mh.htn_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    it "backfills htn_diagnosed_at from device_created_at when hypertension is yes and dates are nil" do
+      mh = create(:medical_history, patient: patient, hypertension: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil, device_created_at: device_created_at)
+      expect(mh.htn_diagnosed_at.to_i).to eq(device_created_at.to_i)
     end
 
-    it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is yes and dates are nil (old APK flow)" do
-      mh = create(:medical_history, patient: patient, diabetes: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
-      expect(mh.dm_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    it "backfills dm_diagnosed_at from device_created_at when diabetes is yes and dates are nil" do
+      mh = create(:medical_history, patient: patient, diabetes: "yes", htn_diagnosed_at: nil, dm_diagnosed_at: nil, device_created_at: device_created_at)
+      expect(mh.dm_diagnosed_at.to_i).to eq(device_created_at.to_i)
     end
 
-    it "backfills htn_diagnosed_at from patient.recorded_at when hypertension is no and dates are nil (old APK flow)" do
-      mh = create(:medical_history, patient: patient, hypertension: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
-      expect(mh.htn_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    it "backfills htn_diagnosed_at from device_created_at when hypertension is no and dates are nil" do
+      mh = create(:medical_history, patient: patient, hypertension: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil, device_created_at: device_created_at)
+      expect(mh.htn_diagnosed_at.to_i).to eq(device_created_at.to_i)
     end
 
-    it "backfills dm_diagnosed_at from patient.recorded_at when diabetes is no and dates are nil (old APK flow)" do
-      mh = create(:medical_history, patient: patient, diabetes: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil)
-      expect(mh.dm_diagnosed_at.to_i).to eq(patient.recorded_at.to_i)
+    it "backfills dm_diagnosed_at from device_created_at when diabetes is no and dates are nil" do
+      mh = create(:medical_history, patient: patient, diabetes: "no", htn_diagnosed_at: nil, dm_diagnosed_at: nil, device_created_at: device_created_at)
+      expect(mh.dm_diagnosed_at.to_i).to eq(device_created_at.to_i)
     end
 
     it "does not backfill for suspected statuses" do
-      mh = create(:medical_history, patient: patient, hypertension: "suspected", htn_diagnosed_at: nil)
+      mh = create(:medical_history, patient: patient, hypertension: "suspected", htn_diagnosed_at: nil, device_created_at: device_created_at)
       expect(mh.htn_diagnosed_at).to be_nil
     end
   end

@@ -913,7 +913,7 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
         :patient,
         recorded_at: Date.new(2024, 6, 1),
         diagnosed_confirmed_at: nil,
-        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected)
+        medical_history: build(:medical_history, :hypertension_suspected, :diabetes_suspected, device_updated_at: 2.days.ago)
       )
 
       diagnosed_date = Date.new(2024, 5, 1)
@@ -928,7 +928,6 @@ RSpec.describe Reports::PatientState, {type: :model, reporting_spec: true} do
 
       described_class.partitioned_refresh(Date.new(2024, 6, 1))
       patient_ids = described_class.where(month_date: Date.new(2024, 6, 1)).pluck(:patient_id)
-
       expect(patient_ids).to include(patient.id)
 
       row = described_class.find_by(patient_id: patient.id, month_date: Date.new(2024, 6, 1))
