@@ -26,12 +26,12 @@ RSpec.describe DrRai::Indicator, type: :model do
         create(:action_plan,
           region: region,
           dr_rai_indicator: the_indicator,
-          dr_rai_target: create(:target, :percentage, period: this_period.value.to_s))
+          dr_rai_target: create(:target, :percentage, indicator: the_indicator, period: this_period.value.to_s))
       end
 
       context "in that period" do
         it "is true" do
-          expect(the_indicator.has_action_plans?(region.region, this_period)).to be_truthy
+          expect(the_indicator.has_action_plans?(region, this_period)).to be_truthy
         end
       end
     end
