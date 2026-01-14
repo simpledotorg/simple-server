@@ -31,7 +31,7 @@ RSpec.describe DrRai::Indicator, type: :model do
 
       context "in that period" do
         it "is true" do
-          expect(the_indicator.has_action_plans?(region.region, this_period)).to be_truthy
+          expect(the_indicator.has_action_plans?(region, this_period)).to be_truthy
         end
       end
     end
