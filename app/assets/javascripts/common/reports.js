@@ -687,7 +687,7 @@ Reports = function ({
   function disabledForRegionLevel() {
     // region names top to bottom: 'organization' > 'state' > 'district' > 'block' > 'facility' (all countries)
     const enabledRegions = {
-      IN: [],
+      IN: ["organization", "state", "district", "block", "facility"],
       BD: ["organization", "state", "district"],
       ET: ["organization", "state"],
       LK: ["organization"],
@@ -1810,5 +1810,12 @@ function mergeArraysWithConcatenation(objValue, srcValue) {
 }
 
 function monthIndexFromDateKey(dateString) {
-  return new Date(dateString).getMonth();
+  // Supports "Dec-2024" (DEFAULT_PERIOD_FORMAT) and falls back to native parsing
+  const match = /^([A-Za-z]{3})-(\d{4})$/.exec(dateString);
+  if (match) {
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const idx = months.indexOf(match[1]);
+    if (idx !== -1) return idx;
+  }
+  return new Date(`${dateString}`.replace(/^(\\d{4}-\\d{2})$/, "$1-01")).getMonth();
 }
