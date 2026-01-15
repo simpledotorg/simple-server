@@ -29,6 +29,8 @@ function dashboardReportsChartJSColors() {
     overdueCalledChartFillLightGreen: "rgba(41,181,0,0.2)",
     overdueCalledChartFillLightYellow: "rgba(255,241,49,0.25)",
     overdueCalledChartFillLightRed: "rgba(255,146,122,0.2)",
+    lightPink: "rgb(223 78 223 / 0.1)",
+    mediumPink: "rgb(223 78 223)",
   };
 }
 
@@ -185,6 +187,56 @@ DashboardReports = () => {
               stacked: true,
             },
           },
+        },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    dmControlledBPTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.controlledBPRate140),
+          datasets: [
+            {
+              label: "BP controlled <130/80",
+              data: Object.values(data.controlledBPRate130),
+              backgroundColor: colors.transparent,
+              borderColor: colors.darkGreen,
+            },
+            {
+              label: "BP controlled <140/90",
+              data: Object.values(data.controlledBPRate140),
+              backgroundColor: colors.transparent,
+              borderColor: colors.mediumGreen,
+            },
+          ],
+        },
+        // options: {
+        //   scales: {
+        //     x: {
+        //       stacked: true,
+        //     },
+        //     y: {
+        //       stacked: true,
+        //     },
+        //   },
+        // },
+      };
+      return withBaseLineConfig(config);
+    },
+
+    dmPrescribedStatinsTrend: function (data) {
+      const config = {
+        data: {
+          labels: Object.keys(data.prescribedStatinsRate),
+          datasets: [
+            {
+              label: "Patients prescribed statins",
+              backgroundColor: colors.lightPink,
+              borderColor: colors.mediumPink,
+              data: Object.values(data.prescribedStatinsRate),
+            },
+          ],
         },
       };
       return withBaseLineConfig(config);
@@ -1459,7 +1511,7 @@ Reports = function ({
       populateVisitDetailsGraphDefault();
     }
   };
-
+  
   this.initializeTables = () => {
     const tableSortAscending = { descending: false };
     const regionComparisonTable = document.getElementById(
