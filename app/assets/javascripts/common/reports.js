@@ -687,7 +687,7 @@ Reports = function ({
   function disabledForRegionLevel() {
     // region names top to bottom: 'organization' > 'state' > 'district' > 'block' > 'facility' (all countries)
     const enabledRegions = {
-      IN: ["organization", "state", "district", "block", "facility"],
+      IN: [],
       BD: ["organization", "state", "district"],
       ET: ["organization", "state"],
       LK: ["organization"],
