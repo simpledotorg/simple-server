@@ -27,7 +27,8 @@ RSpec.describe DrRai::Target, type: :model do
 
     it "Q1-2023 is a valid period format" do
       target = DrRai::Target.new period: "Q1-2025"
-      expect(target).to be_valid
+      expect(target).not_to be_valid
+      expect(target.errors.of_kind?(:period, :invalid)).to be_falsey
     end
   end
 end

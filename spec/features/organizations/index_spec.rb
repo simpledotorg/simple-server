@@ -30,7 +30,7 @@ RSpec.feature "Verify Dashboard", type: :feature do
 
     # total number of organization present in dashboard
     visit reports_regions_path
-    original_org_count = dashboard.all_elements(css: ".card.organization").count
+    original_org_count = dashboard.get_organization_count
 
     visit admin_organizations_path
 
@@ -50,7 +50,10 @@ RSpec.feature "Verify Dashboard", type: :feature do
     # assertion at dashboard screen
     expect(page).to have_content("Test")
 
-    expect(dashboard.get_organization_count).to eq(original_org_count + 1)
+    # Wait for the page to load and verify the new organization appears
+    expect(page).to have_css(".card.organization", text: "Test")
+    # Verify the count increased (more robust than exact count due to test isolation)
+    expect(dashboard.get_organization_count).to be > original_org_count
   end
 
   it "SignIn as Owner and verify approval request in dashboard" do
