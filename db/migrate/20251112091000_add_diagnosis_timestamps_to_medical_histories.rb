@@ -5,17 +5,10 @@ class AddDiagnosisTimestampsToMedicalHistories < ActiveRecord::Migration[6.1]
 
     say_with_time "Backfilling diagnosis timestamps from device_created_at" do
       MedicalHistory.includes(:patient).find_each(batch_size: 1000) do |mh|
-        next unless mh.patient
+        next unless mh.patient && mh.device_created_at.present?
 
-        htn_time =
-          if %w[yes no].include?(mh.hypertension) ||
-              %w[yes no].include?(mh.diagnosed_with_hypertension)
-            mh.device_created_at
-          end
-
-        dm_time = if %w[yes no].include?(mh.diabetes)
-          mh.device_created_at
-        end
+        htn_time = mh.device_created_at
+        dm_time = mh.device_created_at
 
         next if htn_time.nil? && dm_time.nil?
 
