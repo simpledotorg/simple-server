@@ -35,7 +35,7 @@ FactoryBot.define do
       TEXT
     end
     dr_rai_indicator { create(:indicator, :contact_overdue_patients) }
-    dr_rai_target { create(:target, :percentage) }
+    dr_rai_target { |ap| create(:target, :percentage, indicator: ap.dr_rai_indicator) }
     region
   end
 end
