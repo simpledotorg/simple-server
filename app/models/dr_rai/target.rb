@@ -6,7 +6,7 @@ class DrRai::Target < ApplicationRecord
     "custom" => "DrRai::CustomTarget"
   }
 
-  NEEDS_STATEMENT = %w[ percent numeric ].map { |t| TYPES[t] }.freeze
+  NEEDS_STATEMENT = %w[percent numeric].map { |t| TYPES[t] }.freeze
 
   belongs_to :indicator, class_name: "DrRai::Indicator", foreign_key: "dr_rai_indicators_id"
 
