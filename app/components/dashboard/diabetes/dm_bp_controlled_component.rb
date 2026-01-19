@@ -61,12 +61,10 @@ class Dashboard::Diabetes::DmBpControlledComponent < ApplicationComponent
   end
 
   def format_rates(rates_hash)
-    # Convert Period keys to formatted strings like "Jul-2025"
     rates_hash.transform_keys { |period| period.to_s }
   end
 
   def format_counts(counts_hash)
-    # Convert Period keys to formatted strings like "Jul-2025"
     counts_hash.transform_keys { |period| period.to_s }
   end
 end

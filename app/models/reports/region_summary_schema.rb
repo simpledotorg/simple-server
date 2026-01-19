@@ -730,8 +730,6 @@ module Reports
       end
     end
 
-    # DM patients with controlled BP queries
-    # These query reporting_patient_states directly for BP-controlled metrics
     memoize def dm_patients_with_controlled_bp_140_90(with_ltfu: false)
       region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
         dm_controlled_bp_query(entry, systolic_threshold: 140, diastolic_threshold: 90, with_ltfu: with_ltfu).count
@@ -866,7 +864,6 @@ module Reports
         .where.not(systolic: nil)
         .where.not(diastolic: nil)
 
-      # Filter by region - use facility_ids for facility regions, region_id for others
       if region.facility_region?
         query = query.where(assigned_facility_id: region.facility_ids)
       else
@@ -874,7 +871,6 @@ module Reports
         query = query.where(region_id_field => region.id)
       end
 
-      # Exclude LTFU if needed (htn_care_state = 'under_care' already excludes LTFU, but be explicit)
       unless with_ltfu
         query = query.where.not(htn_care_state: "lost_to_follow_up")
       end
