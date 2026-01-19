@@ -730,6 +730,36 @@ module Reports
       end
     end
 
+    memoize def dm_patients_with_controlled_bp_140_90(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        dm_controlled_bp_query(entry, systolic_threshold: 140, diastolic_threshold: 90, with_ltfu: with_ltfu).count
+      end
+    end
+
+    memoize def dm_patients_with_controlled_bp_130_80(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        dm_controlled_bp_query(entry, systolic_threshold: 130, diastolic_threshold: 80, with_ltfu: with_ltfu).count
+      end
+    end
+
+    memoize def dm_controlled_bp_140_90_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_140_90(with_ltfu: with_ltfu)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
+    memoize def dm_controlled_bp_130_80_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_130_80(with_ltfu: with_ltfu)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
     private
 
     def appts_scheduled_rates(entry)
@@ -817,6 +847,35 @@ module Reports
       region_summaries.each_with_object({}) { |(slug, period_values), hsh|
         hsh[slug] = period_values.transform_values { |values| values.fetch(field) }.tap { |period_hsh| period_hsh.default = 0 }
       }
+    end
+
+    def dm_controlled_bp_query(entry, systolic_threshold:, diastolic_threshold:, with_ltfu: false)
+      region = entry.region
+      period = entry.period
+
+      query = Reports::PatientState
+        .where(diabetes: "yes")
+        .where(htn_care_state: "under_care")
+        .where("months_since_registration > ?", 2)
+        .where(month_date: period)
+        .where("months_since_visit < ?", 3)
+        .where("systolic < ?", systolic_threshold)
+        .where("diastolic < ?", diastolic_threshold)
+        .where.not(systolic: nil)
+        .where.not(diastolic: nil)
+
+      if region.facility_region?
+        query = query.where(assigned_facility_id: region.facility_ids)
+      else
+        region_id_field = "assigned_#{region.region_type}_region_id"
+        query = query.where(region_id_field => region.id)
+      end
+
+      unless with_ltfu
+        query = query.where.not(htn_care_state: "lost_to_follow_up")
+      end
+
+      query
     end
   end
 end

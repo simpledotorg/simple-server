@@ -34,20 +34,20 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
     # Period keys should match period.to_s format (e.g., "Jul-2025")
     (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime('%b-%Y')
+      period_key = period_date.strftime("%b-%Y")
       date_value = case key
                    when :bp_control_start_date
-                     period_date.advance(months: -2).beginning_of_month.strftime('%d-%b-%Y')
+                     period_date.advance(months: -2).beginning_of_month.strftime("%d-%b-%Y")
                    when :bp_control_end_date
                      # For current period, use end of current month; for others, use end of that period's month
                      if i == 0
-                       period.value.end_of_month.strftime('%d-%b-%Y')
+                       period.value.end_of_month.strftime("%d-%b-%Y")
                      else
-                       period_date.end_of_month.strftime('%d-%b-%Y')
+                       period_date.end_of_month.strftime("%d-%b-%Y")
                      end
                    when :bp_control_registration_date
-                     period_date.advance(months: -3).end_of_month.strftime('%d-%b-%Y')
-                   end
+                     period_date.advance(months: -3).end_of_month.strftime("%d-%b-%Y")
+      end
       [period_key, date_value]
     end.to_h
   end
@@ -57,7 +57,7 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
     # Period keys should match period.to_s format (e.g., "Jul-2025")
     (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime('%b-%Y')
+      period_key = period_date.strftime("%b-%Y")
       [period_key, rand(28.0..62.0).round]
     end.to_h
   end
@@ -67,7 +67,7 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
     # Period keys should match period.to_s format (e.g., "Jul-2025")
     (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime('%b-%Y')
+      period_key = period_date.strftime("%b-%Y")
       [period_key, rand(50..200)]
     end.to_h
   end
@@ -77,7 +77,7 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
     # Period keys should match period.to_s format (e.g., "Jul-2025")
     (0..17).reverse_each.map do |i|
       period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime('%b-%Y')
+      period_key = period_date.strftime("%b-%Y")
       [period_key, rand(200..500)]
     end.to_h
   end
