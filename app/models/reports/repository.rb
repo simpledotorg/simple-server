@@ -59,6 +59,8 @@ module Reports
       bs_over_300_rates_fasting_and_hba1c
       diabetes_missed_visits_rates
       visited_without_bs_taken_rates
+      dm_controlled_bp_140_90_rates
+      dm_controlled_bp_130_80_rates
       diabetes_appts_scheduled_0_to_14_days_rates
       diabetes_appts_scheduled_15_to_31_days_rates
       diabetes_appts_scheduled_32_to_62_days_rates
@@ -127,6 +129,8 @@ module Reports
       diabetes_missed_visits
       visited_without_bs_taken
       diabetes_patients_with_bs_taken
+      dm_patients_with_controlled_bp_140_90
+      dm_patients_with_controlled_bp_130_80
       diabetes_total_appts_scheduled
       diabetes_appts_scheduled_0_to_14_days
       diabetes_appts_scheduled_15_to_31_days
