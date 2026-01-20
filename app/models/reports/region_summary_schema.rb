@@ -730,6 +730,40 @@ module Reports
       end
     end
 
+    memoize def dm_patients_with_controlled_bp_140_90(with_ltfu: false)
+      if with_ltfu
+        values_at("adjusted_dm_bp_140_90_ltfu_under_care")
+      else
+        values_at("adjusted_dm_bp_140_90_under_care")
+      end
+    end
+
+    memoize def dm_patients_with_controlled_bp_130_80(with_ltfu: false)
+      if with_ltfu
+        values_at("adjusted_dm_bp_130_80_ltfu_under_care")
+      else
+        values_at("adjusted_dm_bp_130_80_under_care")
+      end
+    end
+
+    memoize def dm_controlled_bp_140_90_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_140_90(with_ltfu: with_ltfu)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
+    memoize def dm_controlled_bp_130_80_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_130_80(with_ltfu: with_ltfu)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
     private
 
     def appts_scheduled_rates(entry)
