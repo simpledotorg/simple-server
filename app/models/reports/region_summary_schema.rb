@@ -731,13 +731,11 @@ module Reports
     end
 
     memoize def dm_patients_with_controlled_bp_140_90(with_ltfu: false)
-      field = with_ltfu ? "adjusted_dm_bp_below_140_90_ltfu_under_care" : "adjusted_dm_bp_below_140_90_under_care"
-      values_at(field)
+      values_at("adjusted_dm_bp_below_140_90_under_care")
     end
 
     memoize def dm_patients_with_controlled_bp_130_80(with_ltfu: false)
-      field = with_ltfu ? "adjusted_dm_bp_below_130_80_ltfu_under_care" : "adjusted_dm_bp_below_130_80_under_care"
-      values_at(field)
+      values_at("adjusted_dm_bp_below_130_80_under_care")
     end
 
     memoize def dm_controlled_bp_140_90_rates(with_ltfu: false)
@@ -756,6 +754,14 @@ module Reports
         numerator = dm_patients_with_controlled_bp_130_80(with_ltfu: false)[slug][period]
         percentage(numerator, denominator)
       end
+    end
+
+    def dm_controlled_bp_140_90_with_ltfu_rates
+      dm_controlled_bp_140_90_rates(with_ltfu: true)
+    end
+
+    def dm_controlled_bp_130_80_with_ltfu_rates
+      dm_controlled_bp_130_80_rates(with_ltfu: true)
     end
 
     private

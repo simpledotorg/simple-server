@@ -60,7 +60,9 @@ module Reports
       diabetes_missed_visits_rates
       visited_without_bs_taken_rates
       dm_controlled_bp_140_90_rates
+      dm_controlled_bp_140_90_with_ltfu_rates
       dm_controlled_bp_130_80_rates
+      dm_controlled_bp_130_80_with_ltfu_rates
       diabetes_appts_scheduled_0_to_14_days_rates
       diabetes_appts_scheduled_15_to_31_days_rates
       diabetes_appts_scheduled_32_to_62_days_rates
