@@ -4692,10 +4692,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_140_90_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state IN ('under_care'::text, 'lost_to_follow_up'::text)) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_140_90_ltfu_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_130_80_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state IN ('under_care'::text, 'lost_to_follow_up'::text)) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_130_80_ltfu_under_care
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_140_90_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state IN ('under_care'::text, 'lost_to_follow_up'::text)) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_140_90_ltfu_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_130_80_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state IN ('under_care'::text, 'lost_to_follow_up'::text)) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_130_80_ltfu_under_care
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
@@ -4824,10 +4824,10 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
     adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
     adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
-    adjusted_diabetes_outcomes.dm_bp_140_90_under_care AS adjusted_dm_bp_140_90_under_care,
-    adjusted_diabetes_outcomes.dm_bp_140_90_ltfu_under_care AS adjusted_dm_bp_140_90_ltfu_under_care,
-    adjusted_diabetes_outcomes.dm_bp_130_80_under_care AS adjusted_dm_bp_130_80_under_care,
-    adjusted_diabetes_outcomes.dm_bp_130_80_ltfu_under_care AS adjusted_dm_bp_130_80_ltfu_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_140_90_under_care AS adjusted_dm_bp_below_140_90_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_140_90_ltfu_under_care AS adjusted_dm_bp_below_140_90_ltfu_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_130_80_under_care AS adjusted_dm_bp_below_130_80_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_130_80_ltfu_under_care AS adjusted_dm_bp_below_130_80_ltfu_under_care,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
     monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
     monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
@@ -5373,31 +5373,31 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_lo
 
 
 --
--- Name: COLUMN reporting_facility_states.adjusted_dm_bp_140_90_under_care; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_140_90_under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_140_90_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 140/90 at their latest visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_dm_bp_140_90_ltfu_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_140_90_ltfu_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 140/90 at their latest visit in the last 3 months. Lost to follow-up patients are included.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_140_90_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
 
 
 --
--- Name: COLUMN reporting_facility_states.adjusted_dm_bp_130_80_under_care; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_140_90_ltfu_under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_130_80_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their latest visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_140_90_ltfu_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Includes lost to follow-up patients.';
 
 
 --
--- Name: COLUMN reporting_facility_states.adjusted_dm_bp_130_80_ltfu_under_care; Type: COMMENT; Schema: public; Owner: -
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_130_80_under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_130_80_ltfu_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their latest visit in the last 3 months. Lost to follow-up patients are included.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_130_80_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_130_80_ltfu_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_130_80_ltfu_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their last visit in the last 3 months. Includes lost to follow-up patients.';
 
 
 --
