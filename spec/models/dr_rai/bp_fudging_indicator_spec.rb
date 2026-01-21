@@ -5,7 +5,7 @@ RSpec.describe DrRai::BpFudgingIndicator, type: :model do
     subject { described_class.new }
 
     it { expect(subject.display_name).to eq("BP Fudging") }
-    it { expect(subject.target_type_frontend).to eq("percent") }
+    it { expect(subject.target_type_frontend).to eq("custom") }
     it { expect(subject.numerator_key).to eq(:numerator) }
     it { expect(subject.denominator_key).to eq(:denominator) }
     it { expect(subject.action_passive).to eq("fudged") }

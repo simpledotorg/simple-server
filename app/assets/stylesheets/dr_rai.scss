@@ -231,6 +231,53 @@ $font-condensed: "Roboto Condensed", sans-serif;
         text-align: right;
       }
     }
+
+    & .custom-target-comparison {
+      text-align: right;
+      margin: 12px 0 6px;
+      padding: 0;
+      font-family: $font-condensed;
+
+      & .ratio-comparison {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        flex-wrap: wrap;
+        max-width: 60%;
+
+        & .period-label {
+          font-size: 14px;
+          color: rgba(0, 0, 0, 0.6);
+          font-weight: 700;
+        }
+
+        & .ratio-value {
+          font-size: 22px;
+          font-weight: 800;
+          color: #483d04;
+        }
+
+        & .arrow {
+          font-size: 16px;
+          color: rgba(0, 0, 0, 0.4);
+          margin: 0 4px;
+        }
+
+        & .change-percentage {
+          font-size: 16px;
+          font-weight: 600;
+
+          &.positive {
+            color: #28a745;
+          }
+
+          &.negative {
+            color: #dc3545;
+          }
+        }
+      }
+    }
   }
 }
 
