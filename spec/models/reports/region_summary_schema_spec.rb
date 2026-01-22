@@ -979,12 +979,35 @@ describe Reports::RegionSummarySchema, type: :model do
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
           [facility_1.region, region].each do |r|
             expect(schema.dm_controlled_bp_140_90_rates[r.slug][period]).to eq(0)
-            expect(schema.dm_controlled_bp_140_90_rates(with_ltfu: true)[r.slug][period]).to eq(0)
           end
         end
 
         expect(schema.dm_controlled_bp_140_90_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
-        expect(schema.dm_controlled_bp_140_90_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+      end
+
+      context "with_ltfu" do
+        it "returns the DM controlled BP < 140/90 rates with LTFU patients in denominator" do
+          facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+          facility_1_patients.each do |patient|
+            create(:bp_with_encounter, systolic: 140, diastolic: 90, patient: patient, facility: facility_1, recorded_at: jan_2020 - 1.month)
+          end
+          create(:bp_with_encounter, systolic: 130, diastolic: 85, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:bp_with_encounter, systolic: 120, diastolic: 75, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:bp_with_encounter, systolic: 145, diastolic: 95, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 2.months)
+
+          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
+          refresh_views
+
+          schema = described_class.new([facility_1.region, region], periods: range)
+          (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+            [facility_1.region, region].each do |r|
+              expect(schema.dm_controlled_bp_140_90_with_ltfu_rates[r.slug][period]).to eq(0)
+            end
+          end
+
+          expect(schema.dm_controlled_bp_140_90_with_ltfu_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+        end
       end
     end
 
@@ -1006,12 +1029,35 @@ describe Reports::RegionSummarySchema, type: :model do
         (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
           [facility_1.region, region].each do |r|
             expect(schema.dm_controlled_bp_130_80_rates[r.slug][period]).to eq(0)
-            expect(schema.dm_controlled_bp_130_80_rates(with_ltfu: true)[r.slug][period]).to eq(0)
           end
         end
 
         expect(schema.dm_controlled_bp_130_80_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(25)
-        expect(schema.dm_controlled_bp_130_80_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(25)
+      end
+
+      context "with_ltfu" do
+        it "returns the DM controlled BP < 130/80 rates with LTFU patients in denominator" do
+          facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
+          facility_1_patients.each do |patient|
+            create(:bp_with_encounter, systolic: 140, diastolic: 90, patient: patient, facility: facility_1, recorded_at: jan_2020 - 1.month)
+          end
+          create(:bp_with_encounter, systolic: 120, diastolic: 75, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:bp_with_encounter, systolic: 135, diastolic: 85, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:bp_with_encounter, systolic: 145, diastolic: 95, patient: facility_1_patients.third, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          create(:blood_sugar, :with_encounter, :random, :bs_below_200, patient: facility_1_patients.fourth, facility: facility_1, recorded_at: jan_2020 + 2.months)
+
+          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
+          refresh_views
+
+          schema = described_class.new([facility_1.region, region], periods: range)
+          (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+            [facility_1.region, region].each do |r|
+              expect(schema.dm_controlled_bp_130_80_with_ltfu_rates[r.slug][period]).to eq(0)
+            end
+          end
+
+          expect(schema.dm_controlled_bp_130_80_with_ltfu_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(25)
+        end
       end
     end
   end
