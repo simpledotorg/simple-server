@@ -912,6 +912,7 @@ Reports = function ({
     ctx.stroke();
     ctx.restore();
   }
+
   // -- end of goal-line functions
 
   this.setupControlledGraph = (data) => {
