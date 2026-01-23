@@ -16,6 +16,7 @@ module OneOff
       def query
         Patient
           .joins("inner join patient_business_identifiers on patient_business_identifiers.identifier = patients.id::text")
+          .where(status: "active", deleted_at: nil)
           .select("patients.id, patient_business_identifiers.patient_id")
       end
     end
