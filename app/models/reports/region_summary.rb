@@ -53,6 +53,8 @@ module Reports
       adjusted_post_prandial_bs_over_300_under_care
       adjusted_fasting_bs_over_300_under_care
       adjusted_hba1c_bs_over_300_under_care
+      adjusted_dm_bp_below_130_80_under_care
+      adjusted_dm_bp_below_140_90_under_care
       diabetes_total_appts_scheduled
       diabetes_appts_scheduled_0_to_14_days
       diabetes_appts_scheduled_15_to_31_days

@@ -117,6 +117,8 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         adjusted_fasting_bs_over_300_under_care
         adjusted_hba1c_bs_over_300_under_care
         adjusted_bs_missed_visit_under_care_with_lost_to_follow_up
+        adjusted_dm_bp_below_130_80_under_care
+        adjusted_dm_bp_below_140_90_under_care
         diabetes_total_appts_scheduled
         diabetes_appts_scheduled_0_to_14_days
         diabetes_appts_scheduled_15_to_31_days
