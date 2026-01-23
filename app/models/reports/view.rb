@@ -53,5 +53,11 @@ module Reports
       month_offset = (day_of_month / 2) + 1
       day_of_month.odd? ? month_of_refresh.prev_month : (month_of_refresh - month_offset.month)
     end
+
+    def self.partitioned_refresh(refresh_month)
+      ActiveRecord::Base.connection.exec_query(
+        "CALL simple_reporting.add_shard_to_table('#{refresh_month}', '#{table_name}')"
+      )
+    end
   end
 end
