@@ -61,7 +61,7 @@ class CreatePartitionedTableReportingFacilityMonthlyFollowUpsAndRegistrations < 
     add_index "simple_reporting.reporting_facility_monthly_follow_ups_and_registrations", ["facility_region_id"], name: "facility_monthly_fr_facility_region_id"
 
     execute <<~SQL
-      CREATE FUNCTION simple_reporting.reporting_facility_monthly_follow_ups_and_registrations_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_monthly_follow_ups_and_registrations
+      CREATE OR REPLACE FUNCTION simple_reporting.reporting_facility_monthly_follow_ups_and_registrations_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_monthly_follow_ups_and_registrations
       LANGUAGE plpgsql
       AS $_$
       BEGIN
