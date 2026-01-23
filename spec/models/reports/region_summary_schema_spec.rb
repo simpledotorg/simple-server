@@ -1002,11 +1002,11 @@ describe Reports::RegionSummarySchema, type: :model do
           schema = described_class.new([facility_1.region, region], periods: range)
           (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
             [facility_1.region, region].each do |r|
-              expect(schema.dm_controlled_bp_140_90_with_ltfu_rates[r.slug][period]).to eq(0)
+              expect(schema.dm_controlled_bp_140_90_rates(with_ltfu: true)[r.slug][period]).to eq(0)
             end
           end
 
-          expect(schema.dm_controlled_bp_140_90_with_ltfu_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+          expect(schema.dm_controlled_bp_140_90_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
         end
       end
     end
@@ -1052,11 +1052,11 @@ describe Reports::RegionSummarySchema, type: :model do
           schema = described_class.new([facility_1.region, region], periods: range)
           (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
             [facility_1.region, region].each do |r|
-              expect(schema.dm_controlled_bp_130_80_with_ltfu_rates[r.slug][period]).to eq(0)
+              expect(schema.dm_controlled_bp_130_80_rates(with_ltfu: true)[r.slug][period]).to eq(0)
             end
           end
 
-          expect(schema.dm_controlled_bp_130_80_with_ltfu_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(25)
+          expect(schema.dm_controlled_bp_130_80_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(25)
         end
       end
     end

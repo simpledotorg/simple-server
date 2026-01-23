@@ -756,14 +756,6 @@ module Reports
       end
     end
 
-    def dm_controlled_bp_140_90_with_ltfu_rates
-      dm_controlled_bp_140_90_rates(with_ltfu: true)
-    end
-
-    def dm_controlled_bp_130_80_with_ltfu_rates
-      dm_controlled_bp_130_80_rates(with_ltfu: true)
-    end
-
     private
 
     def appts_scheduled_rates(entry)
