@@ -28,6 +28,88 @@ RSpec.describe Api::V3::PatientTransformer do
         expect(transformed_nested_patient[:reminder_consent]).to eq(patient["reminder_consent"])
       end
     end
+    context "when request payload has no phone_numbers" do
+      let(:request_patient) { build_patient_payload.except("phone_numbers") }
+
+      it "returns empty array for phone_numbers instead of nil" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:phone_numbers]).to eq([])
+      end
+    end
+
+    context "when request payload has nil phone_numbers" do
+      let(:request_patient) { build_patient_payload.merge("phone_numbers" => nil) }
+
+      it "returns empty array for phone_numbers instead of nil" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:phone_numbers]).to eq([])
+      end
+    end
+
+    context "when request payload has empty phone_numbers array" do
+      let(:request_patient) { build_patient_payload.merge("phone_numbers" => []) }
+
+      it "returns empty array for phone_numbers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:phone_numbers]).to eq([])
+      end
+    end
+
+    context "when request payload has no business_identifiers" do
+      let(:request_patient) { build_patient_payload.except("business_identifiers") }
+
+      it "returns empty array for business_identifiers instead of nil" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:business_identifiers]).to eq([])
+      end
+    end
+
+    context "when request payload has nil business_identifiers" do
+      let(:request_patient) { build_patient_payload.merge("business_identifiers" => nil) }
+
+      it "returns empty array for business_identifiers instead of nil" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:business_identifiers]).to eq([])
+      end
+    end
+
+    context "when request payload has empty business_identifiers array" do
+      let(:request_patient) { build_patient_payload.merge("business_identifiers" => []) }
+
+      it "returns empty array for business_identifiers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:business_identifiers]).to eq([])
+      end
+    end
+
+    context "when request payload has no address" do
+      let(:request_patient) { build_patient_payload.except("address") }
+
+      it "returns nil for address instead of raising an error" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:address]).to be_nil
+      end
+    end
+
+    context "when request payload has nil address" do
+      let(:request_patient) { build_patient_payload.merge("address" => nil) }
+
+      it "returns nil for address instead of raising an error" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:address]).to be_nil
+      end
+    end
+
+    context "when request payload has no address, phone_numbers, or business_identifiers" do
+      let(:request_patient) { build_patient_payload.except("address", "phone_numbers", "business_identifiers") }
+
+      it "returns nil for address and empty arrays for phone_numbers and business_identifiers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.from_nested_request(request_patient)
+        expect(transformed_nested_patient[:address]).to be_nil
+        expect(transformed_nested_patient[:phone_numbers]).to eq([])
+        expect(transformed_nested_patient[:business_identifiers]).to eq([])
+      end
+    end
   end
 
   describe "to_nested_response" do
@@ -40,6 +122,58 @@ RSpec.describe Api::V3::PatientTransformer do
     it "includes registration_facility in the response" do
       transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
       expect(transformed_nested_patient["registration_facility_id"]).to eq(patient.registration_facility.id)
+    end
+
+    context "when patient is nil" do
+      it "returns empty hash instead of raising an error" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(nil)
+        expect(transformed_nested_patient).to eq({})
+      end
+    end
+
+    context "when patient is blank" do
+      it "returns empty hash instead of raising an error" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response("")
+        expect(transformed_nested_patient).to eq({})
+      end
+    end
+
+    context "when patient has no address" do
+      let!(:patient_without_address) { create(:patient, address: nil) }
+
+      it "returns nil for address instead of raising an error" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient_without_address)
+        expect(transformed_nested_patient["address"]).to be_nil
+      end
+    end
+
+    context "when patient has no phone numbers" do
+      let!(:patient_without_phone_numbers) { create(:patient, :without_phone_number) }
+
+      it "returns empty array for phone_numbers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient_without_phone_numbers)
+        expect(transformed_nested_patient["phone_numbers"]).to eq([])
+      end
+    end
+
+    context "when patient has no business identifiers" do
+      let!(:patient_without_business_identifiers) { create(:patient, business_identifiers: []) }
+
+      it "returns empty array for business_identifiers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient_without_business_identifiers)
+        expect(transformed_nested_patient["business_identifiers"]).to eq([])
+      end
+    end
+
+    context "when patient has no address, phone_numbers, or business_identifiers" do
+      let!(:patient_without_associations) { create(:patient, address: nil, phone_numbers: [], business_identifiers: []) }
+
+      it "returns nil for address and empty arrays for phone_numbers and business_identifiers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient_without_associations)
+        expect(transformed_nested_patient["address"]).to be_nil
+        expect(transformed_nested_patient["phone_numbers"]).to eq([])
+        expect(transformed_nested_patient["business_identifiers"]).to eq([])
+      end
     end
   end
 end

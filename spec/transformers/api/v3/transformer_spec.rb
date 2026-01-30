@@ -55,4 +55,32 @@ RSpec.describe Api::V3::Transformer do
       expect(transformed_attrs["patient_id"]).to eq deduped_patient.id
     end
   end
+
+  describe ".to_response" do
+    context "when model is nil" do
+      it "returns empty hash instead of raising an error" do
+        result = Api::V3::Transformer.to_response(nil)
+        expect(result).to eq({})
+      end
+    end
+
+    context "when model is blank" do
+      it "returns empty hash instead of raising an error" do
+        result = Api::V3::Transformer.to_response("")
+        expect(result).to eq({})
+      end
+    end
+
+    context "when model is present" do
+      let!(:patient) { create(:patient) }
+
+      it "transforms the model attributes correctly" do
+        result = Api::V3::Transformer.to_response(patient)
+        expect(result).to be_a(Hash)
+        expect(result["created_at"]).to be_present
+        expect(result["updated_at"]).to be_present
+        expect(result["id"]).to eq(patient.id)
+      end
+    end
+  end
 end

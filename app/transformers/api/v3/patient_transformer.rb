@@ -35,16 +35,20 @@ class Api::V3::PatientTransformer
       business_identifiers = payload_attributes[:business_identifiers]
       address_attributes = Api::V3::Transformer.from_request(address) if address.present?
 
-      if phone_numbers.present?
-        phone_numbers_attributes = phone_numbers.map { |phone_number|
+      phone_numbers_attributes = if phone_numbers.present?
+        phone_numbers.map { |phone_number|
           Api::V3::PatientPhoneNumberTransformer.from_request(phone_number)
         }
+      else
+        []
       end
 
-      if business_identifiers.present?
-        business_identifiers_attributes = business_identifiers.map { |business_identifier|
+      business_identifiers_attributes = if business_identifiers.present?
+        business_identifiers.map { |business_identifier|
           Api::V3::PatientBusinessIdentifierTransformer.from_request(business_identifier)
         }
+      else
+        []
       end
 
       patient_attributes = Api::V3::Transformer.from_request(payload_attributes)
@@ -58,17 +62,19 @@ class Api::V3::PatientTransformer
     end
 
     def to_nested_response(patient)
+      return {} if patient.blank?
+
       Api::V3::Transformer.to_response(patient)
         .except("address_id",
           "registration_user_id",
           "test_data",
           "deleted_by_user_id")
         .merge(
-          "address" => Api::V3::Transformer.to_response(patient.address),
-          "phone_numbers" => patient.phone_numbers.map do |phone_number|
+          "address" => patient.address.present? ? Api::V3::Transformer.to_response(patient.address) : nil,
+          "phone_numbers" => Array(patient&.phone_numbers).map do |phone_number|
             Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
           end,
-          "business_identifiers" => patient.business_identifiers.map do |business_identifier|
+          "business_identifiers" => Array(patient&.business_identifiers).map do |business_identifier|
             Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
           end
         )
