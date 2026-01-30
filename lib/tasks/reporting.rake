@@ -33,7 +33,6 @@ namespace :reporting do
       reporting_facility_appointment_scheduled_days
       reporting_facility_states
       reporting_facility_daily_follow_ups_and_registrations
-      reporting_facility_monthly_follow_ups_and_registrations
     ].freeze
     views_to_refresh =
       if args[:views].present?
