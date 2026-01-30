@@ -64,7 +64,7 @@ class Api::V3::PatientTransformer
           "test_data",
           "deleted_by_user_id")
         .merge(
-          "address" => Api::V3::Transformer.to_response(patient.address),
+          "address" => patient.address.present? ? Api::V3::Transformer.to_response(patient.address) : nil,
           "phone_numbers" => patient.phone_numbers.map do |phone_number|
             Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
           end,
