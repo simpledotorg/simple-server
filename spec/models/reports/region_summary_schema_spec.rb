@@ -1070,7 +1070,7 @@ describe Reports::RegionSummarySchema, type: :model do
 
         feb_2020 = (jan_2020 + 1.month).beginning_of_month
         mar_2020 = (jan_2020 + 2.months).beginning_of_month
-        
+
         create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
         create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
 
@@ -1099,7 +1099,7 @@ describe Reports::RegionSummarySchema, type: :model do
 
           feb_2020 = (jan_2020 + 1.month).beginning_of_month
           mar_2020 = (jan_2020 + 2.months).beginning_of_month
-          
+
           create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
           create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
 
