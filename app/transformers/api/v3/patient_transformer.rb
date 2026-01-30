@@ -65,21 +65,14 @@ class Api::V3::PatientTransformer
           "test_data",
           "deleted_by_user_id"
         )
-        .merge(
-          "address" =>
-            patient.address.present? ?
-              Api::V3::Transformer.to_response(patient.address) :
-              nil,
-
-          "phone_numbers" =>
-            Array(patient.phone_numbers).map do |phone_number|
-              Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
-            end,
-
-          "business_identifiers" =>
-            Array(patient.business_identifiers).map do |business_identifier|
-              Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
-            end
+        &.merge(
+          "address" => patient&.address&.present? ? Api::V3::Transformer.to_response(patient.address) : nil,
+          "phone_numbers" => patient.phone_numbers&.map do |phone_number|
+            phone_number.present? ? Api::V3::PatientPhoneNumberTransformer.to_response(phone_number) : nil
+          end&.compact,
+          "business_identifiers" => patient.business_identifiers&.map do |business_identifier|
+            business_identifier.present? ? Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier) : nil
+          end.compact
         )
     end
   end
