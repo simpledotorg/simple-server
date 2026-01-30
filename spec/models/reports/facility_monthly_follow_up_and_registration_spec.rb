@@ -14,7 +14,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     patient = create(:patient, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: six_months_ago)
     patient.discard
-    RefreshReportingViews.call
+    described_class.partitioned_refresh(six_months_ago.to_date.beginning_of_month)
     result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_htn_or_dm).to eq(0)
     expect(result.monthly_follow_ups_htn_or_dm).to eq(0)
@@ -26,7 +26,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     six_months_ago = june_2021[:six_months_ago]
     patient = create(:patient, :without_medical_history, recorded_at: six_months_ago)
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: six_months_ago)
-    RefreshReportingViews.call
+    described_class.partitioned_refresh(six_months_ago.to_date.beginning_of_month)
     result = described_class.find_by(facility: facility, month_date: six_months_ago.to_date)
     expect(result.monthly_registrations_htn_or_dm).to eq(0)
     expect(result.monthly_follow_ups_htn_or_dm).to eq(0)
@@ -42,6 +42,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       create_list(:patient, 3, :hypertension, recorded_at: two_years_ago, gender: :male, registration_user: user, registration_facility: facility)
       create_list(:patient, 1, :hypertension_and_diabetes, recorded_at: two_years_ago, gender: :transgender, registration_user: user, registration_facility: facility)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
+      allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
       refresh_views
       total = described_class.totals(facility)
       expect(total.monthly_registrations_htn_or_dm).to eq(8)
@@ -69,6 +70,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
       create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: six_months_ago)
       create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
       create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
+      allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
       refresh_views
       total = described_class.totals(facility)
       expect(total.monthly_follow_ups_htn_or_dm).to eq(3)
@@ -95,6 +97,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago)
 
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
+    allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     RefreshReportingViews.call
 
     two_years_ago_expected = {
@@ -211,6 +214,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
+    allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     refresh_views
     total = described_class.totals(facility)
     dashboard_data_six_months_ago = Reports::FacilityState.find_by(facility_id: facility.id, month_date: six_months_ago.to_date.to_s)
@@ -229,6 +233,12 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
   describe "#partitioned?" do
     it "returns true" do
       expect(described_class.partitioned?).to be(true)
+    end
+  end
+
+  describe "#materialized" do
+    it "returns false" do
+      expect(described_class.materialized?).to be(false)
     end
   end
 end
