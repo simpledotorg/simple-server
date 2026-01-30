@@ -66,11 +66,11 @@ class Api::V3::PatientTransformer
         .merge(
           "address" => patient.address.present? ? Api::V3::Transformer.to_response(patient.address) : nil,
           "phone_numbers" => patient.phone_numbers.map do |phone_number|
-            Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
-          end,
+            phone_number.present? ? Api::V3::PatientPhoneNumberTransformer.to_response(phone_number) : nil
+          end.compact,
           "business_identifiers" => patient.business_identifiers.map do |business_identifier|
-            Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
-          end
+            business_identifier.present? ? Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier) : nil
+          end.compact
         )
     end
   end
