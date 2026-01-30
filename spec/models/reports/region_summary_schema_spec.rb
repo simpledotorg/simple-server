@@ -1068,11 +1068,14 @@ describe Reports::RegionSummarySchema, type: :model do
           patient.update(date_of_birth: 45.years.ago, age: nil, age_updated_at: nil)
         end
 
-        create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 2.months)
-        create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+        feb_2020 = (jan_2020 + 1.month).beginning_of_month
+        mar_2020 = (jan_2020 + 2.months).beginning_of_month
+        
+        create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
+        create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
 
-        create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: jan_2020 + 2.months)
-        create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: jan_2020 + 2.months)
+        create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
+        create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
 
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
         refresh_views
@@ -1094,11 +1097,14 @@ describe Reports::RegionSummarySchema, type: :model do
             patient.update(date_of_birth: 45.years.ago, age: nil, age_updated_at: nil)
           end
 
-          create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: jan_2020 + 2.months)
-          create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: jan_2020 + 2.months)
+          feb_2020 = (jan_2020 + 1.month).beginning_of_month
+          mar_2020 = (jan_2020 + 2.months).beginning_of_month
+          
+          create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
+          create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
 
-          create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: jan_2020 + 2.months)
-          create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: jan_2020 + 2.months)
+          create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
+          create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
 
           allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
           refresh_views
