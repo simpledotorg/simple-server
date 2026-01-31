@@ -79,4 +79,3 @@ class Api::V3::PatientTransformer
     end
   end
 end
-
