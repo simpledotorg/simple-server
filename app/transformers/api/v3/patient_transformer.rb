@@ -35,20 +35,16 @@ class Api::V3::PatientTransformer
       business_identifiers = payload_attributes[:business_identifiers]
       address_attributes = Api::V3::Transformer.from_request(address) if address.present?
 
-      phone_numbers_attributes = if phone_numbers.present?
-        phone_numbers.map { |phone_number|
+      if phone_numbers.present?
+        phone_numbers_attributes = phone_numbers.map { |phone_number|
           Api::V3::PatientPhoneNumberTransformer.from_request(phone_number)
         }
-      else
-        []
       end
 
-      business_identifiers_attributes = if business_identifiers.present?
-        business_identifiers.map { |business_identifier|
+      if business_identifiers.present?
+        business_identifiers_attributes = business_identifiers.map { |business_identifier|
           Api::V3::PatientBusinessIdentifierTransformer.from_request(business_identifier)
         }
-      else
-        []
       end
 
       patient_attributes = Api::V3::Transformer.from_request(payload_attributes)
@@ -69,12 +65,12 @@ class Api::V3::PatientTransformer
           "deleted_by_user_id")
         .merge(
           "address" => patient.address.present? ? Api::V3::Transformer.to_response(patient.address) : nil,
-          "phone_numbers" => Array(patient.phone_numbers).map do |phone_number|
-            phone_number.present? ? Api::V3::PatientPhoneNumberTransformer.to_response(phone_number) : nil
-          end.compact,
-          "business_identifiers" => Array(patient.business_identifiers).map do |business_identifier|
-            business_identifier.present? ? Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier) : nil
-          end.compact
+          "phone_numbers" => patient.phone_numbers.present? ? patient.phone_numbers.map do |phone_number|
+            Api::V3::PatientPhoneNumberTransformer.to_response(phone_number)
+          end : [],
+          "business_identifiers" => patient.business_identifiers.present? ? patient.business_identifiers.map do |business_identifier|
+            Api::V3::PatientBusinessIdentifierTransformer.to_response(business_identifier)
+          end : []
         )
     end
   end
