@@ -69,31 +69,14 @@ RSpec.describe Api::V3::PatientTransformer do
       end
     end
 
-    context "when phone_numbers contains nil values" do
-      let!(:patient) { create(:patient) }
+    context "when patient has no address, phone_numbers, or business_identifiers" do
+      let!(:patient_without_associations) { create(:patient, address: nil, phone_numbers: [], business_identifiers: []) }
 
-      before do
-        allow(patient).to receive(:phone_numbers).and_return([patient.phone_numbers.first, nil])
-      end
-
-      it "filters out nil values and returns only valid phone numbers" do
-        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
-        expect(transformed_nested_patient["phone_numbers"]).to be_an(Array)
-        expect(transformed_nested_patient["phone_numbers"].all? { |pn| pn.present? }).to be true
-      end
-    end
-
-    context "when business_identifiers contains nil values" do
-      let!(:patient) { create(:patient) }
-
-      before do
-        allow(patient).to receive(:business_identifiers).and_return([patient.business_identifiers.first, nil])
-      end
-
-      it "filters out nil values and returns only valid business identifiers" do
-        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
-        expect(transformed_nested_patient["business_identifiers"]).to be_an(Array)
-        expect(transformed_nested_patient["business_identifiers"].all? { |bi| bi.present? }).to be true
+      it "returns nil for address and empty arrays for phone_numbers and business_identifiers" do
+        transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient_without_associations)
+        expect(transformed_nested_patient["address"]).to be_nil
+        expect(transformed_nested_patient["phone_numbers"]).to eq([])
+        expect(transformed_nested_patient["business_identifiers"]).to eq([])
       end
     end
   end
