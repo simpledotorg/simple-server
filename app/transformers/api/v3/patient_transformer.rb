@@ -58,7 +58,6 @@ class Api::V3::PatientTransformer
     end
 
     def to_nested_response(patient)
-
       Api::V3::Transformer.to_response(patient)
         .except(
           "address_id",
