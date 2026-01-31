@@ -58,7 +58,6 @@ class Api::V3::PatientTransformer
     end
 
     def to_nested_response(patient)
-      return {} if patient.blank?
 
       Api::V3::Transformer.to_response(patient)
         .except(
