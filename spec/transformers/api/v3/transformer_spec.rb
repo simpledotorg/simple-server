@@ -77,8 +77,9 @@ RSpec.describe Api::V3::Transformer do
       it "transforms the model attributes correctly" do
         result = Api::V3::Transformer.to_response(patient)
         expect(result).to be_a(Hash)
-        expect(result["device_created_at"]).to be_present
-        expect(result["device_updated_at"]).to be_present
+        expect(result["created_at"]).to be_present
+        expect(result["updated_at"]).to be_present
+        expect(result["id"]).to eq(patient.id)
       end
     end
   end
