@@ -1062,32 +1062,35 @@ describe Reports::RegionSummarySchema, type: :model do
     end
 
     describe "#dm_prescribed_statins_rates" do
+      let(:june_2025) { Period.month("June 1 2025") }
+      let(:range) { (july_2018..june_2025) }
+
       it "returns the DM patients ≥40 prescribed statins rates over time for a region" do
         facility_1_patients = create_list(:patient, 4, :diabetes, assigned_facility: facility_1, recorded_at: jan_2019)
         facility_1_patients.each do |patient|
           patient.update(date_of_birth: 45.years.ago, age: nil, age_updated_at: nil)
         end
 
-        feb_2020 = (jan_2020 + 1.month).beginning_of_month
-        mar_2020 = (jan_2020 + 2.months).beginning_of_month
+        may_2025 = Time.zone.parse("May 1st, 2025 00:00:00+00:00")
+        june_2025_date = Time.zone.parse("June 1st, 2025 00:00:00+00:00")
 
-        create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
-        create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
+        create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: june_2025_date)
+        create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: june_2025_date)
 
-        create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
-        create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
+        create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: may_2025, device_updated_at: may_2025)
+        create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: may_2025, device_updated_at: may_2025)
 
-        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
+        allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(may_2025.to_date, (june_2025_date + 1.month).to_date))
         refresh_views
 
         schema = described_class.new([facility_1.region, region], periods: range)
-        (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+        (("Jan 2019".to_period)..("Apr 2025".to_period)).each do |period|
           [facility_1.region, region].each do |r|
             expect(schema.dm_prescribed_statins_rates[r.slug][period]).to eq(0)
           end
         end
 
-        expect(schema.dm_prescribed_statins_rates[facility_1.region.slug]["Mar 2020".to_period]).to eq(100)
+        expect(schema.dm_prescribed_statins_rates[facility_1.region.slug][june_2025]).to eq(100)
       end
 
       context "with_ltfu" do
@@ -1097,26 +1100,26 @@ describe Reports::RegionSummarySchema, type: :model do
             patient.update(date_of_birth: 45.years.ago, age: nil, age_updated_at: nil)
           end
 
-          feb_2020 = (jan_2020 + 1.month).beginning_of_month
-          mar_2020 = (jan_2020 + 2.months).beginning_of_month
+          may_2025 = Time.zone.parse("May 1st, 2025 00:00:00+00:00")
+          june_2025_date = Time.zone.parse("June 1st, 2025 00:00:00+00:00")
 
-          create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: mar_2020)
-          create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: mar_2020)
+          create(:bp_with_encounter, patient: facility_1_patients.first, facility: facility_1, recorded_at: june_2025_date)
+          create(:bp_with_encounter, patient: facility_1_patients.second, facility: facility_1, recorded_at: june_2025_date)
 
-          create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
-          create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: feb_2020, device_updated_at: feb_2020)
+          create(:prescription_drug, name: "Atorvastatin", patient: facility_1_patients.first, facility: facility_1, device_created_at: may_2025, device_updated_at: may_2025)
+          create(:prescription_drug, name: "Simvastatin", patient: facility_1_patients.second, facility: facility_1, device_created_at: may_2025, device_updated_at: may_2025)
 
-          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((jan_2020 - 1.month).to_date, jan_2020.to_date + 3.months))
+          allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(may_2025.to_date, (june_2025_date + 1.month).to_date))
           refresh_views
 
           schema = described_class.new([facility_1.region, region], periods: range)
-          (("Jan 2019".to_period)..("Feb 2020".to_period)).each do |period|
+          (("Jan 2019".to_period)..("Apr 2025".to_period)).each do |period|
             [facility_1.region, region].each do |r|
               expect(schema.dm_prescribed_statins_rates(with_ltfu: true)[r.slug][period]).to eq(0)
             end
           end
 
-          expect(schema.dm_prescribed_statins_rates(with_ltfu: true)[facility_1.region.slug]["Mar 2020".to_period]).to eq(50)
+          expect(schema.dm_prescribed_statins_rates(with_ltfu: true)[facility_1.region.slug][june_2025]).to eq(50)
         end
       end
     end

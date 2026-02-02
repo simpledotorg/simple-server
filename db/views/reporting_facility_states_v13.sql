@@ -127,7 +127,13 @@ WITH
                 ON lv.month_date = cal.month_date
                 AND lv.patient_id = pd.patient_id
             WHERE pd.name ILIKE '%statin%'
-                AND (pd.is_deleted = false OR (pd.is_deleted = true AND lv.visited_at IS NOT NULL AND pd.device_updated_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) >= lv.visited_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+                AND (
+                    pd.is_deleted = false
+                    OR (
+                        pd.is_deleted = true
+                        AND pd.device_updated_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')) >= lv.visited_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))
+                    )
+                )
                 AND pd.deleted_at IS NULL
             ORDER BY pd.patient_id, cal.month_date DESC, pd.device_created_at DESC
         ),

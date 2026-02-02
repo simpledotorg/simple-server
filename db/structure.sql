@@ -4710,7 +4710,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
                    FROM public.prescription_drugs
                      LEFT JOIN public.reporting_months ON ((to_char((prescription_drugs.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)), 'YYYY-MM'::text) <= to_char(reporting_months.month_date, 'YYYY-MM'::text)))
                      LEFT JOIN latest_visits_for_statins lv ON (((lv.month_date = reporting_months.month_date) AND (lv.patient_id = prescription_drugs.patient_id)))
-                  WHERE (((prescription_drugs.name)::text ~~* '%statin%'::text) AND ((prescription_drugs.is_deleted = false) OR ((prescription_drugs.is_deleted = true) AND (lv.visited_at IS NOT NULL) AND ((prescription_drugs.device_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)) >= (lv.visited_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))))) AND (prescription_drugs.deleted_at IS NULL)
+                  WHERE ((((prescription_drugs.name)::text ~~* '%statin%'::text) AND ((prescription_drugs.is_deleted = false) OR ((prescription_drugs.is_deleted = true) AND ((prescription_drugs.device_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)) >= (lv.visited_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))))) AND (prescription_drugs.deleted_at IS NULL))
                   ORDER BY prescription_drugs.patient_id, reporting_months.month_date DESC, prescription_drugs.device_created_at DESC
                 ), rps_with_age_for_statins AS (
                  SELECT reporting_patient_states.assigned_facility_region_id,
