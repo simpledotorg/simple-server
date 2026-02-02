@@ -10,11 +10,18 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
   end
 
   def graph_data
-    # Should not use adjusted patients here as this is doesnt need a patient to be registered more than 3 months ago.
+    if with_ltfu
+      rates = data[:dm_prescribed_statins_with_ltfu_rates]
+      denominator = data[:dm_patients_40_and_above_with_ltfu]
+    else
+      rates = data[:dm_prescribed_statins_rates]
+      denominator = data[:dm_patients_40_and_above_under_care]
+    end
+
     {
-      prescribedStatinsRate: fake_rates,
-      prescribedStatinsNumerator: fake_numerators,
-      cumulativeAssignedPatientsUnderCareOver40yearsOld: fake_adjusted_patients,
+      prescribedStatinsRate: format_rates(rates),
+      prescribedStatinsNumerator: format_counts(data[:dm_patients_prescribed_statins]),
+      cumulativeAssignedPatientsUnderCareOver40yearsOld: format_counts(denominator),
       **period_data
     }
   end
@@ -23,62 +30,25 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
 
   def period_data
     {
-      startDate: fake_period_info(:bp_control_start_date),
-      endDate: fake_period_info(:bp_control_end_date),
-      registrationDate: fake_period_info(:bp_control_registration_date)
+      startDate: period_info(:bp_control_start_date),
+      endDate: period_info(:bp_control_end_date),
+      registrationDate: period_info(:bp_control_registration_date)
     }
   end
 
-  def fake_period_info(key)
-    # Generate fake period data for the last 18 months
-    # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..17).reverse_each.map do |i|
-      period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime("%b-%Y")
-      date_value = case key
-                   when :bp_control_start_date
-                     period_date.advance(months: -2).beginning_of_month.strftime("%d-%b-%Y")
-                   when :bp_control_end_date
-                     # For current period, use end of current month; for others, use end of that period's month
-                     if i == 0
-                       period.value.end_of_month.strftime("%d-%b-%Y")
-                     else
-                       period_date.end_of_month.strftime("%d-%b-%Y")
-                     end
-                   when :bp_control_registration_date
-                     period_date.advance(months: -3).end_of_month.strftime("%d-%b-%Y")
-      end
+  def period_info(key)
+    data[:period_info].map do |period_obj, period_data_hash|
+      period_key = period_obj.to_s
+      date_value = period_data_hash[key]
       [period_key, date_value]
     end.to_h
   end
 
-  def fake_rates
-    # Generate fake rates between 28-62% for the last 18 months
-    # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..17).reverse_each.map do |i|
-      period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime("%b-%Y")
-      [period_key, rand(28.0..62.0).round]
-    end.to_h
+  def format_rates(rates_hash)
+    rates_hash.transform_keys { |period| period.to_s }
   end
 
-  def fake_numerators
-    # Generate fake numerators (patients prescribed statins)
-    # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..17).reverse_each.map do |i|
-      period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime("%b-%Y")
-      [period_key, rand(50..200)]
-    end.to_h
-  end
-
-  def fake_adjusted_patients
-    # Generate fake adjusted patient counts
-    # Period keys should match period.to_s format (e.g., "Jul-2025")
-    (0..17).reverse_each.map do |i|
-      period_date = period.value.advance(months: -i)
-      period_key = period_date.strftime("%b-%Y")
-      [period_key, rand(200..500)]
-    end.to_h
+  def format_counts(counts_hash)
+    counts_hash.transform_keys { |period| period.to_s }
   end
 end
