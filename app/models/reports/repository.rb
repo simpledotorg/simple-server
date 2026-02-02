@@ -61,6 +61,7 @@ module Reports
       visited_without_bs_taken_rates
       dm_controlled_bp_140_90_rates
       dm_controlled_bp_130_80_rates
+      dm_prescribed_statins_rates
       diabetes_appts_scheduled_0_to_14_days_rates
       diabetes_appts_scheduled_15_to_31_days_rates
       diabetes_appts_scheduled_32_to_62_days_rates
@@ -131,6 +132,9 @@ module Reports
       diabetes_patients_with_bs_taken
       dm_patients_with_controlled_bp_140_90
       dm_patients_with_controlled_bp_130_80
+      dm_patients_40_and_above_under_care
+      dm_patients_40_and_above_with_ltfu
+      dm_patients_prescribed_statins
       diabetes_total_appts_scheduled
       diabetes_appts_scheduled_0_to_14_days
       diabetes_appts_scheduled_15_to_31_days
