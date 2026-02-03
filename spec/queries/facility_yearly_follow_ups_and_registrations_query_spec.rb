@@ -88,6 +88,7 @@ RSpec.describe FacilityYearlyFollowUpsAndRegistrationsQuery do
       create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: 5.months.ago)
       create(:blood_pressure, patient: patient_2, user: user, facility: facility, recorded_at: 6.months.ago)
       create(:blood_pressure, patient: patient_3, user: user, facility: facility, recorded_at: 6.months.ago)
+      allow(Reports::FacilityMonthlyFollowUpAndRegistration).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2017, 1, 1), Date.today.beginning_of_month))
       refresh_views
 
       last_year = if Date.today.month >= 1 && Date.today.month < 4
