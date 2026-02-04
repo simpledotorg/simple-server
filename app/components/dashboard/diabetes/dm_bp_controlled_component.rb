@@ -42,6 +42,10 @@ class Dashboard::Diabetes::DmBpControlledComponent < ApplicationComponent
     "#{period.bp_control_range_start_date} to #{period.bp_control_range_end_date}"
   end
 
+  def denominator_copy
+    with_ltfu ? "diabetes_bp_controlled_denominator_with_ltfu_copy" : "diabetes_bp_controlled_denominator_copy"
+  end
+
   private
 
   def period_data

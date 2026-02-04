@@ -9,6 +9,10 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
     @use_who_standard = use_who_standard
   end
 
+  def denominator_copy
+    with_ltfu ? "dm_prescribed_statins_denominator_with_ltfu_copy" : "dm_prescribed_statins_denominator_copy"
+  end
+
   def graph_data
     if with_ltfu
       rates = data[:dm_prescribed_statins_with_ltfu_rates]
@@ -17,7 +21,6 @@ class Dashboard::Diabetes::DmPrescribedStatinsComponent < ApplicationComponent
       rates = data[:dm_prescribed_statins_rates]
       denominator = data[:dm_patients_40_and_above_under_care]
     end
-
     {
       prescribedStatinsRate: format_rates(rates),
       prescribedStatinsNumerator: format_counts(data[:dm_patients_prescribed_statins]),
