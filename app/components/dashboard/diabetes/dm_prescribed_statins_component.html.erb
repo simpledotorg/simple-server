@@ -5,6 +5,7 @@
       subtitle: "Diabetes patients in #{region.name} ≥40 years old that were prescribed statins at their latest visit in the last 12 months.") do |title| %>
       <%= title.tooltip({ "Numerator" => "Patients prescribed statins at their latest visit.",
                           "Denominator" => "Diabetes patients assigned to #{region.name} that are ≥40 years old. Dead and lost to follow-up patients are excluded." }) %>
+      <%= title.ltfu_toggle(id: 'DMPrescribedStatinsGraphLtfuToggle', enabled: with_ltfu) %>
     <% end %>
     <%= c.summary do %>
       <div class="mb-12px d-lg-flex align-lg-center">
