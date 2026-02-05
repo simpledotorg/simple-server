@@ -5,11 +5,12 @@ class Api::V4::LegacyDataDumpsController < APIController
     if legacy_dump.save
       log_success(legacy_dump)
 
-      render json: {id: legacy_dump.id, status: "ok"}, status: :ok
+      render json: {errors: []}, status: :ok
     else
       log_failure(legacy_dump)
 
-      render json: {errors: legacy_dump.errors.full_messages}, status: :unprocessable_entity
+      errors = [errors_hash(legacy_dump)]
+      render json: {errors: errors}, status: :ok
     end
   end
 
@@ -52,5 +53,9 @@ class Api::V4::LegacyDataDumpsController < APIController
       facility_id: current_facility&.id,
       errors: legacy_dump.errors.full_messages
     )
+  end
+
+  def errors_hash(legacy_dump)
+    legacy_dump.errors.to_hash.merge(id: legacy_dump.id)
   end
 end
