@@ -117,6 +117,20 @@ class Api::V4::Models
        required: %w[id patient_id height weight created_at updated_at]}
     end
 
+    def patient_score
+      {type: :object,
+       properties: {
+         id: {"$ref" => "#/definitions/uuid"},
+         patient_id: {"$ref" => "#/definitions/uuid"},
+         score_type: {"$ref" => "#/definitions/non_empty_string"},
+         score_value: {type: :number},
+         deleted_at: {"$ref" => "#/definitions/nullable_timestamp"},
+         created_at: {"$ref" => "#/definitions/timestamp"},
+         updated_at: {"$ref" => "#/definitions/timestamp"}
+       },
+       required: %w[id patient_id score_type score_value created_at updated_at]}
+    end
+
     def patient_phone_number
       {
         type: :object,
@@ -458,6 +472,8 @@ class Api::V4::Models
         patient: patient,
         patient_attribute: patient_attribute,
         patient_attributes: Api::CommonDefinitions.array_of("patient_attribute"),
+        patient_score: patient_score,
+        patient_scores: Api::CommonDefinitions.array_of("patient_score"),
         patient_business_identifier: Api::V3::Models.patient_business_identifier,
         patient_business_identifiers: Api::CommonDefinitions.array_of("patient_business_identifier"),
         phone_number: Api::V3::Models.phone_number,
