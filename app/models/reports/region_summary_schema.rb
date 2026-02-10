@@ -20,6 +20,7 @@ module Reports
     def initialize(regions, periods:)
       @regions = regions
       @regions_by_type = regions.group_by { |region| region.region_type }
+      @original_periods = periods
       @periods = periods
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
@@ -42,7 +43,7 @@ module Reports
     # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patients_with_ltfu
       cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+        values = @original_periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
         }
         results[entry] = values
@@ -51,7 +52,7 @@ module Reports
 
     memoize def adjusted_diabetes_patients_with_ltfu
       cumulative_assigned_diabetic_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
+        values = @original_periods.each_with_object(Hash.new(0)) { |period, region_result|
           region_result[period] = result[period.adjusted_period]
         }
         results[entry] = values
@@ -777,7 +778,38 @@ module Reports
       end
     end
 
+    def region_period_cached_query(calculation, **options, &block)
+      results = super
+      results.each_with_object({}) do |(slug, period_values), filtered_results|
+        filtered_results[slug] = period_values.select { |period, _| period_in_original_range?(period) }
+      end
+    end
+
     private
+
+    def extend_periods_for_lookback(periods)
+      return periods if periods.nil? || periods.is_a?(Period)
+
+      if periods.is_a?(Range)
+        extended_begin = periods.begin.advance(months: -3)
+        Range.new(extended_begin, periods.end)
+      else
+        earliest_period = periods.min
+        extended_begin = earliest_period.advance(months: -3)
+        latest_period = periods.max
+        Range.new(extended_begin, latest_period)
+      end
+    end
+
+    def period_in_original_range?(period)
+      if @original_periods.is_a?(Range)
+        @original_periods.include?(period)
+      elsif @original_periods.is_a?(Period)
+        period == @original_periods
+      else
+        @original_periods.include?(period)
+      end
+    end
 
     def appts_scheduled_rates(entry)
       rounded_percentages({
@@ -862,7 +894,8 @@ module Reports
     def values_at(field)
       field = field.to_s
       region_summaries.each_with_object({}) { |(slug, period_values), hsh|
-        hsh[slug] = period_values.transform_values { |values| values.fetch(field) }.tap { |period_hsh| period_hsh.default = 0 }
+        filtered_period_values = period_values.select { |period, _| period_in_original_range?(period) }
+        hsh[slug] = filtered_period_values.transform_values { |values| values.fetch(field) }.tap { |period_hsh| period_hsh.default = 0 }
       }
     end
   end
