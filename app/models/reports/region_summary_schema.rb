@@ -21,9 +21,7 @@ module Reports
       @regions = regions
       @regions_by_type = regions.group_by { |region| region.region_type }
       @original_periods = periods
-      # Extend periods by 3 months earlier for calculations (to support 3-month lookback for diabetes LTFU indicators)
-      # This ensures the first 3 months in the UI window have access to their required historical data
-      @periods = extend_periods_for_lookback(periods)
+      @periods = periods
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 

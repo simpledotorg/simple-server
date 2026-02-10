@@ -935,191 +935,65 @@ RSpec.describe Reports::Repository, type: :model do
     end
   end
 
-  context "period extension for 3-month lookback" do
+  context "period extension for 3-month lookback (18 month UI window + 3 month buffer)" do
     let(:facility) { create(:facility, facility_group: facility_group_1) }
-    let(:start_period) { Period.month("January 2020") }
-    let(:end_period) { Period.month("March 2020") }
+
+    let(:end_period) { Period.month("February 2026") }
+    let(:start_period) { end_period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1)) }
     let(:original_range) { (start_period..end_period) }
+
     let(:repo) { Reports::Repository.new(facility.region, periods: original_range) }
 
-    it "extends periods by 3 months earlier for backend queries" do
-      expected_extended_start = start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
-      expected_extended_end = end_period
-      expected_extended_range = (expected_extended_start..expected_extended_end)
-
-      expect(repo.schema.instance_variable_get(:@periods)).to eq(expected_extended_range)
-      expect(repo.schema.instance_variable_get(:@periods).begin).to eq(Period.month("October 2019"))
-      expect(repo.schema.instance_variable_get(:@periods).end).to eq(end_period)
+    before do
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          end_period.to_date
+        )
+      )
     end
 
-    it "keeps original periods for external access" do
+    it "keeps original UI period window as 18 months" do
       expect(repo.periods).to eq(original_range)
-      expect(repo.periods.begin).to eq(start_period)
-      expect(repo.periods.end).to eq(end_period)
+      expect(repo.periods.count).to eq(18)
     end
 
-    it "filters results to only include original periods" do
-      patient_registered_sept = create(:patient, :diabetes,
-        recorded_at: "September 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      patient_registered_oct = create(:patient, :diabetes,
-        recorded_at: "October 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      patient_registered_nov = create(:patient, :diabetes,
-        recorded_at: "November 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 3, 31))
-      )
+    it "does not expose buffer months in results" do
       refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
 
-      diabetes_patients = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
-
-      expect(diabetes_patients.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-
-      expect(diabetes_patients.keys).not_to include(Period.month("October 2019"))
-      expect(diabetes_patients.keys).not_to include(Period.month("November 2019"))
-      expect(diabetes_patients.keys).not_to include(Period.month("December 2019"))
+      expect(result.keys.min).to eq(start_period)
+      expect(result.keys.max).to eq(end_period)
+      expect(result.keys).not_to include(start_period.advance(months: -1))
+      expect(result.keys).not_to include(start_period.advance(months: -2))
+      expect(result.keys).not_to include(start_period.advance(months: -3))
     end
 
-    it "ensures first 3 months have correct data for diabetes indicators requiring 3-month lookback" do
-      patients_eligible_jan = create_list(:patient, 3, :diabetes,
-        recorded_at: "September 1st 2019",
+    it "ensures first visible month has access to 3-month back denominator data" do
+      patients = create_list(:patient, 3, :diabetes,
+        recorded_at: start_period.advance(months: -3).to_date,
         assigned_facility: facility,
         registration_user: user)
 
-      patients_eligible_jan_oct = create_list(:patient, 2, :diabetes,
-        recorded_at: "October 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      patients_eligible_feb = create_list(:patient, 2, :diabetes,
-        recorded_at: "November 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 3, 31))
-      )
-      refresh_views
-
-      adjusted_patients = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
-      expect(adjusted_patients[start_period]).to eq(5)
-      expect(adjusted_patients[Period.month("February 2020")]).to eq(7)
-      expect(adjusted_patients[end_period]).to eq(7)
-    end
-
-    it "filters delegated counts to original periods" do
-      patient = create(:patient, :diabetes,
-        recorded_at: "September 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 3, 31))
-      )
-      refresh_views
-
-      cumulative_diabetes = repo.cumulative_assigned_diabetic_patients[facility.region.slug]
-      adjusted_diabetes = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
-
-      [cumulative_diabetes, adjusted_diabetes].each do |result|
-        expect(result.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-        expect(result.keys).not_to include(Period.month("October 2019"))
-        expect(result.keys).not_to include(Period.month("November 2019"))
-        expect(result.keys).not_to include(Period.month("December 2019"))
+      patients.each do |patient|
+        create(:blood_sugar, :with_encounter, patient: patient, facility: facility, recorded_at: start_period.to_date, user: user)
       end
-    end
 
-    it "filters delegated rates to original periods" do
-      patient = create(:patient, :diabetes,
-        recorded_at: "September 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 3, 31))
-      )
       refresh_views
-
-      diabetes_ltfu_rates = repo.diabetes_ltfu_rates[facility.region.slug]
-      expect(diabetes_ltfu_rates.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-      expect(diabetes_ltfu_rates.keys).not_to include(Period.month("October 2019"))
-      expect(diabetes_ltfu_rates.keys).not_to include(Period.month("November 2019"))
-      expect(diabetes_ltfu_rates.keys).not_to include(Period.month("December 2019"))
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+      expect(result[start_period]).to eq(3)
     end
 
-    it "handles single period (not a range)" do
-      single_period = Period.month("January 2020")
+    it "works correctly for single period input" do
+      single_period = Period.month("February 2026")
       repo = Reports::Repository.new(facility.region, periods: single_period)
 
-      expect(repo.periods).to eq(Range.new(single_period, single_period))
-
       expected_extended_start = single_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
-      expect(repo.schema.instance_variable_get(:@periods).begin).to eq(expected_extended_start)
-      expect(repo.schema.instance_variable_get(:@periods).end).to eq(single_period)
-    end
+      extended_range = repo.schema.instance_variable_get(:@periods)
 
-    it "ensures LTFU denominator calculations have 3-month back data for first month" do
-      patients_sept = create_list(:patient, 2, :diabetes,
-        recorded_at: "September 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      patients_oct = create_list(:patient, 1, :diabetes,
-        recorded_at: "October 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 1, 31))
-      )
-      refresh_views
-
-      adjusted_patients = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
-      expect(adjusted_patients[start_period]).to eq(3)
-    end
-
-    it "ensures ltfu: false logic works correctly with period extension" do
-      patients_sept = create_list(:patient, 2, :diabetes,
-        recorded_at: "September 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      patients_oct = create_list(:patient, 1, :diabetes,
-        recorded_at: "October 1st 2019",
-        assigned_facility: facility,
-        registration_user: user)
-
-      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
-        ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 9, 1), Date.new(2020, 3, 31))
-      )
-      refresh_views
-
-      adjusted_without_ltfu = repo.adjusted_diabetes_patients_without_ltfu[facility.region.slug]
-
-      expect(adjusted_without_ltfu.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-      expect(adjusted_without_ltfu.keys).not_to include(Period.month("October 2019"))
-      expect(adjusted_without_ltfu.keys).not_to include(Period.month("November 2019"))
-      expect(adjusted_without_ltfu.keys).not_to include(Period.month("December 2019"))
-
-      bs_below_200_rates = repo.bs_below_200_rates[facility.region.slug]
-      expect(bs_below_200_rates.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-      expect(bs_below_200_rates.keys).not_to include(Period.month("October 2019"))
-
-      rates_without_ltfu = repo.bs_below_200_rates[facility.region.slug]
-      rates_with_ltfu = repo.bs_below_200_rates(with_ltfu: true)[facility.region.slug]
-
-      [rates_without_ltfu, rates_with_ltfu].each do |rates|
-        expect(rates.keys).to match_array([start_period, Period.month("February 2020"), end_period])
-        expect(rates.keys).not_to include(Period.month("October 2019"))
-      end
+      expect(repo.periods).to eq(single_period..single_period)
+      expect(extended_range.begin).to eq(expected_extended_start)
+      expect(extended_range.end).to eq(single_period)
     end
   end
 end

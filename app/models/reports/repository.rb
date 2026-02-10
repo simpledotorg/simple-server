@@ -408,8 +408,8 @@ module Reports
     end
 
     def filter_period_hash(period_hash)
-      return period_hash unless period_hash.is_a?(Hash)
-      period_hash.select { |period, _| @original_periods.include?(period) }
+      filtered = period_hash.select { |period, _| @original_periods.include?(period) }
+      Hash.new(0).merge(filtered)
     end
   end
 end
