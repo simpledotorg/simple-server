@@ -7084,13 +7084,6 @@ CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.
 
 
 --
--- Name: index_cvd_risks_on_patient_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (patient_id);
-
-
---
 -- Name: index_cvd_risks_on_risk_score; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8782,14 +8775,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924101441'),
 ('20250924102156'),
 ('20250925094123'),
-('20251125090819'),
-('20251211073126'),
-('20260105123000'),
 ('20251112085230'),
 ('20251112091000'),
 ('20251119095624'),
 ('20251119133109'),
 ('20251120141950'),
+('20251125090819'),
 ('20251126052630'),
 ('20251127104720'),
 ('20251201094315'),
@@ -8799,8 +8790,12 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251205091911'),
 ('20251208104102'),
 ('20251210061204'),
+('20251211073126'),
 ('20251211154907'),
 ('20251215113615'),
 ('20251219061210'),
-('20260128094448');
+('20260105123000'),
+('20260128094448'),
+('20260210161537');
+
 
