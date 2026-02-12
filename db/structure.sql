@@ -7084,16 +7084,17 @@ CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.
 
 
 --
--- Name: index_cvd_risks_on_risk_score; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_cvd_risks_on_risk_score ON public.cvd_risks USING btree (risk_score);
-
---
 -- Name: index_cvd_risks_on_patient_id; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (patient_id);
+
+
+--
+-- Name: index_cvd_risks_on_risk_score; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cvd_risks_on_risk_score ON public.cvd_risks USING btree (risk_score);
 
 
 --
