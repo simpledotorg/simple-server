@@ -22,14 +22,17 @@ module Reports
       @regions_by_type = regions.group_by { |region| region.region_type }
 
       @original_periods =
-        if periods.is_a?(Range)
+        case periods
+        when Range
           periods
+        when Array
+          (periods.min..periods.max)
         else
           (periods..periods)
         end
 
       @periods = @original_periods
-      @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
+      @period_hash = ->(month_date, count) { [Period.month(month_date), count] }
     end
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
