@@ -934,4 +934,66 @@ RSpec.describe Reports::Repository, type: :model do
       expect(described_class::DELEGATED_RATES).to match_array(expected_keys)
     end
   end
+
+  context "period extension for 3-month lookback (18 month UI window + 3 month buffer)" do
+    let(:facility) { create(:facility, facility_group: facility_group_1) }
+
+    let(:end_period) { Period.month("February 2026") }
+    let(:start_period) { end_period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1)) }
+    let(:original_range) { (start_period..end_period) }
+
+    let(:repo) { Reports::Repository.new(facility.region, periods: original_range) }
+
+    before do
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          end_period.to_date
+        )
+      )
+    end
+
+    it "keeps original UI period window as 18 months" do
+      expect(repo.periods).to eq(original_range)
+      expect(repo.periods.count).to eq(18)
+    end
+
+    it "does not expose buffer months in results" do
+      refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+
+      expect(result.keys.min).to eq(start_period)
+      expect(result.keys.max).to eq(end_period)
+      expect(result.keys).not_to include(start_period.advance(months: -1))
+      expect(result.keys).not_to include(start_period.advance(months: -2))
+      expect(result.keys).not_to include(start_period.advance(months: -3))
+    end
+
+    it "ensures first visible month has access to 3-month back denominator data" do
+      patients = create_list(:patient, 3, :diabetes,
+        recorded_at: start_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:blood_sugar, :with_encounter, patient: patient, facility: facility, recorded_at: start_period.to_date, user: user)
+      end
+
+      refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+      expect(result[start_period]).to eq(3)
+    end
+
+    it "works correctly for single period input" do
+      single_period = Period.month("February 2026")
+      repo = Reports::Repository.new(facility.region, periods: single_period)
+
+      expected_extended_start = single_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
+      extended_range = repo.schema.instance_variable_get(:@periods)
+
+      expect(repo.periods).to eq(single_period..single_period)
+      expect(extended_range.begin).to eq(expected_extended_start)
+      expect(extended_range.end).to eq(single_period)
+    end
+  end
 end
