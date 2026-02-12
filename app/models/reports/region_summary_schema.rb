@@ -51,11 +51,22 @@ module Reports
     end
 
     memoize def adjusted_diabetes_patients_with_ltfu
-      cumulative_assigned_diabetic_patients.each_with_object({}) do |(entry, result), results|
-        values = @original_periods.each_with_object(Hash.new(0)) { |period, region_result|
-          region_result[period] = result[period.adjusted_period]
-        }
-        results[entry] = values
+      extended_begin = periods.begin.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
+      extended_range = (extended_begin..periods.end)
+
+      extended_data = regions_by_type.each_with_object({}) do |(_, regions), result|
+        result.merge! RegionSummary.call(regions, range: extended_range)
+      end
+
+      cumulative_data = extended_data.transform_values do |period_values|
+        period_values.transform_values { |v| v.fetch("cumulative_assigned_diabetic_patients", 0) }
+      end
+
+      cumulative_data.each_with_object({}) do |(slug, counts), results|
+        values = periods.each_with_object(Hash.new(0)) do |period, h|
+          h[period] = counts[period.adjusted_period]
+        end
+        results[slug] = values
       end
     end
 

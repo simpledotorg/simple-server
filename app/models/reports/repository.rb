@@ -20,21 +20,14 @@ module Reports
 
     def initialize(regions, periods:, use_who_standard: nil)
       @regions = Array(regions).map(&:region)
-      @original_periods = if periods.is_a?(Period)
+      @periods = if periods.is_a?(Period)
         Range.new(periods, periods)
       else
         periods
       end
-      @period_type = @original_periods.first.type
+      @period_type = @periods.first.type
       raise ArgumentError, "Quarter periods not supported" if @period_type != :month
-
-      # Extend periods by 3 months earlier for backend queries to support 3-month lookback
-      # (e.g., months_since_registration >= 3 requirement for diabetes indicators)
-      # Results will be filtered back to original_periods before returning to UI
-      extended_start = @original_periods.begin.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
-      @extended_periods = Range.new(extended_start, @original_periods.end)
-      @periods = @original_periods
-      @schema = RegionSummarySchema.new(@regions, periods: @extended_periods)
+      @schema = RegionSummarySchema.new(@regions, periods: @periods)
       @measures_query = MeasuresQuery.new
       @follow_ups_query = FollowUpsQuery.new
       @registered_patients_query = RegisteredPatientsQuery.new
@@ -209,24 +202,9 @@ module Reports
       end
     end
 
-    # Delegate methods to schema, but filter results to original period range
-    DELEGATED_COUNTS.each do |method|
-      define_method(method) do |*args, **kwargs|
-        filter_to_original_periods(schema.public_send(method, *args, **kwargs))
-      end
-    end
-
-    DELEGATED_RATES.each do |method|
-      define_method(method) do |*args, **kwargs|
-        filter_to_original_periods(schema.public_send(method, *args, **kwargs))
-      end
-    end
-
-    DELEGATED_BREAKDOWNS.each do |method|
-      define_method(method) do |*args, **kwargs|
-        filter_to_original_periods(schema.public_send(method, *args, **kwargs))
-      end
-    end
+    delegate(*DELEGATED_COUNTS, to: :schema)
+    delegate(*DELEGATED_RATES, to: :schema)
+    delegate(*DELEGATED_BREAKDOWNS, to: :schema)
 
     alias_method :adjusted_patients, :adjusted_patients_without_ltfu
 
@@ -388,28 +366,6 @@ module Reports
       start_period = [earliest_patient_recorded_at_period[region.slug], periods.begin].compact.max
       calc_range = (start_period..periods.end)
       calc_range.each_with_object({}) { |period, hsh| hsh[period] = period.to_hash }
-    end
-
-    private
-
-    # Filter period-keyed hashes to only include periods in the original (UI) range
-    def filter_to_original_periods(data)
-      return data unless data.is_a?(Hash)
-      return data if data.empty?
-
-      first_value = data.values.first
-      if first_value.is_a?(Hash) && !first_value.empty? && first_value.keys.first.is_a?(Period)
-        data.transform_values { |period_hash| filter_period_hash(period_hash) }
-      elsif data.keys.first.is_a?(Period)
-        filter_period_hash(data)
-      else
-        data
-      end
-    end
-
-    def filter_period_hash(period_hash)
-      filtered = period_hash.select { |period, _| @original_periods.include?(period) }
-      Hash.new(0).merge(filtered)
     end
   end
 end
