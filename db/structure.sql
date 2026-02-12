@@ -8515,11 +8515,11 @@ ALTER TABLE ONLY public.facilities
 
 
 --
--- name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; type: fk constraint; schema: public; owner: -
+-- Name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-alter table only public.legacy_mobile_data_dumps
-    add constraint fk_rails_a1b2c3d4e5 foreign key (user_id) references public.users(id);
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT fk_rails_a1b2c3d4e5 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
