@@ -8443,14 +8443,6 @@ ALTER TABLE ONLY public.drug_stocks
 
 
 --
--- Name: cvd_risks fk_rails_90e3653e9a; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cvd_risks
-    ADD CONSTRAINT fk_rails_90e3653e9a FOREIGN KEY (patient_id) REFERENCES public.patients(id);
-
-
---
 -- Name: clean_medicine_to_dosages fk_rails_96b1526de4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8523,11 +8515,11 @@ ALTER TABLE ONLY public.facilities
 
 
 --
--- Name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; type: fk constraint; schema: public; owner: -
 --
 
-ALTER TABLE ONLY public.legacy_mobile_data_dumps
-    ADD CONSTRAINT fk_rails_a1b2c3d4e5 FOREIGN KEY (user_id) REFERENCES public.users(id);
+alter table only public.legacy_mobile_data_dumps
+    add constraint fk_rails_a1b2c3d4e5 foreign key (user_id) references public.users(id);
 
 
 --
@@ -8802,5 +8794,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251211154907'),
 ('20251215113615'),
 ('20251219061210'),
-('20260128094448');
+('20260128094448'),
+('20260212195326');
+
 
