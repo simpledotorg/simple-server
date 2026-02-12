@@ -984,16 +984,29 @@ RSpec.describe Reports::Repository, type: :model do
       expect(result[start_period]).to eq(3)
     end
 
-    it "works correctly for single period input" do
+    it "works correctly for single period input with 3-month lookback data" do
       single_period = Period.month("February 2026")
+
+      patients = create_list(:patient, 2, :diabetes,
+        recorded_at: single_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:blood_sugar, :with_encounter,
+          patient: patient,
+          facility: facility,
+          recorded_at: single_period.to_date,
+          user: user)
+      end
+
       repo = Reports::Repository.new(facility.region, periods: single_period)
 
-      expected_extended_start = single_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS)
-      extended_range = repo.schema.instance_variable_get(:@periods)
-
+      refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
       expect(repo.periods).to eq(single_period..single_period)
-      expect(extended_range.begin).to eq(expected_extended_start)
-      expect(extended_range.end).to eq(single_period)
+      expect(result.keys).to eq([single_period])
+      expect(result[single_period]).to eq(2)
     end
   end
 end
