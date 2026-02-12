@@ -7089,6 +7089,12 @@ CREATE UNIQUE INDEX index_cphc_migration_configs_on_facility_group_id ON public.
 
 CREATE INDEX index_cvd_risks_on_risk_score ON public.cvd_risks USING btree (risk_score);
 
+--
+-- Name: index_cvd_risks_on_patient_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_cvd_risks_on_patient_id ON public.cvd_risks USING btree (patient_id);
+
 
 --
 -- Name: index_deduplication_logs_on_user_id; Type: INDEX; Schema: public; Owner: -
@@ -8433,14 +8439,6 @@ ALTER TABLE ONLY public.blood_sugars
 
 ALTER TABLE ONLY public.drug_stocks
     ADD CONSTRAINT fk_rails_8eb7cdedd2 FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
--- Name: cvd_risks fk_rails_90e3653e9a; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cvd_risks
-    ADD CONSTRAINT fk_rails_90e3653e9a FOREIGN KEY (patient_id) REFERENCES public.patients(id);
 
 
 --
