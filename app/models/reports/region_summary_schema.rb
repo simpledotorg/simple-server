@@ -20,7 +20,15 @@ module Reports
     def initialize(regions, periods:)
       @regions = regions
       @regions_by_type = regions.group_by { |region| region.region_type }
-      @periods = periods
+
+      @original_periods =
+        if periods.is_a?(Range)
+          periods
+        else
+          (periods..periods)
+        end
+
+      @periods = @original_periods
       @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
     end
 
@@ -50,11 +58,29 @@ module Reports
     end
 
     memoize def adjusted_diabetes_patients_with_ltfu
-      cumulative_assigned_diabetic_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          region_result[period] = result[period.adjusted_period]
-        }
-        results[entry] = values
+      extended_begin = @original_periods.begin.advance(
+        months: -Reports::REGISTRATION_BUFFER_IN_MONTHS
+      )
+      extended_range = (extended_begin..@original_periods.end)
+
+      extended_data = regions_by_type.each_with_object({}) do |(_, regions), result|
+        result.merge! RegionSummary.call(regions, range: extended_range)
+      end
+
+      cumulative_data = extended_data.transform_values do |period_values|
+        period_values.transform_values do |v|
+          v.fetch("cumulative_assigned_diabetic_patients", 0)
+        end
+      end
+
+      regions.each_with_object({}) do |region, results|
+        counts = cumulative_data[region.slug] || {}
+
+        values = @original_periods.each_with_object(Hash.new(0)) do |period, h|
+          h[period] = counts.fetch(period.adjusted_period, 0)
+        end
+
+        results[region.slug] = values
       end
     end
 
