@@ -273,4 +273,3 @@ class CreateReportingPatientPrescriptions < ActiveRecord::Migration[6.1]
     drop_table "simple_reporting.reporting_patient_prescriptions"
   end
 end
-
