@@ -46,4 +46,27 @@ namespace :reporting do
       ActiveRecord::Base.connection.exec_query("REFRESH MATERIALIZED VIEW #{view_name}")
     end
   end
+
+  desc "Refresh a partitoned table for given months"
+  task :refresh_partitioned_table, [:table_name, :start_date, :end_date] => :environment do |_, args|
+    unless args[:table_name].present? && args[:start_date].present? && args[:end_date].present?
+      puts "ERROR: table_name, start_date and end_date are required."
+      puts "Usage: rake reporting:refresh_partitioned_table['reporting_patient_states', '2024-01-01' ,'2024-02-01']"
+      exit 1
+    end
+
+    table_name = args[:table_name]
+    start_date = Date.parse(args[:start_date]).beginning_of_month
+    end_date = Date.parse(args[:end_date]).beginning_of_month
+    months = []
+    current = start_date
+    while current <= end_date
+      months << current.strftime("%Y-%m-%d")
+      current = current.next_month
+    end
+    months.each do |month|
+      puts "Refreshing partitioned table: #{table_name} for month: #{month}"
+      ActiveRecord::Base.connection.exec_query("CALL simple_reporting.add_shard_to_table('#{month}', '#{table_name}')")
+    end
+  end
 end
