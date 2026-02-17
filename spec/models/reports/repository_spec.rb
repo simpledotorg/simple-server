@@ -958,15 +958,17 @@ RSpec.describe Reports::Repository, type: :model do
       expect(repo.periods.count).to eq(18)
     end
 
-    it "does not expose buffer months in results" do
-      refresh_views
-      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+    [:adjusted_diabetes_patients_with_ltfu, :adjusted_patients_with_ltfu].each do |method|
+      it "does not expose buffer months for #{method}" do
+        refresh_views
+        result = repo.send(method)[facility.region.slug]
 
-      expect(result.keys.min).to eq(start_period)
-      expect(result.keys.max).to eq(end_period)
-      expect(result.keys).not_to include(start_period.advance(months: -1))
-      expect(result.keys).not_to include(start_period.advance(months: -2))
-      expect(result.keys).not_to include(start_period.advance(months: -3))
+        expect(result.keys.min).to eq(start_period)
+        expect(result.keys.max).to eq(end_period)
+        expect(result.keys).not_to include(start_period.advance(months: -1))
+        expect(result.keys).not_to include(start_period.advance(months: -2))
+        expect(result.keys).not_to include(start_period.advance(months: -3))
+      end
     end
 
     it "ensures first visible month has access to 3-month back denominator data" do
@@ -1004,6 +1006,53 @@ RSpec.describe Reports::Repository, type: :model do
 
       refresh_views
       result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+      expect(repo.periods).to eq(single_period..single_period)
+      expect(result.keys).to eq([single_period])
+      expect(result[single_period]).to eq(2)
+    end
+
+    it "ensures first visible month has access to 3-month back denominator data for hypertension" do
+      patients = create_list(:patient, 3, :hypertension,
+        recorded_at: start_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:bp_with_encounter, patient: patient, facility: facility, recorded_at: start_period.to_date, user: user)
+      end
+
+      refresh_views
+      result = repo.adjusted_patients_with_ltfu[facility.region.slug]
+      expect(result[start_period]).to eq(3)
+    end
+
+    it "works correctly for single period input with 3-month lookback data for hypertension" do
+      single_period = Period.month("February 2026")
+
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          single_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          single_period.to_date
+        )
+      )
+
+      patients = create_list(:patient, 2, :hypertension,
+        recorded_at: single_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:bp_with_encounter,
+          patient: patient,
+          facility: facility,
+          recorded_at: single_period.to_date,
+          user: user)
+      end
+
+      repo = Reports::Repository.new(facility.region, periods: single_period)
+
+      refresh_views
+      result = repo.adjusted_patients_with_ltfu[facility.region.slug]
       expect(repo.periods).to eq(single_period..single_period)
       expect(result.keys).to eq([single_period])
       expect(result[single_period]).to eq(2)
