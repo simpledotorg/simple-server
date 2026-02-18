@@ -948,6 +948,12 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_tabl
 SET default_table_access_method = heap;
 
 --
+-- Name: reporting_patient_prescriptions; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE OR REPLACE VIEW public.reporting_patient_prescriptions AS SELECT * FROM simple_reporting.reporting_patient_prescriptions;
+
+--
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8531,6 +8537,11 @@ CREATE INDEX patient_prescriptions_assigned_state_region_id ON ONLY simple_repor
 
 CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_organization_region_id);
 
+--
+-- Name: index_patient_prescriptions_patient_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
 
 --
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -

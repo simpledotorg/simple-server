@@ -69,6 +69,7 @@ class CreateReportingPatientPrescriptions < ActiveRecord::Migration[6.1]
       CREATE INDEX patient_prescriptions_assigned_district_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_district_region_id);
       CREATE INDEX patient_prescriptions_assigned_state_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_state_region_id);
       CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_organization_region_id);
+      CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
     SQL
 
     execute <<~SQL
@@ -259,9 +260,17 @@ class CreateReportingPatientPrescriptions < ActiveRecord::Migration[6.1]
       END;
       $_$;
     SQL
+
+    execute <<~SQL
+      CREATE OR REPLACE VIEW public.reporting_patient_prescriptions AS SELECT * FROM simple_reporting.reporting_patient_prescriptions;
+    SQL
   end
 
   def down
+    execute <<~SQL
+      DROP VIEW IF EXISTS public.reporting_patient_prescriptions;
+    SQL
+
     execute <<~SQL
       DROP FUNCTION IF EXISTS simple_reporting.normalize_jsonb_array(jsonb);
     SQL
