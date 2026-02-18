@@ -141,6 +141,11 @@ every 1.month, at: local("04:15 am"), roles: [:cron] do
   end
 end
 
+every 1.month, at: local("06:00 am"), roles: [:cron] do
+  refresh_months = (0..3).map { |i| Date.current.beginning_of_month - i.months }.reverse
+  rake "reporting:refresh_partitioned_table[reporting_patient_prescriptions, #{refresh_months.first}, #{refresh_months.last}]"
+end
+
 every :day, at: local("05:00 am"), roles: [:cron] do
   runner "DuplicatePassportAnalytics.call"
 end
