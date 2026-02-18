@@ -11,11 +11,14 @@
 <% args = { data: @data, region: @region, period: @period } %>
 <% args_with_ltfu = { data: @data, region: @region, period: @period, with_ltfu: @with_ltfu, use_who_standard: @use_who_standard } %>
 
-<h4 class="mt-5 mb-32px">Cardiovascular Disease and statins indicators</h4>
-<div class="d-grid grid-2-cols gap-16px">
-  <%= render Dashboard::Diabetes::DmBpControlledComponent.new(args_with_ltfu) %>
-  <%= render Dashboard::Diabetes::DmPrescribedStatinsComponent.new(args_with_ltfu) %> 
-</div>
+<% if Flipper.enabled?(:diabetes_cvd_indicators, current_admin) %>
+  <h4 class="mt-5 mb-32px">Cardiovascular Disease and statins indicators</h4>
+  <div class="d-grid grid-2-cols gap-16px">
+    <%= render Dashboard::Diabetes::DmBpControlledComponent.new(args_with_ltfu) %>
+    <%= render Dashboard::Diabetes::DmPrescribedStatinsComponent.new(args_with_ltfu) %>
+  </div>
+<% end %>
+
 <h4 class="mt-5 mb-32px">Program management indicators</h4>
 <div class="d-grid grid-3-cols gap-16px">
   <%= render Dashboard::Diabetes::BsBelow200GraphComponent.new(args_with_ltfu) %>
