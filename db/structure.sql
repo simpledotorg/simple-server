@@ -5108,10 +5108,47 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_140_90_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_130_80_under_care
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), dm_statins_outcomes AS (
+         WITH latest_visits_for_statins AS (
+                 SELECT reporting_patient_visits.patient_id,
+                    reporting_patient_visits.month_date,
+                    reporting_patient_visits.visited_at
+                   FROM public.reporting_patient_visits
+                ), statin_prescriptions_by_month AS (
+                 SELECT DISTINCT ON (prescription_drugs.patient_id, reporting_months.month_date) prescription_drugs.patient_id,
+                    reporting_months.month_date,
+                    prescription_drugs.id AS statin_prescription_id
+                   FROM public.prescription_drugs
+                     LEFT JOIN public.reporting_months ON ((to_char((prescription_drugs.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)), 'YYYY-MM'::text) <= to_char(reporting_months.month_date, 'YYYY-MM'::text)))
+                     LEFT JOIN latest_visits_for_statins lv ON (((lv.month_date = reporting_months.month_date) AND (lv.patient_id = prescription_drugs.patient_id)))
+                  WHERE ((((prescription_drugs.name)::text ~~* '%statin%'::text) AND ((prescription_drugs.is_deleted = false) OR ((prescription_drugs.is_deleted = true) AND (lv.visited_at IS NOT NULL) AND ((prescription_drugs.device_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)) >= (lv.visited_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))))) AND (prescription_drugs.deleted_at IS NULL))
+                  ORDER BY prescription_drugs.patient_id, reporting_months.month_date DESC, prescription_drugs.device_created_at DESC
+                ), rps_with_age_for_statins AS (
+                 SELECT reporting_patient_states.assigned_facility_region_id,
+                    reporting_patient_states.patient_id,
+                    reporting_patient_states.month_date,
+                    reporting_patient_states.htn_care_state,
+                    CASE
+                        WHEN (reporting_patient_states.date_of_birth IS NOT NULL) THEN date_part('year'::text, age(reporting_patient_states.month_date, reporting_patient_states.date_of_birth))
+                        ELSE (date_part('year'::text, age(reporting_patient_states.month_date, ((reporting_patient_states.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))::date)) + reporting_patient_states.age)
+                    END AS age_on_month_date
+                   FROM public.reporting_patient_states
+                  WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+                )
+         SELECT age_rps.assigned_facility_region_id AS region_id,
+            age_rps.month_date,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_under_care,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision) AND (sp.statin_prescription_id IS NOT NULL))) AS dm_patients_40_and_above_with_statins,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state <> 'dead'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_with_ltfu
+           FROM (rps_with_age_for_statins age_rps
+             LEFT JOIN statin_prescriptions_by_month sp ON (((sp.patient_id = age_rps.patient_id) AND (sp.month_date = age_rps.month_date))))
+          GROUP BY age_rps.assigned_facility_region_id, age_rps.month_date
         ), monthly_cohort_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -5237,6 +5274,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
     adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
     adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
+    adjusted_diabetes_outcomes.dm_bp_below_140_90_under_care AS adjusted_dm_bp_below_140_90_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_130_80_under_care AS adjusted_dm_bp_below_130_80_under_care,
+    dm_statins_outcomes.dm_patients_40_and_above_under_care AS adjusted_dm_patients_40_and_above_under_care,
+    dm_statins_outcomes.dm_patients_40_and_above_with_statins AS adjusted_dm_patients_40_and_above_with_statins,
+    dm_statins_outcomes.dm_patients_40_and_above_with_ltfu AS adjusted_dm_patients_40_and_above_with_ltfu,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
     monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
     monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
@@ -5273,7 +5315,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_removed_from_list
-   FROM ((((((((((((((public.reporting_facilities rf
+   FROM (((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
@@ -5282,6 +5324,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_diabetes_outcomes ON (((adjusted_diabetes_outcomes.month_date = cal.month_date) AND (adjusted_diabetes_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN dm_statins_outcomes ON (((dm_statins_outcomes.month_date = cal.month_date) AND (dm_statins_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
@@ -5779,6 +5822,41 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_un
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_140_90_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_140_90_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_bp_below_130_80_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_130_80_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_under_care; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_under_care IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, have at least one valid statin prescription in the same month, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
+
+
+--
+-- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu IS 'The number of diabetic patients assigned to the facility that are age 40 or above, not dead, and were registered before the last 3 months. Includes both under care and lost to follow-up patients.';
 
 
 --
@@ -9084,6 +9162,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924102156'),
 ('20250925094123'),
 ('20251125090819'),
+('20260120115014'),
+('20260127150000');
 ('20251211073126'),
 ('20260105123000'),
 ('20251112085230'),
@@ -9106,5 +9186,3 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260128094448'),
 ('20260212195326'),
 ('20260205110957');
-
-
