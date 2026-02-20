@@ -20,8 +20,19 @@ module Reports
     def initialize(regions, periods:)
       @regions = regions
       @regions_by_type = regions.group_by { |region| region.region_type }
-      @periods = periods
-      @period_hash = lambda { |month_date, count| [Period.month(month_date), count] }
+
+      @original_periods =
+        case periods
+        when Range
+          periods
+        when Array
+          (periods.min..periods.max)
+        else
+          (periods..periods)
+        end
+
+      @periods = @original_periods
+      @period_hash = ->(month_date, count) { [Period.month(month_date), count] }
     end
 
     # Returns the earliest patient record for a Region from either assigned or registered patients. Note that this *ignores*
@@ -41,21 +52,11 @@ module Reports
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
     # are the basis for control rates. These counts DO include lost to follow up.
     memoize def adjusted_patients_with_ltfu
-      cumulative_assigned_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          region_result[period] = result[period.adjusted_period]
-        }
-        results[entry] = values
-      end
+      adjusted_patients_with_ltfu_for("cumulative_assigned_patients")
     end
 
     memoize def adjusted_diabetes_patients_with_ltfu
-      cumulative_assigned_diabetic_patients.each_with_object({}) do |(entry, result), results|
-        values = periods.each_with_object(Hash.new(0)) { |period, region_result|
-          region_result[period] = result[period.adjusted_period]
-        }
-        results[entry] = values
-      end
+      adjusted_patients_with_ltfu_for("cumulative_assigned_diabetic_patients")
     end
 
     # Adjusted patient counts are the patient counts from three months ago (the adjusted period) that
@@ -730,7 +731,81 @@ module Reports
       end
     end
 
+    memoize def dm_patients_with_controlled_bp_140_90(with_ltfu: false)
+      values_at("adjusted_dm_bp_below_140_90_under_care")
+    end
+
+    memoize def dm_patients_with_controlled_bp_130_80(with_ltfu: false)
+      values_at("adjusted_dm_bp_below_130_80_under_care")
+    end
+
+    memoize def dm_controlled_bp_140_90_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_140_90(with_ltfu: false)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
+    memoize def dm_controlled_bp_130_80_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? adjusted_diabetes_patients_with_ltfu[slug][period] : adjusted_diabetes_patients_without_ltfu[slug][period]
+        numerator = dm_patients_with_controlled_bp_130_80(with_ltfu: false)[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
+    memoize def dm_patients_40_and_above_under_care
+      values_at("adjusted_dm_patients_40_and_above_under_care")
+    end
+
+    memoize def dm_patients_40_and_above_with_ltfu
+      values_at("adjusted_dm_patients_40_and_above_with_ltfu")
+    end
+
+    memoize def dm_patients_prescribed_statins
+      values_at("adjusted_dm_patients_40_and_above_with_statins")
+    end
+
+    memoize def dm_prescribed_statins_rates(with_ltfu: false)
+      region_period_cached_query(__method__, with_ltfu: with_ltfu) do |entry|
+        slug, period = entry.slug, entry.period
+        denominator = with_ltfu ? dm_patients_40_and_above_with_ltfu[slug][period] : dm_patients_40_and_above_under_care[slug][period]
+        numerator = dm_patients_prescribed_statins[slug][period]
+        percentage(numerator, denominator)
+      end
+    end
+
     private
+
+    def adjusted_patients_with_ltfu_for(field_name)
+      extended_begin = @original_periods.begin.advance(
+        months: -Reports::REGISTRATION_BUFFER_IN_MONTHS
+      )
+      extended_range = (extended_begin..@original_periods.end)
+
+      extended_data = regions_by_type.each_with_object({}) do |(_, regions), result|
+        result.merge! RegionSummary.call(regions, range: extended_range)
+      end
+
+      cumulative_data = extended_data.transform_values do |period_values|
+        period_values.transform_values do |v|
+          v.fetch(field_name, 0)
+        end
+      end
+
+      regions.each_with_object({}) do |region, results|
+        counts = cumulative_data[region.slug] || {}
+
+        values = @original_periods.each_with_object(Hash.new(0)) do |period, h|
+          h[period] = counts.fetch(period.adjusted_period, 0)
+        end
+
+        results[region.slug] = values
+      end
+    end
 
     def appts_scheduled_rates(entry)
       rounded_percentages({
