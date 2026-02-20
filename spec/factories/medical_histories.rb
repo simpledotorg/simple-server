@@ -42,6 +42,10 @@ FactoryBot.define do
       hypertension { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
     end
 
+    trait :hypertension_suspected do
+      hypertension { "suspected" }
+    end
+
     trait :diabetes_yes do
       diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes] }
     end
@@ -52,6 +56,10 @@ FactoryBot.define do
 
     trait :diabetes_unknown do
       diabetes { MedicalHistory::MEDICAL_HISTORY_ANSWERS[:unknown] }
+    end
+
+    trait :diabetes_suspected do
+      diabetes { "suspected" }
     end
 
     trait :prior_risk_history do
@@ -73,6 +81,13 @@ FactoryBot.define do
 
     trait :without_smokeless_tobacco do
       smokeless_tobacco { nil }
+    end
+
+    trait :screened do
+      hypertension { "suspected" }
+      diabetes { "suspected" }
+      htn_diagnosed_at { nil }
+      dm_diagnosed_at { nil }
     end
   end
 end

@@ -330,4 +330,15 @@ describe MaterializedPatientSummary, type: :model do
       end
     end
   end
+
+  context "screening" do
+    it "does not include screened patients" do
+      patient = create(:patient, :without_medical_history)
+      create(:medical_history, :screened, patient: patient)
+      refresh_view
+      expect(
+        MaterializedPatientSummary.exists?(patient.id)
+      ).to be false
+    end
+  end
 end

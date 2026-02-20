@@ -18,7 +18,7 @@ class FacilityYearlyFollowUpsAndRegistrationsQuery
   end
 
   def call
-    records = Reports::FacilityMonthlyFollowUpAndRegistration.for_region(@region)
+    records = Reports::FacilityMonthlyFollowUpAndRegistration.for_region(@region).order(month_date: :desc)
     records_per_period = records.group_by { |facility|
       year(facility.month_date)
     }

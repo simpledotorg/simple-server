@@ -60,11 +60,14 @@ class DrRai::ActionPlansController < AdminController
     @region = Region.find_by slug: dr_rai_action_plan_params[:region_slug]
     @indicator = DrRai::Indicator.find(dr_rai_action_plan_params[:indicator_id])
     period = Period.new(type: :quarter, value: dr_rai_action_plan_params[:period])
-    @target = DrRai::Target.create!(
+    target_attributes = {
       type: dr_rai_action_plan_params[:target_type],
       period: period,
-      indicator: @indicator,
-      numeric_value: dr_rai_action_plan_params[:target_value]
-    )
+      indicator: @indicator
+    }
+    if dr_rai_action_plan_params[:target_value].present?
+      target_attributes[:numeric_value] = dr_rai_action_plan_params[:target_value]
+    end
+    @target = DrRai::Target.create!(target_attributes)
   end
 end

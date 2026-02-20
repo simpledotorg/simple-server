@@ -128,6 +128,8 @@ Rails.application.routes.draw do
     namespace :v4, path: "v4" do
       put "import", to: "imports#import"
 
+      resources :legacy_data_dumps, only: [:create]
+
       scope :blood_sugars do
         get "sync", to: "blood_sugars#sync_to_user"
         post "sync", to: "blood_sugars#sync_from_user"

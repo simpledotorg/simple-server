@@ -5,6 +5,10 @@ module Reports
     belongs_to :facility
 
     def self.materialized?
+      false
+    end
+
+    def self.partitioned?
       true
     end
 

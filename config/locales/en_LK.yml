@@ -42,6 +42,7 @@ en-LK:
         large: "District General Hospital"
         national_hospital: "National Hospital"
         teaching_hospital: "Teaching Hospital"
+        arogya_wellness_centre: "Arogya Wellness Centre"
       pluralized_facility_size:
         community: "Primary medical care units"
         small: "Divisional Hospitals"
@@ -49,6 +50,7 @@ en-LK:
         large: "District General Hospitals"
         national_hospital: "National Hospitals"
         teaching_hospital: "Teaching Hospitals"
+        arogya_wellness_centre: "Arogya Wellness Centres"
   bs_below_200_copy:
     numerator: "Patients with RBS/PPBS <200, FBS <126, or HbA1c <7.0 at their last visit in the last 3 months"
     numerator_fbs: "Patients with FBS <126mg/dL, or HbA1c <7% at their last visit in the last 3 months"

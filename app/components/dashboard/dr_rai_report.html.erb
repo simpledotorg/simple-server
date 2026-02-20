@@ -39,12 +39,39 @@
             <% end %>
           </div>
           <div class="action-progress">
-          <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %> <%= action_plan.passive_action %></p>
-            <div class="bar">
-              <div class="bar-fill" style="width: <%= action_plan.progress %>%">
-                <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
+            <% if action_plan.custom_target? %>
+              <% previous_period = Period.new(type: :quarter, value: action_plan.target.period).previous %>
+              <% current_period = Period.new(type: :quarter, value: action_plan.target.period) %>
+              <div class="custom-target-comparison">
+                <div class="ratio-comparison">
+                <div class='d-flex fd-column gap-12px align-items-start'>
+                  <span class="period-label"><%= previous_period.value.to_s %> ratio</span>
+                  <span class="ratio-value"><%= action_plan.previous_ratio&.round(1) || "-" %></span>
+                </div>
+                <div>
+                  <span class="arrow">→</span>
+                </div>
+                <div>
+                <div class='d-flex fd-column gap-12px'>
+                  <span class="period-label"><%= current_period.value.to_s %> ratio</span>
+                  <span class="ratio-value"><%= action_plan.current_ratio&.round(1) || "-" %></span>
+                </div>
+                  <% if action_plan.ratio_change_percentage.present? %>
+                    <span class="change-percentage <%= action_plan.is_better? ? 'positive' : 'negative' %>">
+                      (<%= action_plan.ratio_change_percentage > 0 ? '+' : '' %><%= action_plan.ratio_change_percentage %>%)
+                    </span>
+                  <% end %>
+                </div>
+                </div>
               </div>
-            </div>
+            <% else %>
+              <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %> <%= action_plan.passive_action %></p>
+              <div class="bar">
+                <div class="bar-fill" style="width: <%= action_plan.progress %>%">
+                  <span class="bar-number<%= ' over-86-percent' if action_plan.progress > 86 %>"><%= action_plan.progress %>%</span>
+                </div>
+              </div>
+            <% end %>
           </div>
           <div class="deleting-overlay">
               <i class=" fa-solid fa-spinner-third fa-spin fa-fast-spin"></i>
@@ -171,6 +198,19 @@
           <p class="step-statement">Mark as done when completed</p>
         </div>
       </div>
+      <div class="step-block d-none" id="step-2-custom">
+        <div class='active'>
+          <h2>What is the goal?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <p class="step-statement">Track improvement from previous period</p>
+          <button class="next-button">Next</button>
+        </div>
+        <div class="inactive d-none">
+          <h2>What is the goal?</h2>
+          <%# <button class="link-button edit">Edit</button> %>
+          <p class="step-statement">Track improvement from previous period</p>
+        </div>
+      </div>
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
         <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
@@ -274,8 +314,12 @@
       $('.passive-action').text(indicator.passive_action)
       $('.indicator-unit').text(indicator.unit)
       if (nextStep === 3) {
-        $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
-        $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
+        if (target.ui === 'custom') {
+          $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
+        } else {
+          $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
+          $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
+        }
         $('.action-buttons-block .save-button').removeClass('invisible')
       } else {
         if (target.ui !== undefined) {
@@ -295,6 +339,9 @@
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
           $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.previous_denominator)
+        }
+        if (target.ui == 'custom') {
+          $('#dr-rai--sidebar').data('target-value', 0)
         }
         $('#step-' + nextStep + '-' + target.ui).removeClass('d-none')
         toHide.push($('#step-' + nextStep + '-' + target.ui))
