@@ -8,6 +8,10 @@ module Reports
       true
     end
 
+    def self.partitioned?
+      true
+    end
+
     def self.for_region(region_or_source)
       region = region_or_source.region
       where(region_id_field(region) => region.id)
