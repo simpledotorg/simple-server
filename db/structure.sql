@@ -1027,8 +1027,6 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_states (
     adjusted_bs_missed_visit_lost_to_follow_up bigint,
     adjusted_diabetes_patients_under_care bigint,
     adjusted_diabetes_patients_lost_to_follow_up bigint,
-    adjusted_dm_bp_below_140_90_under_care bigint,
-    adjusted_dm_bp_below_130_80_under_care bigint,
     monthly_cohort_controlled bigint,
     monthly_cohort_uncontrolled bigint,
     monthly_cohort_missed_visit bigint,
@@ -5779,7 +5777,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_removed_from_list
-   FROM ((((((((((((((public.reporting_facilities rf
+   FROM (((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
