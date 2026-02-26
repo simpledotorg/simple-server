@@ -89,14 +89,12 @@ every :week, at: local("01:00 am"), roles: [:whitelist_phone_numbers] do
 end
 
 every :day, at: local("03:00 am"), roles: [:cron] do
-  from = 1.month.ago.to_date.to_s
-  to = Date.today.to_s
   %w[
     titration
     statins
     bp_fudging
   ].each do |indicator|
-    rake "dr_rai:populate_#{indicator}_data[#{from}, #{to}]"
+    rake "dr_rai:populate_#{indicator}_data"
   end
 end
 
