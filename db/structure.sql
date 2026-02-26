@@ -236,7 +236,8 @@ CREATE TABLE simple_reporting.reporting_patient_states (
     diabetes_treatment_outcome_in_last_3_months text,
     diabetes_treatment_outcome_in_last_2_months text,
     diabetes_treatment_outcome_in_quarter text,
-    titrated boolean
+    titrated boolean,
+    diagnosed_confirmed_at timestamp without time zone
 )
 PARTITION BY LIST (month_date);
 
@@ -333,12 +334,12 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
           visits.visited_facility_ids,
 
           -- Relative time calculations
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-          (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+          (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
           AS months_since_registration,
 
-          (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
-          (cal.quarter - DATE_PART('quarter', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
+          (cal.quarter - DATE_PART('quarter', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
           AS quarters_since_registration,
 
           visits.months_since_visit,
@@ -358,8 +359,8 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
           CASE
             WHEN p.status = 'dead' THEN 'dead'
             WHEN (
-              (cal.year - DATE_PART('year', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-              (cal.month - DATE_PART('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
+              (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+              (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
               OR visits.months_since_visit < 12
             ) THEN 'under_care'
             ELSE 'lost_to_follow_up'
@@ -412,14 +413,15 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
             current_meds.enalapril > past_meds.enalapril OR
             current_meds.chlorthalidone > past_meds.chlorthalidone OR
             current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide
-          ) AS titrated
+          ) AS titrated,
+          p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS diagnosed_confirmed_at
 
         FROM public.patients p
         JOIN public.reporting_months cal
           ON cal.month_date = $1
-          AND p.recorded_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
+          AND p.diagnosed_confirmed_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
           AND ((
-            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.recorded_at)), 'YYYY-MM'::text) <=
+            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.diagnosed_confirmed_at)), 'YYYY-MM'::text) <=
             to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))
           )
 
@@ -432,8 +434,12 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
         LEFT OUTER JOIN public.reporting_patient_visits visits
           ON p.id = visits.patient_id AND cal.month_date = visits.month_date
 
-        LEFT OUTER JOIN public.medical_histories mh
-          ON p.id = mh.patient_id AND mh.deleted_at IS NULL
+        LEFT OUTER JOIN LATERAL (
+          SELECT DISTINCT ON (patient_id) *
+          FROM public.medical_histories
+          WHERE patient_id = p.id AND deleted_at IS NULL
+          ORDER BY patient_id, device_updated_at DESC
+        ) mh ON true
 
         LEFT OUTER JOIN public.reporting_prescriptions current_meds
           ON current_meds.patient_id = p.id AND cal.month_date = current_meds.month_date
@@ -447,10 +453,497 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_funct
         INNER JOIN public.reporting_facilities assigned_facility
           ON assigned_facility.facility_id = p.assigned_facility_id
 
-        WHERE p.deleted_at IS NULL;
+        WHERE p.deleted_at IS NULL
+        AND p.diagnosed_confirmed_at IS NOT NULL
+        ORDER BY p.id;
       END;
       $_$;
 
+--
+-- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_monthly_follow_ups_and_registrations (
+    facility_region_slug character varying,
+    facility_id uuid,
+    facility_region_id uuid,
+    block_region_id uuid,
+    district_region_id uuid,
+    state_region_id uuid,
+    month_date date,
+    monthly_registrations_all bigint,
+    monthly_registrations_htn_all bigint,
+    monthly_registrations_htn_male bigint,
+    monthly_registrations_htn_female bigint,
+    monthly_registrations_htn_transgender bigint,
+    monthly_registrations_dm_all bigint,
+    monthly_registrations_dm_male bigint,
+    monthly_registrations_dm_female bigint,
+    monthly_registrations_dm_transgender bigint,
+    monthly_follow_ups_all bigint,
+    monthly_follow_ups_htn_all bigint,
+    monthly_follow_ups_htn_female bigint,
+    monthly_follow_ups_htn_male bigint,
+    monthly_follow_ups_htn_transgender bigint,
+    monthly_follow_ups_dm_all bigint,
+    monthly_follow_ups_dm_female bigint,
+    monthly_follow_ups_dm_male bigint,
+    monthly_follow_ups_dm_transgender bigint,
+    monthly_registrations_htn_or_dm bigint,
+    monthly_registrations_htn_only bigint,
+    monthly_registrations_htn_only_male bigint,
+    monthly_registrations_htn_only_female bigint,
+    monthly_registrations_htn_only_transgender bigint,
+    monthly_registrations_dm_only bigint,
+    monthly_registrations_dm_only_male bigint,
+    monthly_registrations_dm_only_female bigint,
+    monthly_registrations_dm_only_transgender bigint,
+    monthly_registrations_htn_and_dm bigint,
+    monthly_registrations_htn_and_dm_male bigint,
+    monthly_registrations_htn_and_dm_female bigint,
+    monthly_registrations_htn_and_dm_transgender bigint,
+    monthly_follow_ups_htn_or_dm bigint,
+    monthly_follow_ups_htn_only bigint,
+    monthly_follow_ups_htn_only_female bigint,
+    monthly_follow_ups_htn_only_male bigint,
+    monthly_follow_ups_htn_only_transgender bigint,
+    monthly_follow_ups_dm_only bigint,
+    monthly_follow_ups_dm_only_female bigint,
+    monthly_follow_ups_dm_only_male bigint,
+    monthly_follow_ups_dm_only_transgender bigint,
+    monthly_follow_ups_htn_and_dm bigint,
+    monthly_follow_ups_htn_and_dm_male bigint,
+    monthly_follow_ups_htn_and_dm_female bigint,
+    monthly_follow_ups_htn_and_dm_transgender bigint
+)
+PARTITION BY LIST (month_date);
+
+--
+-- Name: reporting_facility_monthly_follow_ups_and_registrations_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION simple_reporting.reporting_facility_monthly_follow_ups_and_registrations_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_monthly_follow_ups_and_registrations
+LANGUAGE plpgsql
+AS $_$
+BEGIN
+RETURN QUERY
+WITH monthly_registration_patient_states AS (
+    SELECT
+    registration_facility_id AS facility_id,
+    month_date,
+    gender,
+    hypertension,
+    diabetes
+    FROM reporting_patient_states
+    WHERE months_since_registration = 0
+    AND month_date = $1
+), registered_patients AS (
+    SELECT
+    facility_id,
+    month_date,
+
+    count(*) AS monthly_registrations_all,
+    count(*) FILTER (WHERE hypertension = 'yes') AS monthly_registrations_htn_all,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female') AS monthly_registrations_htn_female,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male') AS monthly_registrations_htn_male,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender') AS monthly_registrations_htn_transgender,
+    count(*) FILTER (WHERE diabetes = 'yes') AS monthly_registrations_dm_all,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_female,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_male,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_dm_transgender,
+
+    count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_registrations_htn_or_dm,
+    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_and_dm,
+    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_and_dm_female,
+    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_and_dm_male,
+    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_htn_and_dm_transgender,
+
+    count(*) FILTER (WHERE hypertension = 'yes')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_only,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_only_female,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_only_male,
+    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_htn_only_transgender,
+
+    count(*) FILTER (WHERE diabetes = 'yes')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_dm_only,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_only_female,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_only_male,
+    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender')
+        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_dm_only_transgender
+    FROM monthly_registration_patient_states
+    GROUP BY facility_id, month_date
+), follow_ups AS (
+    SELECT
+    facility_id,
+    month_date,
+
+    count(distinct(patient_id)) AS monthly_follow_ups_all,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes') AS monthly_follow_ups_htn_all,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_female,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_male,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_transgender,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes') AS monthly_follow_ups_dm_all,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_female,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_male,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_dm_transgender,
+
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_follow_ups_htn_or_dm,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_and_dm,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_and_dm_female,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_and_dm_male,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_and_dm_transgender,
+
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_only,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_only_female,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_only_male,
+    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_htn_only_transgender,
+
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_dm_only,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_only_female,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_only_male,
+    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender')
+        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_dm_only_transgender
+    FROM reporting_patient_follow_ups
+    WHERE month_date = $1
+    GROUP BY facility_id, month_date
+)
+SELECT
+    rf.facility_region_slug,
+    rf.facility_id,
+    rf.facility_region_id,
+    rf.block_region_id,
+    rf.district_region_id,
+    rf.state_region_id,
+
+    cal.month_date,
+
+    coalesce(registered_patients.monthly_registrations_all,0) AS monthly_registrations_all,
+    coalesce(registered_patients.monthly_registrations_htn_all,0) AS monthly_registrations_htn_all,
+    coalesce(registered_patients.monthly_registrations_htn_male,0) AS monthly_registrations_htn_male,
+    coalesce(registered_patients.monthly_registrations_htn_female,0) AS monthly_registrations_htn_female,
+    coalesce(registered_patients.monthly_registrations_htn_transgender,0) AS monthly_registrations_htn_transgender,
+    coalesce(registered_patients.monthly_registrations_dm_all,0) AS monthly_registrations_dm_all,
+    coalesce(registered_patients.monthly_registrations_dm_male,0) AS monthly_registrations_dm_male,
+    coalesce(registered_patients.monthly_registrations_dm_female,0) AS monthly_registrations_dm_female,
+    coalesce(registered_patients.monthly_registrations_dm_transgender,0) AS monthly_registrations_dm_transgender,
+
+    coalesce(follow_ups.monthly_follow_ups_all,0) AS monthly_follow_ups_all,
+    coalesce(follow_ups.monthly_follow_ups_htn_all,0) AS monthly_follow_ups_htn_all,
+    coalesce(follow_ups.monthly_follow_ups_htn_female,0) AS monthly_follow_ups_htn_female,
+    coalesce(follow_ups.monthly_follow_ups_htn_male,0) AS monthly_follow_ups_htn_male,
+    coalesce(follow_ups.monthly_follow_ups_htn_transgender,0) AS monthly_follow_ups_htn_transgender,
+    coalesce(follow_ups.monthly_follow_ups_dm_all,0) AS monthly_follow_ups_dm_all,
+    coalesce(follow_ups.monthly_follow_ups_dm_female,0) AS monthly_follow_ups_dm_female,
+    coalesce(follow_ups.monthly_follow_ups_dm_male,0) AS monthly_follow_ups_dm_male,
+    coalesce(follow_ups.monthly_follow_ups_dm_transgender,0) AS monthly_follow_ups_dm_transgender,
+
+    coalesce(registered_patients.monthly_registrations_htn_or_dm, 0) AS monthly_registrations_htn_or_dm,
+    coalesce(registered_patients.monthly_registrations_htn_only, 0) AS monthly_registrations_htn_only,
+    coalesce(registered_patients.monthly_registrations_htn_only_male, 0) AS monthly_registrations_htn_only_male,
+    coalesce(registered_patients.monthly_registrations_htn_only_female, 0) AS monthly_registrations_htn_only_female,
+    coalesce(registered_patients.monthly_registrations_htn_only_transgender, 0) AS monthly_registrations_htn_only_transgender,
+    coalesce(registered_patients.monthly_registrations_dm_only, 0) AS monthly_registrations_dm_only,
+    coalesce(registered_patients.monthly_registrations_dm_only_male, 0) AS monthly_registrations_dm_only_male,
+    coalesce(registered_patients.monthly_registrations_dm_only_female, 0) AS monthly_registrations_dm_only_female,
+    coalesce(registered_patients.monthly_registrations_dm_only_transgender, 0) AS monthly_registrations_dm_only_transgender,
+    coalesce(registered_patients.monthly_registrations_htn_and_dm, 0) AS monthly_registrations_htn_and_dm,
+    coalesce(registered_patients.monthly_registrations_htn_and_dm_male, 0) AS monthly_registrations_htn_and_dm_male,
+    coalesce(registered_patients.monthly_registrations_htn_and_dm_female, 0) AS monthly_registrations_htn_and_dm_female,
+    coalesce(registered_patients.monthly_registrations_htn_and_dm_transgender, 0) AS monthly_registrations_htn_and_dm_transgender,
+
+    coalesce(follow_ups.monthly_follow_ups_htn_or_dm, 0) AS monthly_follow_ups_htn_or_dm,
+    coalesce(follow_ups.monthly_follow_ups_htn_only, 0) AS monthly_follow_ups_htn_only,
+    coalesce(follow_ups.monthly_follow_ups_htn_only_female, 0) AS monthly_follow_ups_htn_only_female,
+    coalesce(follow_ups.monthly_follow_ups_htn_only_male, 0) AS monthly_follow_ups_htn_only_male,
+    coalesce(follow_ups.monthly_follow_ups_htn_only_transgender, 0) AS monthly_follow_ups_htn_only_transgender,
+    coalesce(follow_ups.monthly_follow_ups_dm_only, 0) AS monthly_follow_ups_dm_only,
+    coalesce(follow_ups.monthly_follow_ups_dm_only_female, 0) AS monthly_follow_ups_dm_only_female,
+    coalesce(follow_ups.monthly_follow_ups_dm_only_male, 0) AS monthly_follow_ups_dm_only_male,
+    coalesce(follow_ups.monthly_follow_ups_dm_only_transgender, 0) AS monthly_follow_ups_dm_only_transgender,
+    coalesce(follow_ups.monthly_follow_ups_htn_and_dm, 0) AS monthly_follow_ups_htn_and_dm,
+    coalesce(follow_ups.monthly_follow_ups_htn_and_dm_male, 0) AS monthly_follow_ups_htn_and_dm_male,
+    coalesce(follow_ups.monthly_follow_ups_htn_and_dm_female, 0) AS monthly_follow_ups_htn_and_dm_female,
+    coalesce(follow_ups.monthly_follow_ups_htn_and_dm_transgender, 0) AS monthly_follow_ups_htn_and_dm_transgender
+FROM reporting_facilities rf
+INNER JOIN reporting_months cal
+    ON cal.month_date = $1
+LEFT OUTER JOIN registered_patients
+    ON registered_patients.month_date = cal.month_date
+    AND registered_patients.facility_id = rf.facility_id
+LEFT OUTER JOIN follow_ups
+    ON follow_ups.month_date = cal.month_date
+    AND follow_ups.facility_id = rf.facility_id
+ORDER BY cal.month_date desc;
+END;
+$_$;
+
+--
+-- Name: reporting_patient_prescriptions; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE IF NOT EXISTS simple_reporting.reporting_patient_prescriptions (
+    patient_id uuid,
+    month_date date,
+    age integer,
+    gender character varying,
+    hypertension text,
+    diabetes text,
+    last_bp_state text,
+    htn_care_state text,
+    months_since_bp double precision,
+    assigned_facility_id uuid,
+    assigned_facility_name character varying,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_block_name character varying,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_district_name character varying,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_state_name character varying,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    assigned_organization_name character varying,
+    registration_facility_id uuid,
+    registration_facility_name character varying,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_block_name character varying,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_district_name character varying,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_state_name character varying,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    registration_organization_name character varying,
+    hypertension_prescriptions jsonb,
+    diabetes_prescriptions jsonb,
+    other_prescriptions jsonb,
+    previous_hypertension_prescriptions jsonb,
+    previous_diabetes_prescriptions jsonb,
+    previous_other_prescriptions jsonb,
+    hypertension_drug_changed boolean,
+    diabetes_drug_changed boolean,
+    other_drug_changed boolean,
+    prescribed_statins boolean
+    )
+    PARTITION BY LIST (month_date);
+
+--
+-- Name: normalize_jsonb_array(input jsonb); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION simple_reporting.normalize_jsonb_array(input jsonb)
+RETURNS jsonb
+LANGUAGE sql
+IMMUTABLE
+AS $$
+SELECT
+    CASE
+    WHEN input IS NULL THEN NULL
+    ELSE (
+        SELECT jsonb_agg(elem ORDER BY elem)
+        FROM jsonb_array_elements(input) elem
+    )
+    END;
+$$;
+
+--
+-- Name: reporting_patient_prescriptions_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_prescriptions
+    LANGUAGE plpgsql
+    AS $_$
+    BEGIN
+    RETURN QUERY
+    SELECT
+        rps.patient_id,
+        rps.month_date,
+        rps.age,
+        rps.gender,
+        rps.hypertension,
+        rps.diabetes,
+        rps.last_bp_state,
+        rps.htn_care_state,
+        rps.months_since_bp,
+        rps.assigned_facility_id,
+        assigned_facility.facility_name AS assigned_facility_name,
+        rps.assigned_facility_size,
+        rps.assigned_facility_type,
+        rps.assigned_facility_slug,
+        rps.assigned_facility_region_id,
+        rps.assigned_block_slug,
+        rps.assigned_block_region_id,
+        assigned_facility.block_name AS assigned_block_name,
+        rps.assigned_district_slug,
+        rps.assigned_district_region_id,
+        assigned_facility.district_name AS assigned_district_name,
+        rps.assigned_state_slug,
+        rps.assigned_state_region_id,
+        assigned_facility.state_name AS assigned_state_name,
+        rps.assigned_organization_slug,
+        rps.assigned_organization_region_id,
+        assigned_facility.organization_name AS assigned_organization_name,
+        rps.registration_facility_id,
+        registration_facility.facility_name AS registration_facility_name,
+        rps.registration_facility_size,
+        rps.registration_facility_type,
+        rps.registration_facility_slug,
+        rps.registration_facility_region_id,
+        rps.registration_block_slug,
+        rps.registration_block_region_id,
+        registration_facility.block_name AS registration_block_name,
+        rps.registration_district_slug,
+        rps.registration_district_region_id,
+        registration_facility.district_name AS registration_district_name,
+        rps.registration_state_slug,
+        rps.registration_state_region_id,
+        registration_facility.state_name AS registration_state_name,
+        rps.registration_organization_slug,
+        rps.registration_organization_region_id,
+        registration_facility.organization_name AS registration_organization_name,
+
+        curr.hypertension_prescriptions,
+        curr.diabetes_prescriptions,
+        curr.other_prescriptions,
+
+        prev.hypertension_prescriptions AS previous_hypertension_prescriptions,
+        prev.diabetes_prescriptions     AS previous_diabetes_prescriptions,
+        prev.other_prescriptions        AS previous_other_prescriptions,
+
+        (
+        simple_reporting.normalize_jsonb_array(curr.hypertension_prescriptions)
+        IS DISTINCT FROM
+        simple_reporting.normalize_jsonb_array(prev.hypertension_prescriptions)
+        ) AS hypertension_drug_changed,
+
+        (
+        simple_reporting.normalize_jsonb_array(curr.diabetes_prescriptions)
+        IS DISTINCT FROM
+        simple_reporting.normalize_jsonb_array(prev.diabetes_prescriptions)
+        ) AS diabetes_drug_changed,
+
+        (
+        simple_reporting.normalize_jsonb_array(curr.other_prescriptions)
+        IS DISTINCT FROM
+        simple_reporting.normalize_jsonb_array(prev.other_prescriptions)
+        ) AS other_drug_changed,
+
+        (
+        EXISTS (
+            SELECT 1
+            FROM jsonb_array_elements(
+            COALESCE(curr.hypertension_prescriptions, '[]'::jsonb)
+            || COALESCE(curr.diabetes_prescriptions, '[]'::jsonb)
+            || COALESCE(curr.other_prescriptions, '[]'::jsonb)
+            ) elem
+            WHERE elem->>'drug_name' ILIKE '%statin%'
+        )
+        ) AS prescribed_statins
+
+    FROM simple_reporting.reporting_patient_states rps
+    LEFT JOIN reporting_facilities assigned_facility ON rps.assigned_facility_id = assigned_facility.facility_id
+    LEFT JOIN reporting_facilities registration_facility ON rps.registration_facility_id = registration_facility.facility_id
+
+    LEFT JOIN LATERAL (
+        SELECT
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
+
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
+
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (
+            WHERE
+            mp.name IS NULL OR (
+                COALESCE(mp.hypertension,false) = false
+                AND COALESCE(mp.diabetes,false) = false
+            )
+        ) AS other_prescriptions
+
+        FROM prescription_drugs pd
+        LEFT JOIN medicine_purposes mp ON mp.name = pd.name
+        WHERE pd.patient_id = rps.patient_id
+        AND pd.deleted_at IS NULL
+        AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)),'YYYY-MM') <= to_char(rps.month_date, 'YYYY-MM')
+        AND (pd.is_deleted = false
+            OR (
+            pd.is_deleted = true
+            AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date, 'YYYY-MM')
+            )
+        )
+    ) curr ON TRUE
+
+    LEFT JOIN LATERAL (
+        SELECT
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
+
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
+
+        jsonb_agg(jsonb_build_object(
+            'drug_name', pd.name,
+            'dosage', pd.dosage
+        )) FILTER (
+            WHERE
+            mp.name IS NULL OR (
+                COALESCE(mp.hypertension,false) = false
+                AND COALESCE(mp.diabetes,false) = false
+            )
+        ) AS other_prescriptions
+        
+        FROM prescription_drugs pd
+        LEFT JOIN medicine_purposes mp ON mp.name = pd.name
+        WHERE pd.patient_id = rps.patient_id
+        AND pd.deleted_at IS NULL
+        AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)), 'YYYY-MM') <= to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
+        AND ( pd.is_deleted = false
+            OR (
+            pd.is_deleted = true
+            AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
+            )
+        )
+    ) prev ON TRUE
+    WHERE rps.month_date = $1
+    AND rps.htn_care_state <> 'dead';
+    END;
+    $_$;
 
 SET default_table_access_method = heap;
 
@@ -534,6 +1027,8 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_states (
     adjusted_bs_missed_visit_lost_to_follow_up bigint,
     adjusted_diabetes_patients_under_care bigint,
     adjusted_diabetes_patients_lost_to_follow_up bigint,
+    adjusted_dm_bp_below_140_90_under_care bigint,
+    adjusted_dm_bp_below_130_80_under_care bigint,
     monthly_cohort_controlled bigint,
     monthly_cohort_uncontrolled bigint,
     monthly_cohort_missed_visit bigint,
@@ -1082,6 +1577,21 @@ CREATE TABLE public.facilities (
 
 
 --
+-- Name: legacy_mobile_data_dumps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legacy_mobile_data_dumps (
+    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
+    raw_payload jsonb NOT NULL,
+    dump_date timestamp without time zone NOT NULL,
+    user_id uuid NOT NULL,
+    mobile_version character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
+);
+
+
+--
 -- Name: medical_histories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1110,39 +1620,10 @@ CREATE TABLE public.medical_histories (
     receiving_treatment_for_diabetes text,
     smoking text,
     cholesterol integer,
-    smokeless_tobacco character varying
+    smokeless_tobacco character varying,
+    htn_diagnosed_at timestamp without time zone,
+    dm_diagnosed_at timestamp without time zone
 );
-
-
---
--- Name: blood_pressures_per_facility_per_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.blood_pressures_per_facility_per_days AS
- WITH latest_bp_per_patient_per_day AS (
-         SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-            blood_pressures.facility_id,
-            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
-            (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-            (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-            (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-           FROM (public.blood_pressures
-             JOIN public.medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
-          WHERE (blood_pressures.deleted_at IS NULL)
-          ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-        )
- SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
-    facilities.id AS facility_id,
-    timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-    latest_bp_per_patient_per_day.day,
-    latest_bp_per_patient_per_day.month,
-    latest_bp_per_patient_per_day.quarter,
-    latest_bp_per_patient_per_day.year
-   FROM (latest_bp_per_patient_per_day
-     JOIN public.facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
-  GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id
-  WITH NO DATA;
-
 
 --
 -- Name: blood_sugars; Type: TABLE; Schema: public; Owner: -
@@ -1722,7 +2203,7 @@ CREATE TABLE public.dr_rai_targets (
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    dr_rai_indicators_id bigint NOT NULL,
+    dr_rai_indicators_id bigint,
     period character varying
 );
 
@@ -2022,8 +2503,46 @@ CREATE TABLE public.patients (
     deleted_by_user_id uuid,
     deleted_reason character varying,
     assigned_facility_id uuid,
+    diagnosed_confirmed_at timestamp without time zone,
     eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
 );
+
+--
+-- Name: blood_pressures_per_facility_per_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.blood_pressures_per_facility_per_days AS
+ WITH registered_patients AS (
+    SELECT DISTINCT id
+    FROM public.patients
+    WHERE deleted_at IS NULL
+    AND diagnosed_confirmed_at IS NOT NULL
+ ),
+ latest_bp_per_patient_per_day AS (
+    SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+    blood_pressures.facility_id,
+    (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
+    (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+    (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+    (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+    FROM (public.blood_pressures
+        JOIN public.medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text)))
+        JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
+    )
+    WHERE (blood_pressures.deleted_at IS NULL)
+    ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
+)
+ SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
+    facilities.id AS facility_id,
+    timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+    latest_bp_per_patient_per_day.day,
+    latest_bp_per_patient_per_day.month,
+    latest_bp_per_patient_per_day.quarter,
+    latest_bp_per_patient_per_day.year
+   FROM (latest_bp_per_patient_per_day
+     JOIN public.facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
+  GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id
+  WITH NO DATA;
 
 
 --
@@ -2031,27 +2550,37 @@ CREATE TABLE public.patients (
 --
 
 CREATE MATERIALIZED VIEW public.latest_blood_pressures_per_patient_per_months AS
- SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-    blood_pressures.patient_id,
-    patients.registration_facility_id,
-    patients.assigned_facility_id,
-    patients.status AS patient_status,
-    blood_pressures.facility_id AS bp_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-    timezone('UTC'::text, timezone('UTC'::text, patients.recorded_at)) AS patient_recorded_at,
-    blood_pressures.systolic,
-    blood_pressures.diastolic,
-    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
-    medical_histories.hypertension AS medical_history_hypertension,
-    (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS month,
-    (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS quarter,
-    (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS year
-   FROM ((public.blood_pressures
-     JOIN public.patients ON ((patients.id = blood_pressures.patient_id)))
-     LEFT JOIN public.medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
-  WHERE ((blood_pressures.deleted_at IS NULL) AND (patients.deleted_at IS NULL))
-  ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-  WITH NO DATA;
+    WITH registered_patients AS (
+        SELECT DISTINCT id,
+            registration_facility_id,
+            assigned_facility_id,
+            status,
+            recorded_at
+        FROM public.patients
+        WHERE deleted_at IS NULL
+        AND diagnosed_confirmed_at IS NOT NULL
+    )
+    SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text), (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text)) 
+        blood_pressures.id AS bp_id,
+        blood_pressures.patient_id AS patient_id,
+        registered_patients.registration_facility_id AS registration_facility_id,
+        registered_patients.assigned_facility_id AS assigned_facility_id,
+        registered_patients.status as patient_status,
+        blood_pressures.facility_id AS bp_facility_id,
+        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+        timezone('UTC'::text, timezone('UTC'::text, registered_patients.recorded_at)) AS patient_recorded_at,
+        blood_pressures.systolic AS systolic,
+        blood_pressures.diastolic AS diastolic,
+        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
+        medical_histories.hypertension as medical_history_hypertension,
+        date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS month,
+        date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS quarter,
+        date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS year
+    FROM public.blood_pressures JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
+    LEFT JOIN public.medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
+    WHERE blood_pressures.deleted_at IS NULL
+    ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
+    WITH NO DATA;
 
 
 --
@@ -2634,7 +3163,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
      LEFT JOIN latest_blood_pressures ON ((latest_blood_pressures.patient_id = p.id)))
      LEFT JOIN latest_blood_sugars ON ((latest_blood_sugars.patient_id = p.id)))
      LEFT JOIN next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-  WHERE (p.deleted_at IS NULL)
+  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
   WITH NO DATA;
 
 
@@ -3359,55 +3888,57 @@ COMMENT ON COLUMN public.reporting_facilities.organization_slug IS 'Human readab
 --
 
 CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
- WITH latest_appointments_per_patient_per_month AS (
-         SELECT DISTINCT ON (a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date) a.id,
-            a.patient_id,
-            a.facility_id,
-            a.scheduled_date,
-            a.status,
-            a.cancel_reason,
-            a.device_created_at,
-            a.device_updated_at,
-            a.created_at,
-            a.updated_at,
-            a.remind_on,
-            a.agreed_to_visit,
-            a.deleted_at,
-            a.appointment_type,
-            a.user_id,
-            a.creation_facility_id,
-            mh.hypertension,
-            mh.diabetes,
-            (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date AS month_date
-           FROM ((public.appointments a
-             JOIN public.patients p ON ((p.id = a.patient_id)))
-             JOIN public.medical_histories mh ON ((mh.patient_id = a.patient_id)))
-          WHERE ((a.scheduled_date >= date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)))) AND (a.device_created_at >= date_trunc('month'::text, (timezone('UTC'::text, now()) - '6 mons'::interval))) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) AND (p.deleted_at IS NULL) AND (a.deleted_at IS NULL) AND ((mh.hypertension = 'yes'::text) OR (mh.diabetes = 'yes'::text)))
-          ORDER BY a.patient_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, a.device_created_at)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
-        ), scheduled_days_distribution AS (
-         SELECT latest_appointments_per_patient_per_month.month_date,
-            width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63]) AS bucket,
-            count(*) AS number_of_appointments,
-            latest_appointments_per_patient_per_month.hypertension,
-            latest_appointments_per_patient_per_month.diabetes,
-            latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
-           FROM latest_appointments_per_patient_per_month
-          GROUP BY (width_bucket((date_part('days'::text, ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, latest_appointments_per_patient_per_month.device_created_at))))))::integer, ARRAY[0, 15, 32, 63])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date, latest_appointments_per_patient_per_month.hypertension, latest_appointments_per_patient_per_month.diabetes
-        )
- SELECT scheduled_days_distribution.facility_id,
-    scheduled_days_distribution.month_date,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_15_to_31_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_32_to_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_more_than_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.hypertension = 'yes'::text)))::integer AS htn_total_appts_scheduled,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_0_to_14_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_15_to_31_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_32_to_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_more_than_62_days,
-    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.diabetes = 'yes'::text)))::integer AS diabetes_total_appts_scheduled
-   FROM scheduled_days_distribution
-  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
+    WITH latest_medical_histories AS (
+        SELECT DISTINCT ON (patient_id) mh.*
+        FROM public.medical_histories mh
+        WHERE  mh.deleted_at IS NULL
+        ORDER BY patient_id, mh.device_created_at DESC
+    ),
+    latest_appointments_per_patient_per_month AS (
+        SELECT DISTINCT ON (patient_id, month_date) a.*,
+            lmh.hypertension,
+            lmh.diabetes,
+            to_char(a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date
+        FROM public.appointments a
+        INNER JOIN public.patients p ON p.id = a.patient_id
+        INNER JOIN latest_medical_histories lmh ON lmh.patient_id = a.patient_id
+        WHERE a.scheduled_date >= date_trunc('day', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+        AND a.device_created_at >= date_trunc('month', (now() AT TIME ZONE 'UTC') - INTERVAL '6 months')
+        AND date_trunc('month', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+            > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+        AND p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL
+        AND a.deleted_at IS NULL
+        AND (lmh.hypertension = 'yes'  OR lmh.diabetes = 'yes')
+        ORDER BY a.patient_id, month_date, a.device_created_at desc
+    ),
+    scheduled_days_distribution AS (
+        SELECT month_date,
+                width_bucket(
+                extract('days' FROM (scheduled_date - date_trunc('day', device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))))::integer,
+                array[0, 15, 32, 63]
+                ) bucket,
+                COUNT(*) number_of_appointments,
+                hypertension,
+                diabetes,
+                creation_facility_id facility_id
+        FROM latest_appointments_per_patient_per_month
+        GROUP BY bucket, creation_facility_id, month_date, hypertension, diabetes)
+
+    SELECT facility_id,
+        month_date,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_0_to_14_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_15_to_31_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_32_to_62_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_more_than_62_days,
+        (SUM(number_of_appointments) FILTER (WHERE hypertension = 'yes'))::integer htn_total_appts_scheduled,
+
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_0_to_14_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_15_to_31_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_32_to_62_days,
+        (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_more_than_62_days,
+        (SUM(number_of_appointments) FILTER (WHERE diabetes = 'yes'))::integer diabetes_total_appts_scheduled
+    FROM scheduled_days_distribution
+    GROUP BY facility_id, month_date
   WITH NO DATA;
 
 
@@ -3426,8 +3957,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             bp.recorded_at AS visited_at,
             (EXTRACT(doy FROM ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), bs.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3438,8 +3969,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             bs.recorded_at AS visited_at,
             (EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), pd.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3450,8 +3981,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             pd.device_created_at AS visited_at,
             (EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), app.creation_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3462,19 +3993,19 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             app.device_created_at AS visited_at,
             (EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), registered_patients AS (
-         SELECT DISTINCT ON (((EXTRACT(doy FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), p.registration_facility_id, p.id) p.id AS patient_id,
+         SELECT DISTINCT ON (((EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), p.registration_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
             p.id AS visit_id,
             'Registration'::text AS visit_type,
             p.registration_facility_id AS facility_id,
             p.registration_user_id AS user_id,
-            p.recorded_at AS visited_at,
-            (EXTRACT(doy FROM ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
+            p.diagnosed_confirmed_at AS visited_at,
+            (EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM public.patients p
-          WHERE ((p.deleted_at IS NULL) AND (p.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (p.diagnosed_confirmed_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
             follow_up_blood_pressures.patient_gender,
@@ -3708,16 +4239,16 @@ CREATE MATERIALIZED VIEW public.reporting_patient_blood_pressures AS
     bp.systolic,
     bp.diastolic,
     bp.facility_id AS blood_pressure_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS quarters_since_bp
    FROM ((public.blood_pressures bp
      LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL))))
+     JOIN public.patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
   WHERE (bp.deleted_at IS NULL)
   ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC
   WITH NO DATA;
@@ -3764,16 +4295,16 @@ CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
             END
             ELSE NULL::text
         END AS blood_sugar_risk_state,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_registered_at,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
     p.assigned_facility_id AS patient_assigned_facility_id,
     p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
     (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
    FROM ((public.blood_sugars bs
      LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL))))
+     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
   WHERE (bs.deleted_at IS NULL)
   ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
   WITH NO DATA;
@@ -3794,8 +4325,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
             bp.recorded_at AS visited_at,
             to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
            FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE (p.deleted_at IS NULL)
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3806,8 +4337,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
             bs.recorded_at AS visited_at,
             to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
            FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE (p.deleted_at IS NULL)
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3818,8 +4349,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
             pd.device_created_at AS visited_at,
             to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
            FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE (p.deleted_at IS NULL)
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3830,8 +4361,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
             app.device_created_at AS visited_at,
             to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
            FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.recorded_at)))))))
-          WHERE (p.deleted_at IS NULL)
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
             follow_up_blood_pressures.patient_gender,
@@ -3909,7 +4440,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
     p.quarter_string,
     p.assigned_facility_id,
     p.registration_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.recorded_at)) AS patient_recorded_at,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_recorded_at,
     e.id AS encounter_id,
     e.facility_id AS encounter_facility_id,
     timezone('UTC'::text, timezone('UTC'::text, e.recorded_at)) AS encounter_recorded_at,
@@ -3933,8 +4464,8 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             ELSE NULL::uuid
         END], NULL::uuid) AS visited_facility_ids,
     timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS months_since_registration,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.recorded_at))))) AS quarters_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
     (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS months_since_visit,
     (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
    FROM (((( SELECT p_1.id,
@@ -3960,6 +4491,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             p_1.deleted_by_user_id,
             p_1.deleted_reason,
             p_1.assigned_facility_id,
+            p_1.diagnosed_confirmed_at,
             cal.month_date,
             cal.month,
             cal.quarter,
@@ -3967,7 +4499,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
             cal.month_string,
             cal.quarter_string
            FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
      LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS recorded_at,
             encounters.id,
             encounters.facility_id,
@@ -4028,7 +4560,7 @@ CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
           WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
           ORDER BY appointments.device_created_at DESC
          LIMIT 1) app ON (true))
-  WHERE (p.deleted_at IS NULL)
+  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
   ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC
   WITH NO DATA;
 
@@ -4078,8 +4610,8 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
             cal.month_string,
             cal.quarter_string
            FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.recorded_at)), 'YYYY-MM'::text) <= cal.month_string)))
-          WHERE (p_1.deleted_at IS NULL)) p
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))
+          WHERE (p_1.deleted_at IS NULL AND p_1.diagnosed_confirmed_at IS NOT NULL)) p
      LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
             actual.dosage AS actual_dosage,
             clean.medicine AS clean_name,
@@ -4100,7 +4632,7 @@ CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
 -- Name: reporting_patient_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
-CREATE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
+CREATE OR REPLACE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
 
 --
 -- Name: VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
@@ -4677,130 +5209,10 @@ COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the pati
 
 
 --
--- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+-- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: VIEW; Schema: public; Owner: -
 --
 
-CREATE MATERIALIZED VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS
- WITH monthly_registration_patient_states AS (
-         SELECT reporting_patient_states.registration_facility_id AS facility_id,
-            reporting_patient_states.month_date,
-            reporting_patient_states.gender,
-            reporting_patient_states.hypertension,
-            reporting_patient_states.diabetes
-           FROM public.reporting_patient_states
-          WHERE (reporting_patient_states.months_since_registration = (0)::double precision)
-        ), registered_patients AS (
-         SELECT monthly_registration_patient_states.facility_id,
-            monthly_registration_patient_states.month_date,
-            count(*) AS monthly_registrations_all,
-            count(*) FILTER (WHERE (monthly_registration_patient_states.hypertension = 'yes'::text)) AS monthly_registrations_htn_all,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_htn_female,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_htn_male,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_htn_transgender,
-            count(*) FILTER (WHERE (monthly_registration_patient_states.diabetes = 'yes'::text)) AS monthly_registrations_dm_all,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_dm_female,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_dm_male,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_dm_transgender,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) OR (monthly_registration_patient_states.diabetes = 'yes'::text))) AS monthly_registrations_htn_or_dm,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text))) AS monthly_registrations_htn_and_dm,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) AS monthly_registrations_htn_and_dm_female,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) AS monthly_registrations_htn_and_dm_male,
-            count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) AS monthly_registrations_htn_and_dm_transgender,
-            (count(*) FILTER (WHERE (monthly_registration_patient_states.hypertension = 'yes'::text)) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text)))) AS monthly_registrations_htn_only,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text)))) AS monthly_registrations_htn_only_female,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text)))) AS monthly_registrations_htn_only_male,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text)))) AS monthly_registrations_htn_only_transgender,
-            (count(*) FILTER (WHERE (monthly_registration_patient_states.diabetes = 'yes'::text)) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text)))) AS monthly_registrations_dm_only,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'female'::text)))) AS monthly_registrations_dm_only_female,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'male'::text)))) AS monthly_registrations_dm_only_male,
-            (count(*) FILTER (WHERE ((monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text))) - count(*) FILTER (WHERE ((monthly_registration_patient_states.hypertension = 'yes'::text) AND (monthly_registration_patient_states.diabetes = 'yes'::text) AND ((monthly_registration_patient_states.gender)::text = 'transgender'::text)))) AS monthly_registrations_dm_only_transgender
-           FROM monthly_registration_patient_states
-          GROUP BY monthly_registration_patient_states.facility_id, monthly_registration_patient_states.month_date
-        ), follow_ups AS (
-         SELECT reporting_patient_follow_ups.facility_id,
-            reporting_patient_follow_ups.month_date,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) AS monthly_follow_ups_all,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)) AS monthly_follow_ups_htn_all,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_htn_female,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_htn_male,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_htn_transgender,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) AS monthly_follow_ups_dm_all,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_dm_female,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_dm_male,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_dm_transgender,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) OR (reporting_patient_follow_ups.diabetes = 'yes'::text))) AS monthly_follow_ups_htn_or_dm,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text))) AS monthly_follow_ups_htn_and_dm,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_female,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_male,
-            count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) AS monthly_follow_ups_htn_and_dm_transgender,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.hypertension = 'yes'::text)) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text)))) AS monthly_follow_ups_htn_only,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum)))) AS monthly_follow_ups_htn_only_female,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum)))) AS monthly_follow_ups_htn_only_male,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum)))) AS monthly_follow_ups_htn_only_transgender,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE (reporting_patient_follow_ups.diabetes = 'yes'::text)) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text)))) AS monthly_follow_ups_dm_only,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'female'::public.gender_enum)))) AS monthly_follow_ups_dm_only_female,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'male'::public.gender_enum)))) AS monthly_follow_ups_dm_only_male,
-            (count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum))) - count(DISTINCT reporting_patient_follow_ups.patient_id) FILTER (WHERE ((reporting_patient_follow_ups.hypertension = 'yes'::text) AND (reporting_patient_follow_ups.diabetes = 'yes'::text) AND (reporting_patient_follow_ups.patient_gender = 'transgender'::public.gender_enum)))) AS monthly_follow_ups_dm_only_transgender
-           FROM public.reporting_patient_follow_ups
-          GROUP BY reporting_patient_follow_ups.facility_id, reporting_patient_follow_ups.month_date
-        )
- SELECT rf.facility_region_slug,
-    rf.facility_id,
-    rf.facility_region_id,
-    rf.block_region_id,
-    rf.district_region_id,
-    rf.state_region_id,
-    cal.month_date,
-    COALESCE(registered_patients.monthly_registrations_all, (0)::bigint) AS monthly_registrations_all,
-    COALESCE(registered_patients.monthly_registrations_htn_all, (0)::bigint) AS monthly_registrations_htn_all,
-    COALESCE(registered_patients.monthly_registrations_htn_male, (0)::bigint) AS monthly_registrations_htn_male,
-    COALESCE(registered_patients.monthly_registrations_htn_female, (0)::bigint) AS monthly_registrations_htn_female,
-    COALESCE(registered_patients.monthly_registrations_htn_transgender, (0)::bigint) AS monthly_registrations_htn_transgender,
-    COALESCE(registered_patients.monthly_registrations_dm_all, (0)::bigint) AS monthly_registrations_dm_all,
-    COALESCE(registered_patients.monthly_registrations_dm_male, (0)::bigint) AS monthly_registrations_dm_male,
-    COALESCE(registered_patients.monthly_registrations_dm_female, (0)::bigint) AS monthly_registrations_dm_female,
-    COALESCE(registered_patients.monthly_registrations_dm_transgender, (0)::bigint) AS monthly_registrations_dm_transgender,
-    COALESCE(follow_ups.monthly_follow_ups_all, (0)::bigint) AS monthly_follow_ups_all,
-    COALESCE(follow_ups.monthly_follow_ups_htn_all, (0)::bigint) AS monthly_follow_ups_htn_all,
-    COALESCE(follow_ups.monthly_follow_ups_htn_female, (0)::bigint) AS monthly_follow_ups_htn_female,
-    COALESCE(follow_ups.monthly_follow_ups_htn_male, (0)::bigint) AS monthly_follow_ups_htn_male,
-    COALESCE(follow_ups.monthly_follow_ups_htn_transgender, (0)::bigint) AS monthly_follow_ups_htn_transgender,
-    COALESCE(follow_ups.monthly_follow_ups_dm_all, (0)::bigint) AS monthly_follow_ups_dm_all,
-    COALESCE(follow_ups.monthly_follow_ups_dm_female, (0)::bigint) AS monthly_follow_ups_dm_female,
-    COALESCE(follow_ups.monthly_follow_ups_dm_male, (0)::bigint) AS monthly_follow_ups_dm_male,
-    COALESCE(follow_ups.monthly_follow_ups_dm_transgender, (0)::bigint) AS monthly_follow_ups_dm_transgender,
-    COALESCE(registered_patients.monthly_registrations_htn_or_dm, (0)::bigint) AS monthly_registrations_htn_or_dm,
-    COALESCE(registered_patients.monthly_registrations_htn_only, (0)::bigint) AS monthly_registrations_htn_only,
-    COALESCE(registered_patients.monthly_registrations_htn_only_male, (0)::bigint) AS monthly_registrations_htn_only_male,
-    COALESCE(registered_patients.monthly_registrations_htn_only_female, (0)::bigint) AS monthly_registrations_htn_only_female,
-    COALESCE(registered_patients.monthly_registrations_htn_only_transgender, (0)::bigint) AS monthly_registrations_htn_only_transgender,
-    COALESCE(registered_patients.monthly_registrations_dm_only, (0)::bigint) AS monthly_registrations_dm_only,
-    COALESCE(registered_patients.monthly_registrations_dm_only_male, (0)::bigint) AS monthly_registrations_dm_only_male,
-    COALESCE(registered_patients.monthly_registrations_dm_only_female, (0)::bigint) AS monthly_registrations_dm_only_female,
-    COALESCE(registered_patients.monthly_registrations_dm_only_transgender, (0)::bigint) AS monthly_registrations_dm_only_transgender,
-    COALESCE(registered_patients.monthly_registrations_htn_and_dm, (0)::bigint) AS monthly_registrations_htn_and_dm,
-    COALESCE(registered_patients.monthly_registrations_htn_and_dm_male, (0)::bigint) AS monthly_registrations_htn_and_dm_male,
-    COALESCE(registered_patients.monthly_registrations_htn_and_dm_female, (0)::bigint) AS monthly_registrations_htn_and_dm_female,
-    COALESCE(registered_patients.monthly_registrations_htn_and_dm_transgender, (0)::bigint) AS monthly_registrations_htn_and_dm_transgender,
-    COALESCE(follow_ups.monthly_follow_ups_htn_or_dm, (0)::bigint) AS monthly_follow_ups_htn_or_dm,
-    COALESCE(follow_ups.monthly_follow_ups_htn_only, (0)::bigint) AS monthly_follow_ups_htn_only,
-    COALESCE(follow_ups.monthly_follow_ups_htn_only_female, (0)::bigint) AS monthly_follow_ups_htn_only_female,
-    COALESCE(follow_ups.monthly_follow_ups_htn_only_male, (0)::bigint) AS monthly_follow_ups_htn_only_male,
-    COALESCE(follow_ups.monthly_follow_ups_htn_only_transgender, (0)::bigint) AS monthly_follow_ups_htn_only_transgender,
-    COALESCE(follow_ups.monthly_follow_ups_dm_only, (0)::bigint) AS monthly_follow_ups_dm_only,
-    COALESCE(follow_ups.monthly_follow_ups_dm_only_female, (0)::bigint) AS monthly_follow_ups_dm_only_female,
-    COALESCE(follow_ups.monthly_follow_ups_dm_only_male, (0)::bigint) AS monthly_follow_ups_dm_only_male,
-    COALESCE(follow_ups.monthly_follow_ups_dm_only_transgender, (0)::bigint) AS monthly_follow_ups_dm_only_transgender,
-    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm, (0)::bigint) AS monthly_follow_ups_htn_and_dm,
-    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_male, (0)::bigint) AS monthly_follow_ups_htn_and_dm_male,
-    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_female, (0)::bigint) AS monthly_follow_ups_htn_and_dm_female,
-    COALESCE(follow_ups.monthly_follow_ups_htn_and_dm_transgender, (0)::bigint) AS monthly_follow_ups_htn_and_dm_transgender
-   FROM (((public.reporting_facilities rf
-     JOIN public.reporting_months cal ON (true))
-     LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.facility_id = rf.facility_id))))
-     LEFT JOIN follow_ups ON (((follow_ups.month_date = cal.month_date) AND (follow_ups.facility_id = rf.facility_id))))
-  ORDER BY cal.month_date DESC
-  WITH NO DATA;
+CREATE VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS SELECT * FROM simple_reporting.reporting_facility_monthly_follow_ups_and_registrations;
 
 
 --
@@ -4834,6 +5246,7 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_calls AS
    FROM (((public.call_results cr
      JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, cr.device_created_at)), 'YYYY-MM'::text) = to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
      JOIN public.appointments a ON (((cr.appointment_id = a.id) AND (a.deleted_at IS NULL))))
+     JOIN public.patients p ON (p.id = a.patient_id AND ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL)))
      JOIN public.reporting_facilities appointment_facility ON ((a.facility_id = appointment_facility.facility_id)))
   WHERE (cr.deleted_at IS NULL)
   ORDER BY a.patient_id, cal.month_date, cr.device_created_at DESC
@@ -5165,41 +5578,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
-        ), dm_statins_outcomes AS (
-         WITH latest_visits_for_statins AS (
-                 SELECT reporting_patient_visits.patient_id,
-                    reporting_patient_visits.month_date,
-                    reporting_patient_visits.visited_at
-                   FROM public.reporting_patient_visits
-                ), statin_prescriptions_by_month AS (
-                 SELECT DISTINCT ON (prescription_drugs.patient_id, reporting_months.month_date) prescription_drugs.patient_id,
-                    reporting_months.month_date,
-                    prescription_drugs.id AS statin_prescription_id
-                   FROM public.prescription_drugs
-                     LEFT JOIN public.reporting_months ON ((to_char((prescription_drugs.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)), 'YYYY-MM'::text) <= to_char(reporting_months.month_date, 'YYYY-MM'::text)))
-                     LEFT JOIN latest_visits_for_statins lv ON (((lv.month_date = reporting_months.month_date) AND (lv.patient_id = prescription_drugs.patient_id)))
-                  WHERE ((((prescription_drugs.name)::text ~~* '%statin%'::text) AND ((prescription_drugs.is_deleted = false) OR ((prescription_drugs.is_deleted = true) AND (lv.visited_at IS NOT NULL) AND ((prescription_drugs.device_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)) >= (lv.visited_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))))) AND (prescription_drugs.deleted_at IS NULL))
-                  ORDER BY prescription_drugs.patient_id, reporting_months.month_date DESC, prescription_drugs.device_created_at DESC
-                ), rps_with_age_for_statins AS (
-                 SELECT reporting_patient_states.assigned_facility_region_id,
-                    reporting_patient_states.patient_id,
-                    reporting_patient_states.month_date,
-                    reporting_patient_states.htn_care_state,
-                    CASE
-                        WHEN (reporting_patient_states.date_of_birth IS NOT NULL) THEN date_part('year'::text, age(reporting_patient_states.month_date, reporting_patient_states.date_of_birth))
-                        ELSE (date_part('year'::text, age(reporting_patient_states.month_date, ((reporting_patient_states.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))::date)) + reporting_patient_states.age)
-                    END AS age_on_month_date
-                   FROM public.reporting_patient_states
-                  WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
-                )
-         SELECT age_rps.assigned_facility_region_id AS region_id,
-            age_rps.month_date,
-            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_under_care,
-            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision) AND (sp.statin_prescription_id IS NOT NULL))) AS dm_patients_40_and_above_with_statins,
-            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state <> 'dead'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_with_ltfu
-           FROM (rps_with_age_for_statins age_rps
-             LEFT JOIN statin_prescriptions_by_month sp ON (((sp.patient_id = age_rps.patient_id) AND (sp.month_date = age_rps.month_date))))
-          GROUP BY age_rps.assigned_facility_region_id, age_rps.month_date
         ), monthly_cohort_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -5327,9 +5705,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
     adjusted_diabetes_outcomes.dm_bp_below_140_90_under_care AS adjusted_dm_bp_below_140_90_under_care,
     adjusted_diabetes_outcomes.dm_bp_below_130_80_under_care AS adjusted_dm_bp_below_130_80_under_care,
-    dm_statins_outcomes.dm_patients_40_and_above_under_care AS adjusted_dm_patients_40_and_above_under_care,
-    dm_statins_outcomes.dm_patients_40_and_above_with_statins AS adjusted_dm_patients_40_and_above_with_statins,
-    dm_statins_outcomes.dm_patients_40_and_above_with_ltfu AS adjusted_dm_patients_40_and_above_with_ltfu,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
     monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
     monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
@@ -5366,7 +5741,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_removed_from_list
-   FROM (((((((((((((((public.reporting_facilities rf
+   FROM ((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
@@ -5375,7 +5750,6 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_diabetes_outcomes ON (((adjusted_diabetes_outcomes.month_date = cal.month_date) AND (adjusted_diabetes_outcomes.region_id = rf.facility_region_id))))
-     LEFT JOIN dm_statins_outcomes ON (((dm_statins_outcomes.month_date = cal.month_date) AND (dm_statins_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
@@ -5887,27 +6261,6 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_140_90_u
 --
 
 COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_130_80_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with a BP < 130/80 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_under_care IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, have at least one valid statin prescription in the same month, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu IS 'The number of diabetic patients assigned to the facility that are age 40 or above, not dead, and were registered before the last 3 months. Includes both under care and lost to follow-up patients.';
 
 
 --
@@ -6844,6 +7197,14 @@ ALTER TABLE ONLY public.facilities
 
 
 --
+-- Name: legacy_mobile_data_dumps legacy_mobile_data_dumps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT legacy_mobile_data_dumps_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: facility_business_identifiers facility_business_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7130,24 +7491,18 @@ CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_fac
 
 
 --
--- Name: facility_monthly_fr_facility_id; Type: INDEX; Schema: public; Owner: -
+-- Name: facility_monthly_fr_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
 --
 
-CREATE INDEX facility_monthly_fr_facility_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
-
-
---
--- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX facility_monthly_fr_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
+CREATE INDEX facility_monthly_fr_facility_id ON simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
 
 
 --
--- Name: facility_monthly_fr_month_date_facility_region_id; Type: INDEX; Schema: public; Owner: -
+-- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
 --
 
-CREATE UNIQUE INDEX facility_monthly_fr_month_date_facility_region_id ON public.reporting_facility_monthly_follow_ups_and_registrations USING btree (month_date, facility_region_id);
+CREATE INDEX facility_monthly_fr_facility_region_id ON simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
+
 
 
 --
@@ -7690,6 +8045,20 @@ CREATE INDEX index_facilities_on_updated_at ON public.facilities USING btree (up
 
 
 --
+-- Name: index_legacy_mobile_data_dumps_on_dump_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_dump_date ON public.legacy_mobile_data_dumps USING btree (dump_date);
+
+
+--
+-- Name: index_legacy_mobile_data_dumps_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_user_id ON public.legacy_mobile_data_dumps USING btree (user_id);
+
+
+--
 -- Name: index_facilities_teleconsult_mos_on_facility_id_and_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8114,6 +8483,13 @@ CREATE INDEX index_patients_on_id_and_updated_at ON public.patients USING btree 
 --
 
 CREATE INDEX index_patients_on_recorded_at ON public.patients USING btree (recorded_at);
+
+
+--
+-- Name: index_patients_on_diagnosed_confirmed_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patients_on_diagnosed_confirmed_at ON public.patients USING btree (diagnosed_confirmed_at);
 
 
 --
@@ -8601,6 +8977,53 @@ CREATE INDEX reporting_patient_states_bp_facility_id ON ONLY simple_reporting.re
 
 CREATE INDEX reporting_patient_states_titrated ON ONLY simple_reporting.reporting_patient_states USING btree (titrated);
 
+--
+-- Name: index_reporting_patient_prescriptions_on_age; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_prescriptions_on_age ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (age);
+
+--
+-- Name: patient_prescriptions_assigned_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_facility_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_id);
+
+--
+-- Name: patient_prescriptions_assigned_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_facility_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_region_id);
+
+--
+-- Name: patient_prescriptions_assigned_block_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_block_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_block_region_id);
+
+--
+-- Name: patient_prescriptions_assigned_district_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_district_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_district_region_id);
+
+--
+-- Name: patient_prescriptions_assigned_state_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_state_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_state_region_id);
+
+--
+-- Name: patient_prescriptions_assigned_organization_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_organization_region_id);
+
+--
+-- Name: index_patient_prescriptions_patient_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
 
 --
 -- Name: index_fs_block; Type: INDEX; Schema: simple_reporting; Owner: -
@@ -8841,14 +9264,6 @@ ALTER TABLE ONLY public.drug_stocks
 
 
 --
--- Name: cvd_risks fk_rails_90e3653e9a; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cvd_risks
-    ADD CONSTRAINT fk_rails_90e3653e9a FOREIGN KEY (patient_id) REFERENCES public.patients(id);
-
-
---
 -- Name: clean_medicine_to_dosages fk_rails_96b1526de4; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8918,6 +9333,14 @@ ALTER TABLE ONLY public.teleconsultations
 
 ALTER TABLE ONLY public.facilities
     ADD CONSTRAINT fk_rails_c44117c78f FOREIGN KEY (facility_group_id) REFERENCES public.facility_groups(id);
+
+
+--
+-- Name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT fk_rails_a1b2c3d4e5 FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -9173,8 +9596,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924102156'),
 ('20250925094123'),
 ('20251125090819'),
-('20260120115014'),
-('20260127150000'),
 ('20251211073126'),
 ('20260105123000'),
 ('20251112085230'),
@@ -9197,6 +9618,6 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260128094448'),
 ('20260212195326'),
 ('20260205110957'),
-('20260224063659');
-
+('20260224063659'),
+('20260120115014');
 
