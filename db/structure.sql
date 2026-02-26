@@ -149,321 +149,31 @@ CREATE PROCEDURE simple_reporting.monitored_execute(IN run_id uuid, IN action_ke
       $$;
 
 
+--
+-- Name: normalize_jsonb_array(jsonb); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE FUNCTION simple_reporting.normalize_jsonb_array(input jsonb) RETURNS jsonb
+    LANGUAGE sql IMMUTABLE
+    AS $$
+  SELECT
+    CASE
+      WHEN input IS NULL THEN NULL
+      ELSE (
+        SELECT jsonb_agg(elem ORDER BY elem)
+        FROM jsonb_array_elements(input) elem
+      )
+    END;
+$$;
+
+
 SET default_tablespace = '';
-
---
--- Name: reporting_patient_states; Type: TABLE; Schema: simple_reporting; Owner: -
---
-
-CREATE TABLE simple_reporting.reporting_patient_states (
-    patient_id uuid,
-    recorded_at timestamp without time zone,
-    status character varying,
-    gender character varying,
-    age integer,
-    age_updated_at timestamp without time zone,
-    date_of_birth date,
-    current_age double precision,
-    month_date date,
-    month double precision,
-    quarter double precision,
-    year double precision,
-    month_string text,
-    quarter_string text,
-    hypertension text,
-    prior_heart_attack text,
-    prior_stroke text,
-    chronic_kidney_disease text,
-    receiving_treatment_for_hypertension text,
-    diabetes text,
-    assigned_facility_id uuid,
-    assigned_facility_size character varying,
-    assigned_facility_type character varying,
-    assigned_facility_slug character varying,
-    assigned_facility_region_id uuid,
-    assigned_block_slug character varying,
-    assigned_block_region_id uuid,
-    assigned_district_slug character varying,
-    assigned_district_region_id uuid,
-    assigned_state_slug character varying,
-    assigned_state_region_id uuid,
-    assigned_organization_slug character varying,
-    assigned_organization_region_id uuid,
-    registration_facility_id uuid,
-    registration_facility_size character varying,
-    registration_facility_type character varying,
-    registration_facility_slug character varying,
-    registration_facility_region_id uuid,
-    registration_block_slug character varying,
-    registration_block_region_id uuid,
-    registration_district_slug character varying,
-    registration_district_region_id uuid,
-    registration_state_slug character varying,
-    registration_state_region_id uuid,
-    registration_organization_slug character varying,
-    registration_organization_region_id uuid,
-    blood_pressure_id uuid,
-    bp_facility_id uuid,
-    bp_recorded_at timestamp without time zone,
-    systolic integer,
-    diastolic integer,
-    blood_sugar_id uuid,
-    bs_facility_id uuid,
-    bs_recorded_at timestamp without time zone,
-    blood_sugar_type character varying,
-    blood_sugar_value numeric,
-    blood_sugar_risk_state text,
-    encounter_id uuid,
-    encounter_recorded_at timestamp without time zone,
-    prescription_drug_id uuid,
-    prescription_drug_recorded_at timestamp without time zone,
-    appointment_id uuid,
-    appointment_recorded_at timestamp without time zone,
-    visited_facility_ids uuid[],
-    months_since_registration double precision,
-    quarters_since_registration double precision,
-    months_since_visit double precision,
-    quarters_since_visit double precision,
-    months_since_bp double precision,
-    quarters_since_bp double precision,
-    months_since_bs double precision,
-    quarters_since_bs double precision,
-    last_bp_state text,
-    htn_care_state text,
-    htn_treatment_outcome_in_last_3_months text,
-    htn_treatment_outcome_in_last_2_months text,
-    htn_treatment_outcome_in_quarter text,
-    diabetes_treatment_outcome_in_last_3_months text,
-    diabetes_treatment_outcome_in_last_2_months text,
-    diabetes_treatment_outcome_in_quarter text,
-    titrated boolean,
-    diagnosed_confirmed_at timestamp without time zone
-)
-PARTITION BY LIST (month_date);
-
-
---
--- Name: reporting_patient_states_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
---
-
-CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
-    LANGUAGE plpgsql
-    AS $_$
-      BEGIN
-        RETURN QUERY
-        SELECT DISTINCT ON (p.id)
-        -- Basic patient identifiers
-          p.id AS patient_id,
-          p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS recorded_at,
-          p.status,
-          p.gender,
-          p.age,
-          p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
-          p.date_of_birth,
-          EXTRACT(YEAR FROM COALESCE(
-            age(p.date_of_birth),
-            make_interval(years => p.age) + age(p.age_updated_at)
-          ))::float8 AS current_age,
-
-          -- Calendar
-          cal.month_date,
-          cal.month,
-          cal.quarter,
-          cal.year,
-          cal.month_string,
-          cal.quarter_string,
-
-          -- Medical history
-          mh.hypertension,
-          mh.prior_heart_attack,
-          mh.prior_stroke,
-          mh.chronic_kidney_disease,
-          mh.receiving_treatment_for_hypertension,
-          mh.diabetes,
-
-          -- Assigned facility and regions
-          p.assigned_facility_id,
-          assigned_facility.facility_size,
-          assigned_facility.facility_type,
-          assigned_facility.facility_region_slug,
-          assigned_facility.facility_region_id,
-          assigned_facility.block_slug,
-          assigned_facility.block_region_id,
-          assigned_facility.district_slug,
-          assigned_facility.district_region_id,
-          assigned_facility.state_slug,
-          assigned_facility.state_region_id,
-          assigned_facility.organization_slug,
-          assigned_facility.organization_region_id,
-
-          -- Registration facility and regions
-          p.registration_facility_id,
-          registration_facility.facility_size,
-          registration_facility.facility_type,
-          registration_facility.facility_region_slug,
-          registration_facility.facility_region_id,
-          registration_facility.block_slug,
-          registration_facility.block_region_id,
-          registration_facility.district_slug,
-          registration_facility.district_region_id,
-          registration_facility.state_slug,
-          registration_facility.state_region_id,
-          registration_facility.organization_slug,
-          registration_facility.organization_region_id,
-
-          -- Visit details
-          bps.blood_pressure_id,
-          bps.blood_pressure_facility_id AS bp_facility_id,
-          bps.blood_pressure_recorded_at AS bp_recorded_at,
-          bps.systolic,
-          bps.diastolic,
-
-          bss.blood_sugar_id,
-          bss.blood_sugar_facility_id AS bs_facility_id,
-          bss.blood_sugar_recorded_at AS bs_recorded_at,
-          bss.blood_sugar_type,
-          bss.blood_sugar_value,
-          bss.blood_sugar_risk_state,
-
-          visits.encounter_id,
-          visits.encounter_recorded_at,
-          visits.prescription_drug_id,
-          visits.prescription_drug_recorded_at,
-          visits.appointment_id,
-          visits.appointment_recorded_at,
-          visits.visited_facility_ids,
-
-          -- Relative time calculations
-          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-          (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
-          AS months_since_registration,
-
-          (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
-          (cal.quarter - DATE_PART('quarter', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
-          AS quarters_since_registration,
-
-          visits.months_since_visit,
-          visits.quarters_since_visit,
-          bps.months_since_bp,
-          bps.quarters_since_bp,
-          bss.months_since_bs,
-          bss.quarters_since_bs,
-
-          -- BP and treatment indicators
-          CASE
-            WHEN bps.systolic IS NULL OR bps.diastolic IS NULL THEN 'unknown'
-            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
-            ELSE 'uncontrolled'
-          END AS last_bp_state,
-
-          CASE
-            WHEN p.status = 'dead' THEN 'dead'
-            WHEN (
-              (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
-              (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
-              OR visits.months_since_visit < 12
-            ) THEN 'under_care'
-            ELSE 'lost_to_follow_up'
-          END AS htn_care_state,
-
-          CASE
-            WHEN visits.months_since_visit >= 3 OR visits.months_since_visit IS NULL THEN 'missed_visit'
-            WHEN bps.months_since_bp >= 3 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
-            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
-            ELSE 'uncontrolled'
-          END AS htn_treatment_outcome_in_last_3_months,
-
-          CASE
-            WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
-            WHEN bps.months_since_bp >= 2 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
-            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
-            ELSE 'uncontrolled'
-          END AS htn_treatment_outcome_in_last_2_months,
-
-          CASE
-            WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
-            WHEN bps.quarters_since_bp >= 1 OR bps.quarters_since_bp IS NULL THEN 'visited_no_bp'
-            WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
-            ELSE 'uncontrolled'
-          END AS htn_treatment_outcome_in_quarter,
-
-          CASE
-            WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
-            WHEN (bss.months_since_bs >= 3 OR bss.months_since_bs is NULL) THEN 'visited_no_bs'
-            ELSE bss.blood_sugar_risk_state
-          END AS diabetes_treatment_outcome_in_last_3_months,
-
-          CASE
-            WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
-            WHEN bss.months_since_bs >= 2 OR bss.months_since_bs IS NULL THEN 'visited_no_bs'
-            ELSE bss.blood_sugar_risk_state
-          END AS diabetes_treatment_outcome_in_last_2_months,
-
-          CASE
-            WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
-            WHEN bss.quarters_since_bs >= 1 OR bss.quarters_since_bs IS NULL THEN 'visited_no_bs'
-            ELSE bss.blood_sugar_risk_state
-          END AS diabetes_treatment_outcome_in_quarter,
-
-          (
-            current_meds.amlodipine > past_meds.amlodipine OR
-            current_meds.telmisartan > past_meds.telmisartan OR
-            current_meds.losartan > past_meds.losartan OR
-            current_meds.atenolol > past_meds.atenolol OR
-            current_meds.enalapril > past_meds.enalapril OR
-            current_meds.chlorthalidone > past_meds.chlorthalidone OR
-            current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide
-          ) AS titrated,
-          p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS diagnosed_confirmed_at
-
-        FROM public.patients p
-        JOIN public.reporting_months cal
-          ON cal.month_date = $1
-          AND p.diagnosed_confirmed_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
-          AND ((
-            to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.diagnosed_confirmed_at)), 'YYYY-MM'::text) <=
-            to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))
-          )
-
-        LEFT OUTER JOIN public.reporting_patient_blood_pressures bps
-          ON p.id = bps.patient_id AND cal.month_date = bps.month_date
-
-        LEFT OUTER JOIN public.reporting_patient_blood_sugars bss
-          ON p.id = bss.patient_id AND cal.month_date = bss.month_date
-
-        LEFT OUTER JOIN public.reporting_patient_visits visits
-          ON p.id = visits.patient_id AND cal.month_date = visits.month_date
-
-        LEFT OUTER JOIN LATERAL (
-          SELECT DISTINCT ON (patient_id) *
-          FROM public.medical_histories
-          WHERE patient_id = p.id AND deleted_at IS NULL
-          ORDER BY patient_id, device_updated_at DESC
-        ) mh ON true
-
-        LEFT OUTER JOIN public.reporting_prescriptions current_meds
-          ON current_meds.patient_id = p.id AND cal.month_date = current_meds.month_date
-
-        LEFT OUTER JOIN public.reporting_prescriptions past_meds
-          ON past_meds.patient_id = p.id AND cal.month_date = past_meds.month_date + INTERVAL '1 month'
-
-        INNER JOIN public.reporting_facilities registration_facility
-          ON registration_facility.facility_id = p.registration_facility_id
-
-        INNER JOIN public.reporting_facilities assigned_facility
-          ON assigned_facility.facility_id = p.assigned_facility_id
-
-        WHERE p.deleted_at IS NULL
-        AND p.diagnosed_confirmed_at IS NOT NULL
-        ORDER BY p.id;
-      END;
-      $_$;
 
 --
 -- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: TABLE; Schema: simple_reporting; Owner: -
 --
 
-CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_monthly_follow_ups_and_registrations (
+CREATE TABLE simple_reporting.reporting_facility_monthly_follow_ups_and_registrations (
     facility_region_slug character varying,
     facility_id uuid,
     facility_region_id uuid,
@@ -518,108 +228,109 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_monthly_follow_up
 )
 PARTITION BY LIST (month_date);
 
+
 --
--- Name: reporting_facility_monthly_follow_ups_and_registrations_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+-- Name: reporting_facility_monthly_follow_ups_and_registrations_table_f(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
 --
 
-CREATE OR REPLACE FUNCTION simple_reporting.reporting_facility_monthly_follow_ups_and_registrations_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_monthly_follow_ups_and_registrations
-LANGUAGE plpgsql
-AS $_$
+CREATE FUNCTION simple_reporting.reporting_facility_monthly_follow_ups_and_registrations_table_f(date) RETURNS SETOF simple_reporting.reporting_facility_monthly_follow_ups_and_registrations
+    LANGUAGE plpgsql
+    AS $_$
 BEGIN
-RETURN QUERY
-WITH monthly_registration_patient_states AS (
+  RETURN QUERY
+  WITH monthly_registration_patient_states AS (
     SELECT
-    registration_facility_id AS facility_id,
-    month_date,
-    gender,
-    hypertension,
-    diabetes
+      registration_facility_id AS facility_id,
+      month_date,
+      gender,
+      hypertension,
+      diabetes
     FROM reporting_patient_states
     WHERE months_since_registration = 0
     AND month_date = $1
-), registered_patients AS (
+  ), registered_patients AS (
     SELECT
-    facility_id,
-    month_date,
+      facility_id,
+      month_date,
 
-    count(*) AS monthly_registrations_all,
-    count(*) FILTER (WHERE hypertension = 'yes') AS monthly_registrations_htn_all,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female') AS monthly_registrations_htn_female,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male') AS monthly_registrations_htn_male,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender') AS monthly_registrations_htn_transgender,
-    count(*) FILTER (WHERE diabetes = 'yes') AS monthly_registrations_dm_all,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_female,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_male,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_dm_transgender,
+      count(*) AS monthly_registrations_all,
+      count(*) FILTER (WHERE hypertension = 'yes') AS monthly_registrations_htn_all,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female') AS monthly_registrations_htn_female,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male') AS monthly_registrations_htn_male,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender') AS monthly_registrations_htn_transgender,
+      count(*) FILTER (WHERE diabetes = 'yes') AS monthly_registrations_dm_all,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_female,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_male,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_dm_transgender,
 
-    count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_registrations_htn_or_dm,
-    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_and_dm,
-    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_and_dm_female,
-    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_and_dm_male,
-    count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_htn_and_dm_transgender,
+      count(*) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_registrations_htn_or_dm,
+      count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_and_dm,
+      count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_and_dm_female,
+      count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_and_dm_male,
+      count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender') AS monthly_registrations_htn_and_dm_transgender,
 
-    count(*) FILTER (WHERE hypertension = 'yes')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_only,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_only_female,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_only_male,
-    count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_htn_only_transgender,
+      count(*) FILTER (WHERE hypertension = 'yes')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_htn_only,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'female')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_htn_only_female,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'male')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_htn_only_male,
+      count(*) FILTER (WHERE hypertension = 'yes' and gender = 'transgender')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_htn_only_transgender,
 
-    count(*) FILTER (WHERE diabetes = 'yes')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_dm_only,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_only_female,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_only_male,
-    count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender')
-        - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_dm_only_transgender
-    FROM monthly_registration_patient_states
-    GROUP BY facility_id, month_date
-), follow_ups AS (
+      count(*) FILTER (WHERE diabetes = 'yes')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_registrations_dm_only,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'female')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'female') AS monthly_registrations_dm_only_female,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'male')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'male') AS monthly_registrations_dm_only_male,
+      count(*) FILTER (WHERE diabetes = 'yes' and gender = 'transgender')
+          - count(*) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and gender = 'transgender')AS monthly_registrations_dm_only_transgender
+      FROM monthly_registration_patient_states
+      GROUP BY facility_id, month_date
+  ), follow_ups AS (
     SELECT
-    facility_id,
-    month_date,
+      facility_id,
+      month_date,
 
-    count(distinct(patient_id)) AS monthly_follow_ups_all,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes') AS monthly_follow_ups_htn_all,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_female,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_male,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_transgender,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes') AS monthly_follow_ups_dm_all,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_female,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_male,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_dm_transgender,
+      count(distinct(patient_id)) AS monthly_follow_ups_all,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes') AS monthly_follow_ups_htn_all,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_female,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_male,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_transgender,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes') AS monthly_follow_ups_dm_all,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_female,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_male,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_dm_transgender,
 
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_follow_ups_htn_or_dm,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_and_dm,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_and_dm_female,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_and_dm_male,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_and_dm_transgender,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' or diabetes = 'yes') AS monthly_follow_ups_htn_or_dm,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_and_dm,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_and_dm_female,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_and_dm_male,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender') AS monthly_follow_ups_htn_and_dm_transgender,
 
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_only,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_only_female,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_only_male,
-    count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_htn_only_transgender,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_htn_only,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'female')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_htn_only_female,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'male')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_htn_only_male,
+      count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and patient_gender = 'transgender')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_htn_only_transgender,
 
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_dm_only,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_only_female,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_only_male,
-    count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender')
-        - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_dm_only_transgender
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes') AS monthly_follow_ups_dm_only,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'female')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'female') AS monthly_follow_ups_dm_only_female,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'male')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'male') AS monthly_follow_ups_dm_only_male,
+      count(distinct(patient_id)) FILTER (WHERE diabetes = 'yes' and patient_gender = 'transgender')
+          - count(distinct(patient_id)) FILTER (WHERE hypertension = 'yes' and diabetes = 'yes' and patient_gender = 'transgender')AS monthly_follow_ups_dm_only_transgender
     FROM reporting_patient_follow_ups
     WHERE month_date = $1
     GROUP BY facility_id, month_date
-)
-SELECT
+  )
+  SELECT
     rf.facility_region_slug,
     rf.facility_id,
     rf.facility_region_id,
@@ -676,288 +387,25 @@ SELECT
     coalesce(follow_ups.monthly_follow_ups_htn_and_dm_male, 0) AS monthly_follow_ups_htn_and_dm_male,
     coalesce(follow_ups.monthly_follow_ups_htn_and_dm_female, 0) AS monthly_follow_ups_htn_and_dm_female,
     coalesce(follow_ups.monthly_follow_ups_htn_and_dm_transgender, 0) AS monthly_follow_ups_htn_and_dm_transgender
-FROM reporting_facilities rf
-INNER JOIN reporting_months cal
+  FROM reporting_facilities rf
+  INNER JOIN reporting_months cal
     ON cal.month_date = $1
-LEFT OUTER JOIN registered_patients
+  LEFT OUTER JOIN registered_patients
     ON registered_patients.month_date = cal.month_date
     AND registered_patients.facility_id = rf.facility_id
-LEFT OUTER JOIN follow_ups
+  LEFT OUTER JOIN follow_ups
     ON follow_ups.month_date = cal.month_date
     AND follow_ups.facility_id = rf.facility_id
-ORDER BY cal.month_date desc;
+  ORDER BY cal.month_date desc;
 END;
 $_$;
 
---
--- Name: reporting_patient_prescriptions; Type: TABLE; Schema: simple_reporting; Owner: -
---
-
-CREATE TABLE IF NOT EXISTS simple_reporting.reporting_patient_prescriptions (
-    patient_id uuid,
-    month_date date,
-    age integer,
-    gender character varying,
-    hypertension text,
-    diabetes text,
-    last_bp_state text,
-    htn_care_state text,
-    months_since_bp double precision,
-    assigned_facility_id uuid,
-    assigned_facility_name character varying,
-    assigned_facility_size character varying,
-    assigned_facility_type character varying,
-    assigned_facility_slug character varying,
-    assigned_facility_region_id uuid,
-    assigned_block_slug character varying,
-    assigned_block_region_id uuid,
-    assigned_block_name character varying,
-    assigned_district_slug character varying,
-    assigned_district_region_id uuid,
-    assigned_district_name character varying,
-    assigned_state_slug character varying,
-    assigned_state_region_id uuid,
-    assigned_state_name character varying,
-    assigned_organization_slug character varying,
-    assigned_organization_region_id uuid,
-    assigned_organization_name character varying,
-    registration_facility_id uuid,
-    registration_facility_name character varying,
-    registration_facility_size character varying,
-    registration_facility_type character varying,
-    registration_facility_slug character varying,
-    registration_facility_region_id uuid,
-    registration_block_slug character varying,
-    registration_block_region_id uuid,
-    registration_block_name character varying,
-    registration_district_slug character varying,
-    registration_district_region_id uuid,
-    registration_district_name character varying,
-    registration_state_slug character varying,
-    registration_state_region_id uuid,
-    registration_state_name character varying,
-    registration_organization_slug character varying,
-    registration_organization_region_id uuid,
-    registration_organization_name character varying,
-    hypertension_prescriptions jsonb,
-    diabetes_prescriptions jsonb,
-    other_prescriptions jsonb,
-    previous_hypertension_prescriptions jsonb,
-    previous_diabetes_prescriptions jsonb,
-    previous_other_prescriptions jsonb,
-    hypertension_drug_changed boolean,
-    diabetes_drug_changed boolean,
-    other_drug_changed boolean,
-    prescribed_statins boolean
-    )
-    PARTITION BY LIST (month_date);
-
---
--- Name: normalize_jsonb_array(input jsonb); Type: FUNCTION; Schema: simple_reporting; Owner: -
---
-
-CREATE OR REPLACE FUNCTION simple_reporting.normalize_jsonb_array(input jsonb)
-RETURNS jsonb
-LANGUAGE sql
-IMMUTABLE
-AS $$
-SELECT
-    CASE
-    WHEN input IS NULL THEN NULL
-    ELSE (
-        SELECT jsonb_agg(elem ORDER BY elem)
-        FROM jsonb_array_elements(input) elem
-    )
-    END;
-$$;
-
---
--- Name: reporting_patient_prescriptions_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
---
-
-CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_prescriptions
-    LANGUAGE plpgsql
-    AS $_$
-    BEGIN
-    RETURN QUERY
-    SELECT
-        rps.patient_id,
-        rps.month_date,
-        rps.age,
-        rps.gender,
-        rps.hypertension,
-        rps.diabetes,
-        rps.last_bp_state,
-        rps.htn_care_state,
-        rps.months_since_bp,
-        rps.assigned_facility_id,
-        assigned_facility.facility_name AS assigned_facility_name,
-        rps.assigned_facility_size,
-        rps.assigned_facility_type,
-        rps.assigned_facility_slug,
-        rps.assigned_facility_region_id,
-        rps.assigned_block_slug,
-        rps.assigned_block_region_id,
-        assigned_facility.block_name AS assigned_block_name,
-        rps.assigned_district_slug,
-        rps.assigned_district_region_id,
-        assigned_facility.district_name AS assigned_district_name,
-        rps.assigned_state_slug,
-        rps.assigned_state_region_id,
-        assigned_facility.state_name AS assigned_state_name,
-        rps.assigned_organization_slug,
-        rps.assigned_organization_region_id,
-        assigned_facility.organization_name AS assigned_organization_name,
-        rps.registration_facility_id,
-        registration_facility.facility_name AS registration_facility_name,
-        rps.registration_facility_size,
-        rps.registration_facility_type,
-        rps.registration_facility_slug,
-        rps.registration_facility_region_id,
-        rps.registration_block_slug,
-        rps.registration_block_region_id,
-        registration_facility.block_name AS registration_block_name,
-        rps.registration_district_slug,
-        rps.registration_district_region_id,
-        registration_facility.district_name AS registration_district_name,
-        rps.registration_state_slug,
-        rps.registration_state_region_id,
-        registration_facility.state_name AS registration_state_name,
-        rps.registration_organization_slug,
-        rps.registration_organization_region_id,
-        registration_facility.organization_name AS registration_organization_name,
-
-        curr.hypertension_prescriptions,
-        curr.diabetes_prescriptions,
-        curr.other_prescriptions,
-
-        prev.hypertension_prescriptions AS previous_hypertension_prescriptions,
-        prev.diabetes_prescriptions     AS previous_diabetes_prescriptions,
-        prev.other_prescriptions        AS previous_other_prescriptions,
-
-        (
-        simple_reporting.normalize_jsonb_array(curr.hypertension_prescriptions)
-        IS DISTINCT FROM
-        simple_reporting.normalize_jsonb_array(prev.hypertension_prescriptions)
-        ) AS hypertension_drug_changed,
-
-        (
-        simple_reporting.normalize_jsonb_array(curr.diabetes_prescriptions)
-        IS DISTINCT FROM
-        simple_reporting.normalize_jsonb_array(prev.diabetes_prescriptions)
-        ) AS diabetes_drug_changed,
-
-        (
-        simple_reporting.normalize_jsonb_array(curr.other_prescriptions)
-        IS DISTINCT FROM
-        simple_reporting.normalize_jsonb_array(prev.other_prescriptions)
-        ) AS other_drug_changed,
-
-        (
-        EXISTS (
-            SELECT 1
-            FROM jsonb_array_elements(
-            COALESCE(curr.hypertension_prescriptions, '[]'::jsonb)
-            || COALESCE(curr.diabetes_prescriptions, '[]'::jsonb)
-            || COALESCE(curr.other_prescriptions, '[]'::jsonb)
-            ) elem
-            WHERE elem->>'drug_name' ILIKE '%statin%'
-        )
-        ) AS prescribed_statins
-
-    FROM simple_reporting.reporting_patient_states rps
-    LEFT JOIN reporting_facilities assigned_facility ON rps.assigned_facility_id = assigned_facility.facility_id
-    LEFT JOIN reporting_facilities registration_facility ON rps.registration_facility_id = registration_facility.facility_id
-
-    LEFT JOIN LATERAL (
-        SELECT
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
-
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
-
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (
-            WHERE
-            mp.name IS NULL OR (
-                COALESCE(mp.hypertension,false) = false
-                AND COALESCE(mp.diabetes,false) = false
-            )
-        ) AS other_prescriptions
-
-        FROM prescription_drugs pd
-        LEFT JOIN medicine_purposes mp ON mp.name = pd.name
-        WHERE pd.patient_id = rps.patient_id
-        AND pd.deleted_at IS NULL
-        AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)),'YYYY-MM') <= to_char(rps.month_date, 'YYYY-MM')
-        AND (pd.is_deleted = false
-            OR (
-            pd.is_deleted = true
-            AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date, 'YYYY-MM')
-            )
-        )
-    ) curr ON TRUE
-
-    LEFT JOIN LATERAL (
-        SELECT
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
-
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
-
-        jsonb_agg(jsonb_build_object(
-            'drug_name', pd.name,
-            'dosage', pd.dosage
-        )) FILTER (
-            WHERE
-            mp.name IS NULL OR (
-                COALESCE(mp.hypertension,false) = false
-                AND COALESCE(mp.diabetes,false) = false
-            )
-        ) AS other_prescriptions
-        
-        FROM prescription_drugs pd
-        LEFT JOIN medicine_purposes mp ON mp.name = pd.name
-        WHERE pd.patient_id = rps.patient_id
-        AND pd.deleted_at IS NULL
-        AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)), 'YYYY-MM') <= to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
-        AND ( pd.is_deleted = false
-            OR (
-            pd.is_deleted = true
-            AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
-            )
-        )
-    ) prev ON TRUE
-    WHERE rps.month_date = $1
-    AND rps.htn_care_state <> 'dead';
-    END;
-    $_$;
-
-SET default_table_access_method = heap;
-
---
--- Name: reporting_patient_prescriptions; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.reporting_patient_prescriptions AS SELECT * FROM simple_reporting.reporting_patient_prescriptions;
 
 --
 -- Name: reporting_facility_states; Type: TABLE; Schema: simple_reporting; Owner: -
 --
 
-CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_states (
+CREATE TABLE simple_reporting.reporting_facility_states (
     month_date date,
     month double precision,
     quarter double precision,
@@ -1066,13 +514,14 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_states (
 )
 PARTITION BY LIST (month_date);
 
+
 --
 -- Name: reporting_facility_states_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
 --
 
-CREATE OR REPLACE FUNCTION simple_reporting.reporting_facility_states_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_states
-LANGUAGE plpgsql
-AS $_$
+CREATE FUNCTION simple_reporting.reporting_facility_states_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_states
+    LANGUAGE plpgsql
+    AS $_$
 BEGIN
 RETURN QUERY
     WITH registered_patients AS (
@@ -1118,16 +567,16 @@ RETURN QUERY
         GROUP BY 1, 2
     ),
     assigned_diabetes_patients AS (
-    SELECT assigned_facility_region_id AS region_id, month_date,
+      SELECT assigned_facility_region_id AS region_id, month_date,
             COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'under_care') AS diabetes_under_care,
             COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'lost_to_follow_up') AS diabetes_lost_to_follow_up,
             COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state = 'dead') AS diabetes_dead,
             COUNT(distinct(patient_id)) FILTER (WHERE htn_care_state != 'dead') AS cumulative_assigned_diabetic_patients
 
-    FROM reporting_patient_states
-    WHERE diabetes = 'yes'
-    AND month_date = $1
-    GROUP BY 1, 2
+      FROM reporting_patient_states
+      WHERE diabetes = 'yes'
+      AND month_date = $1
+      GROUP BY 1, 2
     ),
     adjusted_outcomes AS (
         SELECT assigned_facility_region_id AS region_id, month_date,
@@ -1415,6 +864,557 @@ RETURN QUERY
 END;
 $_$;
 
+
+--
+-- Name: reporting_patient_prescriptions; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.reporting_patient_prescriptions (
+    patient_id uuid,
+    month_date date,
+    age integer,
+    gender character varying,
+    hypertension text,
+    diabetes text,
+    last_bp_state text,
+    htn_care_state text,
+    months_since_bp double precision,
+    assigned_facility_id uuid,
+    assigned_facility_name character varying,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_block_name character varying,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_district_name character varying,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_state_name character varying,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    assigned_organization_name character varying,
+    registration_facility_id uuid,
+    registration_facility_name character varying,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_block_name character varying,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_district_name character varying,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_state_name character varying,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    registration_organization_name character varying,
+    hypertension_prescriptions jsonb,
+    diabetes_prescriptions jsonb,
+    other_prescriptions jsonb,
+    previous_hypertension_prescriptions jsonb,
+    previous_diabetes_prescriptions jsonb,
+    previous_other_prescriptions jsonb,
+    hypertension_drug_changed boolean,
+    diabetes_drug_changed boolean,
+    other_drug_changed boolean,
+    prescribed_statins boolean
+)
+PARTITION BY LIST (month_date);
+
+
+--
+-- Name: reporting_patient_prescriptions_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE FUNCTION simple_reporting.reporting_patient_prescriptions_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_prescriptions
+    LANGUAGE plpgsql
+    AS $_$
+BEGIN
+  RETURN QUERY
+  SELECT
+    rps.patient_id,
+    rps.month_date,
+    rps.age,
+    rps.gender,
+    rps.hypertension,
+    rps.diabetes,
+    rps.last_bp_state,
+    rps.htn_care_state,
+    rps.months_since_bp,
+    rps.assigned_facility_id,
+    assigned_facility.facility_name AS assigned_facility_name,
+    rps.assigned_facility_size,
+    rps.assigned_facility_type,
+    rps.assigned_facility_slug,
+    rps.assigned_facility_region_id,
+    rps.assigned_block_slug,
+    rps.assigned_block_region_id,
+    assigned_facility.block_name AS assigned_block_name,
+    rps.assigned_district_slug,
+    rps.assigned_district_region_id,
+    assigned_facility.district_name AS assigned_district_name,
+    rps.assigned_state_slug,
+    rps.assigned_state_region_id,
+    assigned_facility.state_name AS assigned_state_name,
+    rps.assigned_organization_slug,
+    rps.assigned_organization_region_id,
+    assigned_facility.organization_name AS assigned_organization_name,
+    rps.registration_facility_id,
+    registration_facility.facility_name AS registration_facility_name,
+    rps.registration_facility_size,
+    rps.registration_facility_type,
+    rps.registration_facility_slug,
+    rps.registration_facility_region_id,
+    rps.registration_block_slug,
+    rps.registration_block_region_id,
+    registration_facility.block_name AS registration_block_name,
+    rps.registration_district_slug,
+    rps.registration_district_region_id,
+    registration_facility.district_name AS registration_district_name,
+    rps.registration_state_slug,
+    rps.registration_state_region_id,
+    registration_facility.state_name AS registration_state_name,
+    rps.registration_organization_slug,
+    rps.registration_organization_region_id,
+    registration_facility.organization_name AS registration_organization_name,
+
+    curr.hypertension_prescriptions,
+    curr.diabetes_prescriptions,
+    curr.other_prescriptions,
+
+    prev.hypertension_prescriptions AS previous_hypertension_prescriptions,
+    prev.diabetes_prescriptions     AS previous_diabetes_prescriptions,
+    prev.other_prescriptions        AS previous_other_prescriptions,
+
+    (
+      simple_reporting.normalize_jsonb_array(curr.hypertension_prescriptions)
+      IS DISTINCT FROM
+      simple_reporting.normalize_jsonb_array(prev.hypertension_prescriptions)
+    ) AS hypertension_drug_changed,
+
+    (
+      simple_reporting.normalize_jsonb_array(curr.diabetes_prescriptions)
+      IS DISTINCT FROM
+      simple_reporting.normalize_jsonb_array(prev.diabetes_prescriptions)
+    ) AS diabetes_drug_changed,
+
+    (
+      simple_reporting.normalize_jsonb_array(curr.other_prescriptions)
+      IS DISTINCT FROM
+      simple_reporting.normalize_jsonb_array(prev.other_prescriptions)
+    ) AS other_drug_changed,
+
+    (
+      EXISTS (
+        SELECT 1
+        FROM jsonb_array_elements(
+          COALESCE(curr.hypertension_prescriptions, '[]'::jsonb)
+          || COALESCE(curr.diabetes_prescriptions, '[]'::jsonb)
+          || COALESCE(curr.other_prescriptions, '[]'::jsonb)
+        ) elem
+        WHERE elem->>'drug_name' ILIKE '%statin%'
+      )
+    ) AS prescribed_statins
+
+  FROM simple_reporting.reporting_patient_states rps
+  LEFT JOIN reporting_facilities assigned_facility ON rps.assigned_facility_id = assigned_facility.facility_id
+  LEFT JOIN reporting_facilities registration_facility ON rps.registration_facility_id = registration_facility.facility_id
+
+  LEFT JOIN LATERAL (
+    SELECT
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
+
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
+
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (
+        WHERE
+          mp.name IS NULL OR (
+            COALESCE(mp.hypertension,false) = false
+            AND COALESCE(mp.diabetes,false) = false
+          )
+      ) AS other_prescriptions
+
+    FROM prescription_drugs pd
+    LEFT JOIN medicine_purposes mp ON mp.name = pd.name
+    WHERE pd.patient_id = rps.patient_id
+      AND pd.deleted_at IS NULL
+      AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)),'YYYY-MM') <= to_char(rps.month_date, 'YYYY-MM')
+      AND (pd.is_deleted = false
+        OR (
+          pd.is_deleted = true
+          AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date, 'YYYY-MM')
+        )
+      )
+  ) curr ON TRUE
+
+  LEFT JOIN LATERAL (
+    SELECT
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (WHERE mp.hypertension = true) AS hypertension_prescriptions,
+
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (WHERE mp.diabetes = true) AS diabetes_prescriptions,
+
+      jsonb_agg(jsonb_build_object(
+        'drug_name', pd.name,
+        'dosage', pd.dosage
+      )) FILTER (
+        WHERE
+          mp.name IS NULL OR (
+            COALESCE(mp.hypertension,false) = false
+            AND COALESCE(mp.diabetes,false) = false
+          )
+      ) AS other_prescriptions
+    
+    FROM prescription_drugs pd
+    LEFT JOIN medicine_purposes mp ON mp.name = pd.name
+    WHERE pd.patient_id = rps.patient_id
+      AND pd.deleted_at IS NULL
+      AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_created_at)), 'YYYY-MM') <= to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
+      AND ( pd.is_deleted = false
+        OR (
+          pd.is_deleted = true
+          AND to_char(timezone(current_setting('TIMEZONE'), timezone('UTC', pd.device_updated_at)), 'YYYY-MM') > to_char(rps.month_date - INTERVAL '1 month', 'YYYY-MM')
+        )
+      )
+  ) prev ON TRUE
+  WHERE rps.month_date = $1
+  AND rps.htn_care_state <> 'dead';
+END;
+$_$;
+
+
+--
+-- Name: reporting_patient_states; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE simple_reporting.reporting_patient_states (
+    patient_id uuid,
+    recorded_at timestamp without time zone,
+    status character varying,
+    gender character varying,
+    age integer,
+    age_updated_at timestamp without time zone,
+    date_of_birth date,
+    current_age double precision,
+    month_date date,
+    month double precision,
+    quarter double precision,
+    year double precision,
+    month_string text,
+    quarter_string text,
+    hypertension text,
+    prior_heart_attack text,
+    prior_stroke text,
+    chronic_kidney_disease text,
+    receiving_treatment_for_hypertension text,
+    diabetes text,
+    assigned_facility_id uuid,
+    assigned_facility_size character varying,
+    assigned_facility_type character varying,
+    assigned_facility_slug character varying,
+    assigned_facility_region_id uuid,
+    assigned_block_slug character varying,
+    assigned_block_region_id uuid,
+    assigned_district_slug character varying,
+    assigned_district_region_id uuid,
+    assigned_state_slug character varying,
+    assigned_state_region_id uuid,
+    assigned_organization_slug character varying,
+    assigned_organization_region_id uuid,
+    registration_facility_id uuid,
+    registration_facility_size character varying,
+    registration_facility_type character varying,
+    registration_facility_slug character varying,
+    registration_facility_region_id uuid,
+    registration_block_slug character varying,
+    registration_block_region_id uuid,
+    registration_district_slug character varying,
+    registration_district_region_id uuid,
+    registration_state_slug character varying,
+    registration_state_region_id uuid,
+    registration_organization_slug character varying,
+    registration_organization_region_id uuid,
+    blood_pressure_id uuid,
+    bp_facility_id uuid,
+    bp_recorded_at timestamp without time zone,
+    systolic integer,
+    diastolic integer,
+    blood_sugar_id uuid,
+    bs_facility_id uuid,
+    bs_recorded_at timestamp without time zone,
+    blood_sugar_type character varying,
+    blood_sugar_value numeric,
+    blood_sugar_risk_state text,
+    encounter_id uuid,
+    encounter_recorded_at timestamp without time zone,
+    prescription_drug_id uuid,
+    prescription_drug_recorded_at timestamp without time zone,
+    appointment_id uuid,
+    appointment_recorded_at timestamp without time zone,
+    visited_facility_ids uuid[],
+    months_since_registration double precision,
+    quarters_since_registration double precision,
+    months_since_visit double precision,
+    quarters_since_visit double precision,
+    months_since_bp double precision,
+    quarters_since_bp double precision,
+    months_since_bs double precision,
+    quarters_since_bs double precision,
+    last_bp_state text,
+    htn_care_state text,
+    htn_treatment_outcome_in_last_3_months text,
+    htn_treatment_outcome_in_last_2_months text,
+    htn_treatment_outcome_in_quarter text,
+    diabetes_treatment_outcome_in_last_3_months text,
+    diabetes_treatment_outcome_in_last_2_months text,
+    diabetes_treatment_outcome_in_quarter text,
+    titrated boolean,
+    diagnosed_confirmed_at timestamp without time zone
+)
+PARTITION BY LIST (month_date);
+
+
+--
+-- Name: reporting_patient_states_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE FUNCTION simple_reporting.reporting_patient_states_table_function(date) RETURNS SETOF simple_reporting.reporting_patient_states
+    LANGUAGE plpgsql
+    AS $_$
+    BEGIN
+      RETURN QUERY
+      SELECT DISTINCT ON (p.id)
+      -- Basic patient identifiers
+        p.id AS patient_id,
+        p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS recorded_at,
+        p.status,
+        p.gender,
+        p.age,
+        p.age_updated_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS age_updated_at,
+        p.date_of_birth,
+        EXTRACT(YEAR FROM COALESCE(
+          age(p.date_of_birth),
+          make_interval(years => p.age) + age(p.age_updated_at)
+        ))::float8 AS current_age,
+
+        -- Calendar
+        cal.month_date,
+        cal.month,
+        cal.quarter,
+        cal.year,
+        cal.month_string,
+        cal.quarter_string,
+
+        -- Medical history
+        mh.hypertension,
+        mh.prior_heart_attack,
+        mh.prior_stroke,
+        mh.chronic_kidney_disease,
+        mh.receiving_treatment_for_hypertension,
+        mh.diabetes,
+
+        -- Assigned facility and regions
+        p.assigned_facility_id,
+        assigned_facility.facility_size,
+        assigned_facility.facility_type,
+        assigned_facility.facility_region_slug,
+        assigned_facility.facility_region_id,
+        assigned_facility.block_slug,
+        assigned_facility.block_region_id,
+        assigned_facility.district_slug,
+        assigned_facility.district_region_id,
+        assigned_facility.state_slug,
+        assigned_facility.state_region_id,
+        assigned_facility.organization_slug,
+        assigned_facility.organization_region_id,
+
+        -- Registration facility and regions
+        p.registration_facility_id,
+        registration_facility.facility_size,
+        registration_facility.facility_type,
+        registration_facility.facility_region_slug,
+        registration_facility.facility_region_id,
+        registration_facility.block_slug,
+        registration_facility.block_region_id,
+        registration_facility.district_slug,
+        registration_facility.district_region_id,
+        registration_facility.state_slug,
+        registration_facility.state_region_id,
+        registration_facility.organization_slug,
+        registration_facility.organization_region_id,
+
+        -- Visit details
+        bps.blood_pressure_id,
+        bps.blood_pressure_facility_id AS bp_facility_id,
+        bps.blood_pressure_recorded_at AS bp_recorded_at,
+        bps.systolic,
+        bps.diastolic,
+
+        bss.blood_sugar_id,
+        bss.blood_sugar_facility_id AS bs_facility_id,
+        bss.blood_sugar_recorded_at AS bs_recorded_at,
+        bss.blood_sugar_type,
+        bss.blood_sugar_value,
+        bss.blood_sugar_risk_state,
+
+        visits.encounter_id,
+        visits.encounter_recorded_at,
+        visits.prescription_drug_id,
+        visits.prescription_drug_recorded_at,
+        visits.appointment_id,
+        visits.appointment_recorded_at,
+        visits.visited_facility_ids,
+
+        -- Relative time calculations
+        (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+        (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+        AS months_since_registration,
+
+        (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 4 +
+        (cal.quarter - DATE_PART('quarter', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))))
+        AS quarters_since_registration,
+
+        visits.months_since_visit,
+        visits.quarters_since_visit,
+        bps.months_since_bp,
+        bps.quarters_since_bp,
+        bss.months_since_bs,
+        bss.quarters_since_bs,
+
+        -- BP and treatment indicators
+        CASE
+          WHEN bps.systolic IS NULL OR bps.diastolic IS NULL THEN 'unknown'
+          WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+          ELSE 'uncontrolled'
+        END AS last_bp_state,
+
+        CASE
+          WHEN p.status = 'dead' THEN 'dead'
+          WHEN (
+            (cal.year - DATE_PART('year', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) * 12 +
+            (cal.month - DATE_PART('month', p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))) < 12
+            OR visits.months_since_visit < 12
+          ) THEN 'under_care'
+          ELSE 'lost_to_follow_up'
+        END AS htn_care_state,
+
+        CASE
+          WHEN visits.months_since_visit >= 3 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+          WHEN bps.months_since_bp >= 3 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
+          WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+          ELSE 'uncontrolled'
+        END AS htn_treatment_outcome_in_last_3_months,
+
+        CASE
+          WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+          WHEN bps.months_since_bp >= 2 OR bps.months_since_bp IS NULL THEN 'visited_no_bp'
+          WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+          ELSE 'uncontrolled'
+        END AS htn_treatment_outcome_in_last_2_months,
+
+        CASE
+          WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
+          WHEN bps.quarters_since_bp >= 1 OR bps.quarters_since_bp IS NULL THEN 'visited_no_bp'
+          WHEN bps.systolic < 140 AND bps.diastolic < 90 THEN 'controlled'
+          ELSE 'uncontrolled'
+        END AS htn_treatment_outcome_in_quarter,
+
+        CASE
+          WHEN (visits.months_since_visit >= 3 OR visits.months_since_visit is NULL) THEN 'missed_visit'
+          WHEN (bss.months_since_bs >= 3 OR bss.months_since_bs is NULL) THEN 'visited_no_bs'
+          ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_last_3_months,
+
+        CASE
+          WHEN visits.months_since_visit >= 2 OR visits.months_since_visit IS NULL THEN 'missed_visit'
+          WHEN bss.months_since_bs >= 2 OR bss.months_since_bs IS NULL THEN 'visited_no_bs'
+          ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_last_2_months,
+
+        CASE
+          WHEN visits.quarters_since_visit >= 1 OR visits.quarters_since_visit IS NULL THEN 'missed_visit'
+          WHEN bss.quarters_since_bs >= 1 OR bss.quarters_since_bs IS NULL THEN 'visited_no_bs'
+          ELSE bss.blood_sugar_risk_state
+        END AS diabetes_treatment_outcome_in_quarter,
+
+        (
+          current_meds.amlodipine > past_meds.amlodipine OR
+          current_meds.telmisartan > past_meds.telmisartan OR
+          current_meds.losartan > past_meds.losartan OR
+          current_meds.atenolol > past_meds.atenolol OR
+          current_meds.enalapril > past_meds.enalapril OR
+          current_meds.chlorthalidone > past_meds.chlorthalidone OR
+          current_meds.hydrochlorothiazide > past_meds.hydrochlorothiazide
+        ) AS titrated,
+        p.diagnosed_confirmed_at AT TIME ZONE 'UTC' AT TIME ZONE 'UTC' AS diagnosed_confirmed_at
+
+      FROM public.patients p
+      JOIN public.reporting_months cal
+        ON cal.month_date = $1
+        AND p.diagnosed_confirmed_at <= cal.month_date + INTERVAL '1 month' + INTERVAL '1 day'
+        AND ((
+          to_char(timezone((SELECT current_setting('TIMEZONE'::text) AS current_setting), TIMEZONE('UTC'::text, p.diagnosed_confirmed_at)), 'YYYY-MM'::text) <=
+          to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))
+        )
+
+      LEFT OUTER JOIN public.reporting_patient_blood_pressures bps
+        ON p.id = bps.patient_id AND cal.month_date = bps.month_date
+
+      LEFT OUTER JOIN public.reporting_patient_blood_sugars bss
+        ON p.id = bss.patient_id AND cal.month_date = bss.month_date
+
+      LEFT OUTER JOIN public.reporting_patient_visits visits
+        ON p.id = visits.patient_id AND cal.month_date = visits.month_date
+
+      LEFT OUTER JOIN LATERAL (
+        SELECT DISTINCT ON (patient_id) *
+        FROM public.medical_histories
+        WHERE patient_id = p.id AND deleted_at IS NULL
+        ORDER BY patient_id, device_updated_at DESC
+      ) mh ON true
+
+      LEFT OUTER JOIN public.reporting_prescriptions current_meds
+        ON current_meds.patient_id = p.id AND cal.month_date = current_meds.month_date
+
+      LEFT OUTER JOIN public.reporting_prescriptions past_meds
+        ON past_meds.patient_id = p.id AND cal.month_date = past_meds.month_date + INTERVAL '1 month'
+
+      INNER JOIN public.reporting_facilities registration_facility
+        ON registration_facility.facility_id = p.registration_facility_id
+
+      INNER JOIN public.reporting_facilities assigned_facility
+        ON assigned_facility.facility_id = p.assigned_facility_id
+
+      WHERE p.deleted_at IS NULL
+      AND p.diagnosed_confirmed_at IS NOT NULL
+      ORDER BY p.id;
+    END;
+    $_$;
+
+
+SET default_table_access_method = heap;
+
 --
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
 --
@@ -1575,21 +1575,6 @@ CREATE TABLE public.facilities (
 
 
 --
--- Name: legacy_mobile_data_dumps; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.legacy_mobile_data_dumps (
-    id uuid DEFAULT public.gen_random_uuid() NOT NULL,
-    raw_payload jsonb NOT NULL,
-    dump_date timestamp without time zone NOT NULL,
-    user_id uuid NOT NULL,
-    mobile_version character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
 -- Name: medical_histories; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1619,9 +1604,79 @@ CREATE TABLE public.medical_histories (
     smoking text,
     cholesterol integer,
     smokeless_tobacco character varying,
+    diagnosis_date timestamp without time zone,
     htn_diagnosed_at timestamp without time zone,
     dm_diagnosed_at timestamp without time zone
 );
+
+
+--
+-- Name: patients; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.patients (
+    id uuid NOT NULL,
+    full_name character varying,
+    age integer,
+    gender character varying,
+    date_of_birth date,
+    status character varying,
+    created_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL,
+    address_id uuid,
+    age_updated_at timestamp without time zone,
+    device_created_at timestamp without time zone NOT NULL,
+    device_updated_at timestamp without time zone NOT NULL,
+    test_data boolean DEFAULT false NOT NULL,
+    registration_facility_id uuid,
+    registration_user_id uuid,
+    deleted_at timestamp without time zone,
+    contacted_by_counsellor boolean DEFAULT false,
+    could_not_contact_reason character varying,
+    recorded_at timestamp without time zone,
+    reminder_consent character varying DEFAULT 'denied'::character varying NOT NULL,
+    deleted_by_user_id uuid,
+    deleted_reason character varying,
+    assigned_facility_id uuid,
+    eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL,
+    diagnosed_confirmed_at timestamp without time zone
+);
+
+
+--
+-- Name: blood_pressures_per_facility_per_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.blood_pressures_per_facility_per_days AS
+ WITH registered_patients AS (
+         SELECT DISTINCT patients.id
+           FROM public.patients
+          WHERE ((patients.deleted_at IS NULL) AND (patients.diagnosed_confirmed_at IS NOT NULL))
+        ), latest_bp_per_patient_per_day AS (
+         SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+            blood_pressures.facility_id,
+            (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
+            (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
+            (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
+            (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
+           FROM ((public.blood_pressures
+             JOIN public.medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text))))
+             JOIN registered_patients ON ((registered_patients.id = blood_pressures.patient_id)))
+          WHERE (blood_pressures.deleted_at IS NULL)
+          ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
+        )
+ SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
+    facilities.id AS facility_id,
+    timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
+    latest_bp_per_patient_per_day.day,
+    latest_bp_per_patient_per_day.month,
+    latest_bp_per_patient_per_day.quarter,
+    latest_bp_per_patient_per_day.year
+   FROM (latest_bp_per_patient_per_day
+     JOIN public.facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
+  GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id
+  WITH NO DATA;
+
 
 --
 -- Name: blood_sugars; Type: TABLE; Schema: public; Owner: -
@@ -2015,38 +2070,6 @@ ALTER SEQUENCE public.dr_rai_action_plans_id_seq OWNED BY public.dr_rai_action_p
 
 
 --
--- Name: dr_rai_actions; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.dr_rai_actions (
-    id bigint NOT NULL,
-    description character varying,
-    deleted_at timestamp without time zone,
-    created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
-);
-
-
---
--- Name: dr_rai_actions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.dr_rai_actions_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: dr_rai_actions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.dr_rai_actions_id_seq OWNED BY public.dr_rai_actions.id;
-
-
---
 -- Name: dr_rai_data_bp_fudgings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2201,8 +2224,8 @@ CREATE TABLE public.dr_rai_targets (
     deleted_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    dr_rai_indicators_id bigint,
-    period character varying
+    period character varying,
+    dr_rai_indicators_id bigint
 );
 
 
@@ -2448,7 +2471,7 @@ CREATE TABLE public.flipper_gates (
     id bigint NOT NULL,
     feature_key character varying NOT NULL,
     key character varying NOT NULL,
-    value character varying,
+    value text,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone NOT NULL
 );
@@ -2474,111 +2497,40 @@ ALTER SEQUENCE public.flipper_gates_id_seq OWNED BY public.flipper_gates.id;
 
 
 --
--- Name: patients; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.patients (
-    id uuid NOT NULL,
-    full_name character varying,
-    age integer,
-    gender character varying,
-    date_of_birth date,
-    status character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL,
-    address_id uuid,
-    age_updated_at timestamp without time zone,
-    device_created_at timestamp without time zone NOT NULL,
-    device_updated_at timestamp without time zone NOT NULL,
-    test_data boolean DEFAULT false NOT NULL,
-    registration_facility_id uuid,
-    registration_user_id uuid,
-    deleted_at timestamp without time zone,
-    contacted_by_counsellor boolean DEFAULT false,
-    could_not_contact_reason character varying,
-    recorded_at timestamp without time zone,
-    reminder_consent character varying DEFAULT 'denied'::character varying NOT NULL,
-    deleted_by_user_id uuid,
-    deleted_reason character varying,
-    assigned_facility_id uuid,
-    diagnosed_confirmed_at timestamp without time zone,
-    eligible_for_reassignment text DEFAULT 'unknown'::text NOT NULL
-);
-
---
--- Name: blood_pressures_per_facility_per_days; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.blood_pressures_per_facility_per_days AS
- WITH registered_patients AS (
-    SELECT DISTINCT id
-    FROM public.patients
-    WHERE deleted_at IS NULL
-    AND diagnosed_confirmed_at IS NOT NULL
- ),
- latest_bp_per_patient_per_day AS (
-    SELECT DISTINCT ON (blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
-    blood_pressures.facility_id,
-    (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS day,
-    (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS month,
-    (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS quarter,
-    (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text AS year
-    FROM (public.blood_pressures
-        JOIN public.medical_histories ON (((blood_pressures.patient_id = medical_histories.patient_id) AND (medical_histories.hypertension = 'yes'::text)))
-        JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
-    )
-    WHERE (blood_pressures.deleted_at IS NULL)
-    ORDER BY blood_pressures.facility_id, blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, (date_part('doy'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
-)
- SELECT count(latest_bp_per_patient_per_day.bp_id) AS bp_count,
-    facilities.id AS facility_id,
-    timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, facilities.deleted_at)) AS deleted_at,
-    latest_bp_per_patient_per_day.day,
-    latest_bp_per_patient_per_day.month,
-    latest_bp_per_patient_per_day.quarter,
-    latest_bp_per_patient_per_day.year
-   FROM (latest_bp_per_patient_per_day
-     JOIN public.facilities ON ((facilities.id = latest_bp_per_patient_per_day.facility_id)))
-  GROUP BY latest_bp_per_patient_per_day.day, latest_bp_per_patient_per_day.month, latest_bp_per_patient_per_day.quarter, latest_bp_per_patient_per_day.year, facilities.deleted_at, facilities.id
-  WITH NO DATA;
-
-
---
 -- Name: latest_blood_pressures_per_patient_per_months; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
 CREATE MATERIALIZED VIEW public.latest_blood_pressures_per_patient_per_months AS
-    WITH registered_patients AS (
-        SELECT DISTINCT id,
-            registration_facility_id,
-            assigned_facility_id,
-            status,
-            recorded_at
-        FROM public.patients
-        WHERE deleted_at IS NULL
-        AND diagnosed_confirmed_at IS NOT NULL
-    )
-    SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text), (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text)) 
-        blood_pressures.id AS bp_id,
-        blood_pressures.patient_id AS patient_id,
-        registered_patients.registration_facility_id AS registration_facility_id,
-        registered_patients.assigned_facility_id AS assigned_facility_id,
-        registered_patients.status as patient_status,
-        blood_pressures.facility_id AS bp_facility_id,
-        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
-        timezone('UTC'::text, timezone('UTC'::text, registered_patients.recorded_at)) AS patient_recorded_at,
-        blood_pressures.systolic AS systolic,
-        blood_pressures.diastolic AS diastolic,
-        timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
-        medical_histories.hypertension as medical_history_hypertension,
-        date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS month,
-        date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS quarter,
-        date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at)))::text AS year
-    FROM public.blood_pressures JOIN registered_patients ON registered_patients.id = blood_pressures.patient_id
-    LEFT JOIN public.medical_histories ON medical_histories.patient_id = blood_pressures.patient_id
-    WHERE blood_pressures.deleted_at IS NULL
-    ORDER BY patient_id, year, month, blood_pressures.recorded_at DESC, bp_id
-    WITH NO DATA;
+ WITH registered_patients AS (
+         SELECT DISTINCT patients.id,
+            patients.registration_facility_id,
+            patients.assigned_facility_id,
+            patients.status,
+            patients.recorded_at
+           FROM public.patients
+          WHERE ((patients.deleted_at IS NULL) AND (patients.diagnosed_confirmed_at IS NOT NULL))
+        )
+ SELECT DISTINCT ON (blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text) blood_pressures.id AS bp_id,
+    blood_pressures.patient_id,
+    registered_patients.registration_facility_id,
+    registered_patients.assigned_facility_id,
+    registered_patients.status AS patient_status,
+    blood_pressures.facility_id AS bp_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.recorded_at)) AS bp_recorded_at,
+    timezone('UTC'::text, timezone('UTC'::text, registered_patients.recorded_at)) AS patient_recorded_at,
+    blood_pressures.systolic,
+    blood_pressures.diastolic,
+    timezone('UTC'::text, timezone('UTC'::text, blood_pressures.deleted_at)) AS deleted_at,
+    medical_histories.hypertension AS medical_history_hypertension,
+    (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS month,
+    (date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS quarter,
+    (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text AS year
+   FROM ((public.blood_pressures
+     JOIN registered_patients ON ((registered_patients.id = blood_pressures.patient_id)))
+     LEFT JOIN public.medical_histories ON ((medical_histories.patient_id = blood_pressures.patient_id)))
+  WHERE (blood_pressures.deleted_at IS NULL)
+  ORDER BY blood_pressures.patient_id, (date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, (date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, blood_pressures.recorded_at))))::text, blood_pressures.recorded_at DESC, blood_pressures.id
+  WITH NO DATA;
 
 
 --
@@ -2629,6 +2581,21 @@ CREATE MATERIALIZED VIEW public.latest_blood_pressures_per_patients AS
    FROM public.latest_blood_pressures_per_patient_per_months
   ORDER BY latest_blood_pressures_per_patient_per_months.patient_id, latest_blood_pressures_per_patient_per_months.bp_recorded_at DESC, latest_blood_pressures_per_patient_per_months.bp_id
   WITH NO DATA;
+
+
+--
+-- Name: legacy_mobile_data_dumps; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.legacy_mobile_data_dumps (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    raw_payload jsonb NOT NULL,
+    dump_date timestamp without time zone NOT NULL,
+    user_id uuid NOT NULL,
+    mobile_version character varying,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
 
 
 --
@@ -3161,7 +3128,7 @@ CREATE MATERIALIZED VIEW public.materialized_patient_summaries AS
      LEFT JOIN latest_blood_pressures ON ((latest_blood_pressures.patient_id = p.id)))
      LEFT JOIN latest_blood_sugars ON ((latest_blood_sugars.patient_id = p.id)))
      LEFT JOIN next_scheduled_appointment ON ((next_scheduled_appointment.patient_id = p.id)))
-  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
+  WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
   WITH NO DATA;
 
 
@@ -3886,57 +3853,87 @@ COMMENT ON COLUMN public.reporting_facilities.organization_slug IS 'Human readab
 --
 
 CREATE MATERIALIZED VIEW public.reporting_facility_appointment_scheduled_days AS
-    WITH latest_medical_histories AS (
-        SELECT DISTINCT ON (patient_id) mh.*
-        FROM public.medical_histories mh
-        WHERE  mh.deleted_at IS NULL
-        ORDER BY patient_id, mh.device_created_at DESC
-    ),
-    latest_appointments_per_patient_per_month AS (
-        SELECT DISTINCT ON (patient_id, month_date) a.*,
+ WITH latest_medical_histories AS (
+         SELECT DISTINCT ON (mh.patient_id) mh.id,
+            mh.patient_id,
+            mh.prior_heart_attack_boolean,
+            mh.prior_stroke_boolean,
+            mh.chronic_kidney_disease_boolean,
+            mh.receiving_treatment_for_hypertension_boolean,
+            mh.diabetes_boolean,
+            mh.device_created_at,
+            mh.device_updated_at,
+            mh.created_at,
+            mh.updated_at,
+            mh.diagnosed_with_hypertension_boolean,
+            mh.prior_heart_attack,
+            mh.prior_stroke,
+            mh.chronic_kidney_disease,
+            mh.receiving_treatment_for_hypertension,
+            mh.diabetes,
+            mh.diagnosed_with_hypertension,
+            mh.deleted_at,
+            mh.user_id,
+            mh.hypertension,
+            mh.receiving_treatment_for_diabetes,
+            mh.smoking,
+            mh.cholesterol,
+            mh.smokeless_tobacco,
+            mh.diagnosis_date,
+            mh.htn_diagnosed_at,
+            mh.dm_diagnosed_at
+           FROM public.medical_histories mh
+          WHERE (mh.deleted_at IS NULL)
+          ORDER BY mh.patient_id, mh.device_created_at DESC
+        ), latest_appointments_per_patient_per_month AS (
+         SELECT DISTINCT ON (a.patient_id, (to_char(((a.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)), 'YYYY-MM-01'::text))::date) a.id,
+            a.patient_id,
+            a.facility_id,
+            a.scheduled_date,
+            a.status,
+            a.cancel_reason,
+            a.device_created_at,
+            a.device_updated_at,
+            a.created_at,
+            a.updated_at,
+            a.remind_on,
+            a.agreed_to_visit,
+            a.deleted_at,
+            a.appointment_type,
+            a.user_id,
+            a.creation_facility_id,
             lmh.hypertension,
             lmh.diabetes,
-            to_char(a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date month_date
-        FROM public.appointments a
-        INNER JOIN public.patients p ON p.id = a.patient_id
-        INNER JOIN latest_medical_histories lmh ON lmh.patient_id = a.patient_id
-        WHERE a.scheduled_date >= date_trunc('day', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-        AND a.device_created_at >= date_trunc('month', (now() AT TIME ZONE 'UTC') - INTERVAL '6 months')
-        AND date_trunc('month', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-            > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
-        AND p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL
-        AND a.deleted_at IS NULL
-        AND (lmh.hypertension = 'yes'  OR lmh.diabetes = 'yes')
-        ORDER BY a.patient_id, month_date, a.device_created_at desc
-    ),
-    scheduled_days_distribution AS (
-        SELECT month_date,
-                width_bucket(
-                extract('days' FROM (scheduled_date - date_trunc('day', device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))))::integer,
-                array[0, 15, 32, 63]
-                ) bucket,
-                COUNT(*) number_of_appointments,
-                hypertension,
-                diabetes,
-                creation_facility_id facility_id
-        FROM latest_appointments_per_patient_per_month
-        GROUP BY bucket, creation_facility_id, month_date, hypertension, diabetes)
-
-    SELECT facility_id,
-        month_date,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_0_to_14_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_15_to_31_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_32_to_62_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_more_than_62_days,
-        (SUM(number_of_appointments) FILTER (WHERE hypertension = 'yes'))::integer htn_total_appts_scheduled,
-
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_0_to_14_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_15_to_31_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_32_to_62_days,
-        (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_more_than_62_days,
-        (SUM(number_of_appointments) FILTER (WHERE diabetes = 'yes'))::integer diabetes_total_appts_scheduled
-    FROM scheduled_days_distribution
-    GROUP BY facility_id, month_date
+            (to_char(((a.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)), 'YYYY-MM-01'::text))::date AS month_date
+           FROM ((public.appointments a
+             JOIN public.patients p ON ((p.id = a.patient_id)))
+             JOIN latest_medical_histories lmh ON ((lmh.patient_id = a.patient_id)))
+          WHERE ((a.scheduled_date >= date_trunc('day'::text, ((a.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AND (a.device_created_at >= date_trunc('month'::text, ((now() AT TIME ZONE 'UTC'::text) - '6 mons'::interval))) AND (date_trunc('month'::text, ((a.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('month'::text, ((p.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (a.deleted_at IS NULL) AND ((lmh.hypertension = 'yes'::text) OR (lmh.diabetes = 'yes'::text)))
+          ORDER BY a.patient_id, (to_char(((a.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)), 'YYYY-MM-01'::text))::date, a.device_created_at DESC
+        ), scheduled_days_distribution AS (
+         SELECT latest_appointments_per_patient_per_month.month_date,
+            width_bucket((EXTRACT(days FROM ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, ((latest_appointments_per_patient_per_month.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))))::integer, ARRAY[0, 15, 32, 63]) AS bucket,
+            count(*) AS number_of_appointments,
+            latest_appointments_per_patient_per_month.hypertension,
+            latest_appointments_per_patient_per_month.diabetes,
+            latest_appointments_per_patient_per_month.creation_facility_id AS facility_id
+           FROM latest_appointments_per_patient_per_month
+          GROUP BY (width_bucket((EXTRACT(days FROM ((latest_appointments_per_patient_per_month.scheduled_date)::timestamp without time zone - date_trunc('day'::text, ((latest_appointments_per_patient_per_month.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))))::integer, ARRAY[0, 15, 32, 63])), latest_appointments_per_patient_per_month.creation_facility_id, latest_appointments_per_patient_per_month.month_date, latest_appointments_per_patient_per_month.hypertension, latest_appointments_per_patient_per_month.diabetes
+        )
+ SELECT scheduled_days_distribution.facility_id,
+    scheduled_days_distribution.month_date,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_15_to_31_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_32_to_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.hypertension = 'yes'::text))))::integer AS htn_appts_scheduled_more_than_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.hypertension = 'yes'::text)))::integer AS htn_total_appts_scheduled,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 1) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_0_to_14_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 2) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_15_to_31_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 3) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_32_to_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE ((scheduled_days_distribution.bucket = 4) AND (scheduled_days_distribution.diabetes = 'yes'::text))))::integer AS diabetes_appts_scheduled_more_than_62_days,
+    (sum(scheduled_days_distribution.number_of_appointments) FILTER (WHERE (scheduled_days_distribution.diabetes = 'yes'::text)))::integer AS diabetes_total_appts_scheduled
+   FROM scheduled_days_distribution
+  GROUP BY scheduled_days_distribution.facility_id, scheduled_days_distribution.month_date
   WITH NO DATA;
 
 
@@ -3956,7 +3953,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             (EXTRACT(doy FROM ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
              JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('day'::text, ((bp.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (bp.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_blood_sugars AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), bs.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3968,7 +3965,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             (EXTRACT(doy FROM ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
              JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('day'::text, ((bs.recorded_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (bs.recorded_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_prescription_drugs AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), pd.facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3980,7 +3977,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             (EXTRACT(doy FROM ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
              JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('day'::text, ((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (pd.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), follow_up_appointments AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), app.creation_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -3992,7 +3989,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             (EXTRACT(doy FROM ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM (public.patients p
              JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('day'::text, ((app.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))) > date_trunc('day'::text, ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))))))
-          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (app.device_created_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), registered_patients AS (
          SELECT DISTINCT ON (((EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer), p.registration_facility_id, p.id) p.id AS patient_id,
             (p.gender)::public.gender_enum AS patient_gender,
@@ -4003,7 +4000,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
             p.diagnosed_confirmed_at AS visited_at,
             (EXTRACT(doy FROM ((p.diagnosed_confirmed_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))::integer AS day_of_year
            FROM public.patients p
-          WHERE ((p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL) AND (p.diagnosed_confirmed_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL) AND (p.diagnosed_confirmed_at > (CURRENT_TIMESTAMP - '30 days'::interval)))
         ), all_follow_ups AS (
          SELECT follow_up_blood_pressures.patient_id,
             follow_up_blood_pressures.patient_gender,
@@ -4154,6 +4151,65 @@ CREATE MATERIALIZED VIEW public.reporting_facility_daily_follow_ups_and_registra
 
 
 --
+-- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS
+ SELECT reporting_facility_monthly_follow_ups_and_registrations.facility_region_slug,
+    reporting_facility_monthly_follow_ups_and_registrations.facility_id,
+    reporting_facility_monthly_follow_ups_and_registrations.facility_region_id,
+    reporting_facility_monthly_follow_ups_and_registrations.block_region_id,
+    reporting_facility_monthly_follow_ups_and_registrations.district_region_id,
+    reporting_facility_monthly_follow_ups_and_registrations.state_region_id,
+    reporting_facility_monthly_follow_ups_and_registrations.month_date,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_all,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_or_dm,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_only,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_only_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_only_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_only_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_only,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_only_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_only_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_dm_only_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_and_dm,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_and_dm_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_and_dm_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_registrations_htn_and_dm_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_or_dm,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_only,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_only_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_only_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_only_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_only,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_only_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_only_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_dm_only_transgender,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_and_dm,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_and_dm_male,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_and_dm_female,
+    reporting_facility_monthly_follow_ups_and_registrations.monthly_follow_ups_htn_and_dm_transgender
+   FROM simple_reporting.reporting_facility_monthly_follow_ups_and_registrations;
+
+
+--
 -- Name: reporting_months; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -4221,999 +4277,6 @@ COMMENT ON COLUMN public.reporting_months.quarter_string IS 'A human readable ve
 
 
 --
--- Name: reporting_patient_blood_pressures; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_patient_blood_pressures AS
- SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
-    cal.month,
-    cal.quarter,
-    cal.year,
-    cal.month_string,
-    cal.quarter_string,
-    timezone('UTC'::text, timezone('UTC'::text, bp.recorded_at)) AS blood_pressure_recorded_at,
-    bp.id AS blood_pressure_id,
-    bp.patient_id,
-    bp.systolic,
-    bp.diastolic,
-    bp.facility_id AS blood_pressure_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
-    p.assigned_facility_id AS patient_assigned_facility_id,
-    p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS quarters_since_bp
-   FROM ((public.blood_pressures bp
-     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
-  WHERE (bp.deleted_at IS NULL)
-  ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC
-  WITH NO DATA;
-
-
---
--- Name: reporting_patient_blood_sugars; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
- SELECT DISTINCT ON (bs.patient_id, cal.month_date) cal.month_date,
-    cal.month,
-    cal.quarter,
-    cal.year,
-    cal.month_string,
-    cal.quarter_string,
-    timezone('UTC'::text, timezone('UTC'::text, bs.recorded_at)) AS blood_sugar_recorded_at,
-    bs.id AS blood_sugar_id,
-    bs.patient_id,
-    bs.blood_sugar_type,
-    bs.blood_sugar_value,
-    bs.facility_id AS blood_sugar_facility_id,
-        CASE
-            WHEN (((bs.blood_sugar_type)::text = 'random'::text) OR ((bs.blood_sugar_type)::text = 'post_prandial'::text)) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 200.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value < 300.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 300.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            WHEN ((bs.blood_sugar_type)::text = 'fasting'::text) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 126.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value < 200.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 200.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
-            CASE
-                WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
-                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_300'::text
-                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_300'::text
-                ELSE NULL::text
-            END
-            ELSE NULL::text
-        END AS blood_sugar_risk_state,
-    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
-    p.assigned_facility_id AS patient_assigned_facility_id,
-    p.registration_facility_id AS patient_registration_facility_id,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
-    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
-   FROM ((public.blood_sugars bs
-     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
-     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
-  WHERE (bs.deleted_at IS NULL)
-  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
-  WITH NO DATA;
-
-
---
--- Name: reporting_patient_follow_ups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
- WITH follow_up_blood_pressures AS (
-         SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            bp.id AS visit_id,
-            'BloodPressure'::text AS visit_type,
-            bp.facility_id,
-            bp.user_id,
-            bp.recorded_at AS visited_at,
-            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
-           FROM (public.patients p
-             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
-          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
-        ), follow_up_blood_sugars AS (
-         SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            bs.id AS visit_id,
-            'BloodSugar'::text AS visit_type,
-            bs.facility_id,
-            bs.user_id,
-            bs.recorded_at AS visited_at,
-            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
-           FROM (public.patients p
-             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
-          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
-        ), follow_up_prescription_drugs AS (
-         SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            pd.id AS visit_id,
-            'PrescriptionDrug'::text AS visit_type,
-            pd.facility_id,
-            pd.user_id,
-            pd.device_created_at AS visited_at,
-            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
-           FROM (public.patients p
-             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
-          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
-        ), follow_up_appointments AS (
-         SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
-            (p.gender)::public.gender_enum AS patient_gender,
-            app.id AS visit_id,
-            'Appointment'::text AS visit_type,
-            app.creation_facility_id AS facility_id,
-            app.user_id,
-            app.device_created_at AS visited_at,
-            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
-           FROM (public.patients p
-             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
-          WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
-        ), all_follow_ups AS (
-         SELECT follow_up_blood_pressures.patient_id,
-            follow_up_blood_pressures.patient_gender,
-            follow_up_blood_pressures.visit_id,
-            follow_up_blood_pressures.visit_type,
-            follow_up_blood_pressures.facility_id,
-            follow_up_blood_pressures.user_id,
-            follow_up_blood_pressures.visited_at,
-            follow_up_blood_pressures.month_string
-           FROM follow_up_blood_pressures
-        UNION
-         SELECT follow_up_blood_sugars.patient_id,
-            follow_up_blood_sugars.patient_gender,
-            follow_up_blood_sugars.visit_id,
-            follow_up_blood_sugars.visit_type,
-            follow_up_blood_sugars.facility_id,
-            follow_up_blood_sugars.user_id,
-            follow_up_blood_sugars.visited_at,
-            follow_up_blood_sugars.month_string
-           FROM follow_up_blood_sugars
-        UNION
-         SELECT follow_up_prescription_drugs.patient_id,
-            follow_up_prescription_drugs.patient_gender,
-            follow_up_prescription_drugs.visit_id,
-            follow_up_prescription_drugs.visit_type,
-            follow_up_prescription_drugs.facility_id,
-            follow_up_prescription_drugs.user_id,
-            follow_up_prescription_drugs.visited_at,
-            follow_up_prescription_drugs.month_string
-           FROM follow_up_prescription_drugs
-        UNION
-         SELECT follow_up_appointments.patient_id,
-            follow_up_appointments.patient_gender,
-            follow_up_appointments.visit_id,
-            follow_up_appointments.visit_type,
-            follow_up_appointments.facility_id,
-            follow_up_appointments.user_id,
-            follow_up_appointments.visited_at,
-            follow_up_appointments.month_string
-           FROM follow_up_appointments
-        )
- SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups.user_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
-    all_follow_ups.patient_gender,
-    all_follow_ups.facility_id,
-    mh.diabetes,
-    mh.hypertension,
-    all_follow_ups.user_id,
-    all_follow_ups.visit_id,
-    all_follow_ups.visit_type,
-    all_follow_ups.visited_at,
-    cal.month_date,
-    cal.month,
-    cal.quarter,
-    cal.year,
-    cal.month_string,
-    cal.quarter_string
-   FROM ((all_follow_ups
-     JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
-     LEFT JOIN public.reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)))
-  ORDER BY cal.month_string DESC
-  WITH NO DATA;
-
-
---
--- Name: reporting_patient_visits; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
- SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
-    p.month_date,
-    p.month,
-    p.quarter,
-    p.year,
-    p.month_string,
-    p.quarter_string,
-    p.assigned_facility_id,
-    p.registration_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_recorded_at,
-    e.id AS encounter_id,
-    e.facility_id AS encounter_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, e.recorded_at)) AS encounter_recorded_at,
-    pd.id AS prescription_drug_id,
-    pd.facility_id AS prescription_drug_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, pd.recorded_at)) AS prescription_drug_recorded_at,
-    app.id AS appointment_id,
-    app.creation_facility_id AS appointment_creation_facility_id,
-    timezone('UTC'::text, timezone('UTC'::text, app.recorded_at)) AS appointment_recorded_at,
-    array_remove(ARRAY[
-        CASE
-            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, e.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN e.facility_id
-            ELSE NULL::uuid
-        END,
-        CASE
-            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, pd.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN pd.facility_id
-            ELSE NULL::uuid
-        END,
-        CASE
-            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, app.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN app.creation_facility_id
-            ELSE NULL::uuid
-        END], NULL::uuid) AS visited_facility_ids,
-    timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS months_since_visit,
-    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
-   FROM (((( SELECT p_1.id,
-            p_1.full_name,
-            p_1.age,
-            p_1.gender,
-            p_1.date_of_birth,
-            p_1.status,
-            p_1.created_at,
-            p_1.updated_at,
-            p_1.address_id,
-            p_1.age_updated_at,
-            p_1.device_created_at,
-            p_1.device_updated_at,
-            p_1.test_data,
-            p_1.registration_facility_id,
-            p_1.registration_user_id,
-            p_1.deleted_at,
-            p_1.contacted_by_counsellor,
-            p_1.could_not_contact_reason,
-            p_1.recorded_at,
-            p_1.reminder_consent,
-            p_1.deleted_by_user_id,
-            p_1.deleted_reason,
-            p_1.assigned_facility_id,
-            p_1.diagnosed_confirmed_at,
-            cal.month_date,
-            cal.month,
-            cal.quarter,
-            cal.year,
-            cal.month_string,
-            cal.quarter_string
-           FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
-     LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS recorded_at,
-            encounters.id,
-            encounters.facility_id,
-            encounters.patient_id,
-            encounters.encountered_on,
-            encounters.timezone_offset,
-            encounters.notes,
-            encounters.metadata,
-            encounters.device_created_at,
-            encounters.device_updated_at,
-            encounters.deleted_at,
-            encounters.created_at,
-            encounters.updated_at
-           FROM public.encounters
-          WHERE ((encounters.patient_id = p.id) AND (to_char((encounters.encountered_on)::timestamp with time zone, 'YYYY-MM'::text) <= p.month_string) AND (encounters.deleted_at IS NULL))
-          ORDER BY encounters.encountered_on DESC
-         LIMIT 1) e ON (true))
-     LEFT JOIN LATERAL ( SELECT prescription_drugs.device_created_at AS recorded_at,
-            prescription_drugs.id,
-            prescription_drugs.name,
-            prescription_drugs.rxnorm_code,
-            prescription_drugs.dosage,
-            prescription_drugs.device_created_at,
-            prescription_drugs.device_updated_at,
-            prescription_drugs.created_at,
-            prescription_drugs.updated_at,
-            prescription_drugs.patient_id,
-            prescription_drugs.facility_id,
-            prescription_drugs.is_protocol_drug,
-            prescription_drugs.is_deleted,
-            prescription_drugs.deleted_at,
-            prescription_drugs.user_id,
-            prescription_drugs.frequency,
-            prescription_drugs.duration_in_days,
-            prescription_drugs.teleconsultation_id
-           FROM public.prescription_drugs
-          WHERE ((prescription_drugs.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, prescription_drugs.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (prescription_drugs.deleted_at IS NULL))
-          ORDER BY prescription_drugs.device_created_at DESC
-         LIMIT 1) pd ON (true))
-     LEFT JOIN LATERAL ( SELECT appointments.device_created_at AS recorded_at,
-            appointments.id,
-            appointments.patient_id,
-            appointments.facility_id,
-            appointments.scheduled_date,
-            appointments.status,
-            appointments.cancel_reason,
-            appointments.device_created_at,
-            appointments.device_updated_at,
-            appointments.created_at,
-            appointments.updated_at,
-            appointments.remind_on,
-            appointments.agreed_to_visit,
-            appointments.deleted_at,
-            appointments.appointment_type,
-            appointments.user_id,
-            appointments.creation_facility_id
-           FROM public.appointments
-          WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
-          ORDER BY appointments.device_created_at DESC
-         LIMIT 1) app ON (true))
-  WHERE (p.deleted_at IS NULL AND p.diagnosed_confirmed_at IS NOT NULL)
-  ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC
-  WITH NO DATA;
-
-
---
--- Name: reporting_prescriptions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
- SELECT p.id AS patient_id,
-    p.month_date,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
-    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
-   FROM (( SELECT p_1.id,
-            p_1.full_name,
-            p_1.age,
-            p_1.gender,
-            p_1.date_of_birth,
-            p_1.status,
-            p_1.created_at,
-            p_1.updated_at,
-            p_1.address_id,
-            p_1.age_updated_at,
-            p_1.device_created_at,
-            p_1.device_updated_at,
-            p_1.test_data,
-            p_1.registration_facility_id,
-            p_1.registration_user_id,
-            p_1.deleted_at,
-            p_1.contacted_by_counsellor,
-            p_1.could_not_contact_reason,
-            p_1.recorded_at,
-            p_1.reminder_consent,
-            p_1.deleted_by_user_id,
-            p_1.deleted_reason,
-            p_1.assigned_facility_id,
-            cal.month_date,
-            cal.month,
-            cal.quarter,
-            cal.year,
-            cal.month_string,
-            cal.quarter_string
-           FROM (public.patients p_1
-             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))
-          WHERE (p_1.deleted_at IS NULL AND p_1.diagnosed_confirmed_at IS NOT NULL)) p
-     LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
-            actual.dosage AS actual_dosage,
-            clean.medicine AS clean_name,
-            clean.dosage AS clean_dosage,
-            purpose.hypertension AS medicine_purpose_hypertension,
-            purpose.diabetes AS medicine_purpose_diabetes
-           FROM (((public.prescription_drugs actual
-             LEFT JOIN public.raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
-             LEFT JOIN public.clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
-             LEFT JOIN public.medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
-          WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))
-          ORDER BY clean.medicine, actual.device_created_at DESC) prescriptions ON (true))
-  GROUP BY p.id, p.month_date
-  WITH NO DATA;
-
-
---
--- Name: reporting_patient_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
---
-
-CREATE OR REPLACE VIEW public.reporting_patient_states AS SELECT * FROM simple_reporting.reporting_patient_states;
-
---
--- Name: VIEW reporting_patient_states; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON VIEW public.reporting_patient_states IS 'Monthly summary of a patient''s information and health indicators. This table has one row per patient, per month, from the month of the patient''s registration.';
-
-
---
--- Name: COLUMN reporting_patient_states.patient_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.patient_id IS 'ID of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.recorded_at IS 'Time (in UTC) at which the patient was registered';
-
-
---
--- Name: COLUMN reporting_patient_states.status; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.status IS 'active, dead, migrated, etc';
-
-
---
--- Name: COLUMN reporting_patient_states.gender; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.gender IS 'Gender of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.age; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.age IS 'Age of the patient as entered by a nurse';
-
-
---
--- Name: COLUMN reporting_patient_states.age_updated_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.age_updated_at IS 'Time (in UTC) at which the field ''age'' was last updated';
-
-
---
--- Name: COLUMN reporting_patient_states.date_of_birth; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.date_of_birth IS 'Date of birth of the patient';
-
-
---
--- Name: COLUMN reporting_patient_states.current_age; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.current_age IS 'Patient''s age as of today, based on ''age'', ''age_updated_at'' and ''date_of_birth''. This will have the same value for a patient across all rows.';
-
-
---
--- Name: COLUMN reporting_patient_states.month_date; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month_date IS 'The reporting month for this row, represented as the date at the beginning of the month';
-
-
---
--- Name: COLUMN reporting_patient_states.month; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month IS 'Month (1-12) of year';
-
-
---
--- Name: COLUMN reporting_patient_states.quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarter IS 'Quarter (1-4) of year';
-
-
---
--- Name: COLUMN reporting_patient_states.year; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.year IS 'Year in YYYY format';
-
-
---
--- Name: COLUMN reporting_patient_states.month_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.month_string IS 'String that represents a month, in YYYY-MM format';
-
-
---
--- Name: COLUMN reporting_patient_states.quarter_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarter_string IS 'String that represents a quarter, in YYYY-Q format';
-
-
---
--- Name: COLUMN reporting_patient_states.hypertension; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.hypertension IS 'Has the patient been diagnosed with hypertension? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.prior_heart_attack; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prior_heart_attack IS 'Has the patient had a heart attack? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.prior_stroke; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prior_stroke IS 'Has the patient has had a stroke? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.chronic_kidney_disease; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.chronic_kidney_disease IS 'Has the patient had a chronic kidney disease? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.receiving_treatment_for_hypertension; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.receiving_treatment_for_hypertension IS 'Was the patient already receiving treatment for hypertension during registration? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes IS 'Has the patient been diagnosed with diabetes? Values can be yes, no, unknown, or null if the data is unavailable.';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_id IS 'ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_size IS 'Size of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_type IS 'Type of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_slug IS 'Human readable ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_facility_region_id IS 'Region ID of the patient''s assigned facility';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_block_slug IS 'Human readable ID of the patient''s assigned facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_block_region_id IS 'ID of the patient''s assigned facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_district_slug IS 'Human readable ID of the patient''s assigned facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_district_region_id IS 'ID of the patient''s assigned facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_state_slug IS 'Human readable ID of the patient''s assigned facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_state_region_id IS 'ID of the patient''s assigned facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_organization_slug IS 'Human readable ID of the patient''s assigned facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.assigned_organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.assigned_organization_region_id IS 'ID of the patient''s assigned facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_id IS 'ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_size IS 'Size of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_type IS 'Type of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_slug IS 'Human readable ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_facility_region_id IS 'Region ID of the patient''s registration facility';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_block_slug IS 'Human readable ID of the patient''s registration facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_block_region_id IS 'ID of the patient''s registration facility''s block';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_district_slug IS 'Human readable ID of the patient''s registration facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_district_region_id IS 'ID of the patient''s registration facility''s district';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_state_slug IS 'Human readable ID of the patient''s registration facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_state_region_id IS 'ID of the patient''s registration facility''s state';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_organization_slug IS 'Human readable ID of the patient''s registration facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.registration_organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.registration_organization_region_id IS 'ID of the patient''s registration facility''s organization';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_pressure_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_pressure_id IS 'ID of the latest BP as of this month. Use this to join with the blood_pressures table.';
-
-
---
--- Name: COLUMN reporting_patient_states.bp_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bp_facility_id IS 'ID of the facility at which the latest BP was recorded as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.bp_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bp_recorded_at IS 'Time (in UTC) at which the latest BP as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.systolic; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.systolic IS 'Systolic of the latest BP as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.diastolic; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diastolic IS 'Diastolic of the latest BP as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_id IS 'ID of the latest blood sugar as of this month. Use this to join with the blood_sugars table.';
-
-
---
--- Name: COLUMN reporting_patient_states.bs_facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bs_facility_id IS 'ID of the facility at which the latest blood sugar was recorded as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.bs_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.bs_recorded_at IS 'Time (in UTC) at which the latest blood sugar as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_type IS 'Blood sugar type of the latest measure as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_value; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_value IS 'Blood sugar value of the latest measure as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.blood_sugar_risk_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.blood_sugar_risk_state IS 'Blood sugar risk state of the latest measure as of this month';
-
-
---
--- Name: COLUMN reporting_patient_states.encounter_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.encounter_id IS 'ID of the latest encounter as of this month. Use this to join with the encounters table.';
-
-
---
--- Name: COLUMN reporting_patient_states.encounter_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.encounter_recorded_at IS 'Time (in UTC) at which the latest encounter as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.prescription_drug_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prescription_drug_id IS 'ID of the latest prescription drug as of this month. Use this to join with the prescription drugs table.';
-
-
---
--- Name: COLUMN reporting_patient_states.prescription_drug_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.prescription_drug_recorded_at IS 'Time (in UTC) at which the latest prescription drug as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.appointment_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.appointment_id IS 'ID of the latest appointment as of this month. Use this to join with the appointments table.';
-
-
---
--- Name: COLUMN reporting_patient_states.appointment_recorded_at; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.appointment_recorded_at IS 'Time (in UTC) at which the latest appointment as of this month was recorded';
-
-
---
--- Name: COLUMN reporting_patient_states.visited_facility_ids; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.visited_facility_ids IS 'IDs of the facilities visited this month';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_registration; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_registration IS 'Number of months since registration. If a patient was registered on 31st Jan, it would be 1 month since registration on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_registration; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_registration IS 'Number of quarters since registration. If a patient was registered on 31st Dec, it would be 1 quarter since registration on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_visit IS 'Number of months since the patient''s last visit. If a patient visited on 31st Jan, it would be 1 month since the visit on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_visit IS 'Number of quarters since the patient''s last visit. If a patient visited on 31st Jan, it would be 1 quarter since the visit on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_bp IS 'Number of months since the patient''s last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 month since BP on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bp IS 'Number of quarters since the patient''s last BP recording. If a patient had a BP reading on 31st Jan, it would be 1 quarter since BP on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.months_since_bs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.months_since_bs IS 'Number of months since the patient''s last blood sugar recording. If a patient had a blood sugar reading on 31st Jan, it would be 1 month since blood sugar on 1st Feb.';
-
-
---
--- Name: COLUMN reporting_patient_states.quarters_since_bs; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.quarters_since_bs IS 'Number of quarters since the patient''s last blood sugar recording. If a patient had a blood sugar reading on 31st Jan, it would be 1 quarter since blood sugar on 1st Jan.';
-
-
---
--- Name: COLUMN reporting_patient_states.last_bp_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.last_bp_state IS 'The state of the last BP recorded: controlled, uncontrolled, or unknown';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_care_state; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_care_state IS 'Is the patient under_care, lost_to_follow_up, or dead as of this month?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_last_3_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_last_3_months IS 'For the visiting period of the last 3 months, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.htn_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.htn_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s treatment outcome controlled, uncontrolled, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_3_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_3_months IS 'For the visiting period of the last 3 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_last_2_months; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_last_2_months IS 'For the visiting period of the last 2 months, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.diabetes_treatment_outcome_in_quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.diabetes_treatment_outcome_in_quarter IS 'For the visiting period of the current quarter, is this patient''s diabetes treatment outcome bs_under_200, bs_200_to_300, bs_over_300, missed_visit, or visited_no_bp?';
-
-
---
--- Name: COLUMN reporting_patient_states.titrated; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_patient_states.titrated IS 'True, if the patient had an increase in dosage of any hypertension drug in a visit this month.';
-
-
---
--- Name: reporting_facility_monthly_follow_ups_and_registrations; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW public.reporting_facility_monthly_follow_ups_and_registrations AS SELECT * FROM simple_reporting.reporting_facility_monthly_follow_ups_and_registrations;
-
-
---
 -- Name: reporting_overdue_calls; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -5241,14 +4304,104 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_calls AS
     appointment_facility.state_region_id AS appointment_state_region_id,
     appointment_facility.organization_slug AS appointment_organization_slug,
     appointment_facility.organization_region_id AS appointment_organization_region_id
-   FROM (((public.call_results cr
+   FROM ((((public.call_results cr
      JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, cr.device_created_at)), 'YYYY-MM'::text) = to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
      JOIN public.appointments a ON (((cr.appointment_id = a.id) AND (a.deleted_at IS NULL))))
-     JOIN public.patients p ON (p.id = a.patient_id AND ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL)))
+     JOIN public.patients p ON (((p.id = a.patient_id) AND ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL)))))
      JOIN public.reporting_facilities appointment_facility ON ((a.facility_id = appointment_facility.facility_id)))
   WHERE (cr.deleted_at IS NULL)
   ORDER BY a.patient_id, cal.month_date, cr.device_created_at DESC
   WITH NO DATA;
+
+
+--
+-- Name: reporting_patient_states; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.reporting_patient_states AS
+ SELECT reporting_patient_states.patient_id,
+    reporting_patient_states.recorded_at,
+    reporting_patient_states.status,
+    reporting_patient_states.gender,
+    reporting_patient_states.age,
+    reporting_patient_states.age_updated_at,
+    reporting_patient_states.date_of_birth,
+    reporting_patient_states.current_age,
+    reporting_patient_states.month_date,
+    reporting_patient_states.month,
+    reporting_patient_states.quarter,
+    reporting_patient_states.year,
+    reporting_patient_states.month_string,
+    reporting_patient_states.quarter_string,
+    reporting_patient_states.hypertension,
+    reporting_patient_states.prior_heart_attack,
+    reporting_patient_states.prior_stroke,
+    reporting_patient_states.chronic_kidney_disease,
+    reporting_patient_states.receiving_treatment_for_hypertension,
+    reporting_patient_states.diabetes,
+    reporting_patient_states.assigned_facility_id,
+    reporting_patient_states.assigned_facility_size,
+    reporting_patient_states.assigned_facility_type,
+    reporting_patient_states.assigned_facility_slug,
+    reporting_patient_states.assigned_facility_region_id,
+    reporting_patient_states.assigned_block_slug,
+    reporting_patient_states.assigned_block_region_id,
+    reporting_patient_states.assigned_district_slug,
+    reporting_patient_states.assigned_district_region_id,
+    reporting_patient_states.assigned_state_slug,
+    reporting_patient_states.assigned_state_region_id,
+    reporting_patient_states.assigned_organization_slug,
+    reporting_patient_states.assigned_organization_region_id,
+    reporting_patient_states.registration_facility_id,
+    reporting_patient_states.registration_facility_size,
+    reporting_patient_states.registration_facility_type,
+    reporting_patient_states.registration_facility_slug,
+    reporting_patient_states.registration_facility_region_id,
+    reporting_patient_states.registration_block_slug,
+    reporting_patient_states.registration_block_region_id,
+    reporting_patient_states.registration_district_slug,
+    reporting_patient_states.registration_district_region_id,
+    reporting_patient_states.registration_state_slug,
+    reporting_patient_states.registration_state_region_id,
+    reporting_patient_states.registration_organization_slug,
+    reporting_patient_states.registration_organization_region_id,
+    reporting_patient_states.blood_pressure_id,
+    reporting_patient_states.bp_facility_id,
+    reporting_patient_states.bp_recorded_at,
+    reporting_patient_states.systolic,
+    reporting_patient_states.diastolic,
+    reporting_patient_states.blood_sugar_id,
+    reporting_patient_states.bs_facility_id,
+    reporting_patient_states.bs_recorded_at,
+    reporting_patient_states.blood_sugar_type,
+    reporting_patient_states.blood_sugar_value,
+    reporting_patient_states.blood_sugar_risk_state,
+    reporting_patient_states.encounter_id,
+    reporting_patient_states.encounter_recorded_at,
+    reporting_patient_states.prescription_drug_id,
+    reporting_patient_states.prescription_drug_recorded_at,
+    reporting_patient_states.appointment_id,
+    reporting_patient_states.appointment_recorded_at,
+    reporting_patient_states.visited_facility_ids,
+    reporting_patient_states.months_since_registration,
+    reporting_patient_states.quarters_since_registration,
+    reporting_patient_states.months_since_visit,
+    reporting_patient_states.quarters_since_visit,
+    reporting_patient_states.months_since_bp,
+    reporting_patient_states.quarters_since_bp,
+    reporting_patient_states.months_since_bs,
+    reporting_patient_states.quarters_since_bs,
+    reporting_patient_states.last_bp_state,
+    reporting_patient_states.htn_care_state,
+    reporting_patient_states.htn_treatment_outcome_in_last_3_months,
+    reporting_patient_states.htn_treatment_outcome_in_last_2_months,
+    reporting_patient_states.htn_treatment_outcome_in_quarter,
+    reporting_patient_states.diabetes_treatment_outcome_in_last_3_months,
+    reporting_patient_states.diabetes_treatment_outcome_in_last_2_months,
+    reporting_patient_states.diabetes_treatment_outcome_in_quarter,
+    reporting_patient_states.titrated,
+    reporting_patient_states.diagnosed_confirmed_at
+   FROM simple_reporting.reporting_patient_states;
 
 
 --
@@ -5486,6 +4639,261 @@ CREATE MATERIALIZED VIEW public.reporting_overdue_patients AS
 
 
 --
+-- Name: reporting_patient_follow_ups; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
+ WITH follow_up_blood_pressures AS (
+         SELECT DISTINCT ON (p.id, bp.facility_id, bp.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bp.id AS visit_id,
+            'BloodPressure'::text AS visit_type,
+            bp.facility_id,
+            bp.user_id,
+            bp.recorded_at AS visited_at,
+            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) AS month_string
+           FROM (public.patients p
+             JOIN public.blood_pressures bp ON (((p.id = bp.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
+        ), follow_up_blood_sugars AS (
+         SELECT DISTINCT ON (p.id, bs.facility_id, bs.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            bs.id AS visit_id,
+            'BloodSugar'::text AS visit_type,
+            bs.facility_id,
+            bs.user_id,
+            bs.recorded_at AS visited_at,
+            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) AS month_string
+           FROM (public.patients p
+             JOIN public.blood_sugars bs ON (((p.id = bs.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
+        ), follow_up_prescription_drugs AS (
+         SELECT DISTINCT ON (p.id, pd.facility_id, pd.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            pd.id AS visit_id,
+            'PrescriptionDrug'::text AS visit_type,
+            pd.facility_id,
+            pd.user_id,
+            pd.device_created_at AS visited_at,
+            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at)), 'YYYY-MM'::text) AS month_string
+           FROM (public.patients p
+             JOIN public.prescription_drugs pd ON (((p.id = pd.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, pd.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
+        ), follow_up_appointments AS (
+         SELECT DISTINCT ON (p.id, app.creation_facility_id, app.user_id, (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text))) p.id AS patient_id,
+            (p.gender)::public.gender_enum AS patient_gender,
+            app.id AS visit_id,
+            'Appointment'::text AS visit_type,
+            app.creation_facility_id AS facility_id,
+            app.user_id,
+            app.device_created_at AS visited_at,
+            to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at)), 'YYYY-MM'::text) AS month_string
+           FROM (public.patients p
+             JOIN public.appointments app ON (((p.id = app.patient_id) AND (date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, app.device_created_at))) > date_trunc('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))))))
+          WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
+        ), all_follow_ups AS (
+         SELECT follow_up_blood_pressures.patient_id,
+            follow_up_blood_pressures.patient_gender,
+            follow_up_blood_pressures.visit_id,
+            follow_up_blood_pressures.visit_type,
+            follow_up_blood_pressures.facility_id,
+            follow_up_blood_pressures.user_id,
+            follow_up_blood_pressures.visited_at,
+            follow_up_blood_pressures.month_string
+           FROM follow_up_blood_pressures
+        UNION
+         SELECT follow_up_blood_sugars.patient_id,
+            follow_up_blood_sugars.patient_gender,
+            follow_up_blood_sugars.visit_id,
+            follow_up_blood_sugars.visit_type,
+            follow_up_blood_sugars.facility_id,
+            follow_up_blood_sugars.user_id,
+            follow_up_blood_sugars.visited_at,
+            follow_up_blood_sugars.month_string
+           FROM follow_up_blood_sugars
+        UNION
+         SELECT follow_up_prescription_drugs.patient_id,
+            follow_up_prescription_drugs.patient_gender,
+            follow_up_prescription_drugs.visit_id,
+            follow_up_prescription_drugs.visit_type,
+            follow_up_prescription_drugs.facility_id,
+            follow_up_prescription_drugs.user_id,
+            follow_up_prescription_drugs.visited_at,
+            follow_up_prescription_drugs.month_string
+           FROM follow_up_prescription_drugs
+        UNION
+         SELECT follow_up_appointments.patient_id,
+            follow_up_appointments.patient_gender,
+            follow_up_appointments.visit_id,
+            follow_up_appointments.visit_type,
+            follow_up_appointments.facility_id,
+            follow_up_appointments.user_id,
+            follow_up_appointments.visited_at,
+            follow_up_appointments.month_string
+           FROM follow_up_appointments
+        )
+ SELECT DISTINCT ON (cal.month_string, all_follow_ups.facility_id, all_follow_ups.user_id, all_follow_ups.patient_id) all_follow_ups.patient_id,
+    all_follow_ups.patient_gender,
+    all_follow_ups.facility_id,
+    mh.diabetes,
+    mh.hypertension,
+    all_follow_ups.user_id,
+    all_follow_ups.visit_id,
+    all_follow_ups.visit_type,
+    all_follow_ups.visited_at,
+    cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
+    cal.month_string,
+    cal.quarter_string
+   FROM ((all_follow_ups
+     JOIN public.medical_histories mh ON ((all_follow_ups.patient_id = mh.patient_id)))
+     LEFT JOIN public.reporting_months cal ON ((all_follow_ups.month_string = cal.month_string)))
+  ORDER BY cal.month_string DESC
+  WITH NO DATA;
+
+
+--
+-- Name: reporting_patient_visits; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_patient_visits AS
+ SELECT DISTINCT ON (p.id, p.month_date) p.id AS patient_id,
+    p.month_date,
+    p.month,
+    p.quarter,
+    p.year,
+    p.month_string,
+    p.quarter_string,
+    p.assigned_facility_id,
+    p.registration_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_recorded_at,
+    e.id AS encounter_id,
+    e.facility_id AS encounter_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, e.recorded_at)) AS encounter_recorded_at,
+    pd.id AS prescription_drug_id,
+    pd.facility_id AS prescription_drug_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, pd.recorded_at)) AS prescription_drug_recorded_at,
+    app.id AS appointment_id,
+    app.creation_facility_id AS appointment_creation_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, app.recorded_at)) AS appointment_recorded_at,
+    array_remove(ARRAY[
+        CASE
+            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, e.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN e.facility_id
+            ELSE NULL::uuid
+        END,
+        CASE
+            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, pd.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN pd.facility_id
+            ELSE NULL::uuid
+        END,
+        CASE
+            WHEN (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, app.recorded_at)), 'YYYY-MM'::text) = p.month_string) THEN app.creation_facility_id
+            ELSE NULL::uuid
+        END], NULL::uuid) AS visited_facility_ids,
+    timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))) AS visited_at,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (12)::double precision) + (p.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS months_since_visit,
+    (((p.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at))))) * (4)::double precision) + (p.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))))) AS quarters_since_visit
+   FROM (((( SELECT p_1.id,
+            p_1.full_name,
+            p_1.age,
+            p_1.gender,
+            p_1.date_of_birth,
+            p_1.status,
+            p_1.created_at,
+            p_1.updated_at,
+            p_1.address_id,
+            p_1.age_updated_at,
+            p_1.device_created_at,
+            p_1.device_updated_at,
+            p_1.test_data,
+            p_1.registration_facility_id,
+            p_1.registration_user_id,
+            p_1.deleted_at,
+            p_1.contacted_by_counsellor,
+            p_1.could_not_contact_reason,
+            p_1.recorded_at,
+            p_1.reminder_consent,
+            p_1.deleted_by_user_id,
+            p_1.deleted_reason,
+            p_1.assigned_facility_id,
+            p_1.diagnosed_confirmed_at,
+            cal.month_date,
+            cal.month,
+            cal.quarter,
+            cal.year,
+            cal.month_string,
+            cal.quarter_string
+           FROM (public.patients p_1
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))) p
+     LEFT JOIN LATERAL ( SELECT timezone('UTC'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), (encounters.encountered_on)::timestamp without time zone)) AS recorded_at,
+            encounters.id,
+            encounters.facility_id,
+            encounters.patient_id,
+            encounters.encountered_on,
+            encounters.timezone_offset,
+            encounters.notes,
+            encounters.metadata,
+            encounters.device_created_at,
+            encounters.device_updated_at,
+            encounters.deleted_at,
+            encounters.created_at,
+            encounters.updated_at
+           FROM public.encounters
+          WHERE ((encounters.patient_id = p.id) AND (to_char((encounters.encountered_on)::timestamp with time zone, 'YYYY-MM'::text) <= p.month_string) AND (encounters.deleted_at IS NULL))
+          ORDER BY encounters.encountered_on DESC
+         LIMIT 1) e ON (true))
+     LEFT JOIN LATERAL ( SELECT prescription_drugs.device_created_at AS recorded_at,
+            prescription_drugs.id,
+            prescription_drugs.name,
+            prescription_drugs.rxnorm_code,
+            prescription_drugs.dosage,
+            prescription_drugs.device_created_at,
+            prescription_drugs.device_updated_at,
+            prescription_drugs.created_at,
+            prescription_drugs.updated_at,
+            prescription_drugs.patient_id,
+            prescription_drugs.facility_id,
+            prescription_drugs.is_protocol_drug,
+            prescription_drugs.is_deleted,
+            prescription_drugs.deleted_at,
+            prescription_drugs.user_id,
+            prescription_drugs.frequency,
+            prescription_drugs.duration_in_days,
+            prescription_drugs.teleconsultation_id
+           FROM public.prescription_drugs
+          WHERE ((prescription_drugs.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, prescription_drugs.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (prescription_drugs.deleted_at IS NULL))
+          ORDER BY prescription_drugs.device_created_at DESC
+         LIMIT 1) pd ON (true))
+     LEFT JOIN LATERAL ( SELECT appointments.device_created_at AS recorded_at,
+            appointments.id,
+            appointments.patient_id,
+            appointments.facility_id,
+            appointments.scheduled_date,
+            appointments.status,
+            appointments.cancel_reason,
+            appointments.device_created_at,
+            appointments.device_updated_at,
+            appointments.created_at,
+            appointments.updated_at,
+            appointments.remind_on,
+            appointments.agreed_to_visit,
+            appointments.deleted_at,
+            appointments.appointment_type,
+            appointments.user_id,
+            appointments.creation_facility_id
+           FROM public.appointments
+          WHERE ((appointments.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, appointments.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (appointments.deleted_at IS NULL))
+          ORDER BY appointments.device_created_at DESC
+         LIMIT 1) app ON (true))
+  WHERE ((p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))
+  ORDER BY p.id, p.month_date, (timezone('UTC'::text, timezone('UTC'::text, GREATEST(e.recorded_at, pd.recorded_at, app.recorded_at)))) DESC
+  WITH NO DATA;
+
+
+--
 -- Name: reporting_facility_states; Type: MATERIALIZED VIEW; Schema: public; Owner: -
 --
 
@@ -5570,10 +4978,47 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'visited_no_bs'::text))) AS visited_no_bs_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < 140) AND (reporting_patient_states.diastolic < 90) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_140_90_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < 130) AND (reporting_patient_states.diastolic < 80) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_130_80_under_care
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
+        ), dm_statins_outcomes AS (
+         WITH latest_visits_for_statins AS (
+                 SELECT reporting_patient_visits.patient_id,
+                    reporting_patient_visits.month_date,
+                    reporting_patient_visits.visited_at
+                   FROM public.reporting_patient_visits
+                ), statin_prescriptions_by_month AS (
+                 SELECT DISTINCT ON (pd.patient_id, cal_1.month_date) pd.patient_id,
+                    cal_1.month_date,
+                    pd.id AS statin_prescription_id
+                   FROM ((public.prescription_drugs pd
+                     LEFT JOIN public.reporting_months cal_1 ON ((to_char(((pd.device_created_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)), 'YYYY-MM'::text) <= to_char((cal_1.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+                     LEFT JOIN latest_visits_for_statins lv ON (((lv.month_date = cal_1.month_date) AND (lv.patient_id = pd.patient_id))))
+                  WHERE (((pd.name)::text ~~* '%statin%'::text) AND ((pd.is_deleted = false) OR ((pd.is_deleted = true) AND (lv.visited_at IS NOT NULL) AND (((pd.device_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)) >= ((lv.visited_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting))))) AND (pd.deleted_at IS NULL))
+                  ORDER BY pd.patient_id, cal_1.month_date DESC, pd.device_created_at DESC
+                ), rps_with_age_for_statins AS (
+                 SELECT rps.assigned_facility_region_id,
+                    rps.patient_id,
+                    rps.month_date,
+                    rps.htn_care_state,
+                        CASE
+                            WHEN (rps.date_of_birth IS NOT NULL) THEN date_part('year'::text, age((rps.month_date)::timestamp with time zone, (rps.date_of_birth)::timestamp with time zone))
+                            ELSE (date_part('year'::text, age((rps.month_date)::timestamp with time zone, ((((rps.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE ( SELECT current_setting('TIMEZONE'::text) AS current_setting)))::date)::timestamp with time zone)) + (rps.age)::double precision)
+                        END AS age_on_month_date
+                   FROM public.reporting_patient_states rps
+                  WHERE ((rps.diabetes = 'yes'::text) AND (rps.months_since_registration >= (3)::double precision))
+                )
+         SELECT age_rps.assigned_facility_region_id AS region_id,
+            age_rps.month_date,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_under_care,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state = 'under_care'::text) AND (age_rps.age_on_month_date >= (40)::double precision) AND (sp.statin_prescription_id IS NOT NULL))) AS dm_patients_40_and_above_with_statins,
+            count(DISTINCT age_rps.patient_id) FILTER (WHERE ((age_rps.htn_care_state <> 'dead'::text) AND (age_rps.age_on_month_date >= (40)::double precision))) AS dm_patients_40_and_above_with_ltfu
+           FROM (rps_with_age_for_statins age_rps
+             LEFT JOIN statin_prescriptions_by_month sp ON (((sp.patient_id = age_rps.patient_id) AND (sp.month_date = age_rps.month_date))))
+          GROUP BY age_rps.assigned_facility_region_id, age_rps.month_date
         ), monthly_cohort_outcomes AS (
          SELECT reporting_patient_states.assigned_facility_region_id AS region_id,
             reporting_patient_states.month_date,
@@ -5699,6 +5144,11 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     adjusted_diabetes_outcomes.bs_missed_visit_lost_to_follow_up AS adjusted_bs_missed_visit_lost_to_follow_up,
     adjusted_diabetes_outcomes.diabetes_patients_under_care AS adjusted_diabetes_patients_under_care,
     adjusted_diabetes_outcomes.diabetes_patients_lost_to_follow_up AS adjusted_diabetes_patients_lost_to_follow_up,
+    adjusted_diabetes_outcomes.dm_bp_below_140_90_under_care AS adjusted_dm_bp_below_140_90_under_care,
+    adjusted_diabetes_outcomes.dm_bp_below_130_80_under_care AS adjusted_dm_bp_below_130_80_under_care,
+    dm_statins_outcomes.dm_patients_40_and_above_under_care AS adjusted_dm_patients_40_and_above_under_care,
+    dm_statins_outcomes.dm_patients_40_and_above_with_statins AS adjusted_dm_patients_40_and_above_with_statins,
+    dm_statins_outcomes.dm_patients_40_and_above_with_ltfu AS adjusted_dm_patients_40_and_above_with_ltfu,
     monthly_cohort_outcomes.controlled AS monthly_cohort_controlled,
     monthly_cohort_outcomes.uncontrolled AS monthly_cohort_uncontrolled,
     monthly_cohort_outcomes.missed_visit AS monthly_cohort_missed_visit,
@@ -5735,7 +5185,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_agreed_to_visit,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_remind_to_call_later,
     monthly_hypertension_overdue_patients.contactable_patients_returned_with_result_removed_from_list
-   FROM ((((((((((((((public.reporting_facilities rf
+   FROM (((((((((((((((public.reporting_facilities rf
      JOIN public.reporting_months cal ON (true))
      LEFT JOIN registered_patients ON (((registered_patients.month_date = cal.month_date) AND (registered_patients.region_id = rf.facility_region_id))))
      LEFT JOIN registered_diabetes_patients ON (((registered_diabetes_patients.month_date = cal.month_date) AND (registered_diabetes_patients.region_id = rf.facility_region_id))))
@@ -5744,6 +5194,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
      LEFT JOIN assigned_diabetes_patients ON (((assigned_diabetes_patients.month_date = cal.month_date) AND (assigned_diabetes_patients.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_outcomes ON (((adjusted_outcomes.month_date = cal.month_date) AND (adjusted_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN adjusted_diabetes_outcomes ON (((adjusted_diabetes_outcomes.month_date = cal.month_date) AND (adjusted_diabetes_outcomes.region_id = rf.facility_region_id))))
+     LEFT JOIN dm_statins_outcomes ON (((dm_statins_outcomes.month_date = cal.month_date) AND (dm_statins_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_cohort_outcomes ON (((monthly_cohort_outcomes.month_date = cal.month_date) AND (monthly_cohort_outcomes.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_overdue_calls ON (((monthly_overdue_calls.month_date = cal.month_date) AND (monthly_overdue_calls.region_id = rf.facility_region_id))))
      LEFT JOIN monthly_follow_ups ON (((monthly_follow_ups.month_date = cal.month_date) AND (monthly_follow_ups.facility_id = rf.facility_id))))
@@ -5754,745 +5205,217 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
 
 
 --
--- Name: MATERIALIZED VIEW reporting_facility_states; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON MATERIALIZED VIEW public.reporting_facility_states IS 'Monthly summary of a facility''s indicators. This table has one row per facility, per month, from the month of the facility''s first registration.';
-
-
---
--- Name: COLUMN reporting_facility_states.month_date; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_date IS 'The reporting month for this row, represented as the date at the beginning of the month';
-
-
---
--- Name: COLUMN reporting_facility_states.month; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month IS 'Month (1-12) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter IS 'Quarter (1-4) of year';
-
-
---
--- Name: COLUMN reporting_facility_states.year; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.year IS 'Year in YYYY format';
-
-
---
--- Name: COLUMN reporting_facility_states.month_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.month_string IS 'String that represents a month, in YYYY-MM format';
-
-
---
--- Name: COLUMN reporting_facility_states.quarter_string; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.quarter_string IS 'String that represents a quarter, in YYYY-Q format';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_id IS 'ID of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_name IS 'Name of the facility';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_type; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_type IS 'Type of the facility (eg. ''District Hospital'')';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_size; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_size IS 'Size of the facility (community, small, medium, large)';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_id IS 'ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_name IS 'Name of the facility region. Usually the same as the facility name';
-
-
---
--- Name: COLUMN reporting_facility_states.facility_region_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.facility_region_slug IS 'Human readable ID of the facility region';
-
-
---
--- Name: COLUMN reporting_facility_states.block_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_region_id IS 'ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_name IS 'Name of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.block_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.block_slug IS 'Human readable ID of the block region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_id IS 'ID of the facility group that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_region_id IS 'ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_name IS 'Name of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.district_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.district_slug IS 'Human readable ID of the district region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_region_id IS 'ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_name IS 'Name of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.state_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.state_slug IS 'Human readable ID of the state region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_id IS 'ID of the organization that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_region_id; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_region_id IS 'ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_name; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_name IS 'Name of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.organization_slug; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.organization_slug IS 'Human readable ID of the organization region that the facility is in';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_registrations IS 'The total number of hypertensive patients registered at the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_registrations IS 'The number of hypertensive patients registered at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_diabetes_registrations IS 'The total number of diabetic patients registered at the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_registrations IS 'The number of diabetic patients registered at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_hypertension_and_diabetes_registrations IS 'The total number of patients registered at the facility with both hypertension and diabetes up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_hypertension_and_diabetes_registrations; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_hypertension_and_diabetes_registrations IS 'The number of patients registered at the facility with both hypertensio and diabetes in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.lost_to_follow_up IS 'The number of patients assigned to the facility as of the reporting month where the patient did not have a BP recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.dead; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.dead IS 'The number of hypertensive patients assigned to the facility as of the reporting month who are dead';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_assigned_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_patients IS 'The total number of hypertensive patients assigned to the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_under_care IS 'The number of patients assigned to the facility as of the reporting month where the patient had a blood sugar recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility as of the reporting month where the patient did not have a blood sugar recorded within the last year, and is not dead';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_dead; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_dead IS 'The number of diabetic patients assigned to the facility as of the reporting month who are dead';
-
-
---
--- Name: COLUMN reporting_facility_states.cumulative_assigned_diabetic_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.cumulative_assigned_diabetic_patients IS 'The total number of diabetic patients assigned to the facility up to the end of the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_controlled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_controlled_under_care IS 'The number of hypertensive patients registered before the last 3 months, with a BP < 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_uncontrolled_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_uncontrolled_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with a BP >= 140/90 at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no BP taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_missed_visit_lost_to_follow_up IS 'adjusted_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bp_lost_to_follow_up IS 'adjusted_visited_no_bp_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_under_care IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_patients_lost_to_follow_up IS 'The number of hypertensive patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar < 126  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar < 200  mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar < 7%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_below_200_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_below_200_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_below_200. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 200  mg/dL and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 126 and < 200 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 200 and < 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 7% and < 9%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_200_to_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_200_to_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_200_to_300. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_random_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_random_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a random blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_fasting_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_fasting_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a fasting blood sugar >= 200 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_post_prandial_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a post-prandial blood sugar >= 300 mg/dL. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_hba1c_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_hba1c_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar measurement is a hba1c blood sugar >= 9%. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_over_300_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_over_300_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, where their latest blood sugar value as of a month is categorized as bs_over_300. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_visited_no_bs_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_visited_no_bs_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no blood sugar taken at their last visit in the last 3 months. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_bs_missed_visit_lost_to_follow_up IS 'adjusted_diabetes_missed_visit_lost_to_follow_up';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_under_care; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_under_care IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months';
-
-
---
--- Name: COLUMN reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_diabetes_patients_lost_to_follow_up IS 'The number of diabetic patients assigned to the facility that were registered before the last 3 months, with no visit in the last year';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_controlled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_controlled IS 'The number of patients from `monthly_cohort_patients` with a BP <140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with a controlled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_uncontrolled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_uncontrolled IS 'The number of patients from `monthly_cohort_patients` with a BP >=140/90 at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with an uncontrolled BP at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_missed_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_missed_visit IS 'The number of patients from `monthly_cohort_patients` with no visit in the next two months. Eg. The number of patients registered in Jan 2020 with no visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_visited_no_bp; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_visited_no_bp IS 'The number of patients from `monthly_cohort_patients` with no BP recorded at their latest visit in the next two months. Eg. The number of patients registered in Jan 2020 with no BP recorded at their latest visit in Feb-Mar 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_cohort_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_cohort_patients IS 'The number of patients assigned to the facility that were registered two months before the reporting month, and have a . Eg. For a March 2020 report, the number of patients registered in Jan 2020';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_overdue_calls; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_overdue_calls IS 'The number of overdue calls made by healthcare workers at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_follow_ups; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_follow_ups IS 'The number of hypertensive follow-up patient visits at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.monthly_diabetes_follow_ups; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.monthly_diabetes_follow_ups IS 'The number of diabetic follow-up patient visits at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.total_appts_scheduled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.total_appts_scheduled IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_0_to_14_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_0_to_14_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 0 and 14 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 15 and 31 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month between 32 and 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers for hypertensive patients at the facility in the reporting month more than 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_total_appts_scheduled; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_total_appts_scheduled IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_0_to_14_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_0_to_14_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 0 and 14 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_15_to_31_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_15_to_31_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 15 and 31 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_32_to_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_32_to_62_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month between 32 and 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.diabetes_appts_scheduled_more_than_62_days; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.diabetes_appts_scheduled_more_than_62_days IS 'The total number of appointments scheduled by healthcare workers for diabetic patients at the facility in the reporting month more than 62 days from the visit date';
-
-
---
--- Name: COLUMN reporting_facility_states.overdue_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_overdue_patients; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_overdue_patients IS 'The total of overdue patients at the facility at the beginning of the reporting month excluding patients who are removed from overdue list. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called IS 'The total of calls made to overdue patients at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_called_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_called_with_result_removed_from_list IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_agreed_to_visit IS 'The total of overdue patients having call result type marked as ''agreed_to_visit'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_remind_to_call_later IS 'The total of overdue patients having call result type marked as ''remind_to_call_later'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_called_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_called_with_result_removed_from_list IS 'The total of overdue patients having call result type marked as ''removed_from_overdue_list'' at the facility during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_after_call; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_after_call IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.patients_returned_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.patients_returned_with_result_removed_from_list IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_agreed_to_visit; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_agreed_to_visit IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''agreed_to_visit''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_remind_to_call_later; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_remind_to_call_later IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''remind_to_call_later''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
-
-
---
--- Name: COLUMN reporting_facility_states.contactable_patients_returned_with_result_removed_from_list; Type: COMMENT; Schema: public; Owner: -
---
-
-COMMENT ON COLUMN public.reporting_facility_states.contactable_patients_returned_with_result_removed_from_list IS 'The total of overdue patients who returned to a facility within 15 days after a call during the reporting month and call result type is ''removed_from_overdue_list''. Patients who are removed from the overdue list at the beginning of the month are excluded. Dead and lost to follow-up patients are excluded.';
+-- Name: reporting_patient_blood_pressures; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_patient_blood_pressures AS
+ SELECT DISTINCT ON (bp.patient_id, cal.month_date) cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
+    cal.month_string,
+    cal.quarter_string,
+    timezone('UTC'::text, timezone('UTC'::text, bp.recorded_at)) AS blood_pressure_recorded_at,
+    bp.id AS blood_pressure_id,
+    bp.patient_id,
+    bp.systolic,
+    bp.diastolic,
+    bp.facility_id AS blood_pressure_facility_id,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
+    p.assigned_facility_id AS patient_assigned_facility_id,
+    p.registration_facility_id AS patient_registration_facility_id,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS months_since_bp,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at))))) AS quarters_since_bp
+   FROM ((public.blood_pressures bp
+     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bp.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+     JOIN public.patients p ON (((bp.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
+  WHERE (bp.deleted_at IS NULL)
+  ORDER BY bp.patient_id, cal.month_date, bp.recorded_at DESC
+  WITH NO DATA;
+
+
+--
+-- Name: reporting_patient_blood_sugars; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_patient_blood_sugars AS
+ SELECT DISTINCT ON (bs.patient_id, cal.month_date) cal.month_date,
+    cal.month,
+    cal.quarter,
+    cal.year,
+    cal.month_string,
+    cal.quarter_string,
+    timezone('UTC'::text, timezone('UTC'::text, bs.recorded_at)) AS blood_sugar_recorded_at,
+    bs.id AS blood_sugar_id,
+    bs.patient_id,
+    bs.blood_sugar_type,
+    bs.blood_sugar_value,
+    bs.facility_id AS blood_sugar_facility_id,
+        CASE
+            WHEN (((bs.blood_sugar_type)::text = 'random'::text) OR ((bs.blood_sugar_type)::text = 'post_prandial'::text)) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 200.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 200.0) AND (bs.blood_sugar_value < 300.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 300.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            WHEN ((bs.blood_sugar_type)::text = 'fasting'::text) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 126.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 126.0) AND (bs.blood_sugar_value < 200.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 200.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            WHEN ((bs.blood_sugar_type)::text = 'hba1c'::text) THEN
+            CASE
+                WHEN (bs.blood_sugar_value < 7.0) THEN 'bs_below_200'::text
+                WHEN ((bs.blood_sugar_value >= 7.0) AND (bs.blood_sugar_value < 9.0)) THEN 'bs_200_to_300'::text
+                WHEN (bs.blood_sugar_value >= 9.0) THEN 'bs_over_300'::text
+                ELSE NULL::text
+            END
+            ELSE NULL::text
+        END AS blood_sugar_risk_state,
+    timezone('UTC'::text, timezone('UTC'::text, p.diagnosed_confirmed_at)) AS patient_registered_at,
+    p.assigned_facility_id AS patient_assigned_facility_id,
+    p.registration_facility_id AS patient_registration_facility_id,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS months_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, p.diagnosed_confirmed_at))))) AS quarters_since_registration,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (12)::double precision) + (cal.month - date_part('month'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS months_since_bs,
+    (((cal.year - date_part('year'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)))) * (4)::double precision) + (cal.quarter - date_part('quarter'::text, timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at))))) AS quarters_since_bs
+   FROM ((public.blood_sugars bs
+     LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, bs.recorded_at)), 'YYYY-MM'::text) <= to_char((cal.month_date)::timestamp with time zone, 'YYYY-MM'::text))))
+     JOIN public.patients p ON (((bs.patient_id = p.id) AND (p.deleted_at IS NULL) AND (p.diagnosed_confirmed_at IS NOT NULL))))
+  WHERE (bs.deleted_at IS NULL)
+  ORDER BY bs.patient_id, cal.month_date, bs.recorded_at DESC
+  WITH NO DATA;
+
+
+--
+-- Name: reporting_patient_prescriptions; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW public.reporting_patient_prescriptions AS
+ SELECT reporting_patient_prescriptions.patient_id,
+    reporting_patient_prescriptions.month_date,
+    reporting_patient_prescriptions.age,
+    reporting_patient_prescriptions.gender,
+    reporting_patient_prescriptions.hypertension,
+    reporting_patient_prescriptions.diabetes,
+    reporting_patient_prescriptions.last_bp_state,
+    reporting_patient_prescriptions.htn_care_state,
+    reporting_patient_prescriptions.months_since_bp,
+    reporting_patient_prescriptions.assigned_facility_id,
+    reporting_patient_prescriptions.assigned_facility_name,
+    reporting_patient_prescriptions.assigned_facility_size,
+    reporting_patient_prescriptions.assigned_facility_type,
+    reporting_patient_prescriptions.assigned_facility_slug,
+    reporting_patient_prescriptions.assigned_facility_region_id,
+    reporting_patient_prescriptions.assigned_block_slug,
+    reporting_patient_prescriptions.assigned_block_region_id,
+    reporting_patient_prescriptions.assigned_block_name,
+    reporting_patient_prescriptions.assigned_district_slug,
+    reporting_patient_prescriptions.assigned_district_region_id,
+    reporting_patient_prescriptions.assigned_district_name,
+    reporting_patient_prescriptions.assigned_state_slug,
+    reporting_patient_prescriptions.assigned_state_region_id,
+    reporting_patient_prescriptions.assigned_state_name,
+    reporting_patient_prescriptions.assigned_organization_slug,
+    reporting_patient_prescriptions.assigned_organization_region_id,
+    reporting_patient_prescriptions.assigned_organization_name,
+    reporting_patient_prescriptions.registration_facility_id,
+    reporting_patient_prescriptions.registration_facility_name,
+    reporting_patient_prescriptions.registration_facility_size,
+    reporting_patient_prescriptions.registration_facility_type,
+    reporting_patient_prescriptions.registration_facility_slug,
+    reporting_patient_prescriptions.registration_facility_region_id,
+    reporting_patient_prescriptions.registration_block_slug,
+    reporting_patient_prescriptions.registration_block_region_id,
+    reporting_patient_prescriptions.registration_block_name,
+    reporting_patient_prescriptions.registration_district_slug,
+    reporting_patient_prescriptions.registration_district_region_id,
+    reporting_patient_prescriptions.registration_district_name,
+    reporting_patient_prescriptions.registration_state_slug,
+    reporting_patient_prescriptions.registration_state_region_id,
+    reporting_patient_prescriptions.registration_state_name,
+    reporting_patient_prescriptions.registration_organization_slug,
+    reporting_patient_prescriptions.registration_organization_region_id,
+    reporting_patient_prescriptions.registration_organization_name,
+    reporting_patient_prescriptions.hypertension_prescriptions,
+    reporting_patient_prescriptions.diabetes_prescriptions,
+    reporting_patient_prescriptions.other_prescriptions,
+    reporting_patient_prescriptions.previous_hypertension_prescriptions,
+    reporting_patient_prescriptions.previous_diabetes_prescriptions,
+    reporting_patient_prescriptions.previous_other_prescriptions,
+    reporting_patient_prescriptions.hypertension_drug_changed,
+    reporting_patient_prescriptions.diabetes_drug_changed,
+    reporting_patient_prescriptions.other_drug_changed,
+    reporting_patient_prescriptions.prescribed_statins
+   FROM simple_reporting.reporting_patient_prescriptions;
+
+
+--
+-- Name: reporting_prescriptions; Type: MATERIALIZED VIEW; Schema: public; Owner: -
+--
+
+CREATE MATERIALIZED VIEW public.reporting_prescriptions AS
+ SELECT p.id AS patient_id,
+    p.month_date,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+   FROM (( SELECT p_1.id,
+            p_1.full_name,
+            p_1.age,
+            p_1.gender,
+            p_1.date_of_birth,
+            p_1.status,
+            p_1.created_at,
+            p_1.updated_at,
+            p_1.address_id,
+            p_1.age_updated_at,
+            p_1.device_created_at,
+            p_1.device_updated_at,
+            p_1.test_data,
+            p_1.registration_facility_id,
+            p_1.registration_user_id,
+            p_1.deleted_at,
+            p_1.contacted_by_counsellor,
+            p_1.could_not_contact_reason,
+            p_1.recorded_at,
+            p_1.reminder_consent,
+            p_1.deleted_by_user_id,
+            p_1.deleted_reason,
+            p_1.assigned_facility_id,
+            cal.month_date,
+            cal.month,
+            cal.quarter,
+            cal.year,
+            cal.month_string,
+            cal.quarter_string
+           FROM (public.patients p_1
+             LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))
+          WHERE ((p_1.deleted_at IS NULL) AND (p_1.diagnosed_confirmed_at IS NOT NULL))) p
+     LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
+            actual.dosage AS actual_dosage,
+            clean.medicine AS clean_name,
+            clean.dosage AS clean_dosage,
+            purpose.hypertension AS medicine_purpose_hypertension,
+            purpose.diabetes AS medicine_purpose_diabetes
+           FROM (((public.prescription_drugs actual
+             LEFT JOIN public.raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, ' +'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, ' +'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, ' +'::text, ''::text, 'g'::text))))))
+             LEFT JOIN public.clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
+             LEFT JOIN public.medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
+          WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))
+          ORDER BY clean.medicine, actual.device_created_at DESC) prescriptions ON (true))
+  GROUP BY p.id, p.month_date
+  WITH NO DATA;
 
 
 --
@@ -6822,10 +5745,10 @@ ALTER TABLE ONLY public.dr_rai_action_plans ALTER COLUMN id SET DEFAULT nextval(
 
 
 --
--- Name: dr_rai_actions id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: dr_rai_data_bp_fudgings id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.dr_rai_actions ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_actions_id_seq'::regclass);
+ALTER TABLE ONLY public.dr_rai_data_bp_fudgings ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_data_bp_fudgings_id_seq'::regclass);
 
 
 --
@@ -7081,11 +6004,11 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 
 --
--- Name: dr_rai_actions dr_rai_actions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: dr_rai_data_bp_fudgings dr_rai_data_bp_fudgings_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.dr_rai_actions
-    ADD CONSTRAINT dr_rai_actions_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.dr_rai_data_bp_fudgings
+    ADD CONSTRAINT dr_rai_data_bp_fudgings_pkey PRIMARY KEY (id);
 
 
 --
@@ -7177,14 +6100,6 @@ ALTER TABLE ONLY public.facilities
 
 
 --
--- Name: legacy_mobile_data_dumps legacy_mobile_data_dumps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.legacy_mobile_data_dumps
-    ADD CONSTRAINT legacy_mobile_data_dumps_pkey PRIMARY KEY (id);
-
-
---
 -- Name: facility_business_identifiers facility_business_identifiers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -7214,6 +6129,14 @@ ALTER TABLE ONLY public.flipper_features
 
 ALTER TABLE ONLY public.flipper_gates
     ADD CONSTRAINT flipper_gates_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: legacy_mobile_data_dumps legacy_mobile_data_dumps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT legacy_mobile_data_dumps_pkey PRIMARY KEY (id);
 
 
 --
@@ -7468,21 +6391,6 @@ CREATE UNIQUE INDEX clean_medicine_to_dosages__unique_name_and_dosage ON public.
 --
 
 CREATE UNIQUE INDEX cphc_facility_mappings_unique_cphc_record ON public.cphc_facility_mappings USING btree (cphc_state_id, cphc_state_name, cphc_district_id, cphc_district_name, cphc_taluka_id, cphc_taluka_name, cphc_phc_id, cphc_phc_name, cphc_subcenter_id, cphc_subcenter_name, cphc_village_id, cphc_village_name);
-
-
---
--- Name: facility_monthly_fr_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX facility_monthly_fr_facility_id ON simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
-
-
---
--- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX facility_monthly_fr_facility_region_id ON simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
-
 
 
 --
@@ -7864,6 +6772,13 @@ CREATE INDEX index_dr_rai_action_plans_on_region_id ON public.dr_rai_action_plan
 
 
 --
+-- Name: index_dr_rai_data_bp_fudgings_on_state_district_slug_quarter; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_dr_rai_data_bp_fudgings_on_state_district_slug_quarter ON public.dr_rai_data_bp_fudgings USING btree (state, district, slug, quarter);
+
+
+--
 -- Name: index_dr_rai_data_statins_on_month_date_and_aggregate_root; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -7875,13 +6790,6 @@ CREATE UNIQUE INDEX index_dr_rai_data_statins_on_month_date_and_aggregate_root O
 --
 
 CREATE UNIQUE INDEX index_dr_rai_data_titrations_on_month_date_and_facility_name ON public.dr_rai_data_titrations USING btree (month_date, facility_name);
-
-
---
--- Name: index_dr_rai_targets_on_dr_rai_indicators_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_dr_rai_targets_on_dr_rai_indicators_id ON public.dr_rai_targets USING btree (dr_rai_indicators_id);
 
 
 --
@@ -8022,20 +6930,6 @@ CREATE UNIQUE INDEX index_facilities_on_slug ON public.facilities USING btree (s
 --
 
 CREATE INDEX index_facilities_on_updated_at ON public.facilities USING btree (updated_at);
-
-
---
--- Name: index_legacy_mobile_data_dumps_on_dump_date; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_legacy_mobile_data_dumps_on_dump_date ON public.legacy_mobile_data_dumps USING btree (dump_date);
-
-
---
--- Name: index_legacy_mobile_data_dumps_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_legacy_mobile_data_dumps_on_user_id ON public.legacy_mobile_data_dumps USING btree (user_id);
 
 
 --
@@ -8190,6 +7084,20 @@ CREATE INDEX index_latest_bp_per_patient_per_months_patient_id ON public.latest_
 --
 
 CREATE INDEX index_latest_bp_per_patient_per_quarters_patient_id ON public.latest_blood_pressures_per_patient_per_quarters USING btree (patient_id);
+
+
+--
+-- Name: index_legacy_mobile_data_dumps_on_dump_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_dump_date ON public.legacy_mobile_data_dumps USING btree (dump_date);
+
+
+--
+-- Name: index_legacy_mobile_data_dumps_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_legacy_mobile_data_dumps_on_user_id ON public.legacy_mobile_data_dumps USING btree (user_id);
 
 
 --
@@ -8452,6 +7360,13 @@ CREATE INDEX index_patients_on_deleted_at ON public.patients USING btree (delete
 
 
 --
+-- Name: index_patients_on_diagnosed_confirmed_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patients_on_diagnosed_confirmed_at ON public.patients USING btree (diagnosed_confirmed_at);
+
+
+--
 -- Name: index_patients_on_id_and_updated_at; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8463,13 +7378,6 @@ CREATE INDEX index_patients_on_id_and_updated_at ON public.patients USING btree 
 --
 
 CREATE INDEX index_patients_on_recorded_at ON public.patients USING btree (recorded_at);
-
-
---
--- Name: index_patients_on_diagnosed_confirmed_at; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_patients_on_diagnosed_confirmed_at ON public.patients USING btree (diagnosed_confirmed_at);
 
 
 --
@@ -8653,6 +7561,7 @@ CREATE UNIQUE INDEX index_reporting_facility_appointment_scheduled_days ON publi
 
 CREATE INDEX index_reporting_patient_follow_ups_on_facility_id ON public.reporting_patient_follow_ups USING btree (facility_id);
 
+
 --
 -- Name: index_teleconsultations_on_facility_id; Type: INDEX; Schema: public; Owner: -
 --
@@ -8820,6 +7729,7 @@ CREATE UNIQUE INDEX patient_blood_pressures_patient_id_month_date ON public.repo
 
 CREATE UNIQUE INDEX patient_blood_sugars_month_date_patient_id ON public.reporting_patient_blood_sugars USING btree (month_date, patient_id);
 
+
 --
 -- Name: patient_visits_patient_id_month_date; Type: INDEX; Schema: public; Owner: -
 --
@@ -8840,11 +7750,6 @@ CREATE UNIQUE INDEX raw_to_clean_medicines_unique_name_and_dosage ON public.raw_
 
 CREATE UNIQUE INDEX reporting_patient_follow_ups_unique_index ON public.reporting_patient_follow_ups USING btree (patient_id, user_id, facility_id, month_date);
 
---
--- Name: reporting_prescriptions_patient_month_date; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX reporting_prescriptions_patient_month_date ON public.reporting_prescriptions USING btree (patient_id, month_date);
 
 --
 -- Name: reporting_prescriptions_month_date; Type: INDEX; Schema: public; Owner: -
@@ -8854,10 +7759,80 @@ CREATE INDEX reporting_prescriptions_month_date ON public.reporting_prescription
 
 
 --
+-- Name: reporting_prescriptions_patient_month_date; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX reporting_prescriptions_patient_month_date ON public.reporting_prescriptions USING btree (patient_id, month_date);
+
+
+--
 -- Name: user_authentications_master_users_authenticatable_uniq_index; Type: INDEX; Schema: public; Owner: -
 --
 
 CREATE UNIQUE INDEX user_authentications_master_users_authenticatable_uniq_index ON public.user_authentications USING btree (user_id, authenticatable_type, authenticatable_id);
+
+
+--
+-- Name: facility_monthly_fr_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_id ON ONLY simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_id);
+
+
+--
+-- Name: facility_monthly_fr_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX facility_monthly_fr_facility_region_id ON ONLY simple_reporting.reporting_facility_monthly_follow_ups_and_registrations USING btree (facility_region_id);
+
+
+--
+-- Name: index_fs_block; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_fs_block ON ONLY simple_reporting.reporting_facility_states USING btree (block_region_id);
+
+
+--
+-- Name: index_fs_district; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_fs_district ON ONLY simple_reporting.reporting_facility_states USING btree (district_region_id);
+
+
+--
+-- Name: index_fs_organization; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_fs_organization ON ONLY simple_reporting.reporting_facility_states USING btree (organization_region_id);
+
+
+--
+-- Name: index_fs_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_fs_region_id ON ONLY simple_reporting.reporting_facility_states USING btree (facility_region_id);
+
+
+--
+-- Name: index_fs_state; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_fs_state ON ONLY simple_reporting.reporting_facility_states USING btree (state_region_id);
+
+
+--
+-- Name: index_patient_prescriptions_patient_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
+
+
+--
+-- Name: index_reporting_patient_prescriptions_on_age; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX index_reporting_patient_prescriptions_on_age ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (age);
 
 
 --
@@ -8879,6 +7854,48 @@ CREATE INDEX index_reporting_patient_states_on_gender ON ONLY simple_reporting.r
 --
 
 CREATE INDEX index_reporting_patient_states_on_gender_and_age ON ONLY simple_reporting.reporting_patient_states USING btree (gender, age);
+
+
+--
+-- Name: patient_prescriptions_assigned_block_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_block_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_block_region_id);
+
+
+--
+-- Name: patient_prescriptions_assigned_district_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_district_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_district_region_id);
+
+
+--
+-- Name: patient_prescriptions_assigned_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_facility_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_id);
+
+
+--
+-- Name: patient_prescriptions_assigned_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_facility_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_region_id);
+
+
+--
+-- Name: patient_prescriptions_assigned_organization_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_organization_region_id);
+
+
+--
+-- Name: patient_prescriptions_assigned_state_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX patient_prescriptions_assigned_state_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_state_region_id);
 
 
 --
@@ -8957,83 +7974,6 @@ CREATE INDEX reporting_patient_states_bp_facility_id ON ONLY simple_reporting.re
 
 CREATE INDEX reporting_patient_states_titrated ON ONLY simple_reporting.reporting_patient_states USING btree (titrated);
 
---
--- Name: index_reporting_patient_prescriptions_on_age; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_reporting_patient_prescriptions_on_age ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (age);
-
---
--- Name: patient_prescriptions_assigned_facility_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_facility_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_id);
-
---
--- Name: patient_prescriptions_assigned_facility_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_facility_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_facility_region_id);
-
---
--- Name: patient_prescriptions_assigned_block_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_block_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_block_region_id);
-
---
--- Name: patient_prescriptions_assigned_district_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_district_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_district_region_id);
-
---
--- Name: patient_prescriptions_assigned_state_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_state_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_state_region_id);
-
---
--- Name: patient_prescriptions_assigned_organization_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (assigned_organization_region_id);
-
---
--- Name: index_patient_prescriptions_patient_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
-
---
--- Name: index_fs_block; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_fs_block ON simple_reporting.reporting_facility_states USING btree (block_region_id);
-
---
--- Name: index_fs_district; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_fs_district ON simple_reporting.reporting_facility_states USING btree (district_region_id);
-
---
--- Name: index_fs_region_id; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_fs_region_id ON simple_reporting.reporting_facility_states USING btree (facility_region_id);
-
---
--- Name: index_fs_organization; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_fs_organization ON simple_reporting.reporting_facility_states USING btree (organization_region_id);
-
---
--- Name: index_fs_state; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX index_fs_state ON simple_reporting.reporting_facility_states USING btree (state_region_id);
 
 --
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
@@ -9089,6 +8029,14 @@ ALTER TABLE ONLY public.dr_rai_action_plans
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_256d8f15cb FOREIGN KEY (registration_facility_id) REFERENCES public.facilities(id);
+
+
+--
+-- Name: legacy_mobile_data_dumps fk_rails_27f160fb5a; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.legacy_mobile_data_dumps
+    ADD CONSTRAINT fk_rails_27f160fb5a FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -9316,14 +8264,6 @@ ALTER TABLE ONLY public.facilities
 
 
 --
--- Name: legacy_mobile_data_dumps fk_rails_a1b2c3d4e5; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.legacy_mobile_data_dumps
-    ADD CONSTRAINT fk_rails_a1b2c3d4e5 FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
 -- Name: dr_rai_action_plans fk_rails_c6db95d644; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -9377,14 +8317,6 @@ ALTER TABLE ONLY public.notifications
 
 ALTER TABLE ONLY public.oauth_access_tokens
     ADD CONSTRAINT fk_rails_ee63f25419 FOREIGN KEY (resource_owner_id) REFERENCES public.machine_users(id);
-
-
---
--- Name: dr_rai_targets fk_rails_f0398a9ae0; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.dr_rai_targets
-    ADD CONSTRAINT fk_rails_f0398a9ae0 FOREIGN KEY (dr_rai_indicators_id) REFERENCES public.dr_rai_indicators(id);
 
 
 --
@@ -9557,6 +8489,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250327172921'),
 ('20250522105107'),
 ('20250522133245'),
+('20250523112330'),
+('20250523112331'),
 ('20250618201739'),
 ('20250619104804'),
 ('20250619113919'),
@@ -9575,14 +8509,13 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20250924101441'),
 ('20250924102156'),
 ('20250925094123'),
-('20251125090819'),
-('20251211073126'),
-('20260105123000'),
+('20251105140314'),
 ('20251112085230'),
 ('20251112091000'),
 ('20251119095624'),
 ('20251119133109'),
 ('20251120141950'),
+('20251125090819'),
 ('20251126052630'),
 ('20251127104720'),
 ('20251201094315'),
@@ -9592,12 +8525,17 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251205091911'),
 ('20251208104102'),
 ('20251210061204'),
+('20251211070415'),
+('20251211073126'),
 ('20251211154907'),
 ('20251215113615'),
 ('20251219061210'),
+('20260105123000'),
+('20260120115014'),
+('20260127150000'),
 ('20260128094448'),
-('20260212195326'),
 ('20260205110957'),
+('20260212195326'),
 ('20260224063659');
 
 
