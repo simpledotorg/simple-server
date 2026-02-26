@@ -47,26 +47,32 @@ namespace :reporting do
     end
   end
 
-  desc "Refresh a partitoned table for given months"
-  task :refresh_partitioned_table, [:table_name, :start_date, :end_date] => :environment do |_, args|
-    unless args[:table_name].present? && args[:start_date].present? && args[:end_date].present?
-      puts "ERROR: table_name, start_date and end_date are required."
-      puts "Usage: rake reporting:refresh_partitioned_table['reporting_patient_states', '2024-01-01' ,'2024-02-01']"
+  desc "Refresh a partitioned table for N months in the past"
+  task :refresh_partitioned_table, [:table_name, :months_back] => :environment do |_, args|
+    unless args[:table_name].present? && args[:months_back].present?
+      puts "ERROR: table_name and months_back are required."
+      puts "Usage: rake reporting:refresh_partitioned_table[reporting_patient_states, 6]"
       exit 1
     end
-
     table_name = args[:table_name]
-    start_date = Date.parse(args[:start_date]).beginning_of_month
-    end_date = Date.parse(args[:end_date]).beginning_of_month
-    months = []
-    current = start_date
-    while current <= end_date
-      months << current.strftime("%Y-%m-%d")
-      current = current.next_month
+    months_back = args[:months_back].to_i
+    if months_back < 0
+      puts "ERROR: months_back must be >= 0"
+      exit 1
     end
-    months.each do |month|
-      puts "Refreshing partitioned table: #{table_name} for month: #{month}"
-      ActiveRecord::Base.connection.exec_query("CALL simple_reporting.add_shard_to_table('#{month}', '#{table_name}')")
+    current_month = Date.today.beginning_of_month
+    start_month = current_month - months_back.months
+    refresh_months = []
+    while start_month <= current_month
+      refresh_months << start_month
+      start_month = start_month.next_month
+    end
+    refresh_months.each do |month|
+      formatted_month = month.strftime("%Y-%m-%d")
+      puts "Refreshing partitioned table: #{table_name} for month: #{formatted_month}"
+      ActiveRecord::Base.connection.exec_query(
+        "CALL simple_reporting.add_shard_to_table('#{formatted_month}', '#{table_name}')"
+      )
     end
   end
 end
