@@ -49,13 +49,14 @@ namespace :reporting do
 
   desc "Refresh a partitioned table for N months in the past"
   task :refresh_partitioned_table, [:table_name, :months_back] => :environment do |_, args|
-    unless args[:table_name].present? && args[:months_back].present?
-      puts "ERROR: table_name and months_back are required."
+    unless args[:table_name].present?
+      puts "ERROR: table_name is required."
       puts "Usage: rake reporting:refresh_partitioned_table[reporting_patient_states, 6]"
+      puts "       rake reporting:refresh_partitioned_table[reporting_patient_states]"
       exit 1
     end
     table_name = args[:table_name]
-    months_back = args[:months_back].to_i
+    months_back = args[:months_back].present? ? args[:months_back].to_i : 12
     if months_back < 0
       puts "ERROR: months_back must be >= 0"
       exit 1
