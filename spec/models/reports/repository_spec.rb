@@ -944,20 +944,6 @@ RSpec.describe Reports::Repository, type: :model do
 
     let(:single_period) { end_period }
 
-    let!(:diabetes_patients) do
-      create_list(:patient, 3, :diabetes,
-        recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
-        assigned_facility: facility,
-        registration_user: user)
-    end
-
-    let!(:hypertension_patients) do
-      create_list(:patient, 3, :hypertension,
-        recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
-        assigned_facility: facility,
-        registration_user: user)
-    end
-
     before do
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
         ReportingHelpers.get_refresh_months_between_dates(
@@ -966,6 +952,11 @@ RSpec.describe Reports::Repository, type: :model do
         )
       )
 
+      diabetes_patients = create_list(:patient, 3, :diabetes,
+        recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
       diabetes_patients.each do |p|
         create(:blood_sugar, :with_encounter,
           patient: p,
@@ -973,6 +964,11 @@ RSpec.describe Reports::Repository, type: :model do
           recorded_at: start_period.to_date,
           user: user)
       end
+
+      hypertension_patients = create_list(:patient, 3, :hypertension,
+        recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+        assigned_facility: facility,
+        registration_user: user)
 
       hypertension_patients.each do |p|
         create(:bp_with_encounter,
