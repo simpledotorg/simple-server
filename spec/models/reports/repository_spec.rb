@@ -937,27 +937,27 @@ RSpec.describe Reports::Repository, type: :model do
 
   context "period extension for 3-month lookback (18 month UI window + 3 month buffer)" do
     let(:facility) { create(:facility, facility_group: facility_group_1) }
-  
+
     let(:end_period) { Period.current }
     let(:start_period) { end_period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1)) }
     let(:original_range) { (start_period..end_period) }
-  
+
     let(:single_period) { end_period }
-  
+
     let!(:diabetes_patients) do
       create_list(:patient, 3, :diabetes,
         recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
         assigned_facility: facility,
         registration_user: user)
     end
-  
+
     let!(:hypertension_patients) do
       create_list(:patient, 3, :hypertension,
         recorded_at: start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
         assigned_facility: facility,
         registration_user: user)
     end
-  
+
     before do
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
         ReportingHelpers.get_refresh_months_between_dates(
@@ -965,7 +965,7 @@ RSpec.describe Reports::Repository, type: :model do
           end_period.to_date
         )
       )
-  
+
       diabetes_patients.each do |p|
         create(:blood_sugar, :with_encounter,
           patient: p,
@@ -973,7 +973,7 @@ RSpec.describe Reports::Repository, type: :model do
           recorded_at: start_period.to_date,
           user: user)
       end
-  
+
       hypertension_patients.each do |p|
         create(:bp_with_encounter,
           patient: p,
@@ -981,22 +981,22 @@ RSpec.describe Reports::Repository, type: :model do
           recorded_at: start_period.to_date,
           user: user)
       end
-  
+
       refresh_views
     end
-  
+
     it "keeps original UI period window as 18 months" do
       repo = Reports::Repository.new(facility.region, periods: original_range)
-  
+
       expect(repo.periods).to eq(original_range)
       expect(repo.periods.count).to eq(Reports::MAX_MONTHS_OF_DATA)
     end
-  
+
     [:adjusted_diabetes_patients_with_ltfu, :adjusted_patients_with_ltfu].each do |method|
       it "does not expose buffer months for #{method}" do
         repo = Reports::Repository.new(facility.region, periods: original_range)
         result = repo.send(method)[facility.region.slug]
-  
+
         expect(result.keys.min).to eq(start_period)
         expect(result.keys.max).to eq(end_period)
         expect(result.keys).not_to include(start_period.advance(months: -1))
@@ -1004,36 +1004,36 @@ RSpec.describe Reports::Repository, type: :model do
         expect(result.keys).not_to include(start_period.advance(months: -3))
       end
     end
-  
+
     it "ensures first visible month has access to 3-month back denominator data" do
       repo = Reports::Repository.new(facility.region, periods: original_range)
-  
+
       result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
       expect(result[start_period]).to eq(3)
     end
-  
+
     it "works correctly for single period input with 3-month lookback data" do
       repo = Reports::Repository.new(facility.region, periods: single_period)
-  
+
       result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
-  
+
       expect(repo.periods).to eq(single_period..single_period)
       expect(result.keys).to eq([single_period])
       expect(result[single_period]).to eq(3)
     end
-  
+
     it "ensures first visible month has access to 3-month back denominator data for hypertension" do
       repo = Reports::Repository.new(facility.region, periods: original_range)
-  
+
       result = repo.adjusted_patients_with_ltfu[facility.region.slug]
       expect(result[start_period]).to eq(3)
     end
-  
+
     it "works correctly for single period input with 3-month lookback data for hypertension" do
       repo = Reports::Repository.new(facility.region, periods: single_period)
-  
+
       result = repo.adjusted_patients_with_ltfu[facility.region.slug]
-  
+
       expect(repo.periods).to eq(single_period..single_period)
       expect(result.keys).to eq([single_period])
       expect(result[single_period]).to eq(3)
