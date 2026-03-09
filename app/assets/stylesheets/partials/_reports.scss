@@ -24,6 +24,10 @@
   bottom: 8px;
 }
 
+.pb-24px {
+  padding-bottom: 24px;
+}
+
 // Pointer events
 .pe-none {
   pointer-events: none;
@@ -328,6 +332,9 @@
 .c-grey-light {
   color: $grey-light;
 }
+.c-green {
+  color: $green;
+}
 .c-green-dark {
   color: $green-dark;
 }
@@ -336,6 +343,9 @@
 }
 .c-purple-medium {
   color: $purple-mid;
+}
+.c-pink {
+  color: $pink;
 }
 .c-red {
   color: $red;

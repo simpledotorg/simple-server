@@ -15,6 +15,13 @@ unless SimpleServer.env.review? && Rake.application.top_level_tasks.any? { |task
       policy.object_src(:none)
       policy.script_src(:self, :https, :unsafe_inline)
       policy.style_src(:self, :https, :unsafe_inline)
+      # Nonces on script-src/style-src can make browsers ignore unsafe-inline for
+      # element/attribute directives, which creates noisy CSP reports in Sentry
+      # for our existing inline styles/scripts while the policy is report-only.
+      policy.script_src_elem(:self, :https, :unsafe_inline)
+      policy.script_src_attr(:self, :https, :unsafe_inline)
+      policy.style_src_elem(:self, :https, :unsafe_inline)
+      policy.style_src_attr(:self, :https, :unsafe_inline)
       policy.connect_src(:self, :https, "http://localhost:3035", "ws://localhost:3035") if Rails.env.development?
 
       report_uri = Addressable::URI.parse(ENV["SENTRY_SECURITY_HEADER_ENDPOINT"])

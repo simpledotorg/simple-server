@@ -847,6 +847,11 @@ RSpec.describe Reports::Repository, type: :model do
         :diabetes_missed_visits,
         :visited_without_bs_taken,
         :diabetes_patients_with_bs_taken,
+        :dm_patients_with_controlled_bp_140_90,
+        :dm_patients_with_controlled_bp_130_80,
+        :dm_patients_40_and_above_under_care,
+        :dm_patients_40_and_above_with_ltfu,
+        :dm_patients_prescribed_statins,
         :diabetes_total_appts_scheduled,
         :diabetes_appts_scheduled_0_to_14_days,
         :diabetes_appts_scheduled_15_to_31_days,
@@ -900,6 +905,9 @@ RSpec.describe Reports::Repository, type: :model do
         :bs_over_300_rates_fasting_and_hba1c,
         :diabetes_missed_visits_rates,
         :visited_without_bs_taken_rates,
+        :dm_controlled_bp_140_90_rates,
+        :dm_controlled_bp_130_80_rates,
+        :dm_prescribed_statins_rates,
         :diabetes_appts_scheduled_0_to_14_days_rates,
         :diabetes_appts_scheduled_15_to_31_days_rates,
         :diabetes_appts_scheduled_32_to_62_days_rates,
@@ -924,6 +932,130 @@ RSpec.describe Reports::Repository, type: :model do
         :contactable_patients_returned_with_result_removed_from_list_rates
       ]
       expect(described_class::DELEGATED_RATES).to match_array(expected_keys)
+    end
+  end
+
+  context "period extension for 3-month lookback (18 month UI window + 3 month buffer)" do
+    let(:facility) { create(:facility, facility_group: facility_group_1) }
+
+    let(:end_period) { Period.month("February 2026") }
+    let(:start_period) { end_period.advance(months: -(Reports::MAX_MONTHS_OF_DATA - 1)) }
+    let(:original_range) { (start_period..end_period) }
+
+    let(:repo) { Reports::Repository.new(facility.region, periods: original_range) }
+
+    before do
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          end_period.to_date
+        )
+      )
+    end
+
+    it "keeps original UI period window as 18 months" do
+      expect(repo.periods).to eq(original_range)
+      expect(repo.periods.count).to eq(18)
+    end
+
+    [:adjusted_diabetes_patients_with_ltfu, :adjusted_patients_with_ltfu].each do |method|
+      it "does not expose buffer months for #{method}" do
+        refresh_views
+        result = repo.send(method)[facility.region.slug]
+
+        expect(result.keys.min).to eq(start_period)
+        expect(result.keys.max).to eq(end_period)
+        expect(result.keys).not_to include(start_period.advance(months: -1))
+        expect(result.keys).not_to include(start_period.advance(months: -2))
+        expect(result.keys).not_to include(start_period.advance(months: -3))
+      end
+    end
+
+    it "ensures first visible month has access to 3-month back denominator data" do
+      patients = create_list(:patient, 3, :diabetes,
+        recorded_at: start_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:blood_sugar, :with_encounter, patient: patient, facility: facility, recorded_at: start_period.to_date, user: user)
+      end
+
+      refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+      expect(result[start_period]).to eq(3)
+    end
+
+    it "works correctly for single period input with 3-month lookback data" do
+      single_period = Period.month("February 2026")
+
+      patients = create_list(:patient, 2, :diabetes,
+        recorded_at: single_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:blood_sugar, :with_encounter,
+          patient: patient,
+          facility: facility,
+          recorded_at: single_period.to_date,
+          user: user)
+      end
+
+      repo = Reports::Repository.new(facility.region, periods: single_period)
+
+      refresh_views
+      result = repo.adjusted_diabetes_patients_with_ltfu[facility.region.slug]
+      expect(repo.periods).to eq(single_period..single_period)
+      expect(result.keys).to eq([single_period])
+      expect(result[single_period]).to eq(2)
+    end
+
+    it "ensures first visible month has access to 3-month back denominator data for hypertension" do
+      patients = create_list(:patient, 3, :hypertension,
+        recorded_at: start_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:bp_with_encounter, patient: patient, facility: facility, recorded_at: start_period.to_date, user: user)
+      end
+
+      refresh_views
+      result = repo.adjusted_patients_with_ltfu[facility.region.slug]
+      expect(result[start_period]).to eq(3)
+    end
+
+    it "works correctly for single period input with 3-month lookback data for hypertension" do
+      single_period = Period.month("February 2026")
+
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          single_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          single_period.to_date
+        )
+      )
+
+      patients = create_list(:patient, 2, :hypertension,
+        recorded_at: single_period.advance(months: -3).to_date,
+        assigned_facility: facility,
+        registration_user: user)
+
+      patients.each do |patient|
+        create(:bp_with_encounter,
+          patient: patient,
+          facility: facility,
+          recorded_at: single_period.to_date,
+          user: user)
+      end
+
+      repo = Reports::Repository.new(facility.region, periods: single_period)
+
+      refresh_views
+      result = repo.adjusted_patients_with_ltfu[facility.region.slug]
+      expect(repo.periods).to eq(single_period..single_period)
+      expect(result.keys).to eq([single_period])
+      expect(result[single_period]).to eq(2)
     end
   end
 end

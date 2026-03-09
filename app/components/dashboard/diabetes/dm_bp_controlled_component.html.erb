@@ -1,0 +1,39 @@
+<div id="dm-controlled-bp" class="d-lg-flex min-w-0">
+  <%= render Dashboard::Card::GraphComponent.new(id: "dmControlledBPTrend", data: graph_data, period: period) do |c| %>
+    <%= c.title(
+      title: "DM patients with controlled BP",
+      subtitle: "Diabetes patients in #{region.name} with controlled BP at their latest visit in the last 3 months (#{bp_control_date_range}).") do |title| %>
+      <%= title.tooltip({ "Numerator" => "Patients with controlled BP at their latest visit in the last 3 months.",
+                          "Denominator" => t(denominator_copy, region_name: region.name )}
+      ) %>
+      <%= title.ltfu_toggle(id: 'DMcontrolleBPGraphLtfuToggle', enabled: with_ltfu) %>
+    <% end %>
+    <%= c.summary do %>
+      <div class="ml-4px d-lg-flex align-lg-center">
+        <p class="c-print-black c-green graph-percent fs-28px" data-key="controlledBPRate140" data-format="percentage"></p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="controlledBPNumerator140" data-format="numberWithCommas"></span>
+            patients with BP &lt;140/90
+          </p>
+        </div>
+      </div>
+      <div class="ml-4px mb-4px d-lg-flex align-lg-center">
+        <p class="c-print-black c-green-dark graph-percent fs-28px" data-key="controlledBPRate130" data-format="percentage">
+        30%</p>
+        <div>
+          <p class="m-0px c-black">
+            <span data-key="controlledBPNumerator130" data-format="numberWithCommas"></span>
+            patients with BP &lt;130/80
+          </p>
+        </div>
+      </div>
+      <p class="ml-4px c-grey-dark c-print-black">
+        of <span data-key="adjustedPatients" data-format="numberWithCommas"></span>
+        patients registered till
+        <span data-key="registrationDate"></span>
+      </p>
+    <% end %>
+  <% end %>
+</div>
+

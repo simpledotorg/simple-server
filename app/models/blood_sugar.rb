@@ -67,6 +67,6 @@ class BloodSugar < ApplicationRecord
         break
       end
     end
-    risk_state.to_sym
+    risk_state&.to_sym
   end
 end

@@ -46,4 +46,34 @@ namespace :reporting do
       ActiveRecord::Base.connection.exec_query("REFRESH MATERIALIZED VIEW #{view_name}")
     end
   end
+
+  desc "Refresh a partitioned table for N months in the past"
+  task :refresh_partitioned_table, [:table_name, :months_back] => :environment do |_, args|
+    unless args[:table_name].present?
+      puts "ERROR: table_name is required."
+      puts "Usage: rake reporting:refresh_partitioned_table[reporting_patient_states, 6]"
+      puts "       rake reporting:refresh_partitioned_table[reporting_patient_states]"
+      exit 1
+    end
+    table_name = args[:table_name]
+    months_back = args[:months_back].present? ? args[:months_back].to_i : 12
+    if months_back < 0
+      puts "ERROR: months_back must be >= 0"
+      exit 1
+    end
+    current_month = Date.today.beginning_of_month
+    start_month = current_month - months_back.months
+    refresh_months = []
+    while start_month <= current_month
+      refresh_months << start_month
+      start_month = start_month.next_month
+    end
+    refresh_months.each do |month|
+      formatted_month = month.strftime("%Y-%m-%d")
+      puts "Refreshing partitioned table: #{table_name} for month: #{formatted_month}"
+      ActiveRecord::Base.connection.exec_query(
+        "CALL simple_reporting.add_shard_to_table('#{formatted_month}', '#{table_name}')"
+      )
+    end
+  end
 end
