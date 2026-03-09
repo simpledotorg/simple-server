@@ -802,7 +802,7 @@ module Reports
         values = @original_periods.each_with_object(Hash.new(0)) do |period, h|
           adjusted_period = Period.month(
             period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date
-          )       
+          )
           h[period] = counts.fetch(adjusted_period, 0)
         end
 
