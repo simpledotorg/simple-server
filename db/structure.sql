@@ -2684,6 +2684,23 @@ CREATE TABLE public.patient_phone_numbers (
 
 
 --
+-- Name: patient_scores; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.patient_scores (
+    id uuid NOT NULL,
+    patient_id uuid NOT NULL,
+    score_type character varying(100) NOT NULL,
+    score_value numeric(5,2) NOT NULL,
+    device_created_at timestamp without time zone NOT NULL,
+    device_updated_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
 -- Name: prescription_drugs; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -7399,6 +7416,14 @@ ALTER TABLE ONLY public.patient_phone_numbers
 
 
 --
+-- Name: patient_scores patient_scores_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_scores
+    ADD CONSTRAINT patient_scores_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: patients patients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8502,6 +8527,20 @@ CREATE INDEX index_patient_phone_numbers_on_patient_id ON public.patient_phone_n
 
 
 --
+-- Name: index_patient_scores_on_patient_id_and_score_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_scores_on_patient_id_and_score_type ON public.patient_scores USING btree (patient_id, score_type);
+
+
+--
+-- Name: index_patient_scores_on_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_scores_on_updated_at ON public.patient_scores USING btree (updated_at);
+
+
+--
 -- Name: index_patient_registrations_per_day_per_facilities; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -9122,6 +9161,14 @@ ALTER TABLE ONLY public.patient_phone_numbers
 
 
 --
+-- Name: patient_scores fk_rails_0209112204; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_scores
+    ADD CONSTRAINT fk_rails_0209112204 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+
+
+--
 -- Name: facility_groups fk_rails_0ba9e6af98; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -9674,6 +9721,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20251215113615'),
 ('20251219061210'),
 ('20260128094448'),
+('20260209112204');
 ('20260212195326'),
 ('20260205110957'),
 ('20260224063659'),
