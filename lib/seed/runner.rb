@@ -96,27 +96,64 @@ module Seed
       Facility.find_in_batches(batch_size: 100) do |facilities|
         options = parallel_options(progress)
         batch_result = Parallel.map(facilities, options) { |facility|
-          registration_user_ids = facility.users.pluck(:id)
-          raise "No facility users found to use for registration" if registration_user_ids.blank?
-
-          result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
-          bp_result = BloodPressureSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          result.merge!(bp_result) { |key, count1, count2| count1 + count2 }
-          blood_sugar_result = BloodSugarSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          result.merge!(blood_sugar_result) { |key, count1, count2| count1 + count2 }
-          unless config.skip_encounters
-            data_creation_info = create_appointments_and_call_results(patient_info, facility: facility, user_ids: registration_user_ids)
-            result[:appointment] = data_creation_info[:appointments_creation_info].ids.size
-            result[:call_result] = data_creation_info[:call_results_creation_info].ids.size
-          end
-          prescription_drugs_result = PrescriptionDrugSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
-          result.merge!(prescription_drugs_result) { |key, count1, count2| count1 + count2 }
-
+          result, patient_info, registration_user_ids = seed_patients_for_facility(facility)
+          merge_result!(result, seed_encounters_in_parallel(facility, patient_info, registration_user_ids))
+          merge_result!(result, seed_prescription_drugs_for_facility(facility, registration_user_ids))
           result
         }
         results.concat batch_result
       end
       results
+    end
+
+    def seed_patients_for_facility(facility)
+      registration_user_ids = facility.users.pluck(:id)
+      raise "No facility users found to use for registration" if registration_user_ids.blank?
+
+      result, patient_info = PatientSeeder.call(facility, user_ids: registration_user_ids, config: config, logger: logger)
+      [result, patient_info, registration_user_ids]
+    end
+
+    def seed_encounters_in_parallel(facility, patient_info, registration_user_ids)
+      tasks = [
+        lambda {
+          BloodPressureSeeder.call(
+            config: config,
+            facility: facility,
+            user_ids: registration_user_ids,
+            patient_info: patient_info
+          )
+        },
+        lambda {
+          BloodSugarSeeder.call(
+            config: config,
+            facility: facility,
+            user_ids: registration_user_ids,
+            patient_info: patient_info
+          )
+        }
+      ]
+      unless config.skip_encounters
+        tasks << lambda {
+          data_creation_info = create_appointments_and_call_results(patient_info, facility: facility, user_ids: registration_user_ids)
+          {
+            appointment: data_creation_info[:appointments_creation_info].ids.size,
+            call_result: data_creation_info[:call_results_creation_info].ids.size
+          }
+        }
+      end
+
+      Parallel.map(tasks, in_threads: tasks.size).each_with_object({}) { |task_result, result|
+        merge_result!(result, task_result)
+      }
+    end
+
+    def seed_prescription_drugs_for_facility(facility, registration_user_ids)
+      PrescriptionDrugSeeder.call(config: config, facility: facility, user_ids: registration_user_ids)
+    end
+
+    def merge_result!(result, new_counts)
+      result.merge!(new_counts) { |_key, count1, count2| count1 + count2 }
     end
 
     def seed_drug_stocks

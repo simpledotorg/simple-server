@@ -8,21 +8,23 @@ module Seed
     attr_reader :counts
     attr_reader :facility
     attr_reader :logger
+    attr_reader :provided_patient_info
     attr_reader :user_ids
     delegate :scale_factor, to: :config
 
     # TODO add some backdated BPs before the facility bday
-    def initialize(config:, facility:, user_ids:)
+    def initialize(config:, facility:, user_ids:, patient_info: nil)
       @logger = Rails.logger.child(class: self.class.name)
       @counts = {}
       @config = config
       @facility = facility
       @user_ids = user_ids
+      @provided_patient_info = patient_info
       @logger.info "Starting #{self.class} with #{config.type} configuration"
     end
 
     def patient_info
-      @patient_info ||= @facility.assigned_patients.pluck(:id, :recorded_at)
+      @patient_info ||= provided_patient_info || @facility.assigned_patients.pluck(:id, :recorded_at)
     end
 
     PERFORMANCE_WEIGHTS = {
