@@ -44,6 +44,8 @@ module DrRai
         region.path.split(".").none? { |level| level.include?("non_rtsl") }
       when "Sri Lanka"
         region.path.split(".").include?("sri_lanka_organization")
+      when "India"
+        true
       else
         false
       end
