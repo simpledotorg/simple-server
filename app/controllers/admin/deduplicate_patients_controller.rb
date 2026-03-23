@@ -1,23 +1,26 @@
 class Admin::DeduplicatePatientsController < AdminController
   skip_before_action :verify_authenticity_token
-  before_action :set_filter_options, only: [:show]
+  before_action :set_filter_options, only: [:show], if: :filter_enabled?
   DUPLICATE_LIMIT = 250
 
   def show
     facilities = current_admin.accessible_facilities(:manage)
     authorize { facilities.any? }
 
-    # Apply facility filter if selected
-    filtered_facilities = if @selected_facility.present?
+    # Apply facility filter if selected and feature flag is enabled
+    filtered_facilities = if filter_enabled? && @selected_facility.present?
       facilities.where(id: @selected_facility.id)
-    elsif @selected_district.present?
+    elsif filter_enabled? && @selected_district.present?
       facilities.where(id: @selected_district.facilities)
     else
       facilities
     end
 
     # Scoping by facilities is costly for users who have a lot of facilities
-    duplicate_patient_ids = if current_admin.accessible_organizations(:manage).any? && !@selected_district.present? && !@selected_facility.present?
+    use_all_organizations = current_admin.accessible_organizations(:manage).any? &&
+      (!filter_enabled? || (!@selected_district.present? && !@selected_facility.present?))
+
+    duplicate_patient_ids = if use_all_organizations
       PatientDeduplication::Strategies.identifier_excluding_full_name_match(limit: DUPLICATE_LIMIT)
     else
       PatientDeduplication::Strategies.identifier_excluding_full_name_match_for_facilities(
@@ -87,5 +90,9 @@ class Admin::DeduplicatePatientsController < AdminController
 
   def set_selected_facility
     @selected_facility = @facilities.find_by(id: params[:facility_id]) if params[:facility_id].present?
+  end
+
+  def filter_enabled?
+    Flipper.enabled?(:patient_deduplication_filter, current_admin)
   end
 end
