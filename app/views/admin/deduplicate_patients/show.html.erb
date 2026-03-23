@@ -1,4 +1,38 @@
 <h1 class="page-title mb-3">Merge duplicate patients</h1>
+
+<% if Flipper.enabled?(:patient_deduplication_filter, current_admin) %>
+  <%= bootstrap_form_with(url: admin_deduplication_path, method: :get, layout: :horizontal, class: "mb-4") do |form| %>
+    <% html_select_options = { onchange: "this.form.submit();" }
+       searchable_select_options = html_select_options.merge(class: "selectpicker", data: {live_search: true}) %>
+    <div class="form-row">
+      <div id="district-selector" class="form-group col-md-4">
+        <%= form.select :district_slug,
+                        @districts.order(:name).map { |district| [district.name, district.slug] },
+                        {
+                          hide_label: true,
+                          selected: @selected_district&.slug,
+                          wrapper: false
+                        },
+                        searchable_select_options
+        %>
+      </div>
+      <div id="facility-selector" class="form-group col-md-4">
+        <%= form.select :facility_id,
+                        @facilities.order(:name).map { |facility| [facility.label_with_district, facility.id] },
+                        {
+                            hide_label: true,
+                            include_blank: "All facilities",
+                            selected: @selected_facility&.id,
+                            wrapper: false
+                        },
+                        searchable_select_options
+        %>
+      </div>
+    </div>
+    <%= form.submit "Filter", style: "display: none" %>
+  <% end %>
+<% end %>
+
 <div class="card">
   <h3>
     <% if @duplicate_count == Admin::DeduplicatePatientsController::DUPLICATE_LIMIT %>
