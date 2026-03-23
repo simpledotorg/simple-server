@@ -118,15 +118,15 @@
                 <% end %>
               <% end %>
             </div>
-            <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px bgc-blue-light bs-border-box bs-fixed-card" style="padding-bottom: 12px;">
-              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center bgc-blue tt-uppercase ls-1_25px br-2px fs-16px b-none bs-primary-button bs-border-box", style: "font-weight: 700; color: #ffffff;" %>
+            <div class="p-fixed b-0 l-0 zi-100 w-100 p-8px pb-12px bgc-blue-light bs-border-box bs-fixed-card">
+              <%= form.button "SAVE", class: "d-block w-100 p-16px ta-center fw-bold c-white bgc-blue tt-uppercase ls-1_25px br-2px fs-16px b-none bs-primary-button bs-border-box" %>
             </div>
           <% end %>
         </div>
       </div>
     </div>
   </body>
-  <script type="text/javascript" charset="utf-8">
+  <script type="text/javascript" charset="utf-8" nonce="<%= content_security_policy_nonce %>">
     window.addEventListener("load", function() {
       let monthSelect = document.getElementById("for_end_of_month");
       monthSelect.addEventListener("change", function(e) {
