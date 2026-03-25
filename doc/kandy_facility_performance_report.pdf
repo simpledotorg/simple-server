@@ -1,0 +1,228 @@
+%PDF-1.4
+%‚„œ”
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Count 2 /Kids [ 5 0 R 7 0 R ] >>
+endobj
+3 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+4 0 obj
+<< /Length 2307 >>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 50 792 Tm
+14 TL
+(# Kandy District Facility Performance Report \(Hypertension\)) Tj
+T*
+() Tj
+T*
+(Date: 2026-03-25) Tj
+T*
+(Reporting period used for facility ranking: Feb 2026 \(Hypertension report\)) Tj
+T*
+() Tj
+T*
+(## 1\) Data sources used) Tj
+T*
+() Tj
+T*
+(1. **Kandy Hypertension report** \(`Kandy___Hypertension1.txt`\)) Tj
+T*
+(   - Used for facility-level performance ranking.) Tj
+T*
+(2. **District report CSV** \(`01___district_report_2026-03-25T08_59_40.603697Z.csv`\)) Tj
+T*
+(   - District-level context only.) Tj
+T*
+(3. **Statin coverage CSV** \(`district_level____of_patients_with_dm_and_aged__40__or_a_history_of_str) Tj
+T*
+(oke_heart_attack_or_cv____20_prescribed_statins_report_2026-03-25T08_59_33.159964Z.csv`\)) Tj
+T*
+(   - District-level context only.) Tj
+T*
+() Tj
+T*
+(## 2\) Important note on scope) Tj
+T*
+() Tj
+T*
+(Only the Hypertension report contains **facility-level rows**.) Tj
+T*
+(The other two sources are district-level and do not support facility-by-facility ranking.) Tj
+T*
+() Tj
+T*
+(## 3\) Ranking method) Tj
+T*
+() Tj
+T*
+(Facilities were ranked using:) Tj
+T*
+() Tj
+T*
+(- BP controlled % \(higher is better\)) Tj
+T*
+(- BP not controlled % \(lower is better\)) Tj
+T*
+(- Missed visits % \(lower is better\)) Tj
+T*
+() Tj
+T*
+(Composite score:) Tj
+T*
+() Tj
+T*
+(`Score = 0.5 * \(BP controlled %\) + 0.3 * \(100 - BP not controlled %\) + 0.2 * \(100 - Missed visits) Tj
+T*
+(%\)`) Tj
+T*
+() Tj
+T*
+(To reduce distortion from very small sites, a minimum volume filter was applied:) Tj
+T*
+() Tj
+T*
+(- **Included in main ranking:** facilities with >= 500 registered HTN patients) Tj
+T*
+() Tj
+T*
+(District benchmark \(same report\):) Tj
+T*
+() Tj
+T*
+(- BP controlled: 54%) Tj
+T*
+(- BP not controlled: 26%) Tj
+T*
+(- Missed visits: 17%) Tj
+T*
+() Tj
+T*
+(## 4\) Best-performing facilities \(>=500 patients\)) Tj
+T*
+() Tj
+T*
+(| Rank | Facility | Registered | BP controlled | BP not controlled | Missed visits | Composite score |) Tj
+T*
+(|---|---|---:|---:|---:|---:|---:|) Tj
+T*
+(| 1 | Jambugahapitiya | 1,599 | 81% | 9% | 9% | 86.0 |) Tj
+T*
+(| 2 | Batumulla | 530 | 79% | 8% | 12% | 84.7 |) Tj
+T*
+(| 3 | Galaha | 1,832 | 75% | 7% | 15% | 82.4 |) Tj
+T*
+(| 4 | Suduhumpola | 584 | 73% | 14% | 13% | 79.7 |) Tj
+T*
+(| 5 | Medadumbara | 1,228 | 68% | 10% | 16% | 77.8 |) Tj
+T*
+() Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 4 0 R >>
+endobj
+6 0 obj
+<< /Length 3388 >>
+stream
+BT
+/F1 10 Tf
+1 0 0 1 50 792 Tm
+14 TL
+(## 5\) Worst-performing facilities \(>=500 patients\)) Tj
+T*
+() Tj
+T*
+(| Rank \(worst\) | Facility | Registered | BP controlled | BP not controlled | Missed visits | Composite score |) Tj
+T*
+(|---|---|---:|---:|---:|---:|---:|) Tj
+T*
+(| 1 | Pamunuwa | 789 | 0% | 0% | 100% | 30.0 |) Tj
+T*
+(| 2 | Udathalawinna | 597 | 20% | 7% | 63% | 45.3 |) Tj
+T*
+(| 3 | Mahakanda | 577 | 32% | 41% | 26% | 48.5 |) Tj
+T*
+(| 4 | Narampanawa | 644 | 34% | 41% | 25% | 49.7 |) Tj
+T*
+(| 5 | Kadugannawa | 3,423 | 36% | 45% | 12% | 52.1 |) Tj
+T*
+() Tj
+T*
+(## 6\) Rationale for ranking) Tj
+T*
+() Tj
+T*
+(1. **Outcome-first prioritization:** BP control is weighted highest because it is the primary) Tj
+T*
+(clinical outcome.) Tj
+T*
+(2. **Risk burden included:** High uncontrolled BP penalizes score strongly.) Tj
+T*
+(3. **Retention included:** Missed visits captures continuity-of-care failure.) Tj
+T*
+(4. **Scale-sensitive interpretation:** A volume threshold is used to avoid over-interpreting very) Tj
+T*
+(small facilities.) Tj
+T*
+(5. **Programmatic impact:** Large low-performing facilities \(e.g., Kadugannawa\) are high-priority) Tj
+T*
+(because district-level gains depend on them.) Tj
+T*
+() Tj
+T*
+(## 7\) Prioritized intervention matrix for worst performers) Tj
+T*
+() Tj
+T*
+(| Priority | Facility | Main gap pattern | Immediate actions | Process KPI | Outcome KPI |) Tj
+T*
+(|---|---|---|---|---|---|) Tj
+T*
+(| 1 \(Critical\) | Pamunuwa | 100% missed, no outcome capture | Rapid data-quality and service-availability audit; generate full no-visit line list; active recall \(phone + field\); restore BP capture at every return visit | % overdue patients contacted; % return visits with BP measured | BP controlled % recovery from 0%; missed visits % reduction |) Tj
+T*
+(| 2 | Udathalawinna | Very high missed visits \(63%\) | Defaulter micro-plans by risk group; dedicated catch-up clinic slots; refill fast-track for overdue patients; weekly follow-up review | % missed patients reached; % returned within cycle | Missed visits % decline; BP controlled % increase |) Tj
+T*
+(| 3 | Mahakanda | High uncontrolled \(41%\) + high missed \(26%\) | Uncontrolled registry with protocolized titration; medicine stock assurance; adherence counseling bundle; early re-review for uncontrolled patients | % uncontrolled reviewed under protocol | Uncontrolled % decrease; controlled % increase |) Tj
+T*
+(| 4 | Narampanawa | High uncontrolled \(41%\) + high missed \(25%\) | Same model as Mahakanda; focus on appointment reliability and dose-intensification fidelity | % uncontrolled with treatment step-up documented | Controlled % increase; missed % decrease |) Tj
+T*
+(| 5 | Kadugannawa | Very high uncontrolled \(45%\) at high volume | High-volume uncontrolled stream; BP measurement quality check \(staff/device\); cohort review meetings; prioritize highest-risk cases first | % uncontrolled cohort reviewed monthly | Uncontrolled % drop from 45%; district-level controlled % gain |) Tj
+T*
+() Tj
+T*
+(## 8\) District-level context from the other two reports) Tj
+T*
+() Tj
+T*
+(- District and quarterly indicators show broader trend context but are not facility-specific.) Tj
+T*
+(- Statin coverage is improving at district level, which is positive for CVD prevention strategy.) Tj
+T*
+(- Facility action should still be targeted based on the hypertension facility table above.) Tj
+ET
+endstream
+endobj
+7 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 3 0 R >> >> /Contents 6 0 R >>
+endobj
+xref
+0 8
+0000000000 65535 f 
+0000000015 00000 n 
+0000000064 00000 n 
+0000000129 00000 n 
+0000000199 00000 n 
+0000002558 00000 n 
+0000002684 00000 n 
+0000006124 00000 n 
+trailer
+<< /Size 8 /Root 1 0 R >>
+startxref
+6250
+%%EOF
