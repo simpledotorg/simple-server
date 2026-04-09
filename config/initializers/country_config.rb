@@ -149,6 +149,10 @@ class CountryConfig
   def self.current_country?(country)
     CountryConfig.current[:name] == country
   end
+
+  def self.supported_genders
+    current[:supported_genders] || %w[male female transgender]
+  end
 end
 
 Rails.application.config.country = CountryConfig.for(ENV.fetch("DEFAULT_COUNTRY"))
