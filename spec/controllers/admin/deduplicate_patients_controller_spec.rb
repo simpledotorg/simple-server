@@ -77,7 +77,6 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
 
         other_facility_group = create(:facility_group, organization: organization)
         other_facility = create(:facility, facility_group: other_facility_group)
-        other_district = other_facility_group.region.parent
 
         patient2 = create(:patient, full_name: "Patient two", assigned_facility: other_facility)
         patient2_passport_id = patient2.business_identifiers.first.identifier
