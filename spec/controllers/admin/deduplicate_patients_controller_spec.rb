@@ -1,7 +1,7 @@
 require "rails_helper"
 
 RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
-  context "#show" do
+  describe "#show" do
     it "shows patients accessible by the user" do
       patient = create(:patient, full_name: "Patient one")
       patient_passport_id = patient.business_identifiers.first.identifier
@@ -40,9 +40,123 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
       expect(response.status).to eq(302)
       expect(flash[:alert]).to eq("You are not authorized to perform this action.")
     end
+
+    context "when patient_deduplication_filter feature flag is enabled" do
+      let(:organization) { create(:organization) }
+      let(:facility_group) { create(:facility_group, organization: organization) }
+      let(:district) { facility_group.region.parent }
+      let(:facility1) { create(:facility, facility_group: facility_group) }
+      let(:facility2) { create(:facility, facility_group: facility_group) }
+      let(:admin) { create(:admin, :manager, :with_access, resource: organization) }
+
+      before do
+        sign_in(admin.email_authentication)
+        Flipper.enable(:patient_deduplication_filter, admin)
+      end
+
+      it "sets filter options when feature flag is enabled" do
+        get :show
+
+        expect(assigns(:districts)).to be_present
+        expect(assigns(:selected_district)).to be_present
+      end
+
+      it "populates accessible districts" do
+        facility1
+        get :show
+
+        expect(assigns(:districts)).to include(district)
+      end
+
+      it "filters patients by selected district" do
+        patient1 = create(:patient, full_name: "Patient one", assigned_facility: facility1)
+        patient1_passport_id = patient1.business_identifiers.first.identifier
+
+        patient1_dup = create(:patient, full_name: "Patient one dup", assigned_facility: facility1)
+        patient1_dup.business_identifiers.first.update(identifier: patient1_passport_id)
+
+        other_facility_group = create(:facility_group, organization: organization)
+        other_facility = create(:facility, facility_group: other_facility_group)
+
+        patient2 = create(:patient, full_name: "Patient two", assigned_facility: other_facility)
+        patient2_passport_id = patient2.business_identifiers.first.identifier
+
+        patient2_dup = create(:patient, full_name: "Patient two dup", assigned_facility: other_facility)
+        patient2_dup.business_identifiers.first.update(identifier: patient2_passport_id)
+
+        get :show, params: {district_slug: district.slug}
+
+        expect(assigns(:patients)).to include(patient1, patient1_dup)
+        expect(assigns(:patients)).not_to include(patient2, patient2_dup)
+      end
+
+      it "filters patients by selected facility" do
+        patient1 = create(:patient, full_name: "Patient one", assigned_facility: facility1)
+        patient1_passport_id = patient1.business_identifiers.first.identifier
+
+        patient1_dup = create(:patient, full_name: "Patient one dup", assigned_facility: facility1)
+        patient1_dup.business_identifiers.first.update(identifier: patient1_passport_id)
+
+        patient2 = create(:patient, full_name: "Patient two", assigned_facility: facility2)
+        patient2_passport_id = patient2.business_identifiers.first.identifier
+
+        patient2_dup = create(:patient, full_name: "Patient two dup", assigned_facility: facility2)
+        patient2_dup.business_identifiers.first.update(identifier: patient2_passport_id)
+
+        get :show, params: {district_slug: district.slug, facility_id: facility1.id}
+
+        expect(assigns(:patients)).to include(patient1, patient1_dup)
+        expect(assigns(:patients)).not_to include(patient2, patient2_dup)
+      end
+
+      it "populates facilities for the selected district" do
+        facility1
+        facility2
+        get :show, params: {district_slug: district.slug}
+
+        expect(assigns(:facilities)).to include(facility1, facility2)
+      end
+
+      it "sets the selected facility when facility_id param is present" do
+        facility1
+        get :show, params: {district_slug: district.slug, facility_id: facility1.id}
+
+        expect(assigns(:selected_facility)).to eq(facility1)
+      end
+    end
+
+    context "when patient_deduplication_filter feature flag is disabled" do
+      let(:admin) { create(:admin, :manager, :with_access, resource: create(:facility)) }
+
+      before do
+        sign_in(admin.email_authentication)
+        Flipper.disable(:patient_deduplication_filter)
+      end
+
+      it "does not set filter options" do
+        get :show
+
+        expect(assigns(:districts)).to be_nil
+        expect(assigns(:selected_district)).to be_nil
+        expect(assigns(:facilities)).to be_nil
+      end
+
+      it "shows all accessible duplicate patients without filtering" do
+        facility = admin.accessible_facilities(:manage).first
+        patient = create(:patient, full_name: "Patient one", assigned_facility: facility)
+        patient_passport_id = patient.business_identifiers.first.identifier
+
+        patient_dup = create(:patient, full_name: "Patient one dup", assigned_facility: facility)
+        patient_dup.business_identifiers.first.update(identifier: patient_passport_id)
+
+        get :show
+
+        expect(assigns(:patients)).to contain_exactly(patient, patient_dup)
+      end
+    end
   end
 
-  context "#merge" do
+  describe "#merge" do
     it "returns unauthorized when none of the patient IDs is accessible by the user" do
       patients = [create(:patient, full_name: "Patient one"), create(:patient, full_name: "Patient two")]
       admin = create(:admin, :manager, :with_access, resource: create(:facility))
