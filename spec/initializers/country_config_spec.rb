@@ -11,4 +11,15 @@ RSpec.describe CountryConfig do
       ).to eq true
     end
   end
+
+  describe ".supported_genders" do
+    it "returns supported genders from the current country config" do
+      expect(CountryConfig.supported_genders).to eq(CountryConfig.current[:supported_genders])
+    end
+
+    it "returns fallback genders when not configured" do
+      allow(CountryConfig).to receive(:current).and_return({})
+      expect(CountryConfig.supported_genders).to eq(%w[male female transgender])
+    end
+  end
 end
