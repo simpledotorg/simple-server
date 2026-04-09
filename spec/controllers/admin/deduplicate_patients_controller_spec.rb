@@ -44,7 +44,7 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
     context "when patient_deduplication_filter feature flag is enabled" do
       let(:organization) { create(:organization) }
       let(:facility_group) { create(:facility_group, organization: organization) }
-      let(:district) { facility_group.region.parent }
+      let(:district) { facility_group.region }
       let(:facility1) { create(:facility, facility_group: facility_group) }
       let(:facility2) { create(:facility, facility_group: facility_group) }
       let(:admin) { create(:admin, :manager, :with_access, resource: organization) }
@@ -55,6 +55,7 @@ RSpec.describe Admin::DeduplicatePatientsController, type: :controller do
       end
 
       it "sets filter options when feature flag is enabled" do
+        facility1
         get :show
 
         expect(assigns(:districts)).to be_present
