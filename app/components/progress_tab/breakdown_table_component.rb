@@ -18,4 +18,8 @@ class ProgressTab::BreakdownTableComponent < ApplicationComponent
   def include_bottom_border
     title != t("progress_tab.diagnoses.hypertension_and_diabetes")
   end
+
+  def supported_genders
+    CountryConfig.supported_genders
+  end
 end
