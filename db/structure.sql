@@ -748,9 +748,7 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_patient_prescriptions (
     hypertension_drug_changed boolean,
     diabetes_drug_changed boolean,
     other_drug_changed boolean,
-    prescribed_statins boolean,
-    latest_cvd_risk_score_lower_range integer,
-    latest_cvd_risk_score_upper_range integer
+    prescribed_statins boolean
     )
     PARTITION BY LIST (month_date);
 
@@ -865,10 +863,7 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_tabl
             ) elem
             WHERE elem->>'drug_name' ILIKE '%statin%'
         )
-        ) AS prescribed_statins,
-
-        cvd.latest_cvd_risk_score_lower_range,
-        cvd.latest_cvd_risk_score_upper_range
+        ) AS prescribed_statins
 
     FROM simple_reporting.reporting_patient_states rps
     LEFT JOIN reporting_facilities assigned_facility ON rps.assigned_facility_id = assigned_facility.facility_id
@@ -945,27 +940,6 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_tabl
             )
         )
     ) prev ON TRUE
-
-    LEFT JOIN LATERAL (
-        SELECT
-        split_part(cr.risk_score,'-',1)::int AS latest_cvd_risk_score_lower_range,
-
-        COALESCE(
-            NULLIF(split_part(cr.risk_score,'-',2),''),
-            split_part(cr.risk_score,'-',1)
-        )::int AS latest_cvd_risk_score_upper_range
-
-        FROM cvd_risks cr
-        WHERE cr.patient_id = rps.patient_id
-        AND cr.deleted_at IS NULL
-        AND date_trunc('month',
-                timezone(current_setting('TIMEZONE'),
-                timezone('UTC', cr.device_updated_at))
-            ) < (rps.month_date + interval '1 month')
-
-        ORDER BY cr.device_updated_at DESC
-        LIMIT 1
-    ) cvd ON TRUE
     WHERE rps.month_date = $1
     AND rps.htn_care_state <> 'dead';
     END;
@@ -2706,6 +2680,23 @@ CREATE TABLE public.patient_phone_numbers (
     device_updated_at timestamp without time zone NOT NULL,
     deleted_at timestamp without time zone,
     dnd_status boolean DEFAULT true NOT NULL
+);
+
+
+--
+-- Name: patient_scores; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.patient_scores (
+    id uuid NOT NULL,
+    patient_id uuid NOT NULL,
+    score_type character varying(100) NOT NULL,
+    score_value numeric(5,2) NOT NULL,
+    device_created_at timestamp without time zone NOT NULL,
+    device_updated_at timestamp without time zone NOT NULL,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
 );
 
 
@@ -7425,6 +7416,14 @@ ALTER TABLE ONLY public.patient_phone_numbers
 
 
 --
+-- Name: patient_scores patient_scores_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_scores
+    ADD CONSTRAINT patient_scores_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: patients patients_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -8528,6 +8527,20 @@ CREATE INDEX index_patient_phone_numbers_on_patient_id ON public.patient_phone_n
 
 
 --
+-- Name: index_patient_scores_on_patient_id_and_score_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_scores_on_patient_id_and_score_type ON public.patient_scores USING btree (patient_id, score_type);
+
+
+--
+-- Name: index_patient_scores_on_updated_at; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_patient_scores_on_updated_at ON public.patient_scores USING btree (updated_at);
+
+
+--
 -- Name: index_patient_registrations_per_day_per_facilities; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -9110,24 +9123,6 @@ CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simpl
 CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
 
 --
--- Name: idx_rpp_month_patient; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX idx_rpp_month_patient ON simple_reporting.reporting_patient_prescriptions (month_date, patient_id);
-
---
--- Name: idx_rpp_latest_cvd_score_lower_range; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX idx_rpp_latest_cvd_score_lower_range ON simple_reporting.reporting_patient_prescriptions (latest_cvd_risk_score_lower_range);
-
---
--- Name: idx_rpp_latest_cvd_score_upper_range; Type: INDEX; Schema: simple_reporting; Owner: -
---
-
-CREATE INDEX idx_rpp_latest_cvd_score_upper_range ON simple_reporting.reporting_patient_prescriptions (latest_cvd_risk_score_upper_range);
-
---
 -- Name: index_fs_block; Type: INDEX; Schema: simple_reporting; Owner: -
 --
 
@@ -9163,6 +9158,14 @@ CREATE INDEX index_fs_state ON simple_reporting.reporting_facility_states USING 
 
 ALTER TABLE ONLY public.patient_phone_numbers
     ADD CONSTRAINT fk_rails_0145dd0b05 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+
+
+--
+-- Name: patient_scores fk_rails_0209112204; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_scores
+    ADD CONSTRAINT fk_rails_0209112204 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
 
 
 --
@@ -9510,6 +9513,14 @@ ALTER TABLE ONLY public.dr_rai_targets
 
 
 --
+-- Name: patient_attributes fk_rails_fc46ae3757; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.patient_attributes
+    ADD CONSTRAINT fk_rails_fc46ae3757 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
@@ -9713,6 +9724,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260127150000'),
 ('20260128094448'),
 ('20260205110957'),
+('20260209112204'),
 ('20260212195326'),
 ('20260224063659'),
 ('20260316093605'),
