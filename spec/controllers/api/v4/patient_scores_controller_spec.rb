@@ -23,5 +23,30 @@ describe Api::V4::PatientScoresController, type: :controller do
 
   describe "GET sync: send data from server to device;" do
     it_behaves_like "a working V3 sync controller sending records"
+
+    it "advances the process_token when many records share one updated_at" do
+      set_authentication_headers
+      shared_ts = 5.minutes.ago
+      facility = create(:facility, facility_group: request_facility_group)
+      patient = create(:patient, registration_facility: facility)
+      records = create_list(:patient_score, 5, patient: patient, updated_at: shared_ts)
+      expected_ids = records.map(&:id).to_set
+
+      received_ids = Set.new
+      process_token = nil
+
+      3.times do
+        reset_controller
+        set_authentication_headers
+        get :sync_to_user, params: {limit: 2, process_token: process_token}.compact
+
+        body = JSON(response.body)
+        body["patient_scores"].each { |r| received_ids << r["id"] }
+        process_token = body["process_token"]
+        break if body["patient_scores"].empty?
+      end
+
+      expect(received_ids).to eq(expected_ids)
+    end
   end
 end
