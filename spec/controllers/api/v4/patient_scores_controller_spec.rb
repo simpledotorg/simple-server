@@ -55,26 +55,34 @@ describe Api::V4::PatientScoresController, type: :controller do
       expect(received_ids).to eq(expected_ids)
     end
 
-    it "advances next_page while full pages are returned and resets to 1 on the final page" do
+    it "advances next_page on every non-empty page and resets to 1 only on an empty page" do
       create_record_list(5, updated_at: 5.minutes.ago)
 
       get :sync_to_user, params: {limit: 2}
-      token1 = parse_process_token(JSON(response.body))
-      expect(token1[:next_page]).to eq(2)
+      body1 = JSON(response.body)
+      expect(body1["patient_scores"].size).to eq(2)
+      expect(parse_process_token(body1)[:next_page]).to eq(2)
 
       reset_controller
       set_authentication_headers
-      get :sync_to_user, params: {limit: 2, process_token: JSON(response.body)["process_token"]}
-      token2 = parse_process_token(JSON(response.body))
-      expect(token2[:next_page]).to eq(3)
+      get :sync_to_user, params: {limit: 2, process_token: body1["process_token"]}
+      body2 = JSON(response.body)
+      expect(body2["patient_scores"].size).to eq(2)
+      expect(parse_process_token(body2)[:next_page]).to eq(3)
 
       reset_controller
       set_authentication_headers
-      get :sync_to_user, params: {limit: 2, process_token: JSON(response.body)["process_token"]}
+      get :sync_to_user, params: {limit: 2, process_token: body2["process_token"]}
       body3 = JSON(response.body)
-      token3 = parse_process_token(body3)
       expect(body3["patient_scores"].size).to eq(1)
-      expect(token3[:next_page]).to eq(1)
+      expect(parse_process_token(body3)[:next_page]).to eq(4)
+
+      reset_controller
+      set_authentication_headers
+      get :sync_to_user, params: {limit: 2, process_token: body3["process_token"]}
+      body4 = JSON(response.body)
+      expect(body4["patient_scores"]).to eq([])
+      expect(parse_process_token(body4)[:next_page]).to eq(1)
     end
 
     it "returns an empty list and next_page=1 when there is nothing to sync" do

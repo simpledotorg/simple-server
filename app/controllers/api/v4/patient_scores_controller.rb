@@ -30,10 +30,9 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
   end
 
   def response_process_token
-    has_more_pages = current_facility_records.size == limit
     {
       current_facility_id: current_facility.id,
-      next_page: has_more_pages ? current_page + 1 : 1,
+      next_page: current_facility_records.empty? ? 1 : current_page + 1,
       resync_token: resync_token,
       sync_region_id: current_sync_region.id
     }
