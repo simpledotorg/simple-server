@@ -90,4 +90,22 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
     return nil if force_resync?
     process_token[:other_facilities_last_id]
   end
+
+  def other_facilities_processed_since
+    return Time.new(0) if force_resync?
+    process_token[:other_facilities_processed_since]&.to_time(:utc) || Time.new(0)
+  end
+
+  def current_facility_processed_since
+    if force_resync?
+      Time.new(0)
+    elsif process_token[:current_facility_processed_since].blank?
+      other_facilities_processed_since
+    elsif process_token[:current_facility_id] != current_facility.id
+      [process_token[:current_facility_processed_since].to_time(:utc),
+        other_facilities_processed_since].min
+    else
+      process_token[:current_facility_processed_since].to_time(:utc)
+    end
+  end
 end
