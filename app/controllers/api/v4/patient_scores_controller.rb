@@ -12,7 +12,7 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
         current_facility_processed_since,
         current_facility_last_id,
         limit
-      )
+      ).to_a
   end
 
   def other_facility_records
@@ -28,7 +28,7 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
         other_facilities_processed_since,
         other_facilities_last_id,
         other_facilities_limit
-      )
+      ).to_a
   end
 
   private
