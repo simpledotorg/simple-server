@@ -298,13 +298,15 @@ RSpec.describe Api::V3::PatientsController, type: :controller do
                            .except("merged_by_user_id")
                            .except("merged_into_patient_id")
                            .except("test_data")
-                           .except("deleted_by_user_id"))
+                           .except("deleted_by_user_id")
+                           .except("diagnosed_confirmed_at"))
             .to eq(updated_patient_payload.with_int_timestamps
                      .except("id")
                      .except("address")
                      .except("phone_numbers")
                      .except("business_identifiers")
-                     .except("registration_facility_id"))
+                     .except("registration_facility_id")
+                     .except("diagnosed_confirmed_at"))
         end
       end
 
