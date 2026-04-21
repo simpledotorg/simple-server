@@ -9557,14 +9557,6 @@ ALTER TABLE ONLY public.dr_rai_targets
 
 
 --
--- Name: patient_attributes fk_rails_fc46ae3757; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.patient_attributes
-    ADD CONSTRAINT fk_rails_fc46ae3757 FOREIGN KEY (patient_id) REFERENCES public.patients(id);
-
-
---
 -- PostgreSQL database dump complete
 --
 
