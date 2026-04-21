@@ -748,7 +748,9 @@ CREATE TABLE IF NOT EXISTS simple_reporting.reporting_patient_prescriptions (
     hypertension_drug_changed boolean,
     diabetes_drug_changed boolean,
     other_drug_changed boolean,
-    prescribed_statins boolean
+    prescribed_statins boolean,
+    latest_cvd_risk_score_lower_range integer,
+    latest_cvd_risk_score_upper_range integer
     )
     PARTITION BY LIST (month_date);
 
@@ -863,7 +865,10 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_tabl
             ) elem
             WHERE elem->>'drug_name' ILIKE '%statin%'
         )
-        ) AS prescribed_statins
+        ) AS prescribed_statins,
+
+        cvd.latest_cvd_risk_score_lower_range,
+        cvd.latest_cvd_risk_score_upper_range
 
     FROM simple_reporting.reporting_patient_states rps
     LEFT JOIN reporting_facilities assigned_facility ON rps.assigned_facility_id = assigned_facility.facility_id
@@ -940,6 +945,27 @@ CREATE OR REPLACE FUNCTION simple_reporting.reporting_patient_prescriptions_tabl
             )
         )
     ) prev ON TRUE
+
+    LEFT JOIN LATERAL (
+        SELECT
+        split_part(cr.risk_score,'-',1)::int AS latest_cvd_risk_score_lower_range,
+
+        COALESCE(
+            NULLIF(split_part(cr.risk_score,'-',2),''),
+            split_part(cr.risk_score,'-',1)
+        )::int AS latest_cvd_risk_score_upper_range
+
+        FROM cvd_risks cr
+        WHERE cr.patient_id = rps.patient_id
+        AND cr.deleted_at IS NULL
+        AND date_trunc('month',
+                timezone(current_setting('TIMEZONE'),
+                timezone('UTC', cr.device_updated_at))
+            ) < (rps.month_date + interval '1 month')
+
+        ORDER BY cr.device_updated_at DESC
+        LIMIT 1
+    ) cvd ON TRUE
     WHERE rps.month_date = $1
     AND rps.htn_care_state <> 'dead';
     END;
@@ -9121,6 +9147,24 @@ CREATE INDEX patient_prescriptions_assigned_organization_region_id ON ONLY simpl
 --
 
 CREATE INDEX index_patient_prescriptions_patient_id ON ONLY simple_reporting.reporting_patient_prescriptions USING btree (patient_id);
+
+--
+-- Name: idx_rpp_month_patient; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX idx_rpp_month_patient ON simple_reporting.reporting_patient_prescriptions (month_date, patient_id);
+
+--
+-- Name: idx_rpp_latest_cvd_score_lower_range; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX idx_rpp_latest_cvd_score_lower_range ON simple_reporting.reporting_patient_prescriptions (latest_cvd_risk_score_lower_range);
+
+--
+-- Name: idx_rpp_latest_cvd_score_upper_range; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE INDEX idx_rpp_latest_cvd_score_upper_range ON simple_reporting.reporting_patient_prescriptions (latest_cvd_risk_score_upper_range);
 
 --
 -- Name: index_fs_block; Type: INDEX; Schema: simple_reporting; Owner: -
