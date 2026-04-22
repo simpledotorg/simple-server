@@ -5614,8 +5614,8 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text) AND (reporting_patient_states.diabetes_treatment_outcome_in_last_3_months = 'missed_visit'::text))) AS bs_missed_visit_lost_to_follow_up,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'under_care'::text)) AS diabetes_patients_under_care,
             count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE (reporting_patient_states.htn_care_state = 'lost_to_follow_up'::text)) AS diabetes_patients_lost_to_follow_up,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (140)::double precision) AND (reporting_patient_states.diastolic < (90)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_140_90_under_care,
-            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.months_since_visit < (3)::double precision) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision) AND (reporting_patient_states.systolic IS NOT NULL) AND (reporting_patient_states.diastolic IS NOT NULL))) AS dm_bp_below_130_80_under_care
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text))) AS dm_bp_below_140_90_under_care,
+            count(DISTINCT reporting_patient_states.patient_id) FILTER (WHERE ((reporting_patient_states.htn_care_state = 'under_care'::text) AND (reporting_patient_states.htn_treatment_outcome_in_last_3_months = 'controlled'::text) AND (reporting_patient_states.systolic < (130)::double precision) AND (reporting_patient_states.diastolic < (80)::double precision))) AS dm_bp_below_130_80_under_care
            FROM public.reporting_patient_states
           WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
           GROUP BY reporting_patient_states.assigned_facility_region_id, reporting_patient_states.month_date
@@ -5644,7 +5644,7 @@ CREATE MATERIALIZED VIEW public.reporting_facility_states AS
                         ELSE (date_part('year'::text, age(reporting_patient_states.month_date, ((reporting_patient_states.age_updated_at AT TIME ZONE 'UTC'::text) AT TIME ZONE (SELECT current_setting('TIMEZONE'::text)))::date)) + reporting_patient_states.age)
                     END AS age_on_month_date
                    FROM public.reporting_patient_states
-                  WHERE ((reporting_patient_states.diabetes = 'yes'::text) AND (reporting_patient_states.months_since_registration >= (3)::double precision))
+                  WHERE (reporting_patient_states.diabetes = 'yes'::text)
                 )
          SELECT age_rps.assigned_facility_region_id AS region_id,
             age_rps.month_date,
@@ -6347,21 +6347,21 @@ COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_bp_below_130_80_u
 -- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_under_care; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_under_care IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_under_care IS 'The number of diabetic patients assigned to the facility that are age 40 or above and under care. Dead and lost to follow-up patients are excluded.';
 
 
 --
 -- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, have at least one valid statin prescription in the same month, and were registered before the last 3 months. Dead and lost to follow-up patients are excluded.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_statins IS 'The number of diabetic patients assigned to the facility that are age 40 or above, under care, and have at least one valid statin prescription in the same month. Dead and lost to follow-up patients are excluded.';
 
 
 --
 -- Name: COLUMN reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu; Type: COMMENT; Schema: public; Owner: -
 --
 
-COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu IS 'The number of diabetic patients assigned to the facility that are age 40 or above, not dead, and were registered before the last 3 months. Includes both under care and lost to follow-up patients.';
+COMMENT ON COLUMN public.reporting_facility_states.adjusted_dm_patients_40_and_above_with_ltfu IS 'The number of diabetic patients assigned to the facility that are age 40 or above and not dead. Includes both under care and lost to follow-up patients.';
 
 
 --
@@ -9764,6 +9764,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260212195326'),
 ('20260224063659'),
 ('20260316093605'),
-('20260407162829');
+('20260407162829'),
+('20260422120000');
 
 
