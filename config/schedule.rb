@@ -140,7 +140,7 @@ every 1.month, at: local("04:15 am"), roles: [:cron] do
 end
 
 every 1.month, at: local("06:00 am"), roles: [:cron] do
-  rake "reporting:refresh_partitioned_table[reporting_patient_prescriptions, 3]"
+  rake "reporting:refresh_partitioned_table[reporting_patient_prescriptions,3]"
 end
 
 every :day, at: local("05:00 am"), roles: [:cron] do
