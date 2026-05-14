@@ -35,6 +35,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       end
       Timecop.freeze("January 15th 2021") do
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
         refresh_views
         get :bp_controlled, params: {}
       end
@@ -87,6 +88,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
 
       Timecop.freeze("January 15th 2021") do
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 11, 1), Date.today))
         refresh_views
         get :bp_not_controlled, params: {}
       end
@@ -154,6 +156,7 @@ RSpec.describe MyFacilitiesController, type: :controller do
       end
       Timecop.freeze("January 15th 2021") do
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.today))
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.today))
         refresh_views
         get :csv_maker, params: {type: "controlled_patients"}
       end

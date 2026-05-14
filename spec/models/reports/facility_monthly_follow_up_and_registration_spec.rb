@@ -214,6 +214,7 @@ RSpec.describe Reports::FacilityMonthlyFollowUpAndRegistration, {type: :model, r
     create(:blood_pressure, patient: patient_2, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     create(:blood_pressure, patient: patient_3, user: user_2, facility: facility, recorded_at: six_months_ago.advance(days: 3))
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(two_years_ago.to_date, two_years_ago.to_date + 3.year))
     refresh_views
     total = described_class.totals(facility)

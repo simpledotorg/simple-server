@@ -48,6 +48,7 @@ RSpec.describe CohortService, type: :model do
     uncontrolled.each { |p| create(:bp_with_encounter, :hypertensive, recorded_at: "March 1st 2020 00:00:00 UTC", facility: facility, patient: p) }
     no_bp_taken.each { |p| create(:appointment, device_created_at: "March 1st 2020 00:00:00 UTC", facility: facility, patient: p) }
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 12, 1), Date.new(2020, 4, 1)))
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 12, 1), Date.new(2020, 4, 1)))
     refresh_views
 
     periods = Period.month("April 1st 2020").downto(5)

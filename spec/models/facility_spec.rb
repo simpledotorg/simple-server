@@ -153,7 +153,7 @@ RSpec.describe Facility, type: :model do
         create(:blood_sugar, :with_encounter, facility: facility, patient: htn_patient, recorded_at: first_follow_up_date)
         create(:blood_pressure, :with_encounter, facility: facility, patient: htn_patient, recorded_at: second_follow_up_date)
         create(:blood_pressure, :with_encounter, facility: facility, patient: dm_patient, recorded_at: second_follow_up_date)
-
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(first_follow_up_date.to_date, second_follow_up_date.to_date))
         refresh_views
 
         expected_output = {
