@@ -37,6 +37,7 @@ describe MonthlyStateData::HypertensionDataExporter do
 
     @months = @period.downto(5).reverse.map(&:to_s)
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(2.years.ago.to_date, Date.today))
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(2.years.ago.to_date, Date.today))
     RefreshReportingViews.refresh_v2
   end
 

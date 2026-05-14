@@ -25,6 +25,7 @@ RSpec.describe FollowUpsQuery do
         Period.month(second_follow_up_date) => 1
       }
 
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(first_follow_up_date.to_date, second_follow_up_date.to_date))
       refresh_views
 
       region = facility.region

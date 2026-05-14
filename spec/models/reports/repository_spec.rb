@@ -36,6 +36,7 @@ RSpec.describe Reports::Repository, type: :model do
       follow_up_patient = create(:patient, recorded_at: july_2018, assigned_facility: other_facility, registration_user: user)
       create(:blood_pressure, patient: follow_up_patient, facility: facility_3, recorded_at: june_30_2020, user: user)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(june_1_2018.to_date, june_30_2020.to_date))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(june_1_2018.to_date, june_30_2020.to_date))
       refresh_views
 
       regions = [district_region, region_with_no_patients, facility_1.region, facility_3.region]
@@ -48,7 +49,10 @@ RSpec.describe Reports::Repository, type: :model do
   end
 
   context "counts and rates" do
-    before { allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 8, 1), Date.new(2021, 1, 1))) }
+    before {
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 8, 1), Date.new(2021, 1, 1)))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 8, 1), Date.new(2021, 1, 1)))
+    }
 
     it "gets assigned and registration counts for single facility region" do
       facilities = FactoryBot.create_list(:facility, 2, facility_group: facility_group_1).sort_by(&:slug)
@@ -507,6 +511,7 @@ RSpec.describe Reports::Repository, type: :model do
         htn_patients.each { |p| create(:bp_with_encounter, :under_control, facility: facility_1, patient: p, recorded_at: period.to_date, user: user) }
       end
     end
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 10, 1), Date.new(2020, 1, 1)))
     refresh_views
     repo = described_class.new(facility_1, periods: range)
     expected = {
@@ -538,7 +543,7 @@ RSpec.describe Reports::Repository, type: :model do
       create(:bp_with_encounter, recorded_at: jan_2020.advance(days: 13), patient: p, facility: facility_2, user: user)
       create(:prescription_drug, recorded_at: jan_2020.advance(days: 10), patient: p, facility: facility_1, user: user)
     end
-
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 10, 1), Date.new(2020, 3, 1)))
     refresh_views
     expected = {
       "October 1st 2019" => 2,
@@ -570,6 +575,7 @@ RSpec.describe Reports::Repository, type: :model do
       create(:bp_with_encounter, recorded_at: 2.months.ago, facility: facility_1, patient: patient_2, user: user_2)
       create(:bp_with_encounter, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
       create(:appointment, recorded_at: 1.month.ago, facility: facility_2, patient: patient_1)
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(10.months.ago.to_date, Date.today))
       refresh_views
 
       repo = described_class.new([facility_1, facility_2], periods: periods)
@@ -595,6 +601,7 @@ RSpec.describe Reports::Repository, type: :model do
       create(:bp_with_encounter, recorded_at: "February 10th 2021", facility: facility_1, patient: patient_1, user: user_1)
       create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_1, user: user_1)
       create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_1, user: user_2)
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(10.months.ago.to_date, Date.today))
       refresh_views
 
       repo = described_class.new([facility_1, facility_2], periods: periods)
@@ -617,6 +624,7 @@ RSpec.describe Reports::Repository, type: :model do
       create(:bp_with_encounter, recorded_at: "February 11th 2021", facility: facility_1, patient: patient_2)
       create(:bp_with_encounter, recorded_at: "February 12th 2021", facility: facility_1, patient: patient_3)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(10.months.ago.to_date, Date.today))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(10.months.ago.to_date, Date.today))
       refresh_views
 
       repo = described_class.new([facility_1, facility_2], periods: periods)
@@ -688,6 +696,7 @@ RSpec.describe Reports::Repository, type: :model do
       non_ltfu_patient = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "July 1st 2019 00:00:00 UTC", registration_user: user)
       create(:bp_with_encounter, recorded_at: "July 1st 2019 00:00:00", facility: facility, patient: non_ltfu_patient, user: user)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 1, 1), Date.new(2020, 1, 1)))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 1, 1), Date.new(2020, 1, 1)))
       refresh_views
 
       jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
@@ -712,6 +721,7 @@ RSpec.describe Reports::Repository, type: :model do
       missed_visit_2 = FactoryBot.create(:patient, assigned_facility: facility, recorded_at: "Jan 1st 2018 00:00:00 UTC", registration_user: user)
       create(:bp_with_encounter, :under_control, facility: facility, patient: missed_visit_2, recorded_at: "April 1st 2019 23:59:00 UTC")
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 1, 1), Date.new(2020, 1, 1)))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2018, 1, 1), Date.new(2020, 1, 1)))
       refresh_views
 
       jan_2020_range = (Period.month(jan_2020.advance(months: -24))..Period.month(jan_2020))
@@ -946,6 +956,12 @@ RSpec.describe Reports::Repository, type: :model do
 
     before do
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(
+        ReportingHelpers.get_refresh_months_between_dates(
+          start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
+          end_period.to_date
+        )
+      )
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(
         ReportingHelpers.get_refresh_months_between_dates(
           start_period.advance(months: -Reports::REGISTRATION_BUFFER_IN_MONTHS).to_date,
           end_period.to_date
