@@ -83,6 +83,7 @@ RSpec.describe DistrictAnalyticsQuery do
           }
         }
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(four_months_back.to_date, current_month.to_date))
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(four_months_back.to_date, current_month.to_date))
         refresh_views
 
         with_reporting_time_zone do
@@ -135,6 +136,7 @@ RSpec.describe DistrictAnalyticsQuery do
               facility_3.id => {total_registered_patients: 0}
             }
           allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(four_months_back.to_date, current_month.to_date))
+          allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(four_months_back.to_date, current_month.to_date))
           refresh_views
 
           with_reporting_time_zone do

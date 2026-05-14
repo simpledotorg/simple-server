@@ -30,6 +30,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     it "returns data from first patient record to PostgreSQL current_date, regardless of Ruby frozen time" do
       _facility_1_patients = create(:patient, recorded_at: jan_2020, assigned_facility: facility_1, registration_user: user)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
       results = Timecop.freeze(mar_2020) do
         refresh_views
         described_class.call(facility_1)
@@ -41,6 +42,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     context "explicit range provided" do
       it "returns data only for periods with patient data" do
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
+        allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
         _facility_1_patients = create(:patient, recorded_at: jan_2020, assigned_facility: facility_1, registration_user: user)
         explicit_range = (jan_2019.to_period..mar_2020.to_period)
         expected_range = (jan_2020.to_period..mar_2020.to_period)
@@ -60,6 +62,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       registration_time, now = 3.months.ago, Time.current
       _facility_1_patients = create_list(:patient, 2, full_name: "controlled", recorded_at: registration_time, assigned_facility: facility_1, registration_user: user)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 4.months, Date.today))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 4.months, Date.today))
       results = Timecop.freeze(now) do
         refresh_views
         described_class.call(facility_1)
@@ -164,6 +167,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       _facility_2_patients = create_list(:patient, 2, full_name: "controlled", recorded_at: mar_2020, assigned_facility: facility_2, registration_user: user)
 
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2020.to_date, Date.today))
       Timecop.freeze("June 1st 2021") do
         refresh_views
         range = (Period.current.advance(months: -24)..Period.current)
@@ -237,6 +241,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     end
 
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 16.months))
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 10, 1), Date.new(2020, 3, 1)))
     refresh_views
 
     expected_facility_1_follow_ups = {
@@ -283,6 +288,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
     create(:appointment, patient: visit_with_no_bp_and_ltfu, recorded_at: jan_2020, facility: facility_1, user: user)
 
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
+    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
     result = Timecop.freeze("October 1st 2021") do
       refresh_views
       described_class.call(facility_1)
@@ -332,6 +338,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       facility_1.update(enable_diabetes_management: true)
       facility_2.update(enable_diabetes_management: true)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
     end
 
     it "returns the adjusted count of patients with bs <200 in a region" do
@@ -761,7 +768,10 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
         Reports::FacilityState].freeze
     }
 
-    before { allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, Date.today)) }
+    before {
+      allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, Date.today))
+      allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, Date.today))
+    }
 
     it "return the count of overdue patients" do
       facility_1_patients = create_list(:patient, 4, :hypertension, assigned_facility: facility_1, recorded_at: jan_2019)
