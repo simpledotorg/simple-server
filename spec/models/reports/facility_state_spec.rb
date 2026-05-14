@@ -51,6 +51,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         month_2021_04 = "2021-04-01"
 
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.new(2021, 4, 1)))
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.new(2021, 4, 1)))
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class
@@ -106,6 +107,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
         create_list(:patient, 3, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 6, 1), Date.new(2021, 6, 1)))
+        allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 6, 1), Date.new(2021, 6, 1)))
         RefreshReportingViews.refresh_v2
         with_reporting_time_zone do
           expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_patients).to eq 1
@@ -254,6 +256,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             scheduled_date: Date.today,
             device_created_at: 63.days.ago)
 
+          allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today.beginning_of_month))
           RefreshReportingViews.refresh_v2
 
           expect(described_class.find_by(month_date: Period.current, facility: facility).appts_scheduled_0_to_14_days).to eq 2
@@ -318,6 +321,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           month_2020_07 = "2020-07-01"
           month_2021_04 = "2021-04-01"
 
+          allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2020, 7, 1), Date.new(2021, 4, 1)))
           refresh_views
           with_reporting_time_zone do
             expect(described_class
@@ -431,6 +435,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:patient, :diabetes, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
           create_list(:patient, 3, :diabetes, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
+          allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((june_2021[:now] - 2.years).to_date, june_2021[:now].beginning_of_month.to_date))
           RefreshReportingViews.refresh_v2
           with_reporting_time_zone do
             expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to eq 1
@@ -448,6 +453,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
           create(:patient, :without_diabetes, assigned_facility: facility, recorded_at: june_2021[:end_of_month])
           create_list(:patient, 3, :without_diabetes, recorded_at: june_2021[:long_ago], assigned_facility: facility, status: "dead")
 
+          allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates((june_2021[:now] - 2.years).to_date, june_2021[:now].beginning_of_month.to_date))
           RefreshReportingViews.refresh_v2
           with_reporting_time_zone do
             expect(described_class.find_by(facility: facility, month_date: june_2021[:now] - 2.years).cumulative_assigned_diabetic_patients).to be_nil
@@ -570,6 +576,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, registration_facility: facility_1, device_created_at: 3.months.ago)
 
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
+      allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_registrations))
@@ -590,6 +597,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:patient, assigned_facility: facility_1, device_created_at: 3.months.ago)
 
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
+      allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :cumulative_assigned_patients))
@@ -610,6 +618,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: patient, facility: facility_1)
       create(:blood_pressure, patient: patient, facility: facility_1, device_created_at: 3.months.ago)
 
+      allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 6.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :monthly_follow_ups))
