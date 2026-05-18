@@ -419,4 +419,10 @@ RSpec.describe Reports::OverduePatient, {type: :model, reporting_spec: true} do
       end
     end
   end
+
+  describe "#partitioned?" do
+    it "returns true" do
+      expect(described_class.partitioned?).to be(true)
+    end
+  end
 end
