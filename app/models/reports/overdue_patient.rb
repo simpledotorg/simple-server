@@ -4,7 +4,7 @@ module Reports
     belongs_to :patient
 
     def self.materialized?
-      true
+      false
     end
 
     def self.partitioned?
