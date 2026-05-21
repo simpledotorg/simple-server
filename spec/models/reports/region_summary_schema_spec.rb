@@ -1231,6 +1231,7 @@ describe Reports::RegionSummarySchema, type: :model do
     before {
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
       allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
+      allow(Reports::OverduePatient).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 3.months, Date.today))
     }
 
     describe "#patients_called_rates" do
