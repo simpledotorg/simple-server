@@ -49,6 +49,7 @@ RSpec.describe RefreshReportingViews do
         end
         create(:blood_pressure, patient: patients.first, recorded_at: Time.current)
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 1.month, Date.today))
+        allow(Reports::OverduePatient).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 1.month, Date.today))
         RefreshReportingViews.call
       end
     }.to change { Reports::PatientBloodPressure.count }.by(4)
