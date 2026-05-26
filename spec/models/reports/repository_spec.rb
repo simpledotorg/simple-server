@@ -222,6 +222,7 @@ RSpec.describe Reports::Repository, type: :model do
       create(:call_result, user: user_1, facility: facility, patient: patient_2, device_created_at: one_month_ago)
       create(:call_result, user: user_2, facility: facility, patient: patient_without_phone, device_created_at: two_months_ago)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(three_months_ago.to_date, Date.today))
+      allow(Reports::OverduePatient).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(three_months_ago.to_date, Date.today))
       refresh_views
 
       repo = Reports::Repository.new(facility.region, periods: (two_months_ago.to_period..this_month.to_period))
