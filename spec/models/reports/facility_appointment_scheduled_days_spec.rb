@@ -252,4 +252,10 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
       expect(described_class.find_by(month_date: Period.current, facility: facility)).to be_nil
     end
   end
+
+  describe "#partitioned?" do
+    it "returns true" do
+      expect(described_class.partitioned?).to be(true)
+    end
+  end
 end
