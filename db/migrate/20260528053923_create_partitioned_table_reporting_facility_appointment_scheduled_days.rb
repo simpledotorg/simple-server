@@ -1,0 +1,94 @@
+class CreatePartitionedTableReportingFacilityAppointmentScheduledDays < ActiveRecord::Migration[6.1]
+  def up
+    execute <<~SQL
+      CREATE TABLE IF NOT EXISTS simple_reporting.reporting_facility_appointment_scheduled_days (
+        facility_id uuid,
+        month_date date,
+        htn_appts_scheduled_0_to_14_days integer,
+        htn_appts_scheduled_15_to_31_days integer,
+        htn_appts_scheduled_32_to_62_days integer,
+        htn_appts_scheduled_more_than_62_days integer,
+        htn_total_appts_scheduled integer,
+        diabetes_appts_scheduled_0_to_14_days integer,
+        diabetes_appts_scheduled_15_to_31_days integer,
+        diabetes_appts_scheduled_32_to_62_days integer,
+        diabetes_appts_scheduled_more_than_62_days integer,
+        diabetes_total_appts_scheduled integer
+      )
+      PARTITION BY LIST (month_date);
+    SQL
+
+    add_index "simple_reporting.reporting_facility_appointment_scheduled_days", ["facility_id"], name: "index_reporting_facility_appointment_scheduled_days_facility_id"
+
+    execute <<~SQL
+      CREATE OR REPLACE FUNCTION simple_reporting.reporting_facility_appointment_scheduled_days_table_function(date) RETURNS SETOF simple_reporting.reporting_facility_appointment_scheduled_days
+      LANGUAGE plpgsql
+      AS $_$
+      BEGIN
+      RETURN QUERY
+        WITH latest_medical_histories AS (
+          SELECT DISTINCT ON (patient_id) mh.*
+          FROM medical_histories mh
+          WHERE mh.deleted_at IS NULL
+          ORDER BY patient_id, mh.device_created_at DESC
+        ),
+        latest_appointments_per_patient_per_month AS (
+          SELECT DISTINCT ON (patient_id, month_date)
+            a.*,
+            lmh.hypertension,
+            lmh.diabetes,
+            to_char(a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')), 'YYYY-MM-01')::date AS month_date
+          FROM appointments a
+            INNER JOIN patients p ON p.id = a.patient_id
+            INNER JOIN latest_medical_histories lmh ON lmh.patient_id = a.patient_id
+          WHERE a.scheduled_date >= date_trunc('day', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+            AND date_trunc('month', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))) = $1
+            AND date_trunc('month', a.device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE'))) > date_trunc('month', p.recorded_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))
+            AND p.deleted_at IS NULL
+            AND p.diagnosed_confirmed_at IS NOT NULL
+            AND a.deleted_at IS NULL
+            AND (lmh.hypertension = 'yes' OR lmh.diabetes = 'yes')
+          ORDER BY a.patient_id, month_date, a.device_created_at DESC
+        ),
+        scheduled_days_distribution AS (
+          SELECT
+            month_date,
+            width_bucket(
+              extract('days' FROM (scheduled_date - date_trunc('day', device_created_at AT TIME ZONE 'UTC' AT TIME ZONE (SELECT current_setting('TIMEZONE')))))::integer,
+              array[0, 15, 32, 63]
+            ) AS bucket,
+            COUNT(*) AS number_of_appointments,
+            hypertension,
+            diabetes,
+            creation_facility_id AS facility_id
+          FROM latest_appointments_per_patient_per_month
+          GROUP BY bucket, creation_facility_id, month_date, hypertension, diabetes
+        )
+        SELECT
+          facility_id,
+          month_date,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_0_to_14_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_15_to_31_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_32_to_62_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND hypertension = 'yes'))::integer AS htn_appts_scheduled_more_than_62_days,
+          (SUM(number_of_appointments) FILTER (WHERE hypertension = 'yes'))::integer AS htn_total_appts_scheduled,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 1 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_0_to_14_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 2 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_15_to_31_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 3 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_32_to_62_days,
+          (SUM(number_of_appointments) FILTER (WHERE bucket = 4 AND diabetes = 'yes'))::integer AS diabetes_appts_scheduled_more_than_62_days,
+          (SUM(number_of_appointments) FILTER (WHERE diabetes = 'yes'))::integer AS diabetes_total_appts_scheduled
+        FROM scheduled_days_distribution
+        GROUP BY facility_id, month_date;
+      END;
+      $_$;
+    SQL
+  end
+
+  def down
+    execute <<~SQL
+      DROP FUNCTION IF EXISTS simple_reporting.reporting_facility_appointment_scheduled_days_table_function(date);
+    SQL
+
+    drop_table "simple_reporting.reporting_facility_appointment_scheduled_days"
+  end
+end
