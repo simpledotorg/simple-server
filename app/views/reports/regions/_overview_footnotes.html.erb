@@ -112,10 +112,10 @@
     <div class="mb-24px">
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         <% if @region.facility_region? %>
-          Follow-up patients per user
-        <% else %>
-          Follow-up patients
-        <% end %>
+            Follow-up <% if CountryConfig.current_country?("Ethiopia") %>visits<% else %>patients<% end %> per user 
+          <% else %>
+            Follow-up <% if CountryConfig.current_country?("Ethiopia") %>visits<% else %>patients<% end %>
+          <% end %>
       </p>
       <div class="pl-16px">
         <p class="mb-8px fs-14px c-grey-dark">
