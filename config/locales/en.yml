@@ -64,7 +64,7 @@ en:
     reports_card_subtitle: "Estimated adults in %{region_name} with hypertension who are registered, under care, and controlled till %{period}"
   bs_below_200_copy:
     reports_card_title: "Blood sugar <200"
-    reports_card_title_fbs: "Blood sugar <126"
+    reports_card_title_fbs: "Blood sugar controlled"
     reports_card_title_dm: "Blood Sugar <200"
     reports_card_title_dm_bs: "Blood sugar <200"
     reports_card_title_dm_fbs: "Blood sugar controlled"
@@ -87,7 +87,7 @@ en:
       numerator: "Patients with HbA1c <7.0 at their last visit in the last 3 months"
   bs_over_200_copy:
     reports_card_title: "Blood sugar ≥200"
-    reports_card_title_fbs: "Blood sugar ≥126"
+    reports_card_title_fbs: "Blood sugar uncontrolled"
     reports_card_title_dm: "Blood sugar ≥200"
     reports_card_title_dm_fbs: "Blood sugar uncontrolled"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
@@ -95,7 +95,7 @@ en:
     bs_200_to_299:
       title: "Blood Sugar 200-299"
       title_dm_bs: "Blood sugar 200-299"
-      title_fbs: "Blood Sugar 126-199"
+      title_fbs: "Blood sugar uncontrolled (126-199)"
       title_dm: "blood sugar 200-299"
       title_dm_fbs: "FBS 126-199mg/dL or HbA1c 7%-8.9%"
       reports_card_subtitle: "Diabetes patients at %{region_name} registered >3 months ago with blood sugar 200-299 at their last visit in the last 3 months."
@@ -114,7 +114,7 @@ en:
         numerator: "Patients with HbA1c 7.0-8.9 at their last visit in the last 3 months"
     bs_over_300:
       title: "Blood sugar ≥300"
-      title_fbs: "Blood sugar ≥200"
+      title_fbs: "Blood sugar uncontrolled (≥200)"
       title_dm_fbs: "FBS ≥200mg/dL or HbA1c ≥9%"
       numerator: "Patients with RBS/PPBS ≥300, FBS ≥200, or HbA1c ≥9.0 at their last visit in the last 3 months"
       numerator_fbs: "Patients with FBS ≥200mg/dL, or HbA1c ≥9% at their last visit in the last 3 months"
@@ -130,6 +130,32 @@ en:
         numerator: "Patients with FBS ≥200 at their last visit in the last 3 months"
       hba1c:
         numerator: "Patients with HbA1c ≥9.0 at their last visit in the last 3 months"
+  diabetes_treatment_status_card:
+    title: "Treatment status of patients under care"
+    missed_visits:
+      title: "Missed visits"
+      description: "patients with no visit"
+    visit_no_bs:
+      title: "Visit but no blood sugar taken"
+      description: "patients with a visit but no blood sugar taken"
+    bs_over_300:
+      title: "Blood sugar ≥300"
+      description: "patients with blood sugar ≥300 taken"
+      who_standard:
+        title: "Blood sugar uncontrolled"
+        description: "patients with FBS ≥200mg/dL or HbA1c ≥9% taken"
+    bs_200_to_299:
+      title: "Blood sugar 200-299"
+      description: "patients with blood sugar 200-299 taken"
+      who_standard:
+        title: "Blood sugar uncontrolled"
+        description: "patients with FBS 126-199mg/dL or HbA1c 7%-8.9% taken"
+    bs_below_200:
+      title: "Blood sugar <200"
+      description: "patients with blood sugar <200 taken"
+      who_standard:
+        title: "Blood sugar controlled"
+        description: "patients with FBS <126mg/dL or HbA1c <7% taken"
   missed_visits_copy:
     reports_card_subtitle: "Hypertension patients with no visit in the last 3 months"
     numerator: "Patients with no visit in the last 3 months"
