@@ -58,9 +58,9 @@
   <div class="mb-24px">
     <p class="mb-8px fs-16px fw-bold c-grey-dark">
       <% if @region.facility_region? %>
-        Follow-up <% if CountryConfig.current_country?("Ethiopia") %>visits<% else %>patients<% end %> per user
+        <%= t(:follow_up_patients_per_user_label) %>
       <% else %>
-        Follow-up <% if CountryConfig.current_country?("Ethiopia") %>visits<% else %>patients<% end %>
+        <%= t(:follow_up_patients_label) %>
       <% end %>
     </p>
     <div class="pl-16px">

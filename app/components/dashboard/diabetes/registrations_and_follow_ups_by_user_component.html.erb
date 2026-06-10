@@ -1,9 +1,8 @@
-<% follow_up_label = "Follow-up #{CountryConfig.current_country?("Ethiopia") ? "visits" : "patients"} per user" %>
 <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
   <%= render Dashboard::Card::TitleComponent.new(title: "Patient registrations and follow-ups") do |c| %>
     <% c.tooltip(
          { "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
-           follow_up_label => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
+           t(:follow_up_patients_per_user_label) => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
   <% end %>
 
   <div class="table-responsive-md">
@@ -29,7 +28,7 @@
 
       <%= table.header("Total") %>
       <%= table.header("Monthly registered patients", colspan: 6) %>
-      <%= table.header(follow_up_label, colspan: 6) %>
+      <%= table.header(t(:follow_up_patients_per_user_label), colspan: 6) %>
 
       <%= table.sub_header("Users", sort_default: true, sort_method: :string) %>
       <%= table.sub_header("Registered patients") %>

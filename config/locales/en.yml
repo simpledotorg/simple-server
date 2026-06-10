@@ -188,6 +188,8 @@ en:
   ltfu_denominator_copy: "Hypertension patients assigned to %{region_name}. Dead patients are excluded."
   diabetes_ltfu_denominator_copy: "Diabetes patients assigned to %{region_name}. Dead patients are excluded."
   follow_up_patients_copy: "Hypertension patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
+  follow_up_patients_label: "Follow-up patients"
+  follow_up_patients_per_user_label: "Follow-up patients per user"
   diabetes_follow_up_patients_copy: "Diabetes patients with a BP measure taken, a blood sugar taken, an appointment scheduled, or their medications refilled during a month in %{region_name}"
   patients_under_care_copy: "Hypertension patients with a visit in the last 12 months."
   patients_bp_controlled_copy: "Hypertension patients with BP <140/90 at their last visit in the last 3 months (from patients enrolled more than 3 months ago)."

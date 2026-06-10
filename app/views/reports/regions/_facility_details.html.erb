@@ -1,4 +1,3 @@
-<% follow_up_label = "Follow-up #{CountryConfig.current_country?("Ethiopia") ? "visits" : "patients"} per user" %>
 <div class="card mt-0 pr-0 pr-md-3 pb-inside-avoid">
   <div class="d-flex flex-1 mb-8px">
     <h3 class="mb-0px mr-8px">
@@ -6,7 +5,7 @@
     </h3>
     <%= render "definition_tooltip",
                 definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name),
-                              follow_up_label => t(:follow_up_patients_copy, region_name: @region.name) } %>
+                              t(:follow_up_patients_per_user_label) => t(:follow_up_patients_copy, region_name: @region.name) } %>
   </div>
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
@@ -36,7 +35,7 @@
           </th>
           <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
           <th colspan="6">
-            <%= follow_up_label %>        
+            <%= t(:follow_up_patients_per_user_label) %>        
           </th>
           <% end %>
         </tr>
