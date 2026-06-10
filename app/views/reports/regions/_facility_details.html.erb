@@ -5,7 +5,7 @@
     </h3>
     <%= render "definition_tooltip",
                 definitions: { "Monthly registered patients" => t("registered_patients_copy.monthly_registered_patients", region_name: @region.name),
-                              "Follow-up patients per user" => t(:follow_up_patients_copy, region_name: @region.name) } %>
+                              t(:follow_up_patients_per_user_label) => t(:follow_up_patients_copy, region_name: @region.name) } %>
   </div>
   <div class="table-responsive-md">
     <table class="analytics-table table-compact">
@@ -35,7 +35,7 @@
           </th>
           <% unless Flipper.enabled?(:hide_facility_follow_up_patients_per_user) %>
           <th colspan="6">
-            Follow-up patients per user
+            <%= t(:follow_up_patients_per_user_label) %>        
           </th>
           <% end %>
         </tr>

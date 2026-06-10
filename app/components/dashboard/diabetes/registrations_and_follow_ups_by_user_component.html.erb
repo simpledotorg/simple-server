@@ -2,7 +2,7 @@
   <%= render Dashboard::Card::TitleComponent.new(title: "Patient registrations and follow-ups") do |c| %>
     <% c.tooltip(
          { "Monthly registered patients" => t("registered_diabetes_patients_copy.monthly_registered_patients", region_name: region.name),
-           "Follow-up patients per user" => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
+           t(:follow_up_patients_per_user_label) => t(:diabetes_follow_up_patients_copy, region_name: region.name) }) %>
   <% end %>
 
   <div class="table-responsive-md">
@@ -28,7 +28,7 @@
 
       <%= table.header("Total") %>
       <%= table.header("Monthly registered patients", colspan: 6) %>
-      <%= table.header("Follow-up patients per user", colspan: 6) %>
+      <%= table.header(t(:follow_up_patients_per_user_label), colspan: 6) %>
 
       <%= table.sub_header("Users", sort_default: true, sort_method: :string) %>
       <%= table.sub_header("Registered patients") %>

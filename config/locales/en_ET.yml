@@ -49,3 +49,5 @@ en-ET:
         small: "Health centers"
         medium: "Primary hospitals"
         large: "General/specialized hospitals"
+  follow_up_patients_label: "Follow-up visits"
+  follow_up_patients_per_user_label: "Follow-up visits per user"
