@@ -1,6 +1,13 @@
 require "rails_helper"
 
 describe MonthlyStateData::DiabetesDataExporter do
+  def stub_get_refresh_months_for(*classes)
+    classes.each do |klass|
+      allow(klass).to receive(:get_refresh_months)
+        .and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today))
+    end
+  end
+
   around do |example|
     # This is in the style of ReportingHelpers::freeze_time_for_reporting_specs.
     # Since FacilityAppointmentScheduledDays only keeps the last 6 months of data, the date cannot be a
@@ -38,8 +45,7 @@ describe MonthlyStateData::DiabetesDataExporter do
     create(:appointment, facility: @facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
 
     @months = @period.downto(5).reverse.map(&:to_s)
-    allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today))
-    allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today))
+    stub_get_refresh_months_for(Reports::PatientState, Reports::FacilityState, Reports::FacilityAppointmentScheduledDays)
     RefreshReportingViews.refresh_v2
   end
 

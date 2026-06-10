@@ -77,6 +77,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     _diabetes_appointment_created_1_month_ago = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: Date.today, device_created_at: 31.days.ago)
     _diabetes_appointment_created_2_month_ago = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: Date.today, device_created_at: 62.days.ago)
 
+    allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today))
     RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).htn_appts_scheduled_0_to_14_days).to eq 1
@@ -119,7 +120,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     expect(described_class.find_by(month_date: Period.current, facility: facility).diabetes_appts_scheduled_more_than_62_days).to eq 1
   end
 
-  it "considers only last 6 months of appointments" do
+  it "considers last 6 months of appointments" do
     facility = create(:facility)
     patient = create(:patient, recorded_at: 8.months.ago, assigned_facility: facility)
     diabetes_patient = create(:patient, :diabetes, recorded_at: 8.months.ago, assigned_facility: facility)
@@ -131,6 +132,7 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
     _diabetes_appointment_created_6_months_ago = create(:appointment, facility: facility, patient: diabetes_patient, scheduled_date: Date.today, device_created_at: 6.month.ago)
     _diabetes_appointment_created_7_months_ago = create(:appointment, facility: facility, patient: diabetes_patient, scheduled_date: Date.today, device_created_at: 7.month.ago)
 
+    allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(8.months.ago.to_date, Date.today))
     RefreshReportingViews.refresh_v2
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).htn_appts_scheduled_0_to_14_days).to eq 1
@@ -138,8 +140,6 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
 
     expect(described_class.find_by(month_date: Period.current, facility: facility).diabetes_appts_scheduled_0_to_14_days).to eq 1
     expect(described_class.find_by(month_date: Period.month(6.month.ago), facility: facility).diabetes_appts_scheduled_more_than_62_days).to eq 1
-
-    expect(described_class.find_by(month_date: Period.month(7.month.ago), facility: facility)).to be_nil
   end
 
   it "does not include appointments where scheduled date is before creation date" do
@@ -256,6 +256,12 @@ RSpec.describe Reports::FacilityAppointmentScheduledDays, {type: :model, reporti
   describe "#partitioned?" do
     it "returns true" do
       expect(described_class.partitioned?).to be(true)
+    end
+  end
+
+  describe "#materialized?" do
+    it "returns false" do
+      expect(described_class.materialized?).to be(false)
     end
   end
 end

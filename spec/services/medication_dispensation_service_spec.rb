@@ -10,6 +10,7 @@ RSpec.describe MedicationDispensationService, type: :model do
       _appointment_created_1_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 32.days.ago)
       _appointment_created_2_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 63.days.ago)
 
+      allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Period.month(3.months.ago).to_date, period.to_date))
       allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Period.month(3.months.ago).to_date, period.to_date))
       RefreshReportingViews.refresh_v2
 
@@ -49,6 +50,7 @@ RSpec.describe MedicationDispensationService, type: :model do
       _appointment_created_1_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 32.days.ago)
       _appointment_created_2_month_ago = create(:appointment, patient: patient, facility: facility, scheduled_date: Date.today, device_created_at: 63.days.ago)
 
+      allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Period.month(3.months.ago).to_date, period.to_date))
       allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Period.month(3.months.ago).to_date, period.to_date))
       RefreshReportingViews.refresh_v2
 

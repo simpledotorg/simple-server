@@ -115,6 +115,7 @@ describe Reports::RegionSummarySchema, type: :model do
         _diabetes_appointment_scheduled_15_to_30_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 1.month.ago + 16.days, device_created_at: 1.month.ago)
         _diabetes_appointment_scheduled_more_than_62_days = create(:appointment, patient: diabetes_patient, facility: facility, scheduled_date: 2.month.ago + 63.days, device_created_at: 2.month.ago)
 
+        allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(4.month.ago.to_date, Date.today))
         allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(4.month.ago.to_date, Date.today))
         refresh_views
 
