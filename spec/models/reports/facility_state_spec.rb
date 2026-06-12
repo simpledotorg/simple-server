@@ -256,6 +256,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
             scheduled_date: Date.today,
             device_created_at: 63.days.ago)
 
+          allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today.beginning_of_month))
           allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(3.months.ago.to_date, Date.today.beginning_of_month))
           RefreshReportingViews.refresh_v2
 
