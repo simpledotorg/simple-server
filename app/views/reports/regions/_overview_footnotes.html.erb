@@ -112,10 +112,10 @@
     <div class="mb-24px">
       <p class="mb-8px fs-16px fw-bold c-grey-dark">
         <% if @region.facility_region? %>
-          Follow-up patients per user
-        <% else %>
-          Follow-up patients
-        <% end %>
+            <%= t(:follow_up_patients_per_user_label) %>
+          <% else %>
+            <%= t(:follow_up_patients_label) %>
+          <% end %>
       </p>
       <div class="pl-16px">
         <p class="mb-8px fs-14px c-grey-dark">
