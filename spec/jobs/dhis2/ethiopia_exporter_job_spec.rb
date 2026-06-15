@@ -1,10 +1,7 @@
 require "rails_helper"
-require "dhis2"
 
 describe Dhis2::EthiopiaExporterJob do
-  let(:configuration) { {} }
   let(:client) { double }
-  let(:data_value_sets) { double }
   let(:attribute_option_combo_id) { CountryConfig.dhis2_data_elements.fetch(:dhis2_attribute_option) }
   let(:age_buckets) { [18, 30, 40, 70] }
 
@@ -14,8 +11,7 @@ describe Dhis2::EthiopiaExporterJob do
     allow(Flipper).to receive(:enabled?).with(:dhis2_export).and_return(true)
     allow(Flipper).to receive(:enabled?).with(:dhis2_use_ethiopian_calendar).and_return(true)
     allow(Flipper).to receive(:enabled?).with(:prometheus_metrics).and_return(false)
-    allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return(configuration)
-    allow(Dhis2::Client).to receive(:new).with(configuration).and_return(client)
+    allow(Dhis2::DataValueSetsClient).to receive(:from_env).and_return(client)
   end
 
   describe "#perform" do
@@ -72,8 +68,7 @@ describe Dhis2::EthiopiaExporterJob do
       expect_any_instance_of(PatientStates::Hypertension::RegistrationsUnderCareQuery).to receive_message_chain(:call).and_return(patients.to_a)
       expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive_message_chain(:call).and_return(patients.to_a)
       expect_any_instance_of(PatientStates::Hypertension::RegistrationsForMonthsQuery).to receive_message_chain(:call).and_return(patients.to_a)
-      allow(client).to receive(:data_value_sets).and_return(data_value_sets)
-      expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
+      expect(client).to receive(:bulk_create).with(data_values: export_data.flatten)
 
       Sidekiq::Testing.inline! do
         described_class.perform_async(facility_identifier.id, total_months)

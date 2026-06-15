@@ -1,5 +1,4 @@
 require "rails_helper"
-require "dhis2"
 
 describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
   describe "#perform" do
@@ -56,11 +55,8 @@ describe Dhis2::BangladeshDisaggregatedDiabetesExporterJob do
       allow_any_instance_of(PatientStates::Diabetes::MonthlyRegistrationsQuery).to receive(:call).and_return(:dm_monthly_registrations)
       allow_any_instance_of(PatientStates::Diabetes::AdjustedAssignedPatientsQuery).to receive(:call).and_return(:dm_cumulative_assigned_adjusted)
       client = double
-      data_value_sets = double
-      allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return({})
-      allow(Dhis2::Client).to receive(:new).with({}).and_return(client)
-      allow(client).to receive(:data_value_sets).and_return(data_value_sets)
-      expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
+      allow(Dhis2::DataValueSetsClient).to receive(:from_env).and_return(client)
+      expect(client).to receive(:bulk_create).with(data_values: export_data.flatten)
 
       Sidekiq::Testing.inline! do
         described_class.perform_async(facility_identifier.id, total_months)

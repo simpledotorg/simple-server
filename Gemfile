@@ -25,7 +25,6 @@ gem "data_migrate"
 gem "data-anonymization", require: false
 gem "devise_invitable", "~> 2.0.6"
 gem "devise", ">= 4.7.1"
-gem "dhis2", require: false
 gem "diffy" # This gem is only needed for Admin::FixZoneDataController, it should be removed with the controller
 gem "discard", "~> 1.2"
 gem "dogstatsd-ruby", "~> 5.2"
