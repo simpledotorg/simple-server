@@ -7,12 +7,18 @@
       Facilities with no BPs recorded in the last 30 days
     </p>
     <section id="facilities-inactive">
-      <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
-        <div class="user-row d-block w-100">
-          <%= link_to facility.name, reports_region_facility_path(facility), class: "" %>
-          &nbsp;‹&nbsp; <%= facility.region.parent.name %>
-          &nbsp;‹&nbsp; <%= facility.region.parent.parent.name %>
-        </div>
+      <% if Flipper.enabled?(:inactive_crumbs) %>
+        <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
+          <div class="user-row d-block w-100">
+            <%= link_to facility.name, reports_region_facility_path(facility) %>
+            &nbsp;‹&nbsp; <%= facility.region.parent.name %>
+            &nbsp;‹&nbsp; <%= facility.region.parent.parent.name %>
+          </div>
+        <% end %>
+      <% else %>
+        <% @inactive_facilities.sort_by(&:name).first(100).each do |facility| %>
+          <%= link_to facility.name, reports_region_facility_path(facility), class: "user-row d-block w-100" %>
+        <% end %>
       <% end %>
     </section>
   </div>
