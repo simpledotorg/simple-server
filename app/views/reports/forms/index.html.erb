@@ -1,0 +1,31 @@
+<% content_for :title do %>
+  <%= @region.name %> | Forms
+<% end %>
+
+<%= render "reports/regions/header", period_selector: false %>
+
+<h4 class="mt-2 mb-3">Forms</h4>
+<p class="text-muted mb-4">Select a form to complete for this facility.</p>
+
+<div class="d-flex flex-column gap-16px col-md-8 p-0">
+  <% @form_types.each do |form_type| %>
+    <%= link_to reports_region_form_responses_path(
+          report_scope: params[:report_scope],
+          id: @region.slug,
+          form_type: form_type[:id]
+        ),
+        class: "card card-margin-0 p-16px td-none c-black d-flex ai-center" do %>
+      <div class="d-flex ai-center jc-space-between w-100 h-48px">
+        <div class="d-flex ai-center f-1 min-w-0 h-100">
+          <div class="d-flex ai-center jc-center mr-16px w-48px h-48px br-8px bgc-blue-light flex-shrink-0">
+            <i class="fas fa-<%= form_type[:icon] %> c-blue fs-20px"></i>
+          </div>
+          <div class="fw-bold d-flex ai-center h-100"><%= form_type[:title] %></div>
+        </div>
+        <div class="d-flex ai-center jc-center h-48px ml-16px flex-shrink-0">
+          <i class="fas fa-chevron-right c-grey-medium"></i>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -244,6 +244,11 @@ Rails.application.routes.draw do
       to: "regions#diabetes_monthly_district_report", as: :region_diabetes_monthly_district_report
     get "regions/:report_scope/:id/diabetes/monthly_district_data_report",
       to: "regions#diabetes_monthly_district_data", as: :region_diabetes_monthly_district_data
+
+    get "regions/:report_scope/:id/forms", to: "forms#index", as: :region_forms
+    get "regions/:report_scope/:id/forms/:form_type", to: "forms#responses", as: :region_form_responses
+    get "regions/:report_scope/:id/forms/:form_type/:response_id/edit", to: "forms#edit", as: :edit_region_form
+    patch "regions/:report_scope/:id/forms/:form_type/:response_id", to: "forms#update", as: :region_form
   end
 
   resource :regions_search, controller: "regions_search"

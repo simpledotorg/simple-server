@@ -1,0 +1,45 @@
+<% content_for :title do %>
+  <%= @region.name %> | <%= @form_type[:title] %>
+<% end %>
+
+<%= render "reports/regions/header", period_selector: false %>
+
+<%= render "back_link",
+      url: reports_region_forms_path(report_scope: params[:report_scope], id: @region.slug),
+      label: "forms" %>
+
+<h4 class="mt-2 mb-3"><%= @form_type[:title] %></h4>
+<p class="text-muted mb-4">Select a month to view or complete the report.</p>
+
+<div class="d-flex flex-column gap-16px col-md-8 p-0">
+  <% @responses.each do |response| %>
+    <%= link_to reports_edit_region_form_path(
+          report_scope: params[:report_scope],
+          id: @region.slug,
+          form_type: @form_type[:id],
+          response_id: response[:id]
+        ),
+        class: "card card-margin-0 p-16px td-none c-black d-flex align-items-center" do %>
+      <div class="d-flex align-items-center justify-content-between w-100">
+        <div class="d-flex align-items-center f-1 min-w-0">
+          <div class="d-flex align-items-center justify-content-center mr-16px br-8px bg-grey-lightest flex-shrink-0" style="width: 48px; height: 48px;">
+            <% if response[:submitted] %>
+              <i class="fas fa-check c-green" style="font-size: 20px; line-height: 1;"></i>
+            <% end %>
+          </div>
+          <div>
+            <div class="fw-bold"><%= response[:label] %></div>
+            <% if response[:submitted] %>
+              <div class="c-green mb-0 fs-14px">Submitted</div>
+            <% else %>
+              <div class="c-grey-dark mb-0 fs-14px">Submit report</div>
+            <% end %>
+          </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-center ml-16px flex-shrink-0 align-self-center">
+          <i class="fas fa-chevron-right c-grey-medium" style="line-height: 1;"></i>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
