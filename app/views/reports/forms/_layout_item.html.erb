@@ -1,0 +1,24 @@
+<% layout_item = local_assigns.fetch(:layout_item) %>
+<% form = local_assigns.fetch(:form) %>
+
+<% case layout_item["type"] %>
+<% when "display" %>
+  <% case layout_item["view_type"] %>
+  <% when "header" %>
+    <h3 class="pt-4 mb-2"><%= questionnaire_form_text(layout_item["text"]) %></h3>
+  <% when "sub_header" %>
+    <h4 class="pt-3 mb-2 fs-16px fw-bold"><%= questionnaire_form_text(layout_item["text"]) %></h4>
+  <% when "separator", "line_separator" %>
+    <hr class="my-4">
+  <% end %>
+<% when "group" %>
+  <% layout_item["item"]&.each do |child| %>
+    <%= render "layout_item", layout_item: child, form: form %>
+  <% end %>
+<% when "integer" %>
+  <% validations = layout_item["validations"] || {} %>
+  <%= form.number_field layout_item["link_id"],
+        label: questionnaire_form_text(layout_item["text"]),
+        min: validations["min"],
+        max: validations["max"] %>
+<% end %>

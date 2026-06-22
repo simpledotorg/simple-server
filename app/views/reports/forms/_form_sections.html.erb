@@ -1,0 +1,25 @@
+<% form = local_assigns.fetch(:form) %>
+<% form_sections.each do |section| %>
+  <h3 class="pt-4"><%= section[:header] %></h3>
+  <% section[:fields].each do |field| %>
+    <% if field[:type] == :text %>
+      <%= form.text_area field[:label].parameterize.underscore,
+            label: field[:label],
+            value: field[:value],
+            rows: 3 %>
+    <% elsif field[:type] == :radio %>
+      <%= form.form_group field[:label].parameterize.underscore, label: {text: field[:label]} do %>
+        <% field[:options].each do |option| %>
+          <%= form.radio_button field[:label].parameterize.underscore, option,
+                label: option.capitalize,
+                checked: field[:value] == option %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= form.number_field field[:label].parameterize.underscore,
+            label: field[:label],
+            value: field[:value],
+            min: 0 %>
+    <% end %>
+  <% end %>
+<% end %>

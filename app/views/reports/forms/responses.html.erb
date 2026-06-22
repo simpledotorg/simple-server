@@ -4,9 +4,7 @@
 
 <%= render "reports/regions/header", period_selector: false %>
 
-<%= render "back_link",
-      url: reports_region_forms_path(report_scope: params[:report_scope], id: @region.slug),
-      label: "forms" %>
+<%= render "back_link", url: reports_region_forms_path(report_scope: params[:report_scope], id: @region.slug) %>
 
 <h4 class="mt-2 mb-3"><%= @form_type[:title] %></h4>
 <p class="text-muted mb-4">Select a month to view or complete the report.</p>

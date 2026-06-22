@@ -40,35 +40,11 @@ class Reports::FormsController < AdminController
     ]
   }.freeze
 
+  MOCK_FORM_LAYOUTS = {
+    "monthly_screening_reports" => Reports::MockScreeningFormLayout::LAYOUT
+  }.freeze
+
   MOCK_FORM_SECTIONS = {
-    "monthly_screening_reports" => [
-      {
-        header: "Monthly OPD visits for adults >30 years old",
-        fields: [
-          {label: "Outpatient department visits", value: nil}
-        ]
-      },
-      {
-        header: "Total BP checks done",
-        fields: [
-          {label: "Male", value: nil},
-          {label: "Female", value: nil}
-        ]
-      },
-      {
-        header: "Total blood sugar checks done",
-        fields: [
-          {label: "Male", value: nil},
-          {label: "Female", value: nil}
-        ]
-      },
-      {
-        header: "Comments",
-        fields: [
-          {label: "Comments", value: nil, type: :text}
-        ]
-      }
-    ],
     "monthly_supplies_reports" => [
       {
         header: "Blood pressure equipment",
@@ -119,7 +95,8 @@ class Reports::FormsController < AdminController
   end
 
   def edit
-    @form_sections = MOCK_FORM_SECTIONS.fetch(@form_type[:id], [])
+    @form_layout = MOCK_FORM_LAYOUTS[@form_type[:id]]
+    @form_sections = MOCK_FORM_SECTIONS.fetch(@form_type[:id], []) unless @form_layout
   end
 
   def update

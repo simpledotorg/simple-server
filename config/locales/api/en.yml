@@ -462,6 +462,7 @@ en:
     not_eligible: "Not Eligible for Cryotherapy/ thermocoagulation"
     suspicious_cancer: "Suspicious Cancerous Lesion"
   monthly_screening_report:
+    annual_target: "Annual target"
     htn_and_dm_screening: "HTN & DM SCREENING"
     # Ethiopia
     total_bp: "Total BP screening done"
