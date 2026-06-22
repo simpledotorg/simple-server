@@ -2,7 +2,7 @@
      class="p-20px mt-8px mx-0px mb-16px bg-white br-4px bs-small d-lg-flex fd-lg-column
           justify-lg-between h-lg-full w-lg-full mt-lg-0 pb-inside-avoid b-print-black w-print-16cm min-w-0 col-span-3">
 
-  <%= render Dashboard::Card::TitleComponent.new(title: 'Treatment status of patients under care') %>
+  <%= render Dashboard::Card::TitleComponent.new(title: t("diabetes_treatment_status_card.title")) %>
 
   <div id="diabetesVisitDetails" class="d-flex fd-column fd-lg-row" data-period="<%= period.to_s %>">
     <div class="pl-lg-12px w-lg-50 h-lg-auto minh-300px">
@@ -10,6 +10,35 @@
     </div>
     <div class="flex-lg-1 mt-24px ml-lg-24px mt-print-2cm">
       <% treatment_outcomes.each do |treatment_outcome| %>
+        <% case treatment_outcome[:outcome]
+           when :bs_below_200
+             copy_key = @use_who_standard ? "diabetes_treatment_status_card.bs_below_200.who_standard" : "diabetes_treatment_status_card.bs_below_200"
+             title_text = t("#{copy_key}.title")
+             description_text = t("#{copy_key}.description")
+             numerator_text = @use_who_standard ? t("bs_below_200_copy.numerator_fbs") : t("bs_below_200_copy.numerator")
+           when :bs_200_to_299
+             copy_key = @use_who_standard ? "diabetes_treatment_status_card.bs_200_to_299.who_standard" : "diabetes_treatment_status_card.bs_200_to_299"
+             title_text = t("#{copy_key}.title")
+             description_text = t("#{copy_key}.description")
+             numerator_text = @use_who_standard ? t("bs_over_200_copy.bs_200_to_299.numerator_fbs") : t("bs_over_200_copy.bs_200_to_299.numerator")
+           when :bs_over_300
+             copy_key = @use_who_standard ? "diabetes_treatment_status_card.bs_over_300.who_standard" : "diabetes_treatment_status_card.bs_over_300"
+             title_text = t("#{copy_key}.title")
+             description_text = t("#{copy_key}.description")
+             numerator_text = @use_who_standard ? t("bs_over_200_copy.bs_over_300.numerator_fbs") : t("bs_over_200_copy.bs_over_300.numerator")
+           when :missed_visits
+             title_text = t("diabetes_treatment_status_card.missed_visits.title")
+             description_text = t("diabetes_treatment_status_card.missed_visits.description")
+             numerator_text = t("diabetes_missed_visits_copy.numerator")
+           when :visit_no_bs
+             title_text = t("diabetes_treatment_status_card.visit_no_bs.title")
+             description_text = t("diabetes_treatment_status_card.visit_no_bs.description")
+             numerator_text = t("visit_but_no_bs_taken_copy.numerator")
+           end %>
+        <% tooltip = {
+             numerator: numerator_text,
+             denominator: t("diabetes_denominator_copy", region_name: region.name)
+           } %>
         <div>
           <div class="mb-16px d-lg-flex align-lg-center">
             <p class="c-print-black <%= treatment_outcome[:class] %> graph-percent fs-28px"
@@ -18,14 +47,14 @@
             <div>
               <div class="d-flex flex-1">
                 <p class="mb-0px mr-6px fw-bold">
-                  <%= treatment_outcome[:title] %>
+                  <%= title_text %>
                 </p>
-                <%= render Dashboard::Card::TooltipComponent.new(treatment_outcome[:tooltip]) %>
+                <%= render Dashboard::Card::TooltipComponent.new(tooltip) %>
               </div>
 
               <p class="m-0px c-black">
                 <span data-key="<%= treatment_outcome[:count] %>" data-format="numberWithCommas"></span>
-                <%= treatment_outcome[:description] %>
+                <%= description_text %>
                 from
                 <span data-key="startDate"></span>
                 to

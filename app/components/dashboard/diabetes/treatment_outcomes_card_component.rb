@@ -3,12 +3,14 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
   attr_reader :region
   attr_reader :period
   attr_reader :with_ltfu
+  attr_reader :use_who_standard
 
-  def initialize(data:, region:, period:, with_ltfu: false)
+  def initialize(data:, region:, period:, with_ltfu: false, use_who_standard: false)
     @data = data
     @region = region
     @period = period
     @with_ltfu = with_ltfu
+    @use_who_standard = use_who_standard
   end
 
   def graph_data
@@ -30,44 +32,23 @@ class Dashboard::Diabetes::TreatmentOutcomesCardComponent < ApplicationComponent
     [{key: "diabetesMissedVisitsRate",
       count: "diabetesMissedVisits",
       class: "c-blue",
-      title: "Missed visits",
-      description: "patients with no visit",
-      tooltip: {
-        numerator: t("diabetes_missed_visits_copy.numerator"),
-        denominator: t("diabetes_denominator_copy", region_name: @region.name)
-      }},
+      outcome: :missed_visits},
       {key: "visitButNoBSMeasureRate",
        count: "visitButNoBSMeasure",
        class: "c-grey-dark",
-       title: "Visit but no blood sugar taken",
-       description: "patients with a visit but no blood sugar taken",
-       tooltip: {
-         numerator: t("visit_but_no_bs_taken_copy.numerator"),
-         denominator: t("diabetes_denominator_copy", region_name: @region.name)
-       }},
+       outcome: :visit_no_bs},
       {key: "bsOver300Rate",
        count: "bsOver300Patients",
        class: "c-red",
-       title: "Blood sugar &ge;300".html_safe,
-       description: "patients with blood sugar ≥300 taken",
-       tooltip: {
-         numerator: t("bs_over_200_copy.bs_over_300.numerator"),
-         denominator: t("diabetes_denominator_copy", region_name: @region.name)
-       }},
+       outcome: :bs_over_300},
       {key: "bs200to300Rate",
        count: "bs200to300Patients",
-       title: "Blood sugar 200-299",
-       description: "patients with blood sugar 200-299 taken",
        class: "c-amber",
-       tooltip: {numerator: t("bs_over_200_copy.bs_200_to_299.numerator"),
-                 denominator: t("diabetes_denominator_copy", region_name: @region.name)}},
+       outcome: :bs_200_to_299},
       {key: "bsBelow200Rate",
        count: "bsBelow200Patients",
        class: "c-green-dark",
-       title: "Blood sugar &lt;200".html_safe,
-       description: "patients with blood sugar <200 taken",
-       tooltip: {numerator: t("bs_below_200_copy.numerator"),
-                 denominator: t("diabetes_denominator_copy", region_name: @region.name)}}]
+       outcome: :bs_below_200}]
   end
 
   def period_data
