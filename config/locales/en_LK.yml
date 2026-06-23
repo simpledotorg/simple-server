@@ -57,8 +57,6 @@ en-LK:
     numerator_dm_fbs: "Patients with FBS <126mg/dL or HbA1c <7% at their last visit in the last 3 months"
     reports_card_title: "Blood Sugar <200"
     reports_card_title_dm_bs: "Blood sugar <200"
-    reports_card_title_fbs: "Blood sugar controlled"
-    reports_card_title_dm: "Blood Sugar <200"
     reports_card_title_dm_fbs: "Blood sugar controlled"
     report_card_lower_bar: "blood sugar <200"
     report_card_lower_bar_fbs:  "FBS <126mg/dL or HbA1c <7%"
@@ -70,8 +68,6 @@ en-LK:
     summary_fbs: "patients with blood sugar controlled from"
   bs_over_200_copy:
     reports_card_title: "Blood sugar 200-299 or ≥300"
-    reports_card_title_dm: "Blood sugar ≥200"
-    reports_card_title_fbs: "Blood sugar uncontrolled"
     reports_card_title_dm_fbs: "Blood sugar uncontrolled"
     reports_card_subtitle: "Diabetes patients in %{region_name} with blood sugar 200-299 or blood sugar ≥300 at their last visit in the last 3 months"
     reports_card_subtitle_fbs: "Diabetes patients in %{region_name} with FBS ≥126mg/dL or HbA1c ≥7% at their last visit in the last 3 months"
