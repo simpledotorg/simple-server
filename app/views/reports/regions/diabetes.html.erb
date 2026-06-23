@@ -26,7 +26,7 @@
   <%= render Dashboard::Diabetes::MissedVisitsGraphComponent.new(args_with_ltfu) %>
   <%= render Dashboard::Diabetes::RegistrationsAndFollowUpsGraphComponent.new(args) %>
   <%= render(Dashboard::Diabetes::LostToFollowUpComponent.new(args)) %>
-  <%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(args) %>
+  <%= render Dashboard::Diabetes::TreatmentOutcomesCardComponent.new(args.merge(use_who_standard: @use_who_standard)) %>
 </div>
 
 <% if current_admin.feature_enabled?(:medications_dispensation) %>
