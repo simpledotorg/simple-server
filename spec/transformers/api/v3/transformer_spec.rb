@@ -11,6 +11,12 @@ def dedupe(old_record, new_record, user)
 end
 
 RSpec.describe Api::V3::Transformer do
+  describe "#to_response" do
+    it "returns nil when the model is nil instead of raising" do
+      expect(Api::V3::Transformer.to_response(nil)).to be_nil
+    end
+  end
+
   context "redirects to deduped records if present" do
     it "doesn't do anything if the record is not deduped" do
       bp = create(:blood_pressure)
