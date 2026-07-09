@@ -41,5 +41,28 @@ RSpec.describe Api::V3::PatientTransformer do
       transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
       expect(transformed_nested_patient["registration_facility_id"]).to eq(patient.registration_facility.id)
     end
+
+    context "when the patient has no address (optional address)" do
+      it "does not raise and serializes the patient with a nil address" do
+        patient.update_columns(address_id: nil)
+        expect {
+          transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
+          expect(transformed_nested_patient["address"]).to be_nil
+        }.not_to raise_error
+      end
+    end
+
+    context "when the patient's address row has been hard-deleted (orphaned address_id)" do
+      it "does not raise and serializes the patient with a nil address" do
+        ActiveRecord::Base.connection.disable_referential_integrity do
+          Address.where(id: patient.address_id).delete_all
+        end
+        expect(patient.reload.address).to be_nil
+        expect {
+          transformed_nested_patient = Api::V3::PatientTransformer.to_nested_response(patient)
+          expect(transformed_nested_patient["address"]).to be_nil
+        }.not_to raise_error
+      end
+    end
   end
 end
