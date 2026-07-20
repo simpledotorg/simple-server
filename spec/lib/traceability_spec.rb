@@ -13,6 +13,23 @@ RSpec.describe Traceability do
     ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
   end
 
+  it "defines the exact event and context contracts" do
+    expect(described_class::EVENT_NAME).to eq("traceability.simple")
+    expect(described_class::CONTEXT_KEY).to eq(:traceability_context)
+    expect(described_class::SAFE_FIELDS).to match_array(
+      %i[
+        phase boundary operation resource request_id idempotency_key
+        controller action http_method path user_id facility_id
+        outcome duration_ms error_class status
+        input_count output_count error_count audit_count record_id
+        authenticated facility_present sync_region_id
+      ]
+    )
+    expect(described_class::METRIC_LABEL_FIELDS).to match_array(
+      %i[boundary operation resource outcome]
+    )
+  end
+
   it "publishes paired start and finish events" do
     described_class.trace(
       boundary: "data",
@@ -92,6 +109,14 @@ RSpec.describe Traceability do
     expect(described_class.active?).to be(false)
   end
 
+  it "does not add context outside an active context" do
+    expect {
+      described_class.add_context(user_id: "user-1")
+    }.not_to change { RequestStore.store[described_class::CONTEXT_KEY] }
+
+    expect(described_class.context).to eq({})
+  end
+
   it "restores a prior request context even when the block raises" do
     prior_context = {request_id: "prior"}
     RequestStore.store[described_class::CONTEXT_KEY] = prior_context
@@ -120,5 +145,16 @@ RSpec.describe Traceability do
     result = described_class.trace(boundary: "data", operation: "query") { :result }
 
     expect(result).to eq(:result)
+  end
+
+  it "preserves the exact operation exception when publication and logging fail" do
+    operation_error = RuntimeError.new("operation failure")
+    expect(ActiveSupport::Notifications)
+      .to receive(:instrument).twice.and_raise("notification failure")
+    expect(Rails.logger).to receive(:error).twice.and_raise("logger failure")
+
+    expect {
+      described_class.trace(boundary: "data", operation: "query") { raise operation_error }
+    }.to raise_error { |raised| expect(raised).to equal(operation_error) }
   end
 end
