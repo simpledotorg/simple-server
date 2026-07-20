@@ -26,6 +26,9 @@ module SyncTraceable
         finish[:status] = response.status
         finish[:outcome] = response.status < 400 ? "success" : "error"
         result
+      rescue => error
+        finish[:status] = ActionDispatch::ExceptionWrapper.status_code_for_exception(error.class.name)
+        raise
       end
     end
   end

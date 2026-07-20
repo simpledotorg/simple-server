@@ -53,11 +53,40 @@ RSpec.describe "Sync traceability", type: :request do
     get "/api/v3/blood_pressures/sync",
       headers: headers.merge("HTTP_AUTHORIZATION" => "Bearer invalid")
 
+    expect(response).to have_http_status(:unauthorized)
+    expect(response.body).to eq("HTTP Token: Access denied.\n")
+
     request_finish = events.find do |event|
       event[:boundary] == "request" && event[:phase] == "finish"
     end
     expect(request_finish).to include(status: 401, outcome: "error")
     expect(request_finish).not_to include(:user_id, :facility_id)
+
+    authentication_finish = events.find do |event|
+      event[:boundary] == "data" &&
+        event[:operation] == "authenticate_request" &&
+        event[:phase] == "finish"
+    end
+    expect(authentication_finish).to include(authenticated: false, outcome: "error")
+  end
+
+  it "does not add an unauthorized facility to request context" do
+    unauthorized_facility = create(:facility, facility_group: create(:facility_group))
+
+    get "/api/v3/blood_pressures/sync",
+      headers: headers.merge("HTTP_X_FACILITY_ID" => unauthorized_facility.id)
+
+    expect(response).to have_http_status(:unauthorized)
+
+    request_finish = events.find do |event|
+      event[:boundary] == "request" && event[:phase] == "finish"
+    end
+    expect(request_finish).to include(
+      user_id: request_user.id,
+      status: 401,
+      outcome: "error"
+    )
+    expect(request_finish).not_to include(:facility_id)
   end
 
   it "traces successful pull data boundaries once" do
@@ -106,5 +135,62 @@ RSpec.describe "Sync traceability", type: :request do
       action: "sync_to_user"
     )
     expect(request_events.last).to include(status: 200, outcome: "success")
+  end
+
+  it "includes the status when ParameterMissing is rescued as a bad request" do
+    post "/api/v3/patients/sync", params: {}, headers: headers
+
+    expect(response).to have_http_status(:bad_request)
+
+    request_finishes = events.select do |event|
+      event[:boundary] == "request" && event[:phase] == "finish"
+    end
+    expect(request_finishes.one?).to be(true)
+    expect(request_finishes.first).to include(
+      status: 400,
+      outcome: "error",
+      error_class: "ActionController::ParameterMissing"
+    )
+  end
+
+  it "includes the status when RecordNotFound is rescued as not found" do
+    allow_any_instance_of(Api::V3::BloodPressuresController)
+      .to receive(:sync_to_user)
+      .and_raise(ActiveRecord::RecordNotFound)
+
+    get "/api/v3/blood_pressures/sync", headers: headers
+
+    expect(response).to have_http_status(:not_found)
+
+    request_finishes = events.select do |event|
+      event[:boundary] == "request" && event[:phase] == "finish"
+    end
+    expect(request_finishes.one?).to be(true)
+    expect(request_finishes.first).to include(
+      status: 404,
+      outcome: "error",
+      error_class: "ActiveRecord::RecordNotFound"
+    )
+  end
+
+  it "maps an unhandled exception to 500 and re-raises the same exception" do
+    error = RuntimeError.new("unexpected")
+    allow_any_instance_of(Api::V3::BloodPressuresController)
+      .to receive(:sync_to_user)
+      .and_raise(error)
+
+    expect {
+      get "/api/v3/blood_pressures/sync", headers: headers
+    }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+    request_finishes = events.select do |event|
+      event[:boundary] == "request" && event[:phase] == "finish"
+    end
+    expect(request_finishes.one?).to be(true)
+    expect(request_finishes.first).to include(
+      status: 500,
+      outcome: "error",
+      error_class: "RuntimeError"
+    )
   end
 end

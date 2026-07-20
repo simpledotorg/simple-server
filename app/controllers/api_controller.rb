@@ -85,14 +85,17 @@ class APIController < ApplicationController
     trace_sync_data("resolve_facility", resource: "facilities") do |finish|
       facility = current_facility
       finish[:facility_present] = facility.present?
-      Traceability.add_context(facility_id: facility.id) if facility.present?
       fail_request(:bad_request, "no current_facility set") unless facility.present?
     end
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    head :unauthorized unless current_user.present? &&
+    authorized = current_user.present? &&
       current_facility_group.facilities.where(id: current_facility.id).present?
+    return head :unauthorized unless authorized
+
+    Traceability.add_context(facility_id: current_facility.id)
+    nil
   end
 
   def current_user_present?
@@ -110,16 +113,19 @@ class APIController < ApplicationController
 
   def authenticate
     trace_sync_data("authenticate_request", resource: "users") do |finish|
-      authenticated = authenticate_or_request_with_http_token do |token, _options|
+      authenticated = false
+      result = authenticate_or_request_with_http_token do |token, _options|
         next false unless ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
 
         RequestStore.store[:current_user] = current_user.to_kv_hash
         Traceability.add_context(user_id: current_user.id)
         current_user.mark_as_logged_in if current_user.has_never_logged_in?
+        authenticated = true
         true
       end
       finish[:authenticated] = authenticated
-      authenticated
+      finish[:outcome] = authenticated ? "success" : "error"
+      result
     end
   end
 
