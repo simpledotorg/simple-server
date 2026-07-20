@@ -36,6 +36,34 @@ RSpec.describe "Sync traceability", type: :request do
     end
   end
 
+  it "finds a secret marker nested inside captured payload string values" do
+    marker = "NESTED LEAK MARKER 8d2f19"
+    payloads = [{outer: ["safe", {inner: "prefix #{marker} suffix"}]}]
+
+    expect(leaked_string_values(payloads, [marker])).to eq(["prefix #{marker} suffix"])
+  end
+
+  def string_values(value)
+    case value
+    when Hash
+      value.values.flat_map { |nested_value| string_values(nested_value) }
+    when Array
+      value.flat_map { |nested_value| string_values(nested_value) }
+    when String
+      [value]
+    else
+      []
+    end
+  end
+
+  def leaked_string_values(payloads, secret_values)
+    secret_markers = secret_values.filter_map { |secret| secret.to_s if secret.present? }
+
+    string_values(payloads).select do |captured_string|
+      secret_markers.any? { |marker| captured_string.include?(marker) }
+    end
+  end
+
   def expect_safe_trace_contract(secret_values: [])
     expect(events).not_to be_empty
     expect(trace_logs).not_to be_empty
@@ -44,12 +72,17 @@ RSpec.describe "Sync traceability", type: :request do
       satisfy { |log| (log.except(:msg).keys - Traceability::SAFE_FIELDS).empty? }
     )
 
-    serialized_trace_output = [events, trace_logs].to_json
-    secret_values.each do |secret|
-      next if secret.blank?
+    expect(trace_logs.size).to eq(events.size)
+    events.zip(trace_logs).each do |event, log|
+      expected_marker = event[:boundary] == "request" ? "SIMPLE-REQUEST-LINE" : "SIMPLE-DATA-LINE"
 
-      expect(serialized_trace_output).not_to include(secret.to_s)
+      expect(log[:msg]).to eq(expected_marker)
+      expect(log[:request_id]).to eq(event[:request_id])
+      expect(log[:idempotency_key]).to eq(event[:idempotency_key]) if event.key?(:idempotency_key)
+      expect(log.except(:msg)).to eq(event)
     end
+
+    expect(leaked_string_values([events, trace_logs], secret_values)).to be_empty
   end
 
   it "wraps a successful v3 sync request with authenticated context" do
@@ -166,24 +199,35 @@ RSpec.describe "Sync traceability", type: :request do
 
   it "keeps clinical payloads, bodies, tokens, authorization, and access tokens out of events and trace logs" do
     private_name = "PRIVATE PATIENT NAME 7f83c1"
+    private_address = "PRIVATE PATIENT ADDRESS b39e52"
+    response_sentinel = "PRIVATE RESPONSE SENTINEL 14ca67"
     private_resync_token = "PRIVATE RESYNC TOKEN 29ab4e"
     private_process_token_contents = "PRIVATE PROCESS TOKEN CONTENTS 61d9a0"
     patient = create(
       :patient,
-      full_name: private_name,
       registration_facility: request_user.facility,
       assigned_facility: request_user.facility,
       registration_user: request_user,
       diagnosed_confirmed_at: nil
     )
-    request_body = {patients: [build_patient_payload(patient)]}.to_json
+    patient_payload = build_patient_payload(patient)
+    patient_payload["full_name"] = private_name
+    patient_payload.fetch("address")["street_address"] = private_address
+    request_body = {patients: [patient_payload]}.to_json
 
     post "/api/v3/patients/sync",
       params: request_body,
       headers: headers.merge("HTTP_X_RESYNC_TOKEN" => private_resync_token)
 
     expect(response).to have_http_status(:ok)
-    push_response_body = response.body.dup
+    create(
+      :patient,
+      full_name: response_sentinel,
+      registration_facility: request_user.facility,
+      assigned_facility: request_user.facility,
+      registration_user: request_user,
+      diagnosed_confirmed_at: nil
+    )
 
     process_token = Base64.strict_encode64(
       {
@@ -196,13 +240,12 @@ RSpec.describe "Sync traceability", type: :request do
       headers: headers.merge("HTTP_X_RESYNC_TOKEN" => private_resync_token)
 
     expect(response).to have_http_status(:ok)
-    expect(trace_logs.size).to eq(events.size)
+    expect(response.body).to include(response_sentinel)
     expect_safe_trace_contract(
       secret_values: [
         private_name,
-        request_body,
-        push_response_body,
-        response.body,
+        private_address,
+        response_sentinel,
         private_resync_token,
         private_process_token_contents,
         process_token,
@@ -215,11 +258,13 @@ RSpec.describe "Sync traceability", type: :request do
   end
 
   it "correlates every v4 blood sugar push event without using identifiers as metric labels" do
-    metric_labels = []
+    metric_labels = {increment: [], histogram: []}
     allow(Metrics).to receive(:increment) do |metric_name, labels|
-      metric_labels << labels if metric_name == "simple_boundary_operations_total"
+      metric_labels[:increment] << labels if metric_name == "simple_boundary_operations_total"
     end
-    allow(Metrics).to receive(:histogram)
+    allow(Metrics).to receive(:histogram) do |metric_name, _value, labels|
+      metric_labels[:histogram] << labels if metric_name == "simple_boundary_duration_seconds"
+    end
     patient = create(:patient, registration_facility: request_user.facility)
     blood_sugar = build(
       :blood_sugar,
@@ -252,10 +297,12 @@ RSpec.describe "Sync traceability", type: :request do
         .transform_values { |operation_events| operation_events.map { |event| event[:phase] } }
     ).to eq(expected_operations.index_with { %w[start finish] })
 
-    expect(metric_labels).not_to be_empty
-    expect(metric_labels).to all(
-      satisfy { |labels| (labels.keys - Traceability::METRIC_LABEL_FIELDS).empty? }
-    )
+    expect(metric_labels.values).to all(be_present)
+    metric_labels.each_value do |captured_labels|
+      expect(captured_labels).to all(
+        satisfy { |labels| (labels.keys - Traceability::METRIC_LABEL_FIELDS).empty? }
+      )
+    end
     expect(Traceability::METRIC_LABEL_FIELDS).not_to include(
       :request_id,
       :idempotency_key,
@@ -264,7 +311,7 @@ RSpec.describe "Sync traceability", type: :request do
       :record_id,
       :sync_region_id
     )
-    expect(metric_labels.flat_map(&:values)).not_to include(
+    expect(metric_labels.values.flatten.flat_map(&:values)).not_to include(
       "v4-push-request",
       "sync-456",
       request_user.id,
