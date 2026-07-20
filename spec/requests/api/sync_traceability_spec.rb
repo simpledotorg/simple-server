@@ -2,6 +2,7 @@ require "rails_helper"
 
 RSpec.describe "Sync traceability", type: :request do
   let(:events) { [] }
+  let(:trace_logs) { [] }
   let(:request_user) { create(:user) }
   let(:headers) do
     {
@@ -23,6 +24,32 @@ RSpec.describe "Sync traceability", type: :request do
     example.run
   ensure
     ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+  end
+
+  before do
+    allow(Rails.logger).to receive(:info).and_wrap_original do |logger, *args|
+      payload = args.first
+      if payload.is_a?(Hash) && %w[SIMPLE-REQUEST-LINE SIMPLE-DATA-LINE].include?(payload[:msg])
+        trace_logs << payload
+      end
+      logger.call(*args)
+    end
+  end
+
+  def expect_safe_trace_contract(secret_values: [])
+    expect(events).not_to be_empty
+    expect(trace_logs).not_to be_empty
+    expect(events).to all(satisfy { |event| (event.keys - Traceability::SAFE_FIELDS).empty? })
+    expect(trace_logs).to all(
+      satisfy { |log| (log.except(:msg).keys - Traceability::SAFE_FIELDS).empty? }
+    )
+
+    serialized_trace_output = [events, trace_logs].to_json
+    secret_values.each do |secret|
+      next if secret.blank?
+
+      expect(serialized_trace_output).not_to include(secret.to_s)
+    end
   end
 
   it "wraps a successful v3 sync request with authenticated context" do
@@ -137,6 +164,116 @@ RSpec.describe "Sync traceability", type: :request do
     expect(request_events.last).to include(status: 200, outcome: "success")
   end
 
+  it "keeps clinical payloads, bodies, tokens, authorization, and access tokens out of events and trace logs" do
+    private_name = "PRIVATE PATIENT NAME 7f83c1"
+    private_resync_token = "PRIVATE RESYNC TOKEN 29ab4e"
+    private_process_token_contents = "PRIVATE PROCESS TOKEN CONTENTS 61d9a0"
+    patient = create(
+      :patient,
+      full_name: private_name,
+      registration_facility: request_user.facility,
+      assigned_facility: request_user.facility,
+      registration_user: request_user,
+      diagnosed_confirmed_at: nil
+    )
+    request_body = {patients: [build_patient_payload(patient)]}.to_json
+
+    post "/api/v3/patients/sync",
+      params: request_body,
+      headers: headers.merge("HTTP_X_RESYNC_TOKEN" => private_resync_token)
+
+    expect(response).to have_http_status(:ok)
+    push_response_body = response.body.dup
+
+    process_token = Base64.strict_encode64(
+      {
+        resync_token: private_process_token_contents,
+        private_marker: private_process_token_contents
+      }.to_json
+    )
+    get "/api/v3/patients/sync",
+      params: {process_token: process_token},
+      headers: headers.merge("HTTP_X_RESYNC_TOKEN" => private_resync_token)
+
+    expect(response).to have_http_status(:ok)
+    expect(trace_logs.size).to eq(events.size)
+    expect_safe_trace_contract(
+      secret_values: [
+        private_name,
+        request_body,
+        push_response_body,
+        response.body,
+        private_resync_token,
+        private_process_token_contents,
+        process_token,
+        request_user.access_token,
+        headers.fetch("HTTP_AUTHORIZATION"),
+        "HTTP_AUTHORIZATION",
+        "Authorization"
+      ]
+    )
+  end
+
+  it "correlates every v4 blood sugar push event without using identifiers as metric labels" do
+    metric_labels = []
+    allow(Metrics).to receive(:increment) do |metric_name, labels|
+      metric_labels << labels if metric_name == "simple_boundary_operations_total"
+    end
+    allow(Metrics).to receive(:histogram)
+    patient = create(:patient, registration_facility: request_user.facility)
+    blood_sugar = build(
+      :blood_sugar,
+      patient: patient,
+      facility: request_user.facility,
+      user: request_user
+    )
+
+    post "/api/v4/blood_sugars/sync",
+      params: {blood_sugars: [build_blood_sugar_payload(blood_sugar)]}.to_json,
+      headers: headers.merge("HTTP_X_REQUEST_ID" => "v4-push-request")
+
+    expect(response).to have_http_status(:ok)
+    expect(events).to all(include(request_id: "v4-push-request"))
+    expect(events).to include(include(user_id: request_user.id, facility_id: request_user.facility.id))
+
+    expected_operations = %w[
+      api/v4/blood_sugars#sync_from_user
+      resolve_user
+      authenticate_request
+      resolve_facility
+      merge_batch
+      aggregate_validation_results
+      render_push_response
+    ]
+    expect(
+      events
+        .select { |event| expected_operations.include?(event[:operation]) }
+        .group_by { |event| event[:operation] }
+        .transform_values { |operation_events| operation_events.map { |event| event[:phase] } }
+    ).to eq(expected_operations.index_with { %w[start finish] })
+
+    expect(metric_labels).not_to be_empty
+    expect(metric_labels).to all(
+      satisfy { |labels| (labels.keys - Traceability::METRIC_LABEL_FIELDS).empty? }
+    )
+    expect(Traceability::METRIC_LABEL_FIELDS).not_to include(
+      :request_id,
+      :idempotency_key,
+      :user_id,
+      :facility_id,
+      :record_id,
+      :sync_region_id
+    )
+    expect(metric_labels.flat_map(&:values)).not_to include(
+      "v4-push-request",
+      "sync-456",
+      request_user.id,
+      request_user.facility.id,
+      blood_sugar.id
+    )
+    expect_safe_trace_contract
+  end
+
   it "traces custom query overrides reached by their sync endpoints" do
     endpoints = {
       "/api/v3/facilities/sync" => ["other_facility_records"],
@@ -231,6 +368,12 @@ RSpec.describe "Sync traceability", type: :request do
       outcome: "error",
       error_class: "ActionController::ParameterMissing"
     )
+    expect_safe_trace_contract(
+      secret_values: [
+        "param is missing or the value is empty",
+        response.body
+      ]
+    )
   end
 
   it "includes the status when RecordNotFound is rescued as not found" do
@@ -271,6 +414,61 @@ RSpec.describe "Sync traceability", type: :request do
       status: 500,
       outcome: "error",
       error_class: "RuntimeError"
+    )
+  end
+
+  it "retains the failing v4 record id and safe error metadata without exception text" do
+    patient = create(:patient, registration_facility: request_user.facility)
+    blood_sugars = 2.times.map do
+      build_blood_sugar_payload(
+        build(
+          :blood_sugar,
+          patient: patient,
+          facility: request_user.facility,
+          user: request_user
+        )
+      )
+    end
+    error = RuntimeError.new("PRIVATE EXCEPTION MESSAGE d0b82f")
+    error.set_backtrace(["PRIVATE BACKTRACE LINE a48c0e"])
+    merge_count = 0
+    allow_any_instance_of(Api::V4::BloodSugarsController)
+      .to receive(:merge_if_valid)
+      .and_wrap_original do |method, record_params|
+        merge_count += 1
+        raise error if merge_count == 2
+
+        method.call(record_params)
+      end
+    request_body = {blood_sugars: blood_sugars}.to_json
+
+    expect {
+      post "/api/v4/blood_sugars/sync", params: request_body, headers: headers
+    }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+    request_finish = events.find do |event|
+      event[:boundary] == "request" && event[:phase] == "finish"
+    end
+    expect(request_finish).to include(
+      status: 500,
+      outcome: "error",
+      error_class: "RuntimeError"
+    )
+
+    merge_finish = events.find do |event|
+      event[:operation] == "merge_batch" && event[:phase] == "finish"
+    end
+    expect(merge_finish).to include(
+      record_id: blood_sugars.second.fetch("id"),
+      outcome: "error",
+      error_class: "RuntimeError"
+    )
+    expect_safe_trace_contract(
+      secret_values: [
+        request_body,
+        error.message,
+        error.backtrace.first
+      ]
     )
   end
 end
