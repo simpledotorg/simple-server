@@ -167,7 +167,7 @@ RSpec.describe "Sync traceability", type: :request do
   end
 
   it "executes the questionnaire SELECT inside its single trace without a COUNT query" do
-    create(:questionnaire, :active, questionnaire_type: stub_questionnaire_types.first, dsl_version: "1")
+    create(:questionnaire, :active, questionnaire_type: "monthly_screening_reports", dsl_version: "1")
     sequence = []
     trace_subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
       event = ActiveSupport::Notifications::Event.new(*args).payload
@@ -189,6 +189,7 @@ RSpec.describe "Sync traceability", type: :request do
   ensure
     ActiveSupport::Notifications.unsubscribe(trace_subscriber) if trace_subscriber
     ActiveSupport::Notifications.unsubscribe(sql_subscriber) if sql_subscriber
+    Questionnaire.reset_column_information
   end
 
   it "wraps the custom facility medical officers batches in one request boundary" do
