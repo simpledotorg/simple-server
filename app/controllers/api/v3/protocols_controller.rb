@@ -8,13 +8,17 @@ class Api::V3::ProtocolsController < Api::V3::SyncController
   private
 
   def current_facility_records
-    []
+    time(__method__) do
+      []
+    end
   end
 
   def other_facility_records
-    Protocol
-      .with_discarded
-      .updated_on_server_since(other_facilities_processed_since, limit)
+    time(__method__) do
+      Protocol
+        .with_discarded
+        .updated_on_server_since(other_facilities_processed_since, limit)
+    end
   end
 
   def disable_audit_logs?

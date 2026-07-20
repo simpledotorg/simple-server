@@ -8,11 +8,15 @@ class Api::V4::MedicationsController < Api::V4::SyncController
   private
 
   def current_facility_records
-    []
+    time(__method__) do
+      []
+    end
   end
 
   def other_facility_records
-    Medication.all
+    time(__method__) do
+      Medication.all
+    end
   end
 
   def disable_audit_logs?

@@ -137,6 +137,62 @@ RSpec.describe "Sync traceability", type: :request do
     expect(request_events.last).to include(status: 200, outcome: "success")
   end
 
+  it "traces custom query overrides reached by their sync endpoints" do
+    endpoints = {
+      "/api/v3/facilities/sync" => ["other_facility_records"],
+      "/api/v3/protocols/sync" => ["other_facility_records"],
+      "/api/v4/medications/sync" => ["other_facility_records"],
+      "/api/v4/questionnaires/sync?dsl_version=1" =>
+        %w[current_facility_records other_facility_records],
+      "/api/v4/questionnaire_responses/sync" =>
+        %w[current_facility_records other_facility_records]
+    }
+
+    endpoints.each do |path, expected_operations|
+      events.clear
+      get path, headers: headers
+
+      expect(response).to have_http_status(:ok)
+      query_events = events.select do |event|
+        event[:boundary] == "data" &&
+          expected_operations.include?(event[:operation])
+      end
+      expect(query_events.map { |event| event[:operation] }.uniq).to eq(expected_operations)
+      query_events.group_by { |event| event[:operation] }.each_value do |operation_events|
+        expect(operation_events.map { |event| event[:phase] }.each_slice(2).to_a)
+          .to all(eq(%w[start finish]))
+      end
+      query_finishes = query_events.select { |event| event[:phase] == "finish" }
+      expect(query_finishes).to all(include(outcome: "success"))
+      expect(query_finishes).to all(satisfy { |event| event[:output_count].is_a?(Integer) })
+    end
+  end
+
+  it "wraps the custom facility medical officers batches in one request boundary" do
+    get "/api/v4/facility_medical_officers/sync", headers: headers
+
+    request_events = events.select { |event| event[:boundary] == "request" }
+    expect(request_events.map { |event| event[:phase] }).to eq(%w[start finish])
+    expect(request_events.first).to include(
+      operation: "api/v4/facility_medical_officers#sync_to_user"
+    )
+    expect(request_events.last).to include(status: 200, outcome: "success")
+
+    operations = %w[
+      query_facility_medical_officers
+      transform_facility_medical_officers
+      render_pull_response
+    ]
+    custom_events = events.select do |event|
+      event[:boundary] == "data" && operations.include?(event[:operation])
+    end
+    expect(custom_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+      operations.flat_map { |operation| [[operation, "start"], [operation, "finish"]] }
+    )
+    expect(custom_events.select { |event| event[:phase] == "finish" })
+      .to all(include(resource: "facility_medical_officers", outcome: "success"))
+  end
+
   it "includes the status when ParameterMissing is rescued as a bad request" do
     post "/api/v3/patients/sync", params: {}, headers: headers
 
