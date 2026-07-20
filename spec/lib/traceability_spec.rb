@@ -109,6 +109,14 @@ RSpec.describe Traceability do
     expect(described_class.active?).to be(false)
   end
 
+  it "removes the request context key afterward when it was initially absent" do
+    RequestStore.store.delete(described_class::CONTEXT_KEY)
+
+    described_class.with_context(request_id: "request-1") { :ok }
+
+    expect(RequestStore.store).not_to have_key(described_class::CONTEXT_KEY)
+  end
+
   it "does not add context outside an active context" do
     expect {
       described_class.add_context(user_id: "user-1")

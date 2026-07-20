@@ -47,11 +47,16 @@ module Traceability
   end
 
   def with_context(attributes)
+    context_existed = RequestStore.store.key?(CONTEXT_KEY)
     previous_context = RequestStore.store[CONTEXT_KEY]
     RequestStore.store[CONTEXT_KEY] = sanitize(attributes)
     yield
   ensure
-    RequestStore.store[CONTEXT_KEY] = previous_context
+    if context_existed
+      RequestStore.store[CONTEXT_KEY] = previous_context
+    else
+      RequestStore.store.delete(CONTEXT_KEY)
+    end
   end
 
   def add_context(attributes)
