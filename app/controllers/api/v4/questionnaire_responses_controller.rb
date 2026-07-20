@@ -14,13 +14,12 @@ class Api::V4::QuestionnaireResponsesController < Api::V4::SyncController
           .for_sync
           .where(facility_id: current_facility)
           .updated_on_server_since(current_facility_processed_since, limit)
+          .to_a
       end
   end
 
   def other_facility_records
-    time(__method__) do
-      []
-    end
+    @other_facility_records ||= time(__method__) { [] }
   end
 
   private

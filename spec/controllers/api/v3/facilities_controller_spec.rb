@@ -96,6 +96,8 @@ RSpec.describe Api::V3::FacilitiesController, type: :controller do
 
           response_1 = JSON(response.body)
 
+          reset_controller
+
           get :sync_to_user, params: {
             process_token: response_1["process_token"],
             limit: 5

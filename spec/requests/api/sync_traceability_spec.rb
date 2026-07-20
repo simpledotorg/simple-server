@@ -157,15 +157,38 @@ RSpec.describe "Sync traceability", type: :request do
         event[:boundary] == "data" &&
           expected_operations.include?(event[:operation])
       end
-      expect(query_events.map { |event| event[:operation] }.uniq).to eq(expected_operations)
-      query_events.group_by { |event| event[:operation] }.each_value do |operation_events|
-        expect(operation_events.map { |event| event[:phase] }.each_slice(2).to_a)
-          .to all(eq(%w[start finish]))
-      end
+      expect(query_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        expected_operations.flat_map { |operation| [[operation, "start"], [operation, "finish"]] }
+      )
       query_finishes = query_events.select { |event| event[:phase] == "finish" }
       expect(query_finishes).to all(include(outcome: "success"))
       expect(query_finishes).to all(satisfy { |event| event[:output_count].is_a?(Integer) })
     end
+  end
+
+  it "executes the questionnaire SELECT inside its single trace without a COUNT query" do
+    create(:questionnaire, :active, questionnaire_type: stub_questionnaire_types.first, dsl_version: "1")
+    sequence = []
+    trace_subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+      event = ActiveSupport::Notifications::Event.new(*args).payload
+      if event[:operation] == "current_facility_records"
+        sequence << :"trace_#{event[:phase]}"
+      end
+    end
+    sql_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+      sql = ActiveSupport::Notifications::Event.new(*args).payload[:sql]
+      next unless sql.include?('FROM "questionnaires"')
+
+      sequence << (sql.match?(/\bCOUNT\b/i) ? :count : :select)
+    end
+
+    get "/api/v4/questionnaires/sync?dsl_version=1", headers: headers
+
+    expect(response).to have_http_status(:ok)
+    expect(sequence).to eq(%i[trace_start select trace_finish])
+  ensure
+    ActiveSupport::Notifications.unsubscribe(trace_subscriber) if trace_subscriber
+    ActiveSupport::Notifications.unsubscribe(sql_subscriber) if sql_subscriber
   end
 
   it "wraps the custom facility medical officers batches in one request boundary" do

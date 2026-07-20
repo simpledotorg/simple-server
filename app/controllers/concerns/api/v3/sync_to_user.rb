@@ -8,6 +8,7 @@ module Api::V3::SyncToUser
           model_sync_scope
             .where(patient: current_facility.prioritized_patients.select(:id))
             .updated_on_server_since(current_facility_processed_since, limit)
+            .to_a
         end
     end
 
@@ -23,6 +24,7 @@ module Api::V3::SyncToUser
                 .where.not(registration_facility: current_facility)
                 .select(:id))
             .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
+            .to_a
         end
     end
 
@@ -98,7 +100,7 @@ module Api::V3::SyncToUser
           Metrics.benchmark_and_gauge("sync_to_user_operation_duration_seconds", {operation: method_name, model: model.name.downcase}) do
             yield(block)
           end
-        finish[:output_count] = result.size if result.respond_to?(:size)
+        finish[:output_count] = result.length if result.respond_to?(:length)
         result
       end
     end

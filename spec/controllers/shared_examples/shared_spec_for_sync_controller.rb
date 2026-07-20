@@ -581,6 +581,34 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
       )
     end
 
+    it "materializes a lazy relation inside its trace without issuing COUNT" do
+      record = model.first
+      relation = model.where(id: record.id)
+      sequence = []
+      trace_subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        event = ActiveSupport::Notifications::Event.new(*args).payload
+        if event[:operation] == "current_facility_records"
+          sequence << :"trace_#{event[:phase]}"
+        end
+      end
+      sql_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+        sql = ActiveSupport::Notifications::Event.new(*args).payload[:sql]
+        next unless sql.include?("FROM \"#{model.table_name}\"")
+
+        sequence << (sql.match?(/\bCOUNT\b/i) ? :count : :select)
+      end
+
+      result = Traceability.with_context(request_id: "lazy-query-test") do
+        controller.send(:time, :current_facility_records) { relation }
+      end
+
+      expect(sequence).to eq(%i[trace_start select trace_finish])
+      expect(result).to be_loaded
+    ensure
+      ActiveSupport::Notifications.unsubscribe(trace_subscriber) if trace_subscriber
+      ActiveSupport::Notifications.unsubscribe(sql_subscriber) if sql_subscriber
+    end
+
     it "traces each actual current and other facility query exactly once" do
       metric_name = "sync_to_user_operation_duration_seconds"
       expect(Metrics).to receive(:benchmark_and_gauge)
@@ -610,6 +638,8 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
         .to all(include(resource: model.table_name, outcome: "success"))
       expect(query_events.select { |event| event[:phase] == "finish" })
         .to all(satisfy { |event| event[:output_count].is_a?(Integer) })
+      expect(controller.send(:current_facility_records)).to be_an(Array)
+      expect(controller.send(:other_facility_records)).to be_an(Array)
       expect(response_ids).to match_array(model.pluck(:id))
     end
   end

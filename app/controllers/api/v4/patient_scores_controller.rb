@@ -17,9 +17,7 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
   end
 
   def other_facility_records
-    time(__method__) do
-      []
-    end
+    @other_facility_records ||= time(__method__) { [] }
   end
 
   private
