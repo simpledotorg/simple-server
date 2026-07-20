@@ -91,7 +91,14 @@ module Api::V3::SyncToUser
       raise ArgumentError, "You must supply a block" unless block
 
       Metrics.benchmark_and_gauge("sync_to_user_operation_duration_seconds", {operation: method_name, model: model.name.downcase}) do
-        yield(block)
+        trace_sync_data(
+          method_name.to_s,
+          resource: model.table_name
+        ) do |finish|
+          result = yield(block)
+          finish[:output_count] = result.size if result.respond_to?(:size)
+          result
+        end
       end
     end
   end

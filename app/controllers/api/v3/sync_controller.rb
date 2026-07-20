@@ -34,24 +34,72 @@ class Api::V3::SyncController < APIController
   end
 
   def __sync_to_user__(response_key)
-    records = records_to_sync
+    records = trace_sync_data(
+      "retrieve_records",
+      resource: pull_resource
+    ) do |finish|
+      retrieved_records = records_to_sync
+      finish[:output_count] = retrieved_records.size
+      retrieved_records
+    end
 
-    AuditLog.create_logs_async(current_user, records, "fetch", Time.current) unless disable_audit_logs?
+    unless disable_audit_logs?
+      trace_sync_data(
+        "enqueue_audit_logs",
+        resource: pull_resource,
+        input_count: records.size
+      ) do |finish|
+        result = AuditLog.create_logs_async(current_user, records, "fetch", Time.current)
+        finish[:audit_count] = records.size
+        result
+      end
+    end
 
-    transformed_records = records.map { |record| transform_to_response(record) }
+    transformed_records = trace_sync_data(
+      "transform_records",
+      resource: pull_resource,
+      input_count: records.size
+    ) do |finish|
+      transformed = records.map { |record| transform_to_response(record) }
+      finish[:output_count] = transformed.size
+      transformed
+    end
 
-    json = Oj.dump({
-      response_key => transformed_records,
-      "process_token" => encode_process_token(response_process_token)
-    }, mode: :compat)
+    encoded_process_token = trace_sync_data(
+      "encode_process_token",
+      resource: pull_resource
+    ) do
+      encode_process_token(response_process_token)
+    end
 
-    render(json: json, status: :ok)
+    json = trace_sync_data(
+      "serialize_pull_response",
+      resource: pull_resource,
+      input_count: transformed_records.size
+    ) do
+      Oj.dump({
+        response_key => transformed_records,
+        "process_token" => encoded_process_token
+      }, mode: :compat)
+    end
+
+    trace_sync_data(
+      "render_pull_response",
+      resource: pull_resource
+    ) do |finish|
+      finish[:output_count] = transformed_records.size
+      render(json: json, status: :ok)
+    end
   end
 
   private
 
   def model
     controller_name.classify.constantize
+  end
+
+  def pull_resource
+    model.respond_to?(:table_name) ? model.table_name : controller_name
   end
 
   def merge_records(params, finish)
@@ -101,10 +149,18 @@ class Api::V3::SyncController < APIController
   end
 
   def process_token
-    if params[:process_token].present?
-      JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
-    else
-      {}
+    return @process_token if defined?(@process_token_params) && @process_token_params.equal?(params)
+
+    @process_token_params = params
+    @process_token = trace_sync_data(
+      "decode_process_token",
+      resource: pull_resource
+    ) do
+      if params[:process_token].present?
+        JSON.parse(Base64.decode64(params[:process_token])).with_indifferent_access
+      else
+        {}
+      end
     end
   end
 
