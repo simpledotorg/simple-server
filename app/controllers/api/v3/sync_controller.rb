@@ -2,12 +2,35 @@ class Api::V3::SyncController < APIController
   include Api::V3::SyncToUser
 
   def __sync_from_user__(params)
-    results = merge_records(params)
+    results = trace_sync_data(
+      "merge_batch",
+      resource: model.table_name,
+      input_count: params.size
+    ) do |finish|
+      finish[:output_count] = 0
+      finish[:error_count] = 0
+      finish[:audit_count] = 0
+      merge_records(params, finish)
+    end
 
-    errors = results.flat_map { |result| result[:errors_hash] || [] }
+    errors = trace_sync_data(
+      "aggregate_validation_results",
+      resource: model.table_name
+    ) do |finish|
+      aggregated_errors = results.flat_map { |result| result[:errors_hash] || [] }
+      finish[:error_count] = aggregated_errors.size
+      aggregated_errors
+    end
     capture_errors params, errors
-    response = {errors: errors.nil? ? nil : errors}
-    render json: response, status: :ok
+
+    trace_sync_data(
+      "render_push_response",
+      resource: model.table_name
+    ) do |finish|
+      finish[:error_count] = errors.size
+      response = {errors: errors.nil? ? nil : errors}
+      render json: response, status: :ok
+    end
   end
 
   def __sync_to_user__(response_key)
@@ -31,11 +54,22 @@ class Api::V3::SyncController < APIController
     controller_name.classify.constantize
   end
 
-  def merge_records(params)
+  def merge_records(params, finish)
     params.flat_map { |single_entity_params|
-      result = merge_if_valid(single_entity_params)
-      AuditLog.merge_log(current_user, result[:record]) if result[:record].present?
-      result
+      begin
+        result = merge_if_valid(single_entity_params)
+        if result[:record].present?
+          finish[:output_count] += 1
+          AuditLog.merge_log(current_user, result[:record])
+          finish[:audit_count] += 1
+        elsif result[:errors_hash].present?
+          finish[:error_count] += 1
+        end
+        result
+      rescue
+        finish[:record_id] = single_entity_params[:id]
+        raise
+      end
     }
   end
 

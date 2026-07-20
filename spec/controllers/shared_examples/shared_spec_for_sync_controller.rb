@@ -115,6 +115,120 @@ RSpec.shared_examples "a working sync controller creating records" do
     set_authentication_headers
   end
 
+  describe "push traceability" do
+    let(:push_trace_events) { [] }
+    let(:push_operations) do
+      %w[merge_batch aggregate_validation_results render_push_response]
+    end
+
+    around do |example|
+      subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        push_trace_events << ActiveSupport::Notifications::Event.new(*args).payload
+      end
+
+      example.run
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+    end
+
+    it "traces one paired set of batch phases with aggregate counts and merge-audit ordering" do
+      calls = []
+      valid_record = build_payload.call
+      invalid_record = build_invalid_payload.call
+
+      allow(controller).to receive(:merge_if_valid).and_wrap_original do |method, record_params|
+        calls << [:merge, record_params[:id]]
+        method.call(record_params)
+      end
+      allow(AuditLog).to receive(:merge_log).and_wrap_original do |method, user, record|
+        calls << [:audit, record.id]
+        method.call(user, record)
+      end
+
+      post(:sync_from_user, params: {request_key => [valid_record, invalid_record]}, as: :json)
+
+      traced_push_events = push_trace_events.select { |event| push_operations.include?(event[:operation]) }
+      resource_events = push_trace_events.select { |event| event[:resource] == model.table_name }
+      expect(resource_events).to eq(traced_push_events)
+      expect(traced_push_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        [
+          ["merge_batch", "start"],
+          ["merge_batch", "finish"],
+          ["aggregate_validation_results", "start"],
+          ["aggregate_validation_results", "finish"],
+          ["render_push_response", "start"],
+          ["render_push_response", "finish"]
+        ]
+      )
+      expect(calls).to eq(
+        [
+          [:merge, valid_record["id"]],
+          [:audit, valid_record["id"]],
+          [:merge, invalid_record["id"]]
+        ]
+      )
+
+      finishes = traced_push_events.select { |event| event[:phase] == "finish" }.index_by { |event| event[:operation] }
+      expect(finishes["merge_batch"]).to include(
+        resource: model.table_name,
+        input_count: 2,
+        output_count: 1,
+        error_count: 1,
+        audit_count: 1,
+        outcome: "success"
+      )
+      expect(finishes["aggregate_validation_results"]).to include(
+        resource: model.table_name,
+        error_count: 1,
+        outcome: "success"
+      )
+      expect(finishes["render_push_response"]).to include(
+        resource: model.table_name,
+        error_count: 1,
+        outcome: "success"
+      )
+      expect(response).to have_http_status(:ok)
+      expect(JSON(response.body)["errors"].pluck("id")).to contain_exactly(invalid_record["id"])
+    end
+
+    it "records only the failing record ID and re-raises the exact exception" do
+      successful_record = build_payload.call
+      failing_record = build_payload.call
+      error = RuntimeError.new("private payload contents")
+      merge_count = 0
+
+      allow(controller).to receive(:merge_if_valid).and_wrap_original do |method, record_params|
+        merge_count += 1
+        raise error if merge_count == 2
+
+        method.call(record_params)
+      end
+
+      expect {
+        post(:sync_from_user, params: {request_key => [successful_record, failing_record]}, as: :json)
+      }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+      merge_events = push_trace_events.select { |event| event[:operation] == "merge_batch" }
+      expect(merge_events.map { |event| event[:phase] }).to eq(%w[start finish])
+
+      merge_finish = merge_events.last
+      expect(merge_finish).to include(
+        resource: model.table_name,
+        input_count: 2,
+        output_count: 1,
+        error_count: 0,
+        audit_count: 1,
+        record_id: failing_record["id"],
+        outcome: "error",
+        error_class: "RuntimeError"
+      )
+      expect(merge_finish[:record_id]).not_to eq(successful_record["id"])
+      expect(merge_finish.keys).not_to include(:message, :error, :params, :payload)
+      expect(push_trace_events).not_to include(include(operation: "aggregate_validation_results"))
+      expect(push_trace_events).not_to include(include(operation: "render_push_response"))
+    end
+  end
+
   describe "creates new records" do
     it "returns 400 when there are no records in the request" do
       post(:sync_from_user, params: empty_payload)
