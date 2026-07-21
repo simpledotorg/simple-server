@@ -3,19 +3,20 @@ module Api::V3::SyncToUser
 
   included do
     def current_facility_records
-      time(__method__) do
-        @current_facility_records ||=
+      @current_facility_records ||=
+        time(__method__) do
           model_sync_scope
             .where(patient: current_facility.prioritized_patients.select(:id))
             .updated_on_server_since(current_facility_processed_since, limit)
-      end
+            .to_a
+        end
     end
 
     # this is performance-critical code, be careful while refactoring it
     def other_facility_records
-      time(__method__) do
-        other_facilities_limit = limit - current_facility_records.size
-        @other_facility_records ||=
+      @other_facility_records ||=
+        time(__method__) do
+          other_facilities_limit = limit - current_facility_records.size
           model_sync_scope
             .where("patient_id = ANY (array(?))",
               current_sync_region
@@ -23,7 +24,8 @@ module Api::V3::SyncToUser
                 .where.not(registration_facility: current_facility)
                 .select(:id))
             .updated_on_server_since(other_facilities_processed_since, other_facilities_limit)
-      end
+            .to_a
+        end
     end
 
     private
@@ -90,8 +92,16 @@ module Api::V3::SyncToUser
     def time(method_name, &block)
       raise ArgumentError, "You must supply a block" unless block
 
-      Metrics.benchmark_and_gauge("sync_to_user_operation_duration_seconds", {operation: method_name, model: model.name.downcase}) do
-        yield(block)
+      trace_sync_data(
+        method_name.to_s,
+        resource: pull_resource
+      ) do |finish|
+        result =
+          Metrics.benchmark_and_gauge("sync_to_user_operation_duration_seconds", {operation: method_name, model: model.name.downcase}) do
+            yield(block)
+          end
+        finish[:output_count] = result.length if result.respond_to?(:length)
+        result
       end
     end
   end
