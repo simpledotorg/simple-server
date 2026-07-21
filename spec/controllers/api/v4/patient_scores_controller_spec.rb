@@ -5,6 +5,17 @@ describe Api::V4::PatientScoresController, type: :controller do
   let(:request_facility_group) { request_user.facility.facility_group }
   let(:request_facility) { create(:facility, facility_group: request_facility_group) }
   let(:model) { PatientScore }
+  let(:trace_events) { [] }
+
+  around do |example|
+    subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+      trace_events << ActiveSupport::Notifications::Event.new(*args).payload
+    end
+
+    example.run
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+  end
 
   def create_record(options = {})
     patient = create(:patient, registration_facility: request_facility)
@@ -32,6 +43,30 @@ describe Api::V4::PatientScoresController, type: :controller do
       body = JSON(response.body)
       expect(body["patient_scores"].map { |r| r["id"] }.to_set)
         .to eq(expected.map(&:id).to_set)
+    end
+
+    it "traces each custom facility query exactly once with its output count" do
+      expected = create_record_list(3)
+
+      get :sync_to_user, params: {limit: 2}
+
+      query_events = trace_events.select do |event|
+        %w[current_facility_records other_facility_records].include?(event[:operation])
+      end
+      expect(query_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        [
+          ["current_facility_records", "start"],
+          ["current_facility_records", "finish"],
+          ["other_facility_records", "start"],
+          ["other_facility_records", "finish"]
+        ]
+      )
+      expect(query_events.select { |event| event[:phase] == "finish" }).to contain_exactly(
+        include(resource: "patient_scores", output_count: 2, outcome: "success"),
+        include(resource: "patient_scores", output_count: 0, outcome: "success")
+      )
+      expect(JSON(response.body)["patient_scores"].pluck("id"))
+        .to eq(expected.sort_by { |record| [record.updated_at, record.id] }.first(2).map(&:id))
     end
 
     it "paginates via next_page token across multiple requests with a shared updated_at" do

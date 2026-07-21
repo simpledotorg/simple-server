@@ -115,6 +115,120 @@ RSpec.shared_examples "a working sync controller creating records" do
     set_authentication_headers
   end
 
+  describe "push traceability" do
+    let(:push_trace_events) { [] }
+    let(:push_operations) do
+      %w[merge_batch aggregate_validation_results render_push_response]
+    end
+
+    around do |example|
+      subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        push_trace_events << ActiveSupport::Notifications::Event.new(*args).payload
+      end
+
+      example.run
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+    end
+
+    it "traces one paired set of batch phases with aggregate counts and merge-audit ordering" do
+      calls = []
+      valid_record = build_payload.call
+      invalid_record = build_invalid_payload.call
+
+      allow(controller).to receive(:merge_if_valid).and_wrap_original do |method, record_params|
+        calls << [:merge, record_params[:id]]
+        method.call(record_params)
+      end
+      allow(AuditLog).to receive(:merge_log).and_wrap_original do |method, user, record|
+        calls << [:audit, record.id]
+        method.call(user, record)
+      end
+
+      post(:sync_from_user, params: {request_key => [valid_record, invalid_record]}, as: :json)
+
+      traced_push_events = push_trace_events.select { |event| push_operations.include?(event[:operation]) }
+      resource_events = push_trace_events.select { |event| event[:resource] == model.table_name }
+      expect(resource_events).to eq(traced_push_events)
+      expect(traced_push_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        [
+          ["merge_batch", "start"],
+          ["merge_batch", "finish"],
+          ["aggregate_validation_results", "start"],
+          ["aggregate_validation_results", "finish"],
+          ["render_push_response", "start"],
+          ["render_push_response", "finish"]
+        ]
+      )
+      expect(calls).to eq(
+        [
+          [:merge, valid_record["id"]],
+          [:audit, valid_record["id"]],
+          [:merge, invalid_record["id"]]
+        ]
+      )
+
+      finishes = traced_push_events.select { |event| event[:phase] == "finish" }.index_by { |event| event[:operation] }
+      expect(finishes["merge_batch"]).to include(
+        resource: model.table_name,
+        input_count: 2,
+        output_count: 1,
+        error_count: 1,
+        audit_count: 1,
+        outcome: "success"
+      )
+      expect(finishes["aggregate_validation_results"]).to include(
+        resource: model.table_name,
+        error_count: 1,
+        outcome: "success"
+      )
+      expect(finishes["render_push_response"]).to include(
+        resource: model.table_name,
+        error_count: 1,
+        outcome: "success"
+      )
+      expect(response).to have_http_status(:ok)
+      expect(JSON(response.body)["errors"].pluck("id")).to contain_exactly(invalid_record["id"])
+    end
+
+    it "records only the failing record ID and re-raises the exact exception" do
+      successful_record = build_payload.call
+      failing_record = build_payload.call
+      error = RuntimeError.new("private payload contents")
+      merge_count = 0
+
+      allow(controller).to receive(:merge_if_valid).and_wrap_original do |method, record_params|
+        merge_count += 1
+        raise error if merge_count == 2
+
+        method.call(record_params)
+      end
+
+      expect {
+        post(:sync_from_user, params: {request_key => [successful_record, failing_record]}, as: :json)
+      }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+      merge_events = push_trace_events.select { |event| event[:operation] == "merge_batch" }
+      expect(merge_events.map { |event| event[:phase] }).to eq(%w[start finish])
+
+      merge_finish = merge_events.last
+      expect(merge_finish).to include(
+        resource: model.table_name,
+        input_count: 2,
+        output_count: 1,
+        error_count: 0,
+        audit_count: 1,
+        record_id: failing_record["id"],
+        outcome: "error",
+        error_class: "RuntimeError"
+      )
+      expect(merge_finish[:record_id]).not_to eq(successful_record["id"])
+      expect(merge_finish.keys).not_to include(:message, :error, :params, :payload)
+      expect(push_trace_events).not_to include(include(operation: "aggregate_validation_results"))
+      expect(push_trace_events).not_to include(include(operation: "render_push_response"))
+    end
+  end
+
   describe "creates new records" do
     it "returns 400 when there are no records in the request" do
       post(:sync_from_user, params: empty_payload)
@@ -229,6 +343,305 @@ RSpec.shared_examples "a working V3 sync controller sending records" do
 
   before :each do
     set_authentication_headers
+  end
+
+  describe "pull traceability" do
+    let(:pull_trace_events) { [] }
+    let(:pull_operations) do
+      %w[
+        retrieve_records
+        enqueue_audit_logs
+        transform_records
+        encode_process_token
+        serialize_pull_response
+        render_pull_response
+      ]
+    end
+
+    around do |example|
+      subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        pull_trace_events << ActiveSupport::Notifications::Event.new(*args).payload
+      end
+
+      example.run
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+    end
+
+    it "traces paired pull phases with aggregate counts and preserves audit ordering" do
+      calls = []
+      audit_records = nil
+
+      expect(AuditLog).to receive(:create_logs_async)
+        .with(request_user, kind_of(Array), "fetch", kind_of(ActiveSupport::TimeWithZone))
+        .and_wrap_original do |method, user, records, action, timestamp|
+          calls << :audit
+          audit_records = records
+          method.call(user, records, action, timestamp)
+        end
+      allow(controller).to receive(:transform_to_response).and_wrap_original do |method, record|
+        calls << :transform
+        method.call(record)
+      end
+
+      get :sync_to_user
+
+      response_records = JSON(response.body)[model.to_s.underscore.pluralize]
+      traced_events = pull_trace_events.select { |event| pull_operations.include?(event[:operation]) }
+      expect(traced_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        pull_operations.flat_map { |operation| [[operation, "start"], [operation, "finish"]] }
+      )
+      expect(calls).to eq([:audit] + Array.new(response_records.size, :transform))
+      expect(audit_records.map(&:id)).to eq(response_records.pluck("id"))
+
+      finishes = traced_events.select { |event| event[:phase] == "finish" }.index_by { |event| event[:operation] }
+      expect(finishes["retrieve_records"]).to include(
+        resource: model.table_name,
+        output_count: response_records.size,
+        outcome: "success"
+      )
+      expect(finishes["enqueue_audit_logs"]).to include(
+        resource: model.table_name,
+        input_count: response_records.size,
+        audit_count: response_records.size,
+        outcome: "success"
+      )
+      expect(finishes["transform_records"]).to include(
+        resource: model.table_name,
+        input_count: response_records.size,
+        output_count: response_records.size,
+        outcome: "success"
+      )
+      expect(finishes["serialize_pull_response"]).to include(
+        resource: model.table_name,
+        input_count: response_records.size,
+        outcome: "success"
+      )
+      expect(finishes["render_pull_response"]).to include(
+        resource: model.table_name,
+        output_count: response_records.size,
+        outcome: "success"
+      )
+      expect(finishes["encode_process_token"]).to include(
+        resource: model.table_name,
+        outcome: "success"
+      )
+      expect(finishes["encode_process_token"].keys).not_to include(:process_token, :token)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "omits audit tracing and preserves the response when audit logs are disabled" do
+      allow(controller).to receive(:disable_audit_logs?).and_return(true)
+      expect(AuditLog).not_to receive(:create_logs_async)
+
+      get :sync_to_user
+
+      expect(pull_trace_events).not_to include(include(operation: "enqueue_audit_logs"))
+      expect(response).to have_http_status(:ok)
+      expect(JSON(response.body)[model.to_s.underscore.pluralize].size).to eq(model.count)
+    end
+
+    it "decodes a present process token once without exposing it in trace events" do
+      process_token = make_process_token(
+        current_facility_id: request_facility.id,
+        current_facility_processed_since: 20.minutes.ago,
+        other_facilities_processed_since: 20.minutes.ago,
+        sync_region_id: request_facility_group.id
+      )
+      expect(Base64).to receive(:decode64).with(process_token).once.and_call_original
+
+      get :sync_to_user, params: {process_token: process_token}
+
+      decode_events = pull_trace_events.select { |event| event[:operation] == "decode_process_token" }
+      expect(decode_events.map { |event| event[:phase] }).to eq(%w[start finish])
+      expect(decode_events.last).to include(resource: model.table_name, outcome: "success")
+      expect(decode_events.flat_map(&:values)).not_to include(process_token)
+      expect(decode_events.flat_map(&:keys)).not_to include(:process_token, :token)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "decodes different process tokens once across consecutive controller requests" do
+      first_process_token = make_process_token(
+        current_facility_id: request_facility.id,
+        current_facility_processed_since: 20.minutes.ago,
+        other_facilities_processed_since: 20.minutes.ago,
+        sync_region_id: request_facility_group.id
+      )
+      second_process_token = make_process_token(
+        current_facility_id: request_facility.id,
+        current_facility_processed_since: 10.minutes.ago,
+        other_facilities_processed_since: 10.minutes.ago,
+        sync_region_id: request_facility_group.id
+      )
+      expect(Base64).to receive(:decode64).with(first_process_token).once.and_call_original
+      expect(Base64).to receive(:decode64).with(second_process_token).once.and_call_original
+
+      get :sync_to_user, params: {process_token: first_process_token}
+      expect(response).to have_http_status(:ok)
+
+      reset_controller
+
+      get :sync_to_user, params: {process_token: second_process_token}
+      expect(response).to have_http_status(:ok)
+
+      decode_events = pull_trace_events.select { |event| event[:operation] == "decode_process_token" }
+      expect(decode_events.map { |event| event[:phase] }).to eq(%w[start finish start finish])
+      expect(decode_events.select { |event| event[:phase] == "finish" })
+        .to all(include(resource: model.table_name, outcome: "success"))
+    end
+
+    it "re-raises the exact process token decode exception after a paired trace" do
+      error = JSON::ParserError.new("invalid token")
+      allow(JSON).to receive(:parse).and_raise(error)
+
+      expect {
+        get :sync_to_user, params: {process_token: "invalid"}
+      }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+      decode_events = pull_trace_events.select { |event| event[:operation] == "decode_process_token" }
+      expect(decode_events.map { |event| event[:phase] }).to eq(%w[start finish])
+      expect(decode_events.last).to include(
+        resource: model.table_name,
+        outcome: "error",
+        error_class: "JSON::ParserError"
+      )
+      expect(decode_events.last.keys).not_to include(:process_token, :token, :message, :error)
+    end
+
+    it "wraps only the original query with the exact legacy metric inside its trace" do
+      metric_name = "sync_to_user_operation_duration_seconds"
+      metric_labels = {operation: :current_facility_records, model: model.name.downcase}
+      sequence = []
+      subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        event = ActiveSupport::Notifications::Event.new(*args).payload
+        sequence << :"trace_#{event[:phase]}" if event[:operation] == "current_facility_records"
+      end
+      expect(Metrics).to receive(:benchmark_and_gauge)
+        .with(metric_name, metric_labels)
+        .once do |&query|
+          sequence << :metric_start
+          result = query.call
+          sequence << :metric_finish
+          result
+        end
+
+      result = Traceability.with_context(request_id: "query-wrapper-test") do
+        controller.send(:time, :current_facility_records) do
+          sequence << :query
+          [:query_result]
+        end
+      end
+
+      expect(result).to eq([:query_result])
+      expect(sequence).to eq(%i[trace_start metric_start query metric_finish trace_finish])
+    ensure
+      ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+    end
+
+    it "traces a legacy metric failure as an error and re-raises the same exception" do
+      error = RuntimeError.new("legacy metric failure")
+      expect(Metrics).to receive(:benchmark_and_gauge)
+        .with(
+          "sync_to_user_operation_duration_seconds",
+          {operation: :current_facility_records, model: model.name.downcase}
+        )
+        .once
+        .and_raise(error)
+
+      expect {
+        Traceability.with_context(request_id: "metric-failure-test") do
+          controller.send(:time, :current_facility_records) { [:unreachable] }
+        end
+      }.to raise_error { |raised_error| expect(raised_error).to equal(error) }
+
+      query_events = pull_trace_events.select { |event| event[:operation] == "current_facility_records" }
+      expect(query_events.map { |event| event[:phase] }).to eq(%w[start finish])
+      expect(query_events.last).to include(outcome: "error", error_class: "RuntimeError")
+    end
+
+    it "uses the pull resource fallback when timing a non-Active Record model" do
+      non_active_record_model = Class.new do
+        def self.name
+          "NonActiveRecordModel"
+        end
+      end
+      allow(controller).to receive(:model).and_return(non_active_record_model)
+
+      result = Traceability.with_context(request_id: "fallback-test") do
+        controller.send(:time, :current_facility_records) { [:query_result] }
+      end
+
+      query_events = pull_trace_events.select { |event| event[:operation] == "current_facility_records" }
+      expect(result).to eq([:query_result])
+      expect(query_events.map { |event| event[:phase] }).to eq(%w[start finish])
+      expect(query_events.last).to include(
+        resource: controller.controller_name,
+        output_count: 1,
+        outcome: "success"
+      )
+    end
+
+    it "materializes a lazy relation inside its trace without issuing COUNT" do
+      record = model.first
+      relation = model.where(id: record.id)
+      sequence = []
+      trace_subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+        event = ActiveSupport::Notifications::Event.new(*args).payload
+        if event[:operation] == "current_facility_records"
+          sequence << :"trace_#{event[:phase]}"
+        end
+      end
+      sql_subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
+        sql = ActiveSupport::Notifications::Event.new(*args).payload[:sql]
+        next unless sql.include?("FROM \"#{model.table_name}\"")
+
+        sequence << (sql.match?(/\bCOUNT\b/i) ? :count : :select)
+      end
+
+      result = Traceability.with_context(request_id: "lazy-query-test") do
+        controller.send(:time, :current_facility_records) { relation }
+      end
+
+      expect(sequence).to eq(%i[trace_start select trace_finish])
+      expect(result).to be_loaded
+    ensure
+      ActiveSupport::Notifications.unsubscribe(trace_subscriber) if trace_subscriber
+      ActiveSupport::Notifications.unsubscribe(sql_subscriber) if sql_subscriber
+    end
+
+    it "traces each actual current and other facility query exactly once" do
+      metric_name = "sync_to_user_operation_duration_seconds"
+      expect(Metrics).to receive(:benchmark_and_gauge)
+        .with(metric_name, {operation: :current_facility_records, model: model.name.downcase})
+        .once
+        .and_call_original
+      expect(Metrics).to receive(:benchmark_and_gauge)
+        .with(metric_name, {operation: :other_facility_records, model: model.name.downcase})
+        .once
+        .and_call_original
+
+      get :sync_to_user
+
+      response_ids = JSON(response.body)[model.to_s.underscore.pluralize].pluck("id")
+      query_events = pull_trace_events.select do |event|
+        %w[current_facility_records other_facility_records].include?(event[:operation])
+      end
+      expect(query_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        [
+          ["current_facility_records", "start"],
+          ["current_facility_records", "finish"],
+          ["other_facility_records", "start"],
+          ["other_facility_records", "finish"]
+        ]
+      )
+      expect(query_events.select { |event| event[:phase] == "finish" })
+        .to all(include(resource: model.table_name, outcome: "success"))
+      expect(query_events.select { |event| event[:phase] == "finish" })
+        .to all(satisfy { |event| event[:output_count].is_a?(Integer) })
+      expect(controller.send(:current_facility_records)).to be_an(Array)
+      expect(controller.send(:other_facility_records)).to be_an(Array)
+      expect(response_ids).to match_array(model.pluck(:id))
+    end
   end
 
   describe "GET sync: send data from server to device;" do

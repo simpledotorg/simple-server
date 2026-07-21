@@ -1,4 +1,6 @@
 class APIController < ApplicationController
+  include SyncTraceable
+
   before_action :current_user_present?
   before_action :validate_sync_approval_status_allowed
   before_action :authenticate
@@ -20,7 +22,9 @@ class APIController < ApplicationController
   private
 
   def current_user
-    @current_user ||= User.find_by(id: request.headers["HTTP_X_USER_ID"])
+    @current_user ||= trace_sync_data("resolve_user", resource: "users") do
+      User.find_by(id: request.headers["HTTP_X_USER_ID"])
+    end
   end
 
   def current_facility
@@ -32,6 +36,16 @@ class APIController < ApplicationController
   end
 
   def current_sync_region
+    return resolve_current_sync_region unless Traceability.active?
+
+    @traced_current_sync_region ||= trace_sync_data("select_sync_scope", resource: "regions") do |finish|
+      region = resolve_current_sync_region
+      finish[:sync_region_id] = region.id
+      region
+    end
+  end
+
+  def resolve_current_sync_region
     # This method selectively permits only FacilityGroup sync (via facility group ID)
     # and block-level sync (via regions) and offers facility group as a safe fallback.
     # Over time, the facility group ID support can be dropped and this method can
@@ -68,12 +82,20 @@ class APIController < ApplicationController
   end
 
   def validate_facility
-    fail_request(:bad_request, "no current_facility set") unless current_facility.present?
+    trace_sync_data("resolve_facility", resource: "facilities") do |finish|
+      facility = current_facility
+      finish[:facility_present] = facility.present?
+      fail_request(:bad_request, "no current_facility set") unless facility.present?
+    end
   end
 
   def validate_current_facility_belongs_to_users_facility_group
-    head :unauthorized unless current_user.present? &&
+    authorized = current_user.present? &&
       current_facility_group.facilities.where(id: current_facility.id).present?
+    return head :unauthorized unless authorized
+
+    Traceability.add_context(facility_id: current_facility.id)
+    nil
   end
 
   def current_user_present?
@@ -90,13 +112,32 @@ class APIController < ApplicationController
   end
 
   def authenticate
-    authenticate_or_request_with_http_token do |token, _options|
-      if ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
+    trace_sync_data("authenticate_request", resource: "users") do |finish|
+      authenticated = false
+      result = authenticate_or_request_with_http_token do |token, _options|
+        next false unless ActiveSupport::SecurityUtils.secure_compare(token, current_user.access_token)
+
         RequestStore.store[:current_user] = current_user.to_kv_hash
+        Traceability.add_context(user_id: current_user.id)
         current_user.mark_as_logged_in if current_user.has_never_logged_in?
+        authenticated = true
         true
       end
+      finish[:authenticated] = authenticated
+      finish[:outcome] = authenticated ? "success" : "error"
+      result
     end
+  end
+
+  def trace_sync_data(operation, attributes = {}, &block)
+    return yield({}) unless Traceability.active?
+
+    Traceability.trace(
+      boundary: "data",
+      operation: operation,
+      attributes: attributes,
+      &block
+    )
   end
 
   def set_sentry_context
