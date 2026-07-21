@@ -7,6 +7,18 @@ def set_authentication_headers
 end
 
 RSpec.describe Api::V4::FacilityMedicalOfficersController, type: :controller do
+  let(:trace_events) { [] }
+
+  around do |example|
+    subscriber = ActiveSupport::Notifications.subscribe(Traceability::EVENT_NAME) do |*args|
+      trace_events << ActiveSupport::Notifications::Event.new(*args).payload
+    end
+
+    example.run
+  ensure
+    ActiveSupport::Notifications.unsubscribe(subscriber) if subscriber
+  end
+
   describe "#sync_to_user" do
     let(:facility_group) { create(:facility_group) }
 
@@ -52,6 +64,36 @@ RSpec.describe Api::V4::FacilityMedicalOfficersController, type: :controller do
         expect(medical_officers.map { |medical_officer| Time.parse(medical_officer["updated_at"]).to_i }).to all eq Time.current.to_i
         expect(medical_officers.map { |medical_officer| medical_officer["deleted_at"] }).to all be nil
       end
+    end
+
+    it "traces the query, transform, and render batches with exact counts" do
+      get :sync_to_user
+
+      operations = %w[
+        query_facility_medical_officers
+        transform_facility_medical_officers
+        render_pull_response
+      ]
+      batch_events = trace_events.select { |event| operations.include?(event[:operation]) }
+      expect(batch_events.map { |event| [event[:operation], event[:phase]] }).to eq(
+        operations.flat_map { |operation| [[operation, "start"], [operation, "finish"]] }
+      )
+      expect(batch_events.select { |event| event[:phase] == "finish" }).to contain_exactly(
+        include(operation: "query_facility_medical_officers",
+          resource: "facility_medical_officers",
+          output_count: 3,
+          outcome: "success"),
+        include(operation: "transform_facility_medical_officers",
+          resource: "facility_medical_officers",
+          input_count: 3,
+          output_count: 3,
+          outcome: "success"),
+        include(operation: "render_pull_response",
+          resource: "facility_medical_officers",
+          output_count: 3,
+          outcome: "success")
+      )
+      expect(JSON(response.body)["facility_medical_officers"].size).to eq(3)
     end
   end
 end
