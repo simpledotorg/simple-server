@@ -148,6 +148,8 @@ describe Api::V4::QuestionnairesController, type: :controller do
       get :sync_to_user, params: {dsl_version: "1.1"}
       expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array([questionnaire_1.id, questionnaire_1_1.id])
 
+      reset_controller
+
       get :sync_to_user, params: {dsl_version: "2.1"}
       expect(JSON(response.body)["questionnaires"].pluck("id")).to match_array(questionnaire_2.id)
     end
