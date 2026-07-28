@@ -56,6 +56,10 @@ class Dashboard::DrRaiReport < ApplicationComponent
     selected_period == current_period
   end
 
+  def action_plans_editable?
+    current_period? && Date.current.month == selected_period.begin.month
+  end
+
   def a_month_to_next_period?
     next_month_period == current_period.next
   end
