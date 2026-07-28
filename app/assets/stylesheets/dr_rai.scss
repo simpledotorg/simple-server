@@ -145,7 +145,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
     right: 3px;
     font-size: 20px;
 
-    button {
+    > button {
       display: flex;
       align-items: center;
       justify-items: center;
@@ -592,6 +592,8 @@ $font-condensed: "Roboto Condensed", sans-serif;
 }
 
 .bs-canvas-overlay {
+  top: 0;
+  left: 0;
   opacity: 0;
   z-index: -1;
 }

@@ -20,8 +20,24 @@
                 <i class="fa-solid fa-ellipsis"></i>
               </button>
               <div class="dropdown-menu dropdown-menu-right">
-                <a class="dropdown-item edit" href="#">Edit</a>
-                <div class="dropdown-divider"></div>
+                <% if action_plans_editable? %>
+                  <%= tag.button "Edit",
+                    type: "button",
+                    class: "dropdown-item edit edit-action-plan",
+                    data: {
+                      toggle: "canvas",
+                      target: "#dr-rai--edit-sidebar",
+                      action_plan_id: action_plan.id,
+                      indicator: action_plan.indicator.display_name,
+                      target_statement: action_plan.statement,
+                      actions: action_plan.actions
+                    },
+                    aria: {
+                      expanded: "false",
+                      controls: "dr-rai--edit-sidebar"
+                    } %>
+                  <div class="dropdown-divider"></div>
+                <% end %>
                 <%= link_to "Delete", dr_rai_action_plan_path(action_plan), method: :delete, class: "dropdown-item delete" %>
               </div>
             </div>
@@ -101,7 +117,8 @@
   <% end %>
 </div>
 <% unless is_lite_version? %>
-<div class="sidepanel bs-canvas bs-canvas-right position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
+<div class="bs-canvas-overlay bs-canvas-anim bg-dark position-fixed w-100 h-100"></div>
+<div class="sidepanel bs-canvas bs-canvas-right bs-canvas-anim position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
     <button class="bs-canvas-close float-left close" aria-label="Close">
@@ -231,6 +248,41 @@
     </div>
   <% end %>
 </div>
+<% if action_plans_editable? %>
+  <div class="sidepanel bs-canvas bs-canvas-right bs-canvas-anim position-fixed h-100" tabindex="-1" id="dr-rai--edit-sidebar" role="dialog" aria-modal="true" aria-labelledby="dr-rai--edit-title" aria-hidden="true" inert>
+    <div class="header">
+      <p id="dr-rai--edit-title">Edit action</p>
+      <button class="bs-canvas-close float-left close" aria-label="Close">
+        <i class="fa-solid fa-xmark-large"></i>
+      </button>
+    </div>
+    <div class="content">
+      <h1><%= start_of(selected_period) %> - <%= end_of(selected_period) %> (<%= human_readable(selected_period) %>)</h1>
+      <div class="step-block">
+        <h2>Which indicator to improve?</h2>
+        <p class="step-statement edit-indicator-summary"></p>
+      </div>
+      <div class="step-block">
+        <h2>What is the goal?</h2>
+        <p class="step-statement edit-target-summary"></p>
+      </div>
+      <div class="step-block">
+        <h2>What action should be taken?</h2>
+        <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
+      </div>
+      <p class="missing-input-warning edit-save-warning d-none" role="alert">Unable to save. Try again.</p>
+      <div class="action-buttons-block">
+        <button class="action-button cancel-button edit-cancel-button">Cancel</button>
+        <button class="action-button save-button edit-save-button">
+          <span class="loading-animation">
+            <i class="fa-solid fa-spinner-third fa-spin"></i>
+          </span>
+          <span class="button-text">Save</span>
+        </button>
+      </div>
+    </div>
+  </div>
+<% end %>
 <script type="text/javascript" charset="utf-8">
   jQuery(document).ready(function($) {
     var bsDefaults = { offset: false, overlay: true, width: '450px' },
@@ -238,31 +290,39 @@
         bsOverlay = $('.bs-canvas-overlay')
 
     const toHide = [], toReveal = []
+    const createPanel = $('#dr-rai--sidebar')
+    const editPanel = $('#dr-rai--edit-sidebar')
 
     // Opening the offcanvas
-    $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function() {
-      var canvas = $(this).data('target'),
+    $('[data-toggle="canvas"][aria-expanded="false"]').on('click', function(e) {
+      e.preventDefault()
+      var canvas = $(this).attr('data-target'),
           opts = $.extend({}, bsDefaults, $(canvas).data()),
           prop = $(canvas).hasClass('bs-canvas-right') ? 'margin-right' : 'margin-left'
+      const opener = $(e.currentTarget).hasClass('edit-action-plan')
+        ? $(this).closest('.action-card').find('[data-toggle="dropdown"]').get(0)
+        : e.currentTarget
 
       if (opts.width === '100%') {
         opts.offset = false
       }
 
+      $(canvas).data('opener', opener)
       $(canvas).css('width', opts.width)
       if (opts.offset && bsMain.length) {
         bsMain.css(prop, opts.width)
       }
 
+      $(canvas).attr('aria-hidden', 'false').removeAttr('inert')
       $(canvas + ' .bs-canvas-close').attr('aria-expanded', "true")
       $('[data-toggle="canvas"][data-target="' + canvas + '"]').attr('aria-expanded', "true")
       if (opts.overlay && bsOverlay.length)
         bsOverlay.addClass('show')
-      return false
     })
 
     // Closing the offcanvas
-    $('.bs-canvas-close, .bs-canvas-overlay').on('click', function() {
+    $('.bs-canvas-close, .bs-canvas-overlay').on('click', function(e) {
+      e.preventDefault()
       var canvas, aria
       if ($(this).hasClass('bs-canvas-close')) {
         canvas = $(this).closest('.bs-canvas')
@@ -281,18 +341,26 @@
         }
       }
       canvas.css('width', '')
+      canvas.attr('aria-hidden', 'true').attr('inert', '')
       aria.attr('aria-expanded', "false")
       if (bsOverlay.length) {
         bsOverlay.removeClass('show')
       }
-      return false
+      canvas.trigger('canvas-closed')
+    })
+
+    $('.bs-canvas').on('canvas-closed', function() {
+      const canvas = $(this)
+      const opener = canvas.data('opener')
+      canvas.removeData('opener')
+      if (opener) opener.focus()
     })
 
     // ===================
     // BEGIN DR. RAI LOGIC
     // ===================
 
-    $('.step-block').on('step-through', (e, target, indicator) => {
+    createPanel.find('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
       const goalInputBlock = $(e.currentTarget).find('.goal-input-block')
       if (goalInputBlock.length > 0 && goalInputBlock.find('input').val() === '') {
@@ -320,7 +388,7 @@
           $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
           $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
         }
-        $('.action-buttons-block .save-button').removeClass('invisible')
+        createPanel.find('.action-buttons-block .save-button').removeClass('invisible')
       } else {
         if (target.ui !== undefined) {
           $('#step-3').data('target-type', target.type)
@@ -348,7 +416,7 @@
       }
     })
 
-    $('.goal-input-block input').on('blur keyup', (e) => {
+    createPanel.find('.goal-input-block input').on('blur keyup', (e) => {
       $('.missing-input-warning').addClass('d-none')
     })
 
@@ -380,9 +448,9 @@
       $('#dr-rai--sidebar').data('target-value', targetValue)
     })
 
-    $('.action-buttons-block .save-button').on('click', (e) => {
-      $('.action-buttons-block .save-button').prop('disabled', true)
-      $(".save-button .button-text").text("Creating...");
+    createPanel.find('.action-buttons-block .save-button').on('click', (e) => {
+      createPanel.find('.action-buttons-block .save-button').prop('disabled', true)
+      createPanel.find(".save-button .button-text").text("Creating...");
       $.ajax({
         url: `/dr_rai/action_plans`,
         type: 'POST',
@@ -390,7 +458,7 @@
           'dr_rai_action_plan': {
             'indicator_id': $('#dr-rai--sidebar').data('indicator-id'),
             'period': $('#dr-rai--sidebar').data('period'),
-            'actions': $('.custom-actions-list').val(),
+            'actions': createPanel.find('.custom-actions-list').val(),
             'region_slug': $('#dr-rai--sidebar').data('region'),
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
@@ -404,14 +472,14 @@
           window.location.reload()
         },
         error: (xhr) => {
-          $('.action-buttons-block .save-button').prop('disabled', false)
-          $(".save-button .button-text").text("Create");
+          createPanel.find('.action-buttons-block .save-button').prop('disabled', false)
+          createPanel.find(".save-button .button-text").text("Create");
         }
       });
 
     })
 
-    $('.step-block .next-button, .advancer').on('click', (e) => {
+    createPanel.find('.step-block .next-button, .advancer').on('click', (e) => {
       $('#dr-rai--sidebar').data('indicator-id', $(e.currentTarget).data('indicator-id'))
       $('#dr-rai--sidebar').data('target-type', $(e.currentTarget).data('target-type'))
       $(e.currentTarget)
@@ -433,7 +501,7 @@
         ])
     })
 
-    $('.link-button.advancer').on('click', (e) => {
+    createPanel.find('.link-button.advancer').on('click', (e) => {
       $(e.currentTarget)
         .closest(".active")
         .siblings('.inactive')
@@ -442,7 +510,7 @@
         .text($(e.currentTarget).text())
     })
 
-    $('.cancel-button').on('click', (e) => {
+    createPanel.find('.cancel-button').on('click', (e) => {
       // Clear "state"
       $('#dr-rai--sidebar').removeData([
         'indicator-id',
@@ -455,14 +523,112 @@
       // Reset UI
       toHide.forEach((el) => el.addClass('d-none'))
       toReveal.forEach((el) => el.removeClass('d-none'))
-      $('.action-buttons-block .save-button').addClass('invisible')
-      $('.sidepanel input').val('')
+      createPanel.find('.action-buttons-block .save-button').addClass('invisible')
+      createPanel.find('input').val('')
       $('.active .activity-promise').addClass('d-none')
-      $('.sidepanel textarea').val('')
+      createPanel.find('textarea').val('')
 
       // Close the offcanvas
-      $('.bs-canvas-close').trigger('click')
+      createPanel.find('.bs-canvas-close').trigger('click')
 
+    })
+
+    const editFocusableSelector = [
+      'a[href]',
+      'button:not([disabled])',
+      'textarea:not([disabled])',
+      'input:not([disabled])',
+      'select:not([disabled])',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',')
+
+    const resetEditError = () => {
+      editPanel.find('.edit-save-warning').addClass('d-none')
+    }
+
+    const clearEditPanel = () => {
+      editPanel.removeData('action-plan-id')
+      editPanel.removeData('open')
+      editPanel.find('.edit-indicator-summary, .edit-target-summary').text('')
+      editPanel.find('.custom-actions-list').val('')
+      editPanel.find('.edit-save-button').prop('disabled', false)
+      editPanel.find('.edit-save-button .button-text').text('Save')
+      resetEditError()
+    }
+
+    $('.edit-action-plan').on('click', (e) => {
+      const editControl = $(e.currentTarget)
+      editPanel.data('open', true)
+      editPanel.data('action-plan-id', editControl.attr('data-action-plan-id'))
+      editPanel.find('.edit-indicator-summary').text(editControl.attr('data-indicator'))
+      editPanel.find('.edit-target-summary').text(editControl.attr('data-target-statement'))
+      editPanel.find('.custom-actions-list').val(editControl.attr('data-actions'))
+      resetEditError()
+      window.setTimeout(() => editPanel.find('.custom-actions-list').trigger('focus'), 0)
+    })
+
+    editPanel.find('.edit-cancel-button').on('click', () => {
+      editPanel.find('.bs-canvas-close').trigger('click')
+    })
+
+    editPanel.on('canvas-closed', clearEditPanel)
+
+    editPanel.on('keydown', (e) => {
+      if (!editPanel.data('open')) return
+
+      if (e.key === 'Escape') {
+        e.preventDefault()
+        editPanel.find('.bs-canvas-close').trigger('click')
+        return
+      }
+
+      if (e.key !== 'Tab') return
+
+      const focusableElements = editPanel.find(editFocusableSelector).filter(':visible')
+      const firstFocusable = focusableElements.first().get(0)
+      const lastFocusable = focusableElements.last().get(0)
+
+      if (!firstFocusable) {
+        e.preventDefault()
+        editPanel.trigger('focus')
+      } else if (e.shiftKey && document.activeElement === firstFocusable) {
+        e.preventDefault()
+        lastFocusable.focus()
+      } else if (!e.shiftKey && document.activeElement === lastFocusable) {
+        e.preventDefault()
+        firstFocusable.focus()
+      } else if (!editPanel.get(0).contains(document.activeElement)) {
+        e.preventDefault()
+        firstFocusable.focus()
+      }
+    })
+
+    editPanel.find('.edit-save-button').on('click', () => {
+      const saveButton = editPanel.find('.edit-save-button')
+      resetEditError()
+      saveButton.prop('disabled', true)
+      saveButton.find('.button-text').text('Saving...')
+
+      $.ajax({
+        url: `/dr_rai/action_plans/${editPanel.data('action-plan-id')}`,
+        type: 'PATCH',
+        data: {
+          'dr_rai_action_plan': {
+            'actions': editPanel.find('.custom-actions-list').val()
+          }
+        },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: () => {
+          window.location.reload()
+        },
+        error: () => {
+          saveButton.prop('disabled', false)
+          saveButton.find('.button-text').text('Save')
+          editPanel.find('.edit-save-warning').removeClass('d-none')
+        }
+      })
     })
 
     // show action delete overlay, takes several seconds to process

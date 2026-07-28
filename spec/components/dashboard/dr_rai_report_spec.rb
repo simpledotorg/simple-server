@@ -95,6 +95,157 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
     end
   end
 
+  describe "#action_plans_editable?" do
+    it "is true on the last day of the current quarter's first month" do
+      Timecop.freeze(Time.zone.parse("April 30 2024 15:12")) do
+        component = described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024))
+
+        expect(component.action_plans_editable?).to be(true)
+      end
+    end
+
+    it "is false on the first day of the current quarter's second month" do
+      Timecop.freeze(Time.zone.parse("May 1 2024 15:12")) do
+        component = described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024))
+
+        expect(component.action_plans_editable?).to be(false)
+      end
+    end
+
+    it "is false when another quarter is selected" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        component = described_class.new(periods, region, default_options.merge(selected_quarter: q1_2024))
+
+        expect(component.action_plans_editable?).to be(false)
+      end
+    end
+  end
+
+  describe "editing action plans" do
+    let(:indicator) { create(:indicator, :contact_overdue_patients) }
+    let(:action_plan) do
+      create(
+        :action_plan,
+        region: Region.find_by!(slug: region),
+        statement: "Call 20 overdue patients",
+        actions: "Call patients marked \"high-risk\" & follow up",
+        dr_rai_indicator: indicator,
+        dr_rai_target: create(:target, :percentage, period: q2_2024, indicator: indicator)
+      )
+    end
+
+    it "renders eligible action plans with safely escaped edit data" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        edit_control = page.find(".edit-action-plan")
+        expect(edit_control["data-action-plan-id"]).to eq(action_plan.id.to_s)
+        expect(edit_control["data-target"]).to eq("#dr-rai--edit-sidebar")
+        expect(edit_control["data-indicator"]).to eq("Contact overdue patients")
+        expect(edit_control["data-target-statement"]).to eq("Call 20 overdue patients")
+        expect(edit_control["data-actions"]).to eq("Call patients marked \"high-risk\" & follow up")
+        expect(edit_control["data-target-statement"]).not_to include("&quot;")
+        expect(edit_control["data-actions"]).not_to include("&amp;")
+      end
+    end
+
+    it "preserves strings that jQuery data attributes would coerce" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan.update!(statement: "null", actions: "{\"enabled\":true}")
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        edit_control = page.find(".edit-action-plan")
+        expect(edit_control["data-target-statement"]).to eq("null")
+        expect(edit_control["data-actions"]).to eq("{\"enabled\":true}")
+        expect(page.native.to_html).to include("editControl.attr('data-indicator')")
+        expect(page.native.to_html).to include("editControl.attr('data-target-statement')")
+        expect(page.native.to_html).to include("editControl.attr('data-actions')")
+      end
+    end
+
+    it "renders a dedicated edit side panel congruent with the creation panel" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        panel = page.find("#dr-rai--edit-sidebar.sidepanel.bs-canvas.bs-canvas-right.bs-canvas-anim")
+        expect(panel).to have_css(".header", text: "Edit action")
+        expect(panel).to have_css(".content > h1", text: "Apr-1 - Jun-30 (Q2 2024)")
+        expect(panel).to have_css(".step-block .edit-indicator-summary")
+        expect(panel).to have_css(".step-block .edit-target-summary")
+        expect(panel).to have_css("textarea.custom-actions-list")
+        expect(panel).to have_css(".action-buttons-block .cancel-button", text: "Cancel")
+        expect(panel).to have_css(".action-buttons-block .save-button .loading-animation")
+        expect(panel).to have_css(".action-buttons-block .save-button .button-text", text: "Save")
+      end
+    end
+
+    it "renders the edit panel as an accessible labelled modal with an error message" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        panel = page.find("#dr-rai--edit-sidebar")
+        expect(panel["role"]).to eq("dialog")
+        expect(panel["aria-modal"]).to eq("true")
+        expect(panel["aria-labelledby"]).to eq("dr-rai--edit-title")
+        expect(panel["aria-hidden"]).to eq("true")
+        expect(panel["inert"]).to eq("")
+        expect(panel).to have_css(".header > p#dr-rai--edit-title", text: "Edit action")
+        expect(panel).to have_css(".missing-input-warning.edit-save-warning.d-none", text: "Unable to save. Try again.")
+      end
+    end
+
+    it "removes and restores the edit panel accessibility guards when toggled" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        markup = page.native.to_html
+        expect(markup).to include("$(canvas).attr('aria-hidden', 'false').removeAttr('inert')")
+        expect(markup).to include("canvas.attr('aria-hidden', 'true').attr('inert', '')")
+      end
+    end
+
+    it "restores focus to the visible action-card toggle after editing and to the opener after creating" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        markup = page.native.to_html
+        expect(markup).to include("$(this).closest('.action-card').find('[data-toggle=\"dropdown\"]').get(0)")
+        expect(markup).to include(": e.currentTarget")
+        expect(markup).to include("$(canvas).data('opener', opener)")
+        expect(markup).to include("opener.focus()")
+      end
+    end
+
+    it "renders a fixed overlay for the offcanvas panels" do
+      Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        expect(page).to have_css(".bs-canvas-overlay.position-fixed.w-100.h-100", visible: :all)
+      end
+    end
+
+    it "hides edit controls after the current quarter's first month" do
+      Timecop.freeze(Time.zone.parse("May 1 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        expect(page).not_to have_css(".edit-action-plan")
+      end
+    end
+  end
+
   describe "stale periods" do
     it "does not allow adding new actions" do
       rai_options = default_options.merge(selected_quarter: q1_2024)
