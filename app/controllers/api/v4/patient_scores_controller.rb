@@ -5,17 +5,19 @@ class Api::V4::PatientScoresController < Api::V4::SyncController
 
   def current_facility_records
     @current_facility_records ||=
-      PatientScore
-        .for_sync
-        .where(patient: current_facility.prioritized_patients.select(:id))
-        .order(:updated_at, :id)
-        .limit(limit)
-        .offset((current_page - 1) * limit)
-        .to_a
+      time(__method__) do
+        PatientScore
+          .for_sync
+          .where(patient: current_facility.prioritized_patients.select(:id))
+          .order(:updated_at, :id)
+          .limit(limit)
+          .offset((current_page - 1) * limit)
+          .to_a
+      end
   end
 
   def other_facility_records
-    []
+    @other_facility_records ||= time(__method__) { [] }
   end
 
   private
