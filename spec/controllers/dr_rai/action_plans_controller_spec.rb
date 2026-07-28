@@ -70,6 +70,139 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
     end
   end
 
+  describe "PATCH /update" do
+    let(:dr_rai_action_plan) {
+      create(:action_plan,
+        region: facility_1.region,
+        dr_rai_indicator: indicator,
+        dr_rai_target: create(:target, :percentage, period: "Q2-2025", indicator: indicator),
+        statement: "Original statement",
+        actions: "Original actions")
+    }
+
+    around do |example|
+      Timecop.freeze(Time.zone.parse("April 30 2025 15:12")) { example.run }
+    end
+
+    context "authorization" do
+      it "allows an admin with report access to the action plan facility to update it" do
+        admin = create(:admin, :viewer_reports_only, :with_access, resource: facility_1)
+        sign_in admin.email_authentication
+
+        patch :update, params: {
+          id: dr_rai_action_plan.to_param,
+          dr_rai_action_plan: {actions: "Updated actions"}
+        }
+
+        expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+      end
+
+      it "does not allow an admin without report access to the action plan facility to update it" do
+        inaccessible_facility = create(:facility)
+        admin = create(:admin, :viewer_reports_only, :with_access, resource: inaccessible_facility)
+        sign_in admin.email_authentication
+
+        patch :update, params: {
+          id: dr_rai_action_plan.to_param,
+          dr_rai_action_plan: {actions: "Updated actions"}
+        }
+
+        expect(dr_rai_action_plan.reload.actions).to eq("Original actions")
+        expect(flash[:alert]).to eq("You are not authorized to perform this action.")
+      end
+    end
+
+    context "within the business edit window" do
+      it "allows updates on the last day of the current quarter's first month" do
+        patch :update, params: {
+          id: dr_rai_action_plan.to_param,
+          dr_rai_action_plan: {actions: "Updated actions"}
+        }
+
+        expect(response).to have_http_status(:no_content)
+        expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+      end
+
+      it "forbids updates after the current quarter's first month" do
+        Timecop.freeze(Time.zone.parse("May 1 2025 00:00")) do
+          patch :update, params: {
+            id: dr_rai_action_plan.to_param,
+            dr_rai_action_plan: {actions: "Updated actions"}
+          }
+        end
+
+        expect(response).to have_http_status(:forbidden)
+        expect(dr_rai_action_plan.reload.actions).to eq("Original actions")
+      end
+
+      it "forbids updates to an action plan targeting another quarter" do
+        dr_rai_action_plan.target.update!(period: "Q1-2025")
+
+        patch :update, params: {
+          id: dr_rai_action_plan.to_param,
+          dr_rai_action_plan: {actions: "Updated actions"}
+        }
+
+        expect(response).to have_http_status(:forbidden)
+        expect(dr_rai_action_plan.reload.actions).to eq("Original actions")
+      end
+    end
+
+    it "updates the action plan actions" do
+      patch :update, params: {
+        id: dr_rai_action_plan.to_param,
+        dr_rai_action_plan: {actions: "Updated actions"}
+      }
+
+      expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+    end
+
+    it "does not update the indicator, target, or statement" do
+      original_indicator = dr_rai_action_plan.dr_rai_indicator
+      original_target = dr_rai_action_plan.dr_rai_target
+      other_indicator = create(:indicator, type: "DrRai::TitrationIndicator")
+      other_target = create(:target, :percentage, indicator: other_indicator)
+
+      patch :update, params: {
+        id: dr_rai_action_plan.to_param,
+        dr_rai_action_plan: {
+          actions: "Updated actions",
+          dr_rai_indicator_id: other_indicator.id,
+          dr_rai_target_id: other_target.id,
+          statement: "Updated statement"
+        }
+      }
+
+      dr_rai_action_plan.reload
+      expect(dr_rai_action_plan.dr_rai_indicator_id).to eq(original_indicator.id)
+      expect(dr_rai_action_plan.dr_rai_target_id).to eq(original_target.id)
+      expect(dr_rai_action_plan.statement).to eq("Original statement")
+    end
+
+    it "returns no content so the AJAX client can reload the report" do
+      patch :update, params: {
+        id: dr_rai_action_plan.to_param,
+        dr_rai_action_plan: {actions: "Updated actions"}
+      }
+
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it "returns JSON errors when the update fails validation" do
+      dr_rai_action_plan.errors.add(:actions, "is invalid")
+      allow(DrRai::ActionPlan).to receive(:find).and_return(dr_rai_action_plan)
+      allow(dr_rai_action_plan).to receive(:update).and_return(false)
+
+      patch :update, params: {
+        id: dr_rai_action_plan.to_param,
+        dr_rai_action_plan: {actions: "Invalid actions"}
+      }, format: :json
+
+      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response.parsed_body).to eq("actions" => ["is invalid"])
+    end
+  end
+
   describe "DELETE /destroy" do
     it "destroys the requested dr_rai_action_plan" do
       dr_rai_action_plan = create :action_plan, region: region, dr_rai_indicator: contact_overdue_patients_indicator
