@@ -6,6 +6,10 @@ RSpec.describe DrRai::ActionPlansController, type: :routing do
       expect(post: "/dr_rai/action_plans").to route_to("dr_rai/action_plans#create")
     end
 
+    it "routes to #update" do
+      expect(patch: "/dr_rai/action_plans/1").to route_to("dr_rai/action_plans#update", id: "1")
+    end
+
     it "routes to #destroy" do
       expect(delete: "/dr_rai/action_plans/1").to route_to("dr_rai/action_plans#destroy", id: "1")
     end
