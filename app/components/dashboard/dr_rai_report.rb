@@ -57,7 +57,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
   end
 
   def action_plans_editable?
-    current_period? && Date.current.month == selected_period.begin.month
+    Flipper.enabled?(:dr_rai_manual_edit) ||
+      current_period? && Date.current.month == selected_period.begin.month
   end
 
   def a_month_to_next_period?
