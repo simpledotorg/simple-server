@@ -83,6 +83,34 @@ describe Mergeable do
     Patient.merge(updated_patient.attributes)
   end
 
+  it "merges an existing record when create races with a concurrent insert" do
+    facility = create(:facility)
+    patient = create(:patient, registration_facility: facility)
+    encountered_on = Date.new(2019, 1, 1)
+    encounter_id = Encounter.generate_id(facility.id, patient.id, encountered_on)
+    existing_encounter = create(:encounter,
+      id: encounter_id,
+      facility: facility,
+      patient: patient,
+      encountered_on: encountered_on)
+    newer_attributes = existing_encounter.attributes.merge(
+      "device_updated_at" => existing_encounter.device_updated_at + 1.hour
+    )
+
+    allow(Encounter).to receive(:create).and_raise(
+      ActiveRecord::RecordNotUnique.new(
+        'duplicate key value violates unique constraint "encounters_pkey"'
+      )
+    )
+
+    result = Encounter.merge(newer_attributes)
+
+    expect(result.id).to eq(encounter_id)
+    expect(result.merge_status).to eq(:updated)
+    expect(Encounter.count).to eq(1)
+    expect(existing_encounter.reload.device_updated_at).to eq(newer_attributes["device_updated_at"])
+  end
+
   it "works for all models" do
     new_address = FactoryBot.build(:address)
     Address.merge(new_address.attributes)
