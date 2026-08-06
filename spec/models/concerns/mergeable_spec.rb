@@ -108,7 +108,8 @@ describe Mergeable do
     expect(result.id).to eq(encounter_id)
     expect(result.merge_status).to eq(:updated)
     expect(Encounter.count).to eq(1)
-    expect(existing_encounter.reload.device_updated_at).to eq(newer_attributes["device_updated_at"])
+    expect(existing_encounter.reload.device_updated_at.to_i)
+      .to eq(newer_attributes["device_updated_at"].to_i)
   end
 
   it "works for all models" do
