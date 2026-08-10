@@ -75,11 +75,34 @@ module Mergeable
 
     def create_new_record(attributes)
       logger.debug "#{self} with id #{attributes["id"]} is new, creating."
-      increment_metric(:new)
 
       record = create(attributes)
+      increment_metric(:new)
       record.merge_status = :new
       record
+    rescue ActiveRecord::RecordNotUnique
+      existing_record = with_discarded.find_by(id: attributes["id"])
+      raise unless existing_record
+
+      logger.debug "#{self} with id #{attributes["id"]} was created concurrently, merging instead."
+      merge_concurrent_record(existing_record, attributes)
+    end
+
+    def merge_concurrent_record(existing_record, attributes)
+      new_record = new(attributes)
+
+      case merge_status(new_record, existing_record)
+      when :discarded
+        discarded_record(existing_record)
+      when :updated
+        update_existing_record(existing_record, attributes)
+      when :identical
+        return_identical_record(existing_record)
+      when :old
+        return_old_record(existing_record)
+      else
+        raise ActiveRecord::RecordNotUnique
+      end
     end
 
     def update_existing_record(existing_record, attributes)
