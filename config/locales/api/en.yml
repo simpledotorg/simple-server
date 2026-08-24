@@ -479,6 +479,7 @@ en:
     total_women_screened_via_screening_result: "Total women screened for cervical Ca VIA screening result"
     total_women_treated_cervical: "Total women treated for Cervical Cancer"
     total_women_followup_cervical: "Total women followed up after 1 year"
+    htn_screening_denominator: "Hypertension screening denominator"
     # India
     monthly_opd_visits_gt_30: "Monthly OPD visits for adults >30 years old"
     monthly_opd_visits_gt_18: "Monthly OPD visits for adults >18 years old"
