@@ -123,8 +123,20 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
         expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
       end
 
-      it "forbids updates after the current quarter's first month" do
+      it "allows updates during the current quarter's second month" do
         Timecop.freeze(Time.zone.parse("May 1 2025 00:00")) do
+          patch :update, params: {
+            id: dr_rai_action_plan.to_param,
+            dr_rai_action_plan: {actions: "Updated actions"}
+          }
+        end
+
+        expect(response).to have_http_status(:no_content)
+        expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+      end
+
+      it "forbids updates during the current quarter's last month" do
+        Timecop.freeze(Time.zone.parse("June 1 2025 00:00")) do
           patch :update, params: {
             id: dr_rai_action_plan.to_param,
             dr_rai_action_plan: {actions: "Updated actions"}
@@ -145,6 +157,39 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
 
         expect(response).to have_http_status(:forbidden)
         expect(dr_rai_action_plan.reload.actions).to eq("Original actions")
+      end
+    end
+
+    context "with the dr_rai_manual_edit override enabled" do
+      it "allows updates outside the business edit window" do
+        Flipper.enable(:dr_rai_manual_edit)
+
+        Timecop.freeze(Time.zone.parse("June 15 2025 00:00")) do
+          patch :update, params: {
+            id: dr_rai_action_plan.to_param,
+            dr_rai_action_plan: {actions: "Updated actions"}
+          }
+        end
+
+        expect(response).to have_http_status(:no_content)
+        expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+      ensure
+        Flipper.disable(:dr_rai_manual_edit)
+      end
+
+      it "allows updates to an action plan targeting another quarter" do
+        Flipper.enable(:dr_rai_manual_edit)
+        dr_rai_action_plan.target.update!(period: "Q1-2025")
+
+        patch :update, params: {
+          id: dr_rai_action_plan.to_param,
+          dr_rai_action_plan: {actions: "Updated actions"}
+        }
+
+        expect(response).to have_http_status(:no_content)
+        expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
+      ensure
+        Flipper.disable(:dr_rai_manual_edit)
       end
     end
 
