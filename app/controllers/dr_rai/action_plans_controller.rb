@@ -57,10 +57,12 @@ class DrRai::ActionPlansController < AdminController
   # the component — but I have to guard against AI-generated code in the
   # future.
   def enforce_action_plan_edit_window
+    return if Flipper.enabled?(:dr_rai_manual_edit)
+
     target_period = Period.new(type: :quarter, value: @dr_rai_action_plan.target.period)
     current_period = Period.current.to_quarter_period
 
-    unless target_period == current_period && Date.current.month == current_period.begin.month
+    unless target_period == current_period && Date.current.month != current_period.end.month
       head :forbidden
     end
   end
