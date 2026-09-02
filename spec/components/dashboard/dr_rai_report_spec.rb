@@ -104,8 +104,16 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       end
     end
 
-    it "is false on the first day of the current quarter's second month" do
+    it "is true on the first day of the current quarter's second month" do
       Timecop.freeze(Time.zone.parse("May 1 2024 15:12")) do
+        component = described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024))
+
+        expect(component.action_plans_editable?).to be(true)
+      end
+    end
+
+    it "is false on the first day of the current quarter's last month" do
+      Timecop.freeze(Time.zone.parse("June 1 2024 15:12")) do
         component = described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024))
 
         expect(component.action_plans_editable?).to be(false)
@@ -235,8 +243,18 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       end
     end
 
-    it "hides edit controls after the current quarter's first month" do
+    it "shows edit controls during the current quarter's second month" do
       Timecop.freeze(Time.zone.parse("May 1 2024 15:12")) do
+        action_plan
+
+        render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+        expect(page).to have_css(".edit-action-plan")
+      end
+    end
+
+    it "hides edit controls during the current quarter's last month" do
+      Timecop.freeze(Time.zone.parse("June 1 2024 15:12")) do
         action_plan
 
         render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
