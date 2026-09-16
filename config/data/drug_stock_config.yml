@@ -600,3 +600,41 @@ Chattogram:
     other:
       new_patient_coefficient: 0.55
       '2167572': 1
+Khulna:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_arb:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.35
+      '316047': 1
+      '316049': 2
+      '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
+Rangpur:
+  load_coefficient: 1
+  drug_categories:
+    hypertension_ccb:
+      new_patient_coefficient: 0.88
+      '329528': 1
+      '329526': 2
+    hypertension_arb:
+      new_patient_coefficient: 0.72
+      '979467': 1
+      '979463': 2
+    hypertension_diuretic:
+      new_patient_coefficient: 0.35
+      '316047': 1
+      '316049': 2
+      '316051': 4
+    other:
+      new_patient_coefficient: 0.55
+      '2167572': 1
