@@ -87,14 +87,6 @@ module Dhis2
       {"default" => registered_patients.count}
     end
 
-    # DHIS2 library we use works for old versions of DHIS2. Since Ethiopia is on much advanced version, this is a hack to prevent
-    # false errors being raised from the client.
-    def export(data_values)
-      @client.data_value_sets.bulk_create(data_values: data_values)
-    rescue Dhis2::BulkCreationError => error
-      response = JSON.parse(error.import_summary.to_json)["hash"]
-      raise error if response["http_status_code"] != 200
-      Rails.logger.info("Exported to Dhis2 with response: ", response)
-    end
+    # No need for the export override anymore - the new HTTP client handles modern DHIS2 API responses correctly
   end
 end
