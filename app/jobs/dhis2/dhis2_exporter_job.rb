@@ -1,5 +1,3 @@
-require "dhis2"
-
 module Dhis2
   class Dhis2ExporterJob
     include Sidekiq::Job
@@ -9,13 +7,11 @@ module Dhis2
     def initialize
       throw "DHIS2 export not enabled in Flipper" unless Flipper.enabled?(:dhis2_export)
 
-      configuration = Dhis2::Configuration.new.tap do |config|
-        config.url = ENV.fetch("DHIS2_URL")
-        config.user = ENV.fetch("DHIS2_USERNAME")
-        config.password = ENV.fetch("DHIS2_PASSWORD")
-        config.version = ENV.fetch("DHIS2_VERSION")
-      end
-      @client = Dhis2::Client.new(configuration.client_params)
+      @client = Dhis2HttpClient.new(
+        url: ENV.fetch("DHIS2_URL"),
+        username: ENV.fetch("DHIS2_USERNAME"),
+        password: ENV.fetch("DHIS2_PASSWORD")
+      )
     end
 
     def perform(facility_identifier_id, total_months)
@@ -39,8 +35,11 @@ module Dhis2
     end
 
     def export(data_values)
-      response = @client.data_value_sets.bulk_create(data_values: data_values)
-      Rails.logger.info("Exported to Dhis2 with response: ", response)
+      response = @client.bulk_create_data_values(data_values: data_values)
+      Rails.logger.info("DHIS2 export successful: imported=#{response[:imported]}, updated=#{response[:updated]}, ignored=#{response[:ignored]}")
+    rescue Dhis2HttpClient::Error => e
+      Rails.logger.error("DHIS2 export failed: #{e.message}")
+      raise # Re-raise to let Sidekiq retry with proper backoff
     end
 
     def disaggregate_by_gender_age(patient_states, buckets)
