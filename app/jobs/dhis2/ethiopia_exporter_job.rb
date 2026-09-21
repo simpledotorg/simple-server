@@ -86,7 +86,5 @@ module Dhis2
     def format_cohort_registered_data(registered_patients)
       {"default" => registered_patients.count}
     end
-
-    # No need for the export override anymore - the new HTTP client handles modern DHIS2 API responses correctly
   end
 end
