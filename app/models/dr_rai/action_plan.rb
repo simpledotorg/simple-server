@@ -39,6 +39,16 @@ class DrRai::ActionPlan < ApplicationRecord
     indicator.action_passive
   end
 
+  def goal_percentage
+    return nil unless percentage_target?
+    target.percentage_value
+  end
+
+  def goal_statement
+    return nil if goal_percentage.nil?
+    "Goal: #{goal_percentage}% of #{unit} #{passive_action}"
+  end
+
   def current_ratio
     return nil unless custom_target?
     datasource = indicator.datasource(region)
@@ -74,6 +84,10 @@ class DrRai::ActionPlan < ApplicationRecord
 
   def custom_target?
     target.type == "DrRai::CustomTarget"
+  end
+
+  def percentage_target?
+    target.type == "DrRai::PercentageTarget"
   end
 
   private

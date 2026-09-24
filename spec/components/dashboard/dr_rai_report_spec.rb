@@ -264,6 +264,37 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
     end
   end
 
+  describe "goal statement" do
+    let(:indicator) { create(:indicator, :contact_overdue_patients) }
+
+    def create_action_plan_with(target)
+      create(
+        :action_plan,
+        region: Region.find_by!(slug: region),
+        statement: "Call 20 overdue patients",
+        dr_rai_indicator: indicator,
+        dr_rai_target: target
+      )
+    end
+
+    it "shows the goal percentage set with the action plan" do
+      create_action_plan_with(create(:target, :percentage, period: q2_2024, indicator: indicator, percentage_value: 35))
+
+      render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+      expect(page).to have_css(".action-card .goal-statement", text: "Goal: 35% of overdue patients called")
+    end
+
+    it "is hidden when no goal percentage was set" do
+      create_action_plan_with(create(:target, :percentage, period: q2_2024, indicator: indicator, percentage_value: nil))
+
+      render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+
+      expect(page).to have_css(".action-card")
+      expect(page).not_to have_css(".action-card .goal-statement")
+    end
+  end
+
   describe "stale periods" do
     it "does not allow adding new actions" do
       rai_options = default_options.merge(selected_quarter: q1_2024)

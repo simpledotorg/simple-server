@@ -18,6 +18,43 @@ RSpec.describe DrRai::ActionPlan, type: :model do
     end
   end
 
+  describe "#goal_statement" do
+    let(:indicator) { DrRai::ContactOverduePatientsIndicator.create }
+    let(:district_with_facilities) { setup_district_with_facilities }
+    let(:region) { district_with_facilities[:region] }
+
+    def action_plan_for(target)
+      DrRai::ActionPlan.new(dr_rai_target: target,
+        dr_rai_indicator: indicator,
+        region: region,
+        statement: "TODO")
+    end
+
+    context "for percentage targets with a goal" do
+      let(:target) { DrRai::PercentageTarget.create(numeric_value: 20, percentage_value: 35, period: "Q1-2025") }
+
+      it "describes the goal using the indicator's unit and passive action" do
+        expect(action_plan_for(target).goal_statement).to eq "Goal: 35% of overdue patients called"
+      end
+    end
+
+    context "for percentage targets without a goal" do
+      let(:target) { DrRai::PercentageTarget.create(numeric_value: 20, period: "Q1-2025") }
+
+      it "should be nil" do
+        expect(action_plan_for(target).goal_statement).to be_nil
+      end
+    end
+
+    context "for non-percentage targets" do
+      let(:target) { DrRai::NumericTarget.create(numeric_value: 20, period: "Q1-2025") }
+
+      it "should be nil" do
+        expect(action_plan_for(target).goal_statement).to be_nil
+      end
+    end
+  end
+
   describe "#progress" do
     let(:indicator) { DrRai::ContactOverduePatientsIndicator.create }
     let(:target) { DrRai::NumericTarget.create(numeric_value: 20, period: "Q1-2025") }

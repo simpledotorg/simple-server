@@ -21,7 +21,8 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
       region_slug: region.slug,
       statement: "Must be completed before tomorrow",
       target_type: "DrRai::PercentageTarget",
-      target_value: 12
+      target_value: 12,
+      percentage_value: 35
     }
   }
 
@@ -58,6 +59,16 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
       it "redirects to the facility" do
         post :create, params: {dr_rai_action_plan: valid_attributes}
         expect(response).to redirect_to(reports_region_path(report_scope: "facility", id: valid_attributes[:region_slug]))
+      end
+
+      it "stores the goal percentage on the target" do
+        post :create, params: {dr_rai_action_plan: valid_attributes}
+        expect(DrRai::ActionPlan.last.target.percentage_value).to eq 35
+      end
+
+      it "leaves the goal percentage blank when it is not sent" do
+        post :create, params: {dr_rai_action_plan: valid_attributes.except(:percentage_value)}
+        expect(DrRai::ActionPlan.last.target.percentage_value).to be_nil
       end
     end
 
