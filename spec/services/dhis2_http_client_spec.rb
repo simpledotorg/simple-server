@@ -59,9 +59,9 @@ RSpec.describe Dhis2HttpClient, type: :model do
               "Content-Type" => "application/json",
               "Accept" => "application/json"
             },
-            body: hash_including(dataValues: array_including(
-              hash_including(dataElement: "DE123", orgUnit: "ORG456", period: "202401", value: 42),
-              hash_including(dataElement: "DE124", orgUnit: "ORG456", period: "202401", value: 10)
+            body: hash_including("dataValues" => array_including(
+              hash_including("dataElement" => "DE123", "orgUnit" => "ORG456", "period" => "202401", "value" => 42),
+              hash_including("dataElement" => "DE124", "orgUnit" => "ORG456", "period" => "202401", "value" => 10)
             ))
           )
           .to_return(status: 200, body: success_response)
@@ -79,12 +79,12 @@ RSpec.describe Dhis2HttpClient, type: :model do
       it "transforms snake_case keys to camelCase" do
         stub_request(:post, request_url)
           .with(
-            body: hash_including(dataValues: array_including(
+            body: hash_including("dataValues" => array_including(
               hash_including(
-                dataElement: "DE123",
-                orgUnit: "ORG456",
-                period: "202401",
-                value: 42
+                "dataElement" => "DE123",
+                "orgUnit" => "ORG456",
+                "period" => "202401",
+                "value" => 42
               )
             ))
           )
@@ -143,14 +143,14 @@ RSpec.describe Dhis2HttpClient, type: :model do
       it "transforms all keys to camelCase including category options" do
         stub_request(:post, request_url)
           .with(
-            body: hash_including(dataValues: array_including(
+            body: hash_including("dataValues" => array_including(
               hash_including(
-                dataElement: "DE123",
-                orgUnit: "ORG456",
-                categoryOptionCombo: "CAT789",
-                attributeOptionCombo: "ATTR012",
-                period: "202401",
-                value: 42
+                "dataElement" => "DE123",
+                "orgUnit" => "ORG456",
+                "categoryOptionCombo" => "CAT789",
+                "attributeOptionCombo" => "ATTR012",
+                "period" => "202401",
+                "value" => 42
               )
             ))
           )
