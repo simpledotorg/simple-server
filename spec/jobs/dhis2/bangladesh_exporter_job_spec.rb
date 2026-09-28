@@ -1,5 +1,4 @@
 require "rails_helper"
-require "dhis2"
 
 describe Dhis2::BangladeshExporterJob do
   describe "#perform" do
@@ -49,13 +48,13 @@ describe Dhis2::BangladeshExporterJob do
       expect_any_instance_of(PatientStates::Hypertension::CumulativeRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_registrations)
       expect_any_instance_of(PatientStates::Hypertension::MonthlyRegistrationsQuery).to receive_message_chain(:call, :count).and_return(:htn_monthly_registrations)
       expect_any_instance_of(PatientStates::Hypertension::AdjustedAssignedPatientsQuery).to receive_message_chain(:call, :count).and_return(:htn_cumulative_assigned_adjusted)
-      client = double
-      data_value_sets = double
-      configuration = {}
-      allow_any_instance_of(Dhis2::Configuration).to receive(:client_params).and_return(configuration)
-      allow(Dhis2::Client).to receive(:new).with(configuration).and_return(client)
-      allow(client).to receive(:data_value_sets).and_return(data_value_sets)
-      expect(data_value_sets).to receive(:bulk_create).with(data_values: export_data.flatten)
+
+      # Mock the new HTTP client
+      http_client = instance_double(Dhis2HttpClient)
+      allow(Dhis2HttpClient).to receive(:new).and_return(http_client)
+      expect(http_client).to receive(:bulk_create_data_values).with(data_values: export_data.flatten).and_return(
+        {status: "SUCCESS", imported: export_data.flatten.count, updated: 0, ignored: 0, deleted: 0, conflicts: []}
+      )
 
       Sidekiq::Testing.inline! do
         described_class.perform_async(facility_identifier.id, total_months)
