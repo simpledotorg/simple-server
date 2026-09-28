@@ -43,10 +43,18 @@ RSpec.feature "Owner Login as Admin", type: :feature do
       login_page.click_successful_message_cross_button
     end
   end
-  it "login with Invalid data" do
-    visit root_path
-    login_page.do_login(owner.email, "")
-    login_page.is_errormessage_present
-    login_page.click_errormessage_cross_button
+
+  context "login with Invalid data" do
+    before(:each) do
+      # Ensure owner exists before attempting login
+      owner
+    end
+
+    it "login with Invalid data" do
+      visit root_path
+      login_page.do_login(owner.email, "")
+      login_page.is_errormessage_present
+      login_page.click_errormessage_cross_button
+    end
   end
 end
