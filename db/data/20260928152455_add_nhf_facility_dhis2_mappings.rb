@@ -248,7 +248,7 @@ class AddNhfFacilityDhis2Mappings < ActiveRecord::Migration[6.1]
     "d30c8a20-e8a4-4f4a-b62b-a30a99abacbe" => "vG5ltYk3PAw",
     "9205872d-251e-45f6-aaac-5f275e6863e2" => "ZjfwEkmALbN",
     "345a48e3-a22c-4f6c-ac0b-b05c6fc3083e" => "a8d9tGDshnS",
-    "60cd0460-2c2e-4c63-9608-e4d3149b039c" => "NaDA26xzdi4",
+    "60cd0460-2c2e-4c63-9608-e4d3149b039c" => "NaDA26xzdi4"
   }
 
   def up
