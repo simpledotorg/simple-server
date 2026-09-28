@@ -3,7 +3,9 @@ require "json"
 
 class Dhis2HttpClient
   class Error < StandardError; end
+
   class RequestError < Error; end
+
   class ResponseError < Error; end
 
   attr_reader :base_url, :username, :password
@@ -44,7 +46,7 @@ class Dhis2HttpClient
     # Transform snake_case keys to camelCase as expected by DHIS2 API
     formatted_data_values = data_values.map { |dv| transform_keys_to_camel_case(dv) }
 
-    request.body = { dataValues: formatted_data_values }.to_json
+    request.body = {dataValues: formatted_data_values}.to_json
     request
   end
 
@@ -63,7 +65,7 @@ class Dhis2HttpClient
       response
     rescue Net::OpenTimeout, Net::ReadTimeout => e
       raise RequestError, "Request timeout: #{e.message}"
-    rescue StandardError => e
+    rescue => e
       raise RequestError, "HTTP request failed: #{e.message}"
     end
   end
