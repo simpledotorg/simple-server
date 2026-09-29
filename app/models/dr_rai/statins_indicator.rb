@@ -1,15 +1,7 @@
 module DrRai
   class StatinsIndicator < Indicator
-    attr_reader :region
-
     def datasource(region)
-      @region = region
-      @query ||= DrRai::Data::Statin.chartable
-      if @query.key? region.name
-        @query[region.name]
-      else
-        @query[region.slug]
-      end
+      quarterlies(region)
     end
 
     def display_name
@@ -21,11 +13,11 @@ module DrRai
     end
 
     def numerator_key all: nil
-      :patients_prescribed_statins
+      "adjusted_dm_patients_40_and_above_with_statins"
     end
 
     def denominator_key all: nil
-      :eligible_patients
+      "adjusted_dm_patients_40_and_above_under_care"
     end
 
     def unit
@@ -40,12 +32,8 @@ module DrRai
       "Prescribe statins for"
     end
 
-    def percentage
-      raise "Unimplemented"
-    end
-
     def is_supported?(region)
-      @is_supported ||= (datasource(region).present? && true)
+      datasource(region).present?
     end
   end
 end
