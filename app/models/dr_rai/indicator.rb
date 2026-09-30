@@ -17,9 +17,13 @@ class DrRai::Indicator < ApplicationRecord
   # There should only ever be one instance of any indicator in the db
   validates :type, uniqueness: true
 
+  def quarterly_aggregation
+    :sum
+  end
+
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
-    Reports::RegionSummaryAggregator.new(data).quarterly(with: :sum)[region.slug]
+    Reports::RegionSummaryAggregator.new(data).quarterly(with: quarterly_aggregation)[region.slug]
   end
 
   def has_action_plans?(region, period)

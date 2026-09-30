@@ -27,6 +27,12 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
     end
   end
 
+  describe "#quarterly_aggregation" do
+    it "sums the months in a quarter" do
+      expect(DrRai::ContactOverduePatientsIndicator.new.quarterly_aggregation).to eq :sum
+    end
+  end
+
   describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }

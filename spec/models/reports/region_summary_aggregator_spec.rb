@@ -51,6 +51,25 @@ RSpec.describe Reports::RegionSummaryAggregator do
           .flatten
         expect(values).to match_array([3, 6, 9, 12])
       end
+
+      it "uses the last month of each quarter when the range does not start on a quarter boundary" do
+        # Mar to Sep 2021, i.e. | M | A | M | J | J | A | S |
+        #                       | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+        partial = {"test_region" => data["test_region"].select { |period, _| period.value.month.between?(3, 9) }}
+        aggregate = described_class.new(partial).quarterly(with: :eoq)["test_region"]
+        expect(aggregate.transform_values { |stats| stats["test_attribute"] }).to eq(
+          Period.quarter(Date.parse("2021-01-01")) => 3,
+          Period.quarter(Date.parse("2021-04-01")) => 6,
+          Period.quarter(Date.parse("2021-07-01")) => 9
+        )
+      end
+
+      it "uses the latest available month for an incomplete quarter" do
+        # Oct and Nov 2021 only
+        partial = {"test_region" => data["test_region"].select { |period, _| period.value.month.between?(10, 11) }}
+        aggregate = described_class.new(partial).quarterly(with: :eoq)["test_region"]
+        expect(aggregate[Period.quarter(Date.parse("2021-10-01"))]["test_attribute"]).to eq 11
+      end
     end
 
     context ":rollup" do
