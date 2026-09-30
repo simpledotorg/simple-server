@@ -44,6 +44,9 @@
           <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
+            <% if action_plan.goal_statement.present? %>
+              <p class="goal-statement"><%= action_plan.goal_statement %></p>
+            <% end %>
             <% if !action_plan.actions.nil? %>
               <ul>
                 <% action_plan.actions.lines.each do |line| %>
@@ -446,6 +449,7 @@
         .text(targetValue)
       activityPromise.removeClass('d-none')
       $('#dr-rai--sidebar').data('target-value', targetValue)
+      $('#dr-rai--sidebar').data('percentage-value', inputValue)
     })
 
     createPanel.find('.action-buttons-block .save-button').on('click', (e) => {
@@ -463,6 +467,7 @@
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
             'target_value': $('#dr-rai--sidebar').data('target-value'),
+            'percentage_value': $('#dr-rai--sidebar').data('percentage-value'),
           }
         },
         headers: {
@@ -518,6 +523,7 @@
         'region_slug',
         'statement',
         'actions',
+        'percentage-value',
       ])
 
       // Reset UI

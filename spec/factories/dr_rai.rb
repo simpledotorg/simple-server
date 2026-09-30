@@ -13,6 +13,7 @@ FactoryBot.define do
       type { "DrRai::PercentageTarget" }
       numeric_value { 20 }
       numeric_units { "Percent" }
+      percentage_value { 35 }
     end
 
     trait :boolean do

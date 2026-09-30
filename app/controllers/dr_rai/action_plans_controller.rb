@@ -77,6 +77,7 @@ class DrRai::ActionPlansController < AdminController
     params.require(:dr_rai_action_plan).permit(
       :actions,
       :indicator_id,
+      :percentage_value,
       :period,
       :region_slug,
       :statement,
@@ -104,6 +105,9 @@ class DrRai::ActionPlansController < AdminController
     }
     if dr_rai_action_plan_params[:target_value].present?
       target_attributes[:numeric_value] = dr_rai_action_plan_params[:target_value]
+    end
+    if dr_rai_action_plan_params[:percentage_value].present?
+      target_attributes[:percentage_value] = dr_rai_action_plan_params[:percentage_value]
     end
     @target = DrRai::Target.create!(target_attributes)
   end
