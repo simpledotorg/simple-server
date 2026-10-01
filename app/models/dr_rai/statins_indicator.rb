@@ -4,6 +4,14 @@ module DrRai
       quarterlies(region)
     end
 
+    def quarterly_aggregation
+      :eoq
+    end
+
+    def goal_relative_to_previous?
+      true
+    end
+
     def display_name
       "Statins"
     end
