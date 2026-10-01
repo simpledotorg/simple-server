@@ -2376,6 +2376,41 @@ CREATE TABLE public.deduplication_logs (
 
 
 --
+-- Name: dr_rai_action_items; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.dr_rai_action_items (
+    id bigint NOT NULL,
+    action_plan_id bigint NOT NULL,
+    body text NOT NULL,
+    "position" integer DEFAULT 0 NOT NULL,
+    completed_at timestamp without time zone,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: dr_rai_action_items_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.dr_rai_action_items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: dr_rai_action_items_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.dr_rai_action_items_id_seq OWNED BY public.dr_rai_action_items.id;
+
+
+--
 -- Name: dr_rai_action_plans; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -6720,6 +6755,13 @@ ALTER TABLE ONLY public.cphc_migration_error_logs ALTER COLUMN id SET DEFAULT ne
 
 
 --
+-- Name: dr_rai_action_items id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_items ALTER COLUMN id SET DEFAULT nextval('public.dr_rai_action_items_id_seq'::regclass);
+
+
+--
 -- Name: dr_rai_action_plans id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -6975,6 +7017,14 @@ ALTER TABLE ONLY public.data_migrations
 
 ALTER TABLE ONLY public.deduplication_logs
     ADD CONSTRAINT deduplication_logs_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: dr_rai_action_items dr_rai_action_items_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_items
+    ADD CONSTRAINT dr_rai_action_items_pkey PRIMARY KEY (id);
 
 
 --
@@ -7753,6 +7803,13 @@ CREATE INDEX index_device_created_at_on_appts ON public.appointments USING btree
 --
 
 CREATE UNIQUE INDEX index_df_facility_region_id_visit_date ON public.reporting_facility_daily_follow_ups_and_registrations USING btree (facility_region_id, visit_date);
+
+
+--
+-- Name: index_dr_rai_action_items_on_action_plan_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_dr_rai_action_items_on_action_plan_id ON public.dr_rai_action_items USING btree (action_plan_id);
 
 
 --
@@ -9090,6 +9147,14 @@ ALTER TABLE ONLY public.observations
 
 ALTER TABLE ONLY public.patients
     ADD CONSTRAINT fk_rails_66733b5dc0 FOREIGN KEY (assigned_facility_id) REFERENCES public.facilities(id);
+
+
+--
+-- Name: dr_rai_action_items fk_rails_728a02bff0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.dr_rai_action_items
+    ADD CONSTRAINT fk_rails_728a02bff0 FOREIGN KEY (action_plan_id) REFERENCES public.dr_rai_action_plans(id);
 
 
 --

@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   namespace :dr_rai do
     resources :action_plans, only: [:create, :update, :destroy]
+    resources :action_items, only: [:update]
+    resources :action_item_checks, only: [:create]
   end
   resources :home
 

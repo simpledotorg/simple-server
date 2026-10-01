@@ -13,5 +13,13 @@ RSpec.describe DrRai::ActionPlansController, type: :routing do
     it "routes to #destroy" do
       expect(delete: "/dr_rai/action_plans/1").to route_to("dr_rai/action_plans#destroy", id: "1")
     end
+
+    it "routes action item updates" do
+      expect(patch: "/dr_rai/action_items/1").to route_to("dr_rai/action_items#update", id: "1")
+    end
+
+    it "routes action item checks" do
+      expect(post: "/dr_rai/action_item_checks").to route_to("dr_rai/action_item_checks#create")
+    end
   end
 end

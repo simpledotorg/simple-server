@@ -55,6 +55,22 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
         }.to change(DrRai::ActionPlan, :count).by(1)
       end
 
+      it "stores action items from the task list and skips blank rows" do
+        post :create, params: {
+          dr_rai_action_plan: valid_attributes.merge(
+            action_items_json: [
+              {body: "Email doctors"},
+              {body: "  "},
+              {body: "Book a room"}
+            ].to_json
+          )
+        }
+
+        action_plan = DrRai::ActionPlan.last
+        expect(action_plan.action_items.map(&:body)).to eq(["Email doctors", "Book a room"])
+        expect(action_plan.actions).to eq("Email doctors\nBook a room")
+      end
+
       it "redirects to the facility" do
         post :create, params: {dr_rai_action_plan: valid_attributes}
         expect(response).to redirect_to(reports_region_path(report_scope: "facility", id: valid_attributes[:region_slug]))
@@ -202,6 +218,26 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
       expect(dr_rai_action_plan.reload.actions).to eq("Updated actions")
     end
 
+    it "keeps completed_at when an existing task is edited" do
+      item = dr_rai_action_plan.action_items.first
+      item.update!(completed_at: Time.current)
+
+      patch :update, params: {
+        id: dr_rai_action_plan.to_param,
+        dr_rai_action_plan: {
+          action_items_json: [
+            {id: item.id, body: "Revised task"},
+            {body: "New task"}
+          ].to_json
+        }
+      }
+
+      expect(response).to have_http_status(:no_content)
+      expect(item.reload.body).to eq("Revised task")
+      expect(item.completed_at).to be_present
+      expect(dr_rai_action_plan.action_items.reload.map(&:body)).to eq(["Revised task", "New task"])
+    end
+
     it "does not update the indicator, target, or statement" do
       original_indicator = dr_rai_action_plan.dr_rai_indicator
       original_target = dr_rai_action_plan.dr_rai_target
@@ -236,11 +272,11 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
     it "returns JSON errors when the update fails validation" do
       dr_rai_action_plan.errors.add(:actions, "is invalid")
       allow(DrRai::ActionPlan).to receive(:find).and_return(dr_rai_action_plan)
-      allow(dr_rai_action_plan).to receive(:update).and_return(false)
+      allow(dr_rai_action_plan).to receive(:replace_action_items!).and_raise(ActiveRecord::RecordInvalid.new(dr_rai_action_plan))
 
       patch :update, params: {
         id: dr_rai_action_plan.to_param,
-        dr_rai_action_plan: {actions: "Invalid actions"}
+        dr_rai_action_plan: {action_items_json: [{body: "Invalid actions"}].to_json}
       }, format: :json
 
       expect(response).to have_http_status(:unprocessable_entity)

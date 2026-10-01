@@ -30,7 +30,7 @@
                       action_plan_id: action_plan.id,
                       indicator: action_plan.indicator.display_name,
                       target_statement: action_plan.statement,
-                      actions: action_plan.actions
+                      action_items: json_escape(action_plan.action_items.map { |item| {id: item.id, body: item.body} }.to_json)
                     },
                     aria: {
                       expanded: "false",
@@ -44,11 +44,18 @@
           <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
-            <% if !action_plan.actions.nil? %>
-              <ul>
-                <% action_plan.actions.lines.each do |line| %>
-                  <li>
-                    <p><%= line %></p>
+            <% if action_plan.action_items.any? %>
+              <ul class="action-tasks">
+                <% action_plan.action_items.each do |item| %>
+                  <li class="action-task<%= " completed" if item.completed? %>">
+                    <label>
+                      <%= tag.input type: "checkbox",
+                        class: "action-task-toggle",
+                        checked: item.completed?,
+                        disabled: !tasks_checkable?(action_plan),
+                        data: {url: dr_rai_action_item_path(item)} %>
+                      <span><%= item.body %></span>
+                    </label>
                   </li>
                 <% end %>
               </ul>
@@ -230,7 +237,22 @@
       </div>
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
-        <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
+        <p class="task-list-intro">Add tasks to be done to help reach the goal.</p>
+        <div class="task-list">
+          <div class="task-list-items">
+            <div class="task-row">
+              <input type="checkbox" class="task-row-check" tabindex="-1" disabled aria-hidden="true">
+              <div class="task-main">
+                <textarea class="task-body" rows="1" placeholder="Write a task..."></textarea>
+              </div>
+              <button type="button" class="task-remove" aria-label="Remove task">&times;</button>
+              <p class="task-feedback" hidden></p>
+            </div>
+          </div>
+          <button type="button" class="add-task-button">+ Add task</button>
+        </div>
+        <p class="task-list-tip">Tip: Create actionable tasks that workers can complete.<br>E.g. Buy new phone and data plan for overdue calling</p>
+        <p class="task-list-tip">Actions are revied by AI and can make mistakes</p>
       </div>
       <div class="action-buttons-block">
         <button class="action-button cancel-button">Cancel</button>
@@ -268,7 +290,12 @@
       </div>
       <div class="step-block">
         <h2>What action should be taken?</h2>
-        <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
+        <p class="task-list-intro">Add tasks to be done to help reach the goal.</p>
+        <div class="task-list">
+          <div class="task-list-items"></div>
+          <button type="button" class="add-task-button">+ Add task</button>
+        </div>
+        <p class="task-list-tip">Tip: Create actionable tasks that workers can complete.<br>E.g. Buy new phone and data plan for overdue calling</p>
       </div>
       <p class="missing-input-warning edit-save-warning d-none" role="alert">Unable to save. Try again.</p>
       <div class="action-buttons-block">
@@ -359,6 +386,117 @@
     // ===================
     // BEGIN DR. RAI LOGIC
     // ===================
+
+    const taskRow = (item) => {
+      const row = $('<div>', { class: 'task-row' })
+      if (item && item.id) row.attr('data-item-id', item.id)
+      const main = $('<div>', { class: 'task-main' }).append(
+        $('<textarea>', { class: 'task-body', rows: 1, placeholder: 'Write a task...' }).val(item && item.body ? item.body : '')
+      )
+      row.append(
+        $('<input>', { type: 'checkbox', class: 'task-row-check', tabindex: '-1', disabled: true, 'aria-hidden': 'true' }),
+        main,
+        $('<button>', { type: 'button', class: 'task-remove', 'aria-label': 'Remove task' }).html('&times;'),
+        $('<p>', { class: 'task-feedback', hidden: true })
+      )
+      return row
+    }
+
+    const fillTaskList = (panel, items) => {
+      const list = panel.find('.task-list-items')
+      list.empty()
+      const rows = (items && items.length) ? items : [{}]
+      rows.forEach((item) => list.append(taskRow(item)))
+    }
+
+    const collectTasks = (panel) => {
+      const items = []
+      panel.find('.task-row').each(function() {
+        const body = $(this).find('.task-body').val().trim()
+        if (!body) return
+        const item = { body: body }
+        const id = $(this).attr('data-item-id')
+        if (id) item.id = id
+        items.push(item)
+      })
+      return items
+    }
+
+    const scoreTaskRow = (row) => {
+      const body = row.find('.task-body').val().trim()
+      const feedback = row.find('.task-feedback')
+      if (!body) {
+        window.clearTimeout(row.data('idle-timer'))
+        row.removeData('scored-body scoring-body')
+        feedback.attr('hidden', true).text('').removeClass('is-warning is-error')
+        return
+      }
+      if (row.data('scored-body') === body || row.data('scoring-body') === body) return
+
+      row.data('scoring-body', body)
+      $.ajax({
+        url: '/dr_rai/action_item_checks',
+        type: 'POST',
+        data: { body: body },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: (response) => {
+          if (row.find('.task-body').val().trim() !== body) return
+          row.data('scored-body', body)
+          row.removeData('scoring-body')
+          const probability = Number(response.probability)
+          if (probability < 0.75) {
+            feedback.removeAttr('hidden').removeClass('is-error').addClass('is-warning').text('Consider making this task more actionable')
+          } else {
+            feedback.attr('hidden', true).text('').removeClass('is-warning is-error')
+          }
+        },
+        error: () => {
+          if (row.find('.task-body').val().trim() !== body) return
+          row.removeData('scoring-body')
+          feedback.removeAttr('hidden').removeClass('is-warning').addClass('is-error').text("Couldn't check this task")
+        }
+      })
+    }
+
+    const bindTaskList = (panel) => {
+      panel.on('click', '.add-task-button', () => {
+        panel.find('.task-row').each(function() {
+          scoreTaskRow($(this))
+        })
+        const row = taskRow({})
+        panel.find('.task-list-items').append(row)
+        row.find('.task-body').trigger('focus')
+      })
+      panel.on('click', '.task-remove', (e) => {
+        const list = $(e.currentTarget).closest('.task-list-items')
+        const row = $(e.currentTarget).closest('.task-row')
+        window.clearTimeout(row.data('idle-timer'))
+        row.remove()
+        if (list.children().length === 0) list.append(taskRow({}))
+      })
+      panel.on('input', '.task-body', (e) => {
+        e.currentTarget.style.height = 'auto'
+        e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px'
+        const row = $(e.currentTarget).closest('.task-row')
+        const body = $(e.currentTarget).val().trim()
+        if (row.data('scored-body') !== body) {
+          row.removeData('scored-body')
+          row.find('.task-feedback').attr('hidden', true).text('').removeClass('is-warning is-error')
+        }
+        window.clearTimeout(row.data('idle-timer'))
+        row.data('idle-timer', window.setTimeout(() => scoreTaskRow(row), 5000))
+      })
+      panel.on('focusout', '.task-body', (e) => {
+        const row = $(e.currentTarget).closest('.task-row')
+        window.clearTimeout(row.data('idle-timer'))
+        scoreTaskRow(row)
+      })
+    }
+
+    bindTaskList(createPanel)
+    bindTaskList(editPanel)
 
     createPanel.find('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
@@ -458,7 +596,7 @@
           'dr_rai_action_plan': {
             'indicator_id': $('#dr-rai--sidebar').data('indicator-id'),
             'period': $('#dr-rai--sidebar').data('period'),
-            'actions': createPanel.find('.custom-actions-list').val(),
+            'action_items_json': JSON.stringify(collectTasks(createPanel)),
             'region_slug': $('#dr-rai--sidebar').data('region'),
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
@@ -524,9 +662,9 @@
       toHide.forEach((el) => el.addClass('d-none'))
       toReveal.forEach((el) => el.removeClass('d-none'))
       createPanel.find('.action-buttons-block .save-button').addClass('invisible')
-      createPanel.find('input').val('')
+      createPanel.find('.goal-input-block input').val('')
       $('.active .activity-promise').addClass('d-none')
-      createPanel.find('textarea').val('')
+      fillTaskList(createPanel, [])
 
       // Close the offcanvas
       createPanel.find('.bs-canvas-close').trigger('click')
@@ -550,7 +688,7 @@
       editPanel.removeData('action-plan-id')
       editPanel.removeData('open')
       editPanel.find('.edit-indicator-summary, .edit-target-summary').text('')
-      editPanel.find('.custom-actions-list').val('')
+      editPanel.find('.task-list-items').empty()
       editPanel.find('.edit-save-button').prop('disabled', false)
       editPanel.find('.edit-save-button .button-text').text('Save')
       resetEditError()
@@ -562,9 +700,15 @@
       editPanel.data('action-plan-id', editControl.attr('data-action-plan-id'))
       editPanel.find('.edit-indicator-summary').text(editControl.attr('data-indicator'))
       editPanel.find('.edit-target-summary').text(editControl.attr('data-target-statement'))
-      editPanel.find('.custom-actions-list').val(editControl.attr('data-actions'))
+      let actionItems = []
+      try {
+        actionItems = JSON.parse(editControl.attr('data-action-items') || '[]')
+      } catch (error) {
+        actionItems = []
+      }
+      fillTaskList(editPanel, actionItems)
       resetEditError()
-      window.setTimeout(() => editPanel.find('.custom-actions-list').trigger('focus'), 0)
+      window.setTimeout(() => editPanel.find('.task-body').first().trigger('focus'), 0)
     })
 
     editPanel.find('.edit-cancel-button').on('click', () => {
@@ -614,7 +758,7 @@
         type: 'PATCH',
         data: {
           'dr_rai_action_plan': {
-            'actions': editPanel.find('.custom-actions-list').val()
+            'action_items_json': JSON.stringify(collectTasks(editPanel))
           }
         },
         headers: {
@@ -644,3 +788,28 @@
 </script>
 
 <% end %>
+<script type="text/javascript" charset="utf-8">
+  jQuery(document).ready(function($) {
+    $('#dr-rai--progress').on('change', '.action-task-toggle', function() {
+      const box = $(this)
+      const completed = box.prop('checked')
+      box.prop('disabled', true)
+      $.ajax({
+        url: box.attr('data-url'),
+        type: 'PATCH',
+        data: { completed: completed },
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: () => {
+          box.prop('disabled', false)
+          box.closest('.action-task').toggleClass('completed', completed)
+        },
+        error: () => {
+          box.prop('checked', !completed)
+          box.prop('disabled', false)
+        }
+      })
+    })
+  });
+</script>

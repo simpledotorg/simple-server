@@ -7,30 +7,28 @@ class DrRai::ActionPlansController < AdminController
 
   # POST /dr_rai/action_plans or /dr_rai/action_plans.json
   def create
-    @dr_rai_action_plan = DrRai::ActionPlan.new(
-      statement: dr_rai_action_plan_params[:statement],
-      actions: dr_rai_action_plan_params[:actions],
-      dr_rai_indicator: @indicator,
-      dr_rai_target: @target,
-      region: @region
-    )
-
-    respond_to do |format|
-      if @dr_rai_action_plan.save
-        format.html { redirect_to reports_region_path(report_scope: "facility", id: dr_rai_action_plan_params[:region_slug]) }
-      else
-        format.html { render json: @dr_rai_action_plan.errors, status: :unprocessable_entity }
-      end
+    DrRai::ActionPlan.transaction do
+      @dr_rai_action_plan = DrRai::ActionPlan.new(
+        statement: dr_rai_action_plan_params[:statement],
+        dr_rai_indicator: @indicator,
+        dr_rai_target: @target,
+        region: @region
+      )
+      @dr_rai_action_plan.save!
+      @dr_rai_action_plan.replace_action_items!(action_item_attributes)
     end
+
+    redirect_to reports_region_path(report_scope: "facility", id: dr_rai_action_plan_params[:region_slug])
+  rescue ActiveRecord::RecordInvalid
+    render json: @dr_rai_action_plan&.errors || {}, status: :unprocessable_entity
   end
 
   # PATCH/PUT /dr_rai/action_plans/1 or /dr_rai/action_plans/1.json
   def update
-    if @dr_rai_action_plan.update(dr_rai_action_plan_update_params)
-      head :no_content
-    else
-      render json: @dr_rai_action_plan.errors, status: :unprocessable_entity
-    end
+    @dr_rai_action_plan.replace_action_items!(action_item_attributes)
+    head :no_content
+  rescue ActiveRecord::RecordInvalid
+    render json: @dr_rai_action_plan.errors, status: :unprocessable_entity
   end
 
   # DELETE /dr_rai/action_plans/1 or /dr_rai/action_plans/1.json
@@ -76,6 +74,7 @@ class DrRai::ActionPlansController < AdminController
   def dr_rai_action_plan_params
     params.require(:dr_rai_action_plan).permit(
       :actions,
+      :action_items_json,
       :indicator_id,
       :period,
       :region_slug,
@@ -85,8 +84,25 @@ class DrRai::ActionPlansController < AdminController
     )
   end
 
-  def dr_rai_action_plan_update_params
-    params.require(:dr_rai_action_plan).permit(:actions)
+  def action_item_attributes
+    plan_params = params.require(:dr_rai_action_plan)
+    if plan_params.key?(:action_items_json)
+      parse_action_items_json(plan_params[:action_items_json])
+    else
+      DrRai::ActionPlan.items_from_actions_text(plan_params[:actions]).map { |body| {body: body} }
+    end
+  end
+
+  def parse_action_items_json(raw)
+    parsed = JSON.parse(raw.presence || "[]")
+    return [] unless parsed.is_a?(Array)
+
+    parsed.map do |item|
+      item = item.stringify_keys
+      {id: item["id"], body: item["body"]}
+    end
+  rescue JSON::ParserError
+    []
   end
 
   def authorize_user

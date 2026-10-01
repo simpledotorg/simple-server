@@ -21,6 +21,7 @@ class Dashboard::DrRaiReport < ApplicationComponent
 
   def action_plans
     @action_plans ||= DrRai::ActionPlan
+      .preload(:action_items)
       .joins(:dr_rai_target)
       .where(
         region: @region,
@@ -59,6 +60,10 @@ class Dashboard::DrRaiReport < ApplicationComponent
   def action_plans_editable?
     Flipper.enabled?(:dr_rai_manual_edit) ||
       current_period? && Date.current.month != selected_period.end.month
+  end
+
+  def tasks_checkable?(action_plan)
+    action_plan.tasks_checkable?
   end
 
   def a_month_to_next_period?

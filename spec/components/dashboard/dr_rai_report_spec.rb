@@ -153,24 +153,27 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
         expect(edit_control["data-target"]).to eq("#dr-rai--edit-sidebar")
         expect(edit_control["data-indicator"]).to eq("Contact overdue patients")
         expect(edit_control["data-target-statement"]).to eq("Call 20 overdue patients")
-        expect(edit_control["data-actions"]).to eq("Call patients marked \"high-risk\" & follow up")
+        action_items = JSON.parse(edit_control["data-action-items"])
+        expect(action_items.first["body"]).to eq("Call patients marked \"high-risk\" & follow up")
         expect(edit_control["data-target-statement"]).not_to include("&quot;")
-        expect(edit_control["data-actions"]).not_to include("&amp;")
+        expect(edit_control["data-action-items"]).not_to include("&amp;")
       end
     end
 
     it "preserves strings that jQuery data attributes would coerce" do
       Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
-        action_plan.update!(statement: "null", actions: "{\"enabled\":true}")
+        action_plan.update!(statement: "null")
+        action_plan.action_items.first.update!(body: "{\"enabled\":true}")
 
         render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
 
         edit_control = page.find(".edit-action-plan")
         expect(edit_control["data-target-statement"]).to eq("null")
-        expect(edit_control["data-actions"]).to eq("{\"enabled\":true}")
+        action_items = JSON.parse(edit_control["data-action-items"])
+        expect(action_items.first["body"]).to eq("{\"enabled\":true}")
         expect(page.native.to_html).to include("editControl.attr('data-indicator')")
         expect(page.native.to_html).to include("editControl.attr('data-target-statement')")
-        expect(page.native.to_html).to include("editControl.attr('data-actions')")
+        expect(page.native.to_html).to include("editControl.attr('data-action-items')")
       end
     end
 
@@ -185,7 +188,9 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
         expect(panel).to have_css(".content > h1", text: "Apr-1 - Jun-30 (Q2 2024)")
         expect(panel).to have_css(".step-block .edit-indicator-summary")
         expect(panel).to have_css(".step-block .edit-target-summary")
-        expect(panel).to have_css("textarea.custom-actions-list")
+        expect(panel).to have_css(".task-list .add-task-button", text: "+ Add task")
+        expect(panel).to have_css(".task-list-tip", text: "Create actionable tasks that workers can complete.")
+        expect(panel).not_to have_css("textarea.custom-actions-list")
         expect(panel).to have_css(".action-buttons-block .cancel-button", text: "Cancel")
         expect(panel).to have_css(".action-buttons-block .save-button .loading-animation")
         expect(panel).to have_css(".action-buttons-block .save-button .button-text", text: "Save")
@@ -271,6 +276,74 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       the_page = render_inline(comp)
       add_action_button = the_page.css(".add-action-button")
       expect(add_action_button).to be_empty
+    end
+  end
+
+  describe "action task checkboxes" do
+    let(:indicator) { create(:indicator, :contact_overdue_patients) }
+    let(:action_plan) do
+      create(
+        :action_plan,
+        region: Region.find_by!(slug: region),
+        statement: "Call 20 overdue patients",
+        actions: "Email lead doctors",
+        dr_rai_indicator: indicator,
+        dr_rai_target: create(:target, :percentage, period: q2_2024, indicator: indicator)
+      )
+    end
+
+    def render_report(quarter: q2_2024, lite: false)
+      render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: quarter), lite))
+    end
+
+    it "renders an enabled checkbox on the last day of the quarter" do
+      Timecop.freeze(Time.zone.parse("June 30 2024 15:12")) do
+        action_plan
+        render_report
+
+        checkbox = page.find(".action-task-toggle")
+        expect(checkbox).not_to be_disabled
+        expect(checkbox["data-url"]).to eq("/dr_rai/action_items/#{action_plan.action_items.first.id}")
+        expect(page).to have_text("Email lead doctors")
+      end
+    end
+
+    it "renders an enabled checkbox one month after the quarter ends" do
+      Timecop.freeze(Time.zone.parse("July 31 2024 15:12")) do
+        action_plan
+        render_report
+
+        expect(page.find(".action-task-toggle")).not_to be_disabled
+      end
+    end
+
+    it "disables the checkbox the day after the completion window" do
+      Timecop.freeze(Time.zone.parse("August 1 2024 15:12")) do
+        action_plan
+        render_report
+
+        expect(page.find(".action-task-toggle")).to be_disabled
+      end
+    end
+
+    it "shows completed tasks as checked" do
+      Timecop.freeze(Time.zone.parse("June 30 2024 15:12")) do
+        action_plan.action_items.first.update!(completed_at: Time.current)
+        render_report
+
+        expect(page.find(".action-task-toggle")).to be_checked
+        expect(page).to have_css(".action-task.completed", text: "Email lead doctors")
+      end
+    end
+
+    it "renders checkboxes on the lite progress tab" do
+      Timecop.freeze(Time.zone.parse("June 30 2024 15:12")) do
+        action_plan
+        render_report(lite: true)
+
+        expect(page).to have_css(".action-task-toggle")
+        expect(page.native.to_html).to include(".action-task-toggle")
+      end
     end
   end
 
