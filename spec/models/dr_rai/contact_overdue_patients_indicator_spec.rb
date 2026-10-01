@@ -33,6 +33,12 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
     end
   end
 
+  describe "#goal_relative_to_previous?" do
+    it "sets goals as a total" do
+      expect(DrRai::ContactOverduePatientsIndicator.new.goal_relative_to_previous?).to be false
+    end
+  end
+
   describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }

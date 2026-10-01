@@ -21,6 +21,10 @@ class DrRai::Indicator < ApplicationRecord
     :sum
   end
 
+  def goal_relative_to_previous?
+    false
+  end
+
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
     Reports::RegionSummaryAggregator.new(data).quarterly(with: quarterly_aggregation)[region.slug]

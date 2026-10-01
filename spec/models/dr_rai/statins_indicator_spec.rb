@@ -78,4 +78,10 @@ RSpec.describe DrRai::StatinsIndicator, type: :model do
       expect(indicator.denominator(region, q3)).to eq 48
     end
   end
+
+  describe "#goal_relative_to_previous?" do
+    it "sets goals as additional patients on top of the previous quarter" do
+      expect(indicator.goal_relative_to_previous?).to be true
+    end
+  end
 end
