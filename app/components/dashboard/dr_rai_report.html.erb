@@ -143,6 +143,7 @@
                     indicator_action_active: indicator.action_active,
                     indicator_action_passive: indicator.action_passive,
                     indicator_denominator: indicator_denominator(indicator),
+                    indicator_goal_relative_to_previous: indicator.goal_relative_to_previous?,
                     indicator_id: indicator.id,
                     indicator_previous_numerator: indicator_numerator(indicator, selected_period.previous),
                     indicator_previous_denominator: indicator_denominator(indicator, selected_period.previous),
@@ -406,7 +407,10 @@
             previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
-          $('#step-' + nextStep + '-' + target.ui).data('denominator', indicator.previous_denominator)
+          $('#step-' + nextStep + '-' + target.ui)
+            .data('denominator', indicator.previous_denominator)
+            .data('previous-numerator', indicator.previous_numerator)
+            .data('goal-relative-to-previous', indicator.goal_relative_to_previous)
         }
         if (target.ui == 'custom') {
           $('#dr-rai--sidebar').data('target-value', 0)
@@ -441,7 +445,13 @@
       const activityPromise = $(e.currentTarget)
         .closest('.goal-input-block')
         .siblings('.activity-promise')
-      const targetValue = Math.round(inputValue / 100 * $('#step-2-percent').data('denominator'))
+      const percentStep = $('#step-2-percent')
+      var targetValue = Math.round(inputValue / 100 * percentStep.data('denominator'))
+      if (percentStep.data('goal-relative-to-previous') === true) {
+        // The goal is the number of additional patients needed on top of the previous quarter
+        const previousNumerator = parseInt(percentStep.data('previous-numerator')) || 0
+        targetValue = Math.max(0, targetValue - previousNumerator)
+      }
       activityPromise.find('.highlight')
         .text(targetValue)
       activityPromise.removeClass('d-none')
@@ -493,6 +503,7 @@
             'denominator': $(e.currentTarget).data('indicator-denominator'),
             'previous_numerator': $(e.currentTarget).data('indicator-previous-numerator'),
             'previous_denominator': $(e.currentTarget).data('indicator-previous-denominator'),
+            'goal_relative_to_previous': $(e.currentTarget).data('indicator-goal-relative-to-previous'),
             'action': $(e.currentTarget).data('indicator-action'),
             'passive_action': $(e.currentTarget).data('indicator-action-passive'),
             'active_action': $(e.currentTarget).data('indicator-action-active'),

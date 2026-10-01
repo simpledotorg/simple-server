@@ -283,4 +283,25 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       expect(add_action_button).not_to be_empty
     end
   end
+
+  describe "creating action plans" do
+    let(:facility_region) { district_with_facilities[:facility_1].region }
+
+    before do
+      indicators = [DrRai::StatinsIndicator.create!, DrRai::ContactOverduePatientsIndicator.create!]
+      allow_any_instance_of(described_class).to receive(:indicators).and_return(indicators)
+      allow_any_instance_of(described_class).to receive(:indicator_numerator).and_return(27)
+      allow_any_instance_of(described_class).to receive(:indicator_denominator).and_return(48)
+    end
+
+    it "tells the creation panel which indicators set goals relative to the previous quarter" do
+      render_inline(described_class.new(periods, facility_region.slug, default_options.merge(selected_quarter: q2_2024)))
+
+      statins = page.find("#dr-rai--sidebar button.advancer", text: "Statins")
+      contact_overdue = page.find("#dr-rai--sidebar button.advancer", text: "Contact overdue patients")
+      expect(statins["data-indicator-goal-relative-to-previous"]).to eq("true")
+      expect(statins["data-indicator-previous-numerator"]).to eq("27")
+      expect(contact_overdue["data-indicator-goal-relative-to-previous"]).to eq("false")
+    end
+  end
 end
