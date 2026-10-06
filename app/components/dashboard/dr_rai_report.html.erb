@@ -117,12 +117,11 @@
   <% end %>
 </div>
 <% unless is_lite_version? %>
-<div class="bs-canvas-overlay bs-canvas-anim bg-dark position-fixed w-100 h-100"></div>
-<div class="sidepanel bs-canvas bs-canvas-right bs-canvas-anim position-fixed h-100" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
+<%# <div class="bs-canvas-overlay bs-canvas-anim bg-dark position-fixed w-100 h-100"></div> %>
+<div class="sidepanel bs-canvas position-fixed" tabindex="-1" id="dr-rai--sidebar" data-period="<%= selected_period.value %>" data-region="<%= region.slug %>">
   <div class="header">
     <p>Create action</p>
-    <button class="bs-canvas-close float-left close" aria-label="Close">
-      <i class="fa-solid fa-xmark-large"></i>
+    <button id="action-plan--sidebar-close" class="bs-canvas-close float-left close" aria-label="Close">      <i class="fa-solid fa-xmark-large"></i>
     </button>
   </div>
   <% if active_period? %>
@@ -303,15 +302,8 @@
         ? $(this).closest('.action-card').find('[data-toggle="dropdown"]').get(0)
         : e.currentTarget
 
-      if (opts.width === '100%') {
-        opts.offset = false
-      }
-
       $(canvas).data('opener', opener)
-      $(canvas).css('width', opts.width)
-      if (opts.offset && bsMain.length) {
-        bsMain.css(prop, opts.width)
-      }
+      $(canvas).addClass('is-open')
 
       $(canvas).attr('aria-hidden', 'false').removeAttr('inert')
       $(canvas + ' .bs-canvas-close').attr('aria-expanded', "true")
@@ -340,7 +332,8 @@
           })
         }
       }
-      canvas.css('width', '')
+      canvas.removeClass('is-open')
+
       canvas.attr('aria-hidden', 'true').attr('inert', '')
       aria.attr('aria-expanded', "false")
       if (bsOverlay.length) {

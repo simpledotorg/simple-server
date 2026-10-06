@@ -1,5 +1,4 @@
 @import "partials/variables";
-$font-condensed: "Roboto Condensed", sans-serif;
 
 // Action plan
 .actions-block {
@@ -295,6 +294,17 @@ $font-condensed: "Roboto Condensed", sans-serif;
   box-shadow: -8px 0 0 0 rgba(0, 0, 0, 0.08), -4px 0 8px rgba(0, 0, 0, 0.05);
   overflow-y: scroll;
   background: #ffffff;
+  transition: all 125ms ease-out;
+  transition-behavior: allow-discrete;
+  transform: translateX(100%);
+  right: 0;
+  top: 0;
+  height: 100dvh;
+  width: 450px;
+}
+
+.sidepanel.is-open {
+  transform: translateX(0);
 }
 
 @scope (.sidepanel) {
@@ -591,39 +601,10 @@ $font-condensed: "Roboto Condensed", sans-serif;
   }
 }
 
-.bs-canvas-overlay {
-  top: 0;
-  left: 0;
-  opacity: 0;
-  z-index: -1;
-}
-
-.bs-canvas-overlay.show {
-  opacity: 0.85;
-  z-index: 1100;
-}
-
 .bs-canvas {
-  top: 0;
-  width: 0;
-  z-index: 1110;
+  z-index: 1000;
   overflow-x: hidden;
   overflow-y: auto;
-}
-
-.bs-canvas-left {
-  left: 0;
-}
-
-.bs-canvas-right {
-  right: 0;
-}
-
-.bs-canvas-anim {
-  transition: all 0.4s ease-out;
-  -webkit-transition: all 0.4s ease-out;
-  -moz-transition: all 0.4s ease-out;
-  -ms-transition: all 0.4s ease-out;
 }
 
 .fa-spin {
