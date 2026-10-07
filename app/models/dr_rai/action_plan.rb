@@ -16,8 +16,10 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   def numerator
-    target_period = Period.new(type: :quarter, value: target.period)
-    indicator.numerator(region, target_period)
+    progress_made = progress_numerator
+    return progress_made if progress_made.nil?
+
+    [progress_made, 0].max
   end
 
   def denominator
@@ -26,9 +28,11 @@ class DrRai::ActionPlan < ApplicationRecord
 
   def progress
     return 0 if unprocessible?
-    return 100 unless numerator < denominator
+    current = progress_numerator
+    return 0 if current.negative?
+    return 100 unless current < denominator
 
-    (numerator.to_f / denominator * 100).round
+    (current.to_f / denominator * 100).round
   end
 
   def unit
@@ -77,6 +81,12 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   private
+
+  # Uncapped, so that a drop against a target of 0 does not count as reached
+  def progress_numerator
+    target_period = Period.new(type: :quarter, value: target.period)
+    indicator.progress_numerator(region, target_period)
+  end
 
   def unprocessible?
     denominator.negative? ||
