@@ -27,6 +27,29 @@ RSpec.describe DrRai::ContactOverduePatientsIndicator, type: :model do
     end
   end
 
+  describe "#quarterly_aggregation" do
+    it "sums the months in a quarter" do
+      expect(DrRai::ContactOverduePatientsIndicator.new.quarterly_aggregation).to eq :sum
+    end
+  end
+
+  describe "#goal_relative_to_previous?" do
+    it "sets goals as a total" do
+      expect(DrRai::ContactOverduePatientsIndicator.new.goal_relative_to_previous?).to be false
+    end
+  end
+
+  describe "#progress_numerator" do
+    let(:region) { setup_district_with_facilities[:region] }
+    let(:quarter) { Period.quarter(Date.new(2026, 7, 1)) }
+    let(:indicator) { DrRai::ContactOverduePatientsIndicator.new }
+
+    it "is the numerator for the quarter" do
+      allow(indicator).to receive(:numerator).with(region, quarter).and_return(9)
+      expect(indicator.progress_numerator(region, quarter)).to eq 9
+    end
+  end
+
   describe "indicator_function" do
     around do |example|
       Timecop.freeze("June 25 2025 15:12 GMT") { example.run }
