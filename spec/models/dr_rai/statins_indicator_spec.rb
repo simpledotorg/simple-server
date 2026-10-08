@@ -77,6 +77,21 @@ RSpec.describe DrRai::StatinsIndicator, type: :model do
       expect(indicator.numerator(region, q3)).to eq 27
       expect(indicator.denominator(region, q3)).to eq 48
     end
+
+    it "measures progress as the change since the last month of the previous quarter" do
+      # Sep (27) - Jun (13), i.e. Jul +5, Aug +5, Sep +4
+      expect(indicator.progress_numerator(region, Period.quarter(Date.new(2026, 7, 1)))).to eq 14
+    end
+
+    it "has no progress when the previous quarter has no data" do
+      # Q1 2026 only has March, and Q4 2025 is outside the data
+      expect(indicator.progress_numerator(region, Period.quarter(Date.new(2026, 1, 1)))).to be_nil
+    end
+
+    it "has negative progress when fewer patients are on statins than last quarter" do
+      monthly_data[Period.month(Date.new(2026, 9, 1))]["adjusted_dm_patients_40_and_above_with_statins"] = 10
+      expect(indicator.progress_numerator(region, Period.quarter(Date.new(2026, 7, 1)))).to eq(-3)
+    end
   end
 
   describe "#goal_relative_to_previous?" do
