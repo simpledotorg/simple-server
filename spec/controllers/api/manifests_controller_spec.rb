@@ -55,6 +55,8 @@ RSpec.describe Api::ManifestsController, type: :controller do
           parsed_body = JSON.parse(response.body)
           expect(parsed_body["v1"]).to eq(v1_response)
           expect(parsed_body["v2"]).to eq(v2_response)
+          expect(parsed_body["version"]).to eq("3")
+          expect(parsed_body["countries"]).to eq(v2_response["countries"])
 
           allow(ENV).to receive(:[]).with("SIMPLE_SERVER_ENV").and_return(original_env)
         end
