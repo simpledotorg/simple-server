@@ -81,4 +81,30 @@ RSpec.describe DrRai::ActionPlan, type: :model do
       expect(action_plan_with(target_value: 7, previous: nil, current: 31).progress).to eq 0
     end
   end
+
+  describe "#goal_statement" do
+    let(:region) { setup_district_with_facilities[:region] }
+
+    def action_plan_for(indicator, baseline:, goal:)
+      target = DrRai::PercentageTarget.create(numeric_value: 7, period: "Q4-2026", baseline_percentage: baseline, goal_percentage: goal)
+      DrRai::ActionPlan.new(dr_rai_target: target, dr_rai_indicator: indicator, region: region, statement: "TODO")
+    end
+
+    it "describes the goal with the saved percentages" do
+      expect(action_plan_for(DrRai::ContactOverduePatientsIndicator.create, baseline: 20, goal: 35).goal_statement)
+        .to eq "Goal: Increase calling from 20% to 35%"
+      expect(action_plan_for(DrRai::TitrationIndicator.create, baseline: 34, goal: 50).goal_statement)
+        .to eq "Goal: Increase titrations from 34% to 50%"
+      expect(action_plan_for(DrRai::StatinsIndicator.create, baseline: 15, goal: 25).goal_statement)
+        .to eq "Goal: Increase patients prescribed statins from 15% to 25%"
+    end
+
+    it "is nil for plans created without the percentages" do
+      expect(action_plan_for(DrRai::StatinsIndicator.create, baseline: nil, goal: nil).goal_statement).to be_nil
+    end
+
+    it "is nil for indicators without a goal subject" do
+      expect(action_plan_for(DrRai::BpFudgingIndicator.create, baseline: 10, goal: 5).goal_statement).to be_nil
+    end
+  end
 end

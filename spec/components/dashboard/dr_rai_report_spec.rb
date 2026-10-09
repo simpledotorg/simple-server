@@ -304,4 +304,27 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       expect(contact_overdue["data-indicator-goal-relative-to-previous"]).to eq("false")
     end
   end
+
+  describe "goal statement" do
+    let(:indicator) { create(:indicator, :contact_overdue_patients) }
+
+    def plan_with(baseline:, goal:)
+      target = create(:target, :percentage, period: q2_2024, indicator: indicator, baseline_percentage: baseline, goal_percentage: goal)
+      create(:action_plan, region: Region.find_by!(slug: region), statement: "Call 20 overdue patients",
+        dr_rai_indicator: indicator, dr_rai_target: target)
+    end
+
+    it "shows the goal under the plan's title" do
+      plan_with(baseline: 20, goal: 35)
+      render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+      expect(page.find(".action-card .goal-statement").text).to eq "Goal: Increase calling from 20% to 35%"
+    end
+
+    it "shows no goal line for plans created without the percentages" do
+      plan_with(baseline: nil, goal: nil)
+      render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
+      expect(page).to have_css(".action-card h3", text: "Call 20 overdue patients")
+      expect(page).not_to have_css(".goal-statement")
+    end
+  end
 end

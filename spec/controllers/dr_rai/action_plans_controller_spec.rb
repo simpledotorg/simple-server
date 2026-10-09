@@ -59,6 +59,20 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
         post :create, params: {dr_rai_action_plan: valid_attributes}
         expect(response).to redirect_to(reports_region_path(report_scope: "facility", id: valid_attributes[:region_slug]))
       end
+
+      it "saves the baseline and goal percentages on the target" do
+        post :create, params: {dr_rai_action_plan: valid_attributes.merge(baseline_percentage: 20, goal_percentage: 35)}
+        target = DrRai::ActionPlan.last.target
+        expect(target.baseline_percentage).to eq 20
+        expect(target.goal_percentage).to eq 35
+      end
+
+      it "leaves the percentages empty when they are not sent" do
+        post :create, params: {dr_rai_action_plan: valid_attributes}
+        target = DrRai::ActionPlan.last.target
+        expect(target.baseline_percentage).to be_nil
+        expect(target.goal_percentage).to be_nil
+      end
     end
 
     context "with invalid parameters" do

@@ -36,6 +36,10 @@ module DrRai
       "Call"
     end
 
+    def goal_subject
+      "calling"
+    end
+
     def is_supported?(region)
       !datasource(region).empty?
     end
