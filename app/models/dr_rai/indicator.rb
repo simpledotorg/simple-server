@@ -25,6 +25,10 @@ class DrRai::Indicator < ApplicationRecord
     false
   end
 
+  def goal_subject
+    nil
+  end
+
   # The value an action plan's progress is measured with. When goals are set
   # relative to the previous quarter, progress is the change since then
   def progress_numerator(region, period)

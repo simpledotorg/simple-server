@@ -43,6 +43,13 @@ class DrRai::ActionPlan < ApplicationRecord
     indicator.action_passive
   end
 
+  def goal_statement
+    baseline, goal = target.baseline_percentage, target.goal_percentage
+    return nil if baseline.nil? || goal.nil? || indicator.goal_subject.nil?
+
+    "Goal: Increase #{indicator.goal_subject} from #{baseline}% to #{goal}%"
+  end
+
   def current_ratio
     return nil unless custom_target?
     datasource = indicator.datasource(region)
@@ -82,7 +89,6 @@ class DrRai::ActionPlan < ApplicationRecord
 
   private
 
-  # Uncapped, so that a drop against a target of 0 does not count as reached
   def progress_numerator
     target_period = Period.new(type: :quarter, value: target.period)
     indicator.progress_numerator(region, target_period)

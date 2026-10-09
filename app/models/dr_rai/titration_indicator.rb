@@ -32,6 +32,10 @@ module DrRai
       "Titrate"
     end
 
+    def goal_subject
+      "titrations"
+    end
+
     def unit
       "patients"
     end
