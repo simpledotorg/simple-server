@@ -69,21 +69,13 @@ module Reports
         # |    Q1     |    Q2     |    Q3     |    Q4     |
         # |     1     |     1     |     1     |     1     |
         # Note: This is different from average because it takes the data of the
-        # last month of the quarter as the value for the quarter
+        # last month of the quarter as the value for the quarter. When the last
+        # month is missing (e.g. the current quarter), the latest available
+        # month in that quarter is used.
         @data.map do |facility, months|
-          aggregated = {}
-          months
-            .sort_by { |k, v| k }
-            .to_h
-            .each_slice(3) do |quarter_window|
-              selected = quarter_window.last
-              month_period, stats = selected
-              quarter = month_period.to_quarter_period
-              aggregated[quarter] = {}
-              stats.each do |attr, val|
-                aggregated[quarter][attr] = val
-              end
-            end
+          aggregated = months
+            .group_by { |period, _| period.to_quarter_period }
+            .transform_values { |entries| entries.max_by { |period, _| period }.last.dup }
           [facility, aggregated]
         end.to_h
       when :rollup
