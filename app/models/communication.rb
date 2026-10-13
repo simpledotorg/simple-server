@@ -14,7 +14,8 @@ class Communication < ApplicationRecord
     voip_call: "voip_call",
     manual_call: "manual_call",
     sms: "sms",
-    whatsapp: "whatsapp"
+    whatsapp: "whatsapp",
+    ai_voice_call: "ai_voice_call"
   }
 
   COMMUNICATION_RESULTS = {

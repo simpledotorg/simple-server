@@ -15,7 +15,7 @@ class ImportUser
     end
 
     user = User.new(
-      full_name: "import-user",
+      full_name: bot_full_name,
       organization_id: facility.organization.id,
       device_created_at: Time.current,
       device_updated_at: Time.current
@@ -32,10 +32,18 @@ class ImportUser
     end
 
     user.phone_number_authentications = [phone_number_authentication]
-    user.sync_approval_denied("bot user for import")
+    user.sync_approval_denied(bot_sync_approval_reason)
     user.save!
 
     user
+  end
+
+  def self.bot_full_name
+    "import-user"
+  end
+
+  def self.bot_sync_approval_reason
+    "bot user for import"
   end
 
   def self.generate_pin
