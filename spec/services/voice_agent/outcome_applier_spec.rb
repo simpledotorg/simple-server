@@ -107,7 +107,7 @@ RSpec.describe VoiceAgent::OutcomeApplier do
       apply(status: "unreached", outcome: nil, confidence: nil, answered_attempts: 0, attempts: 3)
 
       appointment.reload
-      expect(appointment).to be_cancelled
+      expect(appointment).to be_status_cancelled
       expect(appointment.cancel_reason).to eq("not_responding")
       expect(appointment.call_results.last).to have_attributes(
         result_type: "removed_from_overdue_list",
@@ -138,7 +138,7 @@ RSpec.describe VoiceAgent::OutcomeApplier do
       apply
 
       expect(detail.reload).to be_status_completed
-      expect(appointment.reload).to be_visited
+      expect(appointment.reload).to be_status_visited
       expect(appointment.call_results).to be_empty
     end
   end

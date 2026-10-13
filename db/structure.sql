@@ -6625,6 +6625,51 @@ CREATE TABLE public.users (
 
 
 --
+-- Name: voice_call_details; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.voice_call_details (
+    id bigint NOT NULL,
+    call_request_id character varying NOT NULL,
+    status character varying NOT NULL,
+    outcome character varying,
+    suggested_remove_reason character varying,
+    safety_flag boolean DEFAULT false NOT NULL,
+    confidence character varying,
+    attempts integer,
+    answered_attempts integer,
+    last_attempted_at timestamp without time zone,
+    connected_seconds integer,
+    provider character varying,
+    prompt_version character varying,
+    resolved_by_user_id uuid,
+    resolved_at timestamp without time zone,
+    deleted_at timestamp without time zone,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: voice_call_details_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.voice_call_details_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: voice_call_details_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.voice_call_details_id_seq OWNED BY public.voice_call_details.id;
+
+
+--
 -- Name: simple_reporting_runs; Type: TABLE; Schema: simple_reporting; Owner: -
 --
 
@@ -6772,6 +6817,13 @@ ALTER TABLE ONLY public.treatment_group_memberships ALTER COLUMN id SET DEFAULT 
 --
 
 ALTER TABLE ONLY public.twilio_sms_delivery_details ALTER COLUMN id SET DEFAULT nextval('public.twilio_sms_delivery_details_id_seq'::regclass);
+
+
+--
+-- Name: voice_call_details id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.voice_call_details ALTER COLUMN id SET DEFAULT nextval('public.voice_call_details_id_seq'::regclass);
 
 
 --
@@ -7308,6 +7360,14 @@ ALTER TABLE ONLY public.user_authentications
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: voice_call_details voice_call_details_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.voice_call_details
+    ADD CONSTRAINT voice_call_details_pkey PRIMARY KEY (id);
 
 
 --
@@ -8606,6 +8666,27 @@ CREATE INDEX index_users_on_teleconsultation_phone_number ON public.users USING 
 
 
 --
+-- Name: index_voice_call_details_on_call_request_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_voice_call_details_on_call_request_id ON public.voice_call_details USING btree (call_request_id);
+
+
+--
+-- Name: index_voice_call_details_on_resolved_by_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_voice_call_details_on_resolved_by_user_id ON public.voice_call_details USING btree (resolved_by_user_id);
+
+
+--
+-- Name: index_voice_call_details_on_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_voice_call_details_on_status ON public.voice_call_details USING btree (status);
+
+
+--
 -- Name: medicine_purposes_unique_name; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -8920,6 +9001,14 @@ ALTER TABLE ONLY public.treatment_group_memberships
 
 ALTER TABLE ONLY public.communications
     ADD CONSTRAINT fk_rails_17477eedd4 FOREIGN KEY (notification_id) REFERENCES public.notifications(id);
+
+
+--
+-- Name: voice_call_details fk_rails_1850a7c333; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.voice_call_details
+    ADD CONSTRAINT fk_rails_1850a7c333 FOREIGN KEY (resolved_by_user_id) REFERENCES public.users(id);
 
 
 --
@@ -9458,6 +9547,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260521101357'),
 ('20260528053923'),
 ('20260610061836'),
-('20260929000000');
+('20260929000000'),
+('20261013000000');
 
 
