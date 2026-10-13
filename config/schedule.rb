@@ -91,7 +91,6 @@ end
 every :day, at: local("03:00 am"), roles: [:cron] do
   %w[
     titration
-    statins
     bp_fudging
   ].each do |indicator|
     rake "dr_rai:populate_#{indicator}_data"

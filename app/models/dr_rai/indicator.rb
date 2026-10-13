@@ -17,9 +17,28 @@ class DrRai::Indicator < ApplicationRecord
   # There should only ever be one instance of any indicator in the db
   validates :type, uniqueness: true
 
+  def quarterly_aggregation
+    :sum
+  end
+
+  def goal_relative_to_previous?
+    false
+  end
+
+  # The value an action plan's progress is measured with. When goals are set
+  # relative to the previous quarter, progress is the change since then
+  def progress_numerator(region, period)
+    current = numerator(region, period)
+    return current unless goal_relative_to_previous?
+
+    previous = numerator(region, period.previous)
+    return nil if current.nil? || previous.nil?
+    current - previous
+  end
+
   def quarterlies(region)
     data = Reports::RegionSummary.call(region, range: DEFAULT_RANGE)
-    Reports::RegionSummaryAggregator.new(data).quarterly(with: :sum)[region.slug]
+    Reports::RegionSummaryAggregator.new(data).quarterly(with: quarterly_aggregation)[region.slug]
   end
 
   def has_action_plans?(region, period)
