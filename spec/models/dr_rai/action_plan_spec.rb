@@ -107,4 +107,38 @@ RSpec.describe DrRai::ActionPlan, type: :model do
       expect(action_plan_for(DrRai::BpFudgingIndicator.create, baseline: 10, goal: 5).goal_statement).to be_nil
     end
   end
+
+  describe "custom goals" do
+    let(:indicator) { DrRai::CustomIndicator.create }
+    let(:target) { DrRai::BooleanTarget.create(period: "Q1-2025", completed: false, indicator: indicator) }
+    let(:region) { setup_district_with_facilities[:region] }
+
+    def action_plan_with(statement:)
+      DrRai::ActionPlan.new(dr_rai_target: target, dr_rai_indicator: indicator, region: region, statement: statement)
+    end
+
+    it "is a boolean target" do
+      expect(action_plan_with(statement: "Train staff")).to be_boolean_target
+    end
+
+    it "requires a statement" do
+      expect(action_plan_with(statement: "")).not_to be_valid
+    end
+
+    it "limits the statement to 80 characters" do
+      expect(action_plan_with(statement: "a" * 80)).to be_valid
+      expect(action_plan_with(statement: "a" * 81)).not_to be_valid
+    end
+
+    it "has no progress" do
+      expect(action_plan_with(statement: "Train staff").progress).to eq 0
+    end
+
+    it "is completed once the target is completed" do
+      action_plan = action_plan_with(statement: "Train staff")
+      expect(action_plan).not_to be_completed
+      target.update!(completed: true)
+      expect(action_plan).to be_completed
+    end
+  end
 end

@@ -1,8 +1,8 @@
 class DrRai::ActionPlansController < AdminController
   before_action :authorize_user
   before_action :hydrate_plan, only: [:create]
-  before_action :set_dr_rai_action_plan, only: %i[update destroy]
-  before_action :authorize_edit_action_plans, only: [:update]
+  before_action :set_dr_rai_action_plan, only: %i[update destroy completion]
+  before_action :authorize_edit_action_plans, only: %i[update completion]
   before_action :enforce_action_plan_edit_window, only: [:update]
 
   # POST /dr_rai/action_plans or /dr_rai/action_plans.json
@@ -31,6 +31,13 @@ class DrRai::ActionPlansController < AdminController
     else
       render json: @dr_rai_action_plan.errors, status: :unprocessable_entity
     end
+  end
+
+  def completion
+    return head :unprocessable_entity unless @dr_rai_action_plan.boolean_target?
+
+    @dr_rai_action_plan.target.update!(completed: params.require(:completed))
+    head :no_content
   end
 
   # DELETE /dr_rai/action_plans/1 or /dr_rai/action_plans/1.json
