@@ -29,23 +29,21 @@ describe SetUpBangladeshDecemberExperiment do
       appointment_date = enrollment_date - earliest_remind_on
 
       facility1 = create(:facility, slug: "uhc-agailjhara")
-      patient1 = create(:patient, assigned_facility: facility1)
+      patient1 = create(:patient, assigned_facility: facility1, age: 50)
       create(:appointment, patient: patient1, scheduled_date: appointment_date)
 
       facility2 = create(:facility, slug: "another-facility")
-      patient2 = create(:patient, assigned_facility: facility2)
+      patient2 = create(:patient, assigned_facility: facility2, age: 50)
       create(:appointment, patient: patient2, scheduled_date: appointment_date)
 
       described_class.new.up
 
-      Timecop.freeze(enrollment_date)
-
-      Experimentation::CurrentPatientExperiment.conduct_daily(enrollment_date)
-      current_experiment = Experimentation::CurrentPatientExperiment.first
-      expect(current_experiment.treatment_group_memberships.count).to eq(1)
-      expect(current_experiment.treatment_group_memberships.first&.patient).to eq(patient1)
-
-      Timecop.return
+      Timecop.freeze(enrollment_date) do
+        Experimentation::CurrentPatientExperiment.conduct_daily(enrollment_date)
+        current_experiment = Experimentation::CurrentPatientExperiment.first
+        expect(current_experiment.treatment_group_memberships.count).to eq(1)
+        expect(current_experiment.treatment_group_memberships.first&.patient).to eq(patient1)
+      end
     end
   end
 

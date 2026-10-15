@@ -44,6 +44,9 @@
           <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
+            <% if action_plan.goal_statement.present? %>
+              <p class="goal-statement"><%= action_plan.goal_statement %></p>
+            <% end %>
             <% if !action_plan.actions.nil? %>
               <ul>
                 <% action_plan.actions.lines.each do |line| %>
@@ -407,6 +410,7 @@
             previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
+          $('#dr-rai--sidebar').data('baseline-percentage', previousPercentage)
           $('#step-' + nextStep + '-' + target.ui)
             .data('denominator', indicator.previous_denominator)
             .data('previous-numerator', indicator.previous_numerator)
@@ -456,6 +460,7 @@
         .text(targetValue)
       activityPromise.removeClass('d-none')
       $('#dr-rai--sidebar').data('target-value', targetValue)
+      $('#dr-rai--sidebar').data('goal-percentage', inputValue)
     })
 
     createPanel.find('.action-buttons-block .save-button').on('click', (e) => {
@@ -473,6 +478,8 @@
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
             'target_value': $('#dr-rai--sidebar').data('target-value'),
+            'baseline_percentage': $('#dr-rai--sidebar').data('baseline-percentage'),
+            'goal_percentage': $('#dr-rai--sidebar').data('goal-percentage'),
           }
         },
         headers: {
@@ -529,6 +536,8 @@
         'region_slug',
         'statement',
         'actions',
+        'baseline-percentage',
+        'goal-percentage',
       ])
 
       // Reset UI
