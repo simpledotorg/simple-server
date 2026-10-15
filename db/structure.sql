@@ -2565,7 +2565,8 @@ CREATE TABLE public.dr_rai_targets (
     dr_rai_indicators_id bigint,
     period character varying,
     baseline_percentage integer,
-    goal_percentage integer
+    goal_percentage integer,
+    completed_at timestamp without time zone
 );
 
 
@@ -9461,6 +9462,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20260528053923'),
 ('20260610061836'),
 ('20260929000000'),
-('20261008000000');
+('20261008000000'),
+('20261014000000');
 
 

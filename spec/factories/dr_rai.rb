@@ -24,6 +24,10 @@ FactoryBot.define do
     trait :contact_overdue_patients do
       type { "DrRai::ContactOverduePatientsIndicator" }
     end
+
+    trait :custom do
+      type { "DrRai::CustomIndicator" }
+    end
   end
 
   factory :action_plan, class: "DrRai::ActionPlan" do
