@@ -1,6 +1,11 @@
 # Dockerfile development version
 FROM ruby:2.7.8
 
+# ruby:2.7.8 is based on Debian 11 (bullseye), which is end-of-life. Its packages
+# have moved from deb.debian.org to archive.debian.org, whose Release files are expired.
+RUN sed -i 's|http://deb.debian.org|http://archive.debian.org|g; /bullseye-updates/d' /etc/apt/sources.list \
+ && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99archive
+
 ENV BUNDLE_VERSION 2.4.22
 ENV EDITOR vim
 
