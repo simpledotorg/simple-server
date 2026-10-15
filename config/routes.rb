@@ -190,6 +190,8 @@ Rails.application.routes.draw do
 
       resources :drug_stocks, only: [:index]
 
+      post "voice_call_outcomes", to: "voice_call_outcomes#create"
+
       get "states", to: "states#index"
 
       concerns :v4_sync_routes

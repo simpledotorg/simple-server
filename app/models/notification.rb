@@ -28,7 +28,8 @@ class Notification < ApplicationRecord
     one_off_medications_reminder: "one_off_medications_reminder",
     experimental_appointment_reminder: "experimental_appointment_reminder",
     missed_visit_reminder: "missed_visit_reminder",
-    test_message: "test_message"
+    test_message: "test_message",
+    overdue_voice_call: "overdue_voice_call"
   }
 
   scope :due_today, -> { where(remind_on: Date.current, status: [:pending]) }

@@ -68,6 +68,10 @@ every :day, at: local("11:00 pm").utc, roles: [:cron] do
   rake "appointment_notification:three_days_after_missed_visit"
 end
 
+every :day, at: local("08:00 am"), roles: [:cron] do
+  runner "VoiceCallSchedulerJob.perform_later"
+end
+
 every :day, at: local("11:00 pm"), roles: [:cron] do
   runner "Messaging::Bsnl::Sms.get_message_statuses"
 end
