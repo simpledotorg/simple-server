@@ -126,6 +126,16 @@ $font-condensed: "Roboto Condensed", sans-serif;
     font-family: $font-condensed;
   }
 
+  h3:has(+ .goal-statement) {
+    margin-bottom: 2px;
+  }
+
+  .goal-statement {
+    font-size: 13px;
+    color: #6a6500;
+    margin-bottom: 12px;
+  }
+
   ul {
     margin: 6px 0 0;
     list-style-type: disc;
