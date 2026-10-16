@@ -40,6 +40,10 @@ module DrRai
       "Prescribe statins for"
     end
 
+    def goal_subject
+      "patients prescribed statins"
+    end
+
     def is_supported?(region)
       datasource(region).present?
     end

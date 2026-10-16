@@ -42,6 +42,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             state: "Punjab"
           )
 
+          expect(page).to have_current_path(admin_facilities_path)
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
         end
@@ -62,6 +63,7 @@ RSpec.feature "Facility page functionality", type: :feature do
             state: "Punjab"
           )
 
+          expect(page).to have_current_path(admin_facilities_path)
           expect(page).to have_content("Bathinda")
           expect(page).to have_content("Testfacilitygroup")
           facility_page.is_edit_button_present_for_facilitygroup("Testfacilitygroup")
