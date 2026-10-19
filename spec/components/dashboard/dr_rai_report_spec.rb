@@ -327,4 +327,96 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
       expect(page).not_to have_css(".goal-statement")
     end
   end
+
+  describe "custom goals" do
+    let(:facility_region) { district_with_facilities[:facility_1].region }
+    let(:custom_indicator) { create(:indicator, :custom) }
+
+    def custom_goal(completed_at: nil)
+      target = create(:target, :boolean, period: q2_2024, indicator: custom_indicator,
+        completed: completed_at.present?, completed_at: completed_at)
+      create(:action_plan, region: facility_region, statement: "Organise EMR training",
+        dr_rai_indicator: custom_indicator, dr_rai_target: target)
+    end
+
+    def render_report(lite: false)
+      render_inline(described_class.new(periods, facility_region.slug, default_options.merge(selected_quarter: q2_2024), lite))
+    end
+
+    it "offers 'Create my own' last in the indicator list" do
+      DrRai::ContactOverduePatientsIndicator.create!
+      custom_indicator
+
+      render_report
+
+      options = page.all("#dr-rai--sidebar #step-1 button.advancer").map { |button| button.text.strip }
+      expect(options.last).to eq "Create my own"
+      expect(options.count("Create my own")).to eq 1
+    end
+
+    it "keeps 'Create my own' available when the quarter already has a custom goal" do
+      custom_goal
+
+      render_report
+
+      button = page.find("#dr-rai--sidebar button.advancer", text: "Create my own")
+      expect(button[:disabled]).to be_nil
+      expect(button["data-target-type"]).to eq "DrRai::BooleanTarget"
+      expect(button["data-target-ui"]).to eq "boolean"
+    end
+
+    it "explains 'Create my own' with the dashboard tooltip" do
+      custom_indicator
+
+      render_report
+
+      tooltip = page.find("#dr-rai--sidebar .create-my-own [data-toggle='tooltip']", visible: :all)
+      expect(tooltip["title"]).to eq "To track something not listed, select this option to create your own"
+    end
+
+    it "counts the goal's characters against the 80 character limit" do
+      custom_indicator
+
+      render_report
+
+      expect(page).to have_css("#step-2-boolean .custom-goal-input-block[data-max-length='80']", visible: :all)
+      expect(page).to have_css("#step-2-boolean .character-count", text: "0 / 80", visible: :all)
+      # Longer goals can be typed so the user can see how much to cut
+      expect(page).not_to have_css("#step-2-boolean textarea[maxlength]", visible: :all)
+    end
+
+    it "shows a mark complete button for incomplete goals" do
+      action_plan = custom_goal
+
+      render_report
+
+      button = page.find(".action-card button.toggle-completion")
+      expect(button.text.strip).to eq "Mark complete"
+      expect(button["data-url"]).to eq "/dr_rai/action_plans/#{action_plan.id}/completion"
+      expect(button["data-completed"]).to eq "true"
+      expect(button["aria-pressed"]).to eq "false"
+      expect(page).not_to have_css(".action-card .bar")
+    end
+
+    it "lets a completed goal be marked incomplete and shows when it was completed" do
+      custom_goal(completed_at: Time.zone.parse("June 7 2024 10:00"))
+
+      render_report
+
+      button = page.find(".action-card button.toggle-completion.completed")
+      expect(button.text.strip).to eq "Completed"
+      expect(button["data-completed"]).to eq "false"
+      expect(button["aria-pressed"]).to eq "true"
+      expect(page).to have_css(".action-card .completed-on", text: "Completed 07-Jun-2024")
+    end
+
+    it "is read only in the progress view" do
+      custom_goal
+
+      render_report(lite: true)
+
+      expect(page).to have_css(".action-card .complete-button", text: "Not completed")
+      expect(page).not_to have_css(".action-card button.toggle-completion")
+    end
+  end
 end

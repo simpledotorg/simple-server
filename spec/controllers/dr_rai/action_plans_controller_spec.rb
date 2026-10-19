@@ -262,6 +262,90 @@ RSpec.describe DrRai::ActionPlansController, type: :controller do
     end
   end
 
+  describe "POST /create for a custom goal" do
+    let(:custom_indicator) { create(:indicator, :custom) }
+
+    it "creates an action plan with a boolean target" do
+      post :create, params: {
+        dr_rai_action_plan: {
+          actions: "Find a venue",
+          indicator_id: custom_indicator.id,
+          period: "Q2-2025",
+          region_slug: region.slug,
+          statement: "Organise EMR training for all district staff",
+          target_type: "DrRai::BooleanTarget"
+        }
+      }
+
+      action_plan = DrRai::ActionPlan.last
+      expect(action_plan.target).to be_a(DrRai::BooleanTarget)
+      expect(action_plan.statement).to eq("Organise EMR training for all district staff")
+      expect(action_plan).not_to be_completed
+    end
+  end
+
+  describe "PATCH /completion" do
+    let(:custom_indicator) { create(:indicator, :custom) }
+    let(:dr_rai_action_plan) {
+      create(:action_plan,
+        region: facility_1.region,
+        dr_rai_indicator: custom_indicator,
+        dr_rai_target: create(:target, :boolean, period: "Q2-2025", indicator: custom_indicator),
+        statement: "Organise EMR training")
+    }
+
+    it "marks the custom goal complete" do
+      patch :completion, params: {id: dr_rai_action_plan.to_param, completed: "true"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(dr_rai_action_plan.reload).to be_completed
+      expect(dr_rai_action_plan.target.completed_at).to be_present
+    end
+
+    it "marks a completed custom goal incomplete" do
+      dr_rai_action_plan.reload.target.update!(completed: true)
+
+      patch :completion, params: {id: dr_rai_action_plan.to_param, completed: "false"}
+
+      expect(response).to have_http_status(:no_content)
+      expect(dr_rai_action_plan.reload).not_to be_completed
+      expect(dr_rai_action_plan.target.completed_at).to be_nil
+    end
+
+    it "allows changes outside the edit window" do
+      Timecop.freeze(Time.zone.parse("June 15 2025 00:00")) do
+        patch :completion, params: {id: dr_rai_action_plan.to_param, completed: "true"}
+      end
+
+      expect(response).to have_http_status(:no_content)
+      expect(dr_rai_action_plan.reload).to be_completed
+    end
+
+    it "requires the completed state" do
+      expect {
+        patch :completion, params: {id: dr_rai_action_plan.to_param}
+      }.to raise_error(ActionController::ParameterMissing)
+      expect(dr_rai_action_plan.reload).not_to be_completed
+    end
+
+    it "does not allow an admin without report access to the facility to change it" do
+      admin = create(:admin, :viewer_reports_only, :with_access, resource: create(:facility))
+      sign_in admin.email_authentication
+
+      patch :completion, params: {id: dr_rai_action_plan.to_param, completed: "true"}
+
+      expect(dr_rai_action_plan.reload).not_to be_completed
+    end
+
+    it "rejects action plans that are not custom goals" do
+      percentage_plan = create(:action_plan, region: facility_1.region)
+
+      patch :completion, params: {id: percentage_plan.to_param, completed: "true"}
+
+      expect(response).to have_http_status(:unprocessable_entity)
+    end
+  end
+
   describe "DELETE /destroy" do
     it "destroys the requested dr_rai_action_plan" do
       dr_rai_action_plan = create :action_plan, region: region, dr_rai_indicator: contact_overdue_patients_indicator
