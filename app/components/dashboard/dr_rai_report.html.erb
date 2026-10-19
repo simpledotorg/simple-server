@@ -44,6 +44,9 @@
           <% end %>
           <div>
             <h3><%= action_plan.statement %></h3>
+            <% if action_plan.goal_statement.present? %>
+              <p class="goal-statement"><%= action_plan.goal_statement %></p>
+            <% end %>
             <% if !action_plan.actions.nil? %>
               <ul>
                 <% action_plan.actions.lines.each do |line| %>
@@ -79,6 +82,20 @@
                   <% end %>
                 </div>
                 </div>
+              </div>
+            <% elsif action_plan.boolean_target? %>
+              <% completed = action_plan.completed? %>
+              <div class="custom-goal-status">
+                <% label = tag.i(class: completed ? "fa-solid fa-square-check" : "fa-regular fa-square") + (completed ? "Completed" : is_lite_version? ? "Not completed" : "Mark complete") %>
+                <% if is_lite_version? %>
+                  <%= tag.span label, class: ["complete-button", ("completed" if completed)] %>
+                <% else %>
+                  <%= tag.button label, type: "button", class: ["complete-button toggle-completion", ("completed" if completed)],
+                    aria: {pressed: completed}, data: {url: completion_dr_rai_action_plan_path(action_plan), completed: !completed} %>
+                <% end %>
+                <% if completed && action_plan.target.completed_at %>
+                  <p class="completed-on">Completed <%= action_plan.target.completed_at.strftime("%d-%b-%Y") %></p>
+                <% end %>
               </div>
             <% else %>
               <p class="statement"><%= action_plan.numerator %> of <%= action_plan.denominator %> <%= action_plan.unit %> <%= action_plan.passive_action %></p>
@@ -134,7 +151,7 @@
           <%# <button class="link-button edit">Edit</button> %>
           <ul>
             <% indicators.each do |indicator| %>
-              <%= tag.li do %>
+              <%= tag.li class: ("create-my-own d-flex align-items-center justify-content-between" if indicator.tooltip) do %>
                 <%= tag.button disabled: indicator.has_action_plans?(region, selected_period), class: [
                     "link-button advancer",
                     indicator.has_action_plans?(region, selected_period) ? "link-button-inactive" : "link-button-active"
@@ -153,6 +170,7 @@
                   } do %>
                   <%= indicator.display_name %>
                 <% end %>
+                <%= render Dashboard::Card::TooltipComponent.new(indicator.tooltip) %>
               <% end %>
             <% end %>
           </ul>
@@ -164,7 +182,7 @@
       </div>
       <div class="step-block d-none" id="step-2-percent">
         <div class='active'>
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <div class="goal-input-block">
             <label class="goal-label-block">
@@ -178,14 +196,14 @@
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-numeric">
         <div class='active'>
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <div class="goal-input-block">
             <label class="goal-label-block patients">
@@ -199,38 +217,48 @@
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-boolean">
         <div class='active'>
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
+          <p class="step-statement fs-14px">Write a clear, single, measurable outcome to be achieved.</p>
+          <div class="goal-input-block custom-goal-input-block" data-max-length="<%= DrRai::ActionPlan::CUSTOM_GOAL_MAX_LENGTH %>">
+            <textarea class="custom-goal-input" rows="2" placeholder="Organise monthly EMR training sessions for all district staff" aria-describedby="custom-goal-feedback"></textarea>
+            <p class="goal-feedback d-flex justify-content-end fs-14px" id="custom-goal-feedback" aria-live="polite">
+              <span class="custom-goal-error"></span>
+              <span class="custom-goal-separator d-none">&middot;</span>
+              <span class="character-count"><span class="current-count">0</span> / <%= DrRai::ActionPlan::CUSTOM_GOAL_MAX_LENGTH %></span>
+            </p>
+          </div>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
-          <p class="step-statement">Mark as done when completed</p>
+          <p class="step-statement"></p>
         </div>
       </div>
       <div class="step-block d-none" id="step-2-custom">
         <div class='active'>
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement">Track improvement from previous period</p>
           <button class="next-button">Next</button>
         </div>
         <div class="inactive d-none">
-          <h2>What is the goal?</h2>
+          <h2>What is the quarterly goal?</h2>
           <%# <button class="link-button edit">Edit</button> %>
           <p class="step-statement">Track improvement from previous period</p>
         </div>
       </div>
       <div class="step-block d-none" id="step-3">
         <h2>What action should be taken?</h2>
+        <p class="step-statement fs-14px">Add tasks to be done to help reach the goal.</p>
         <textarea class="custom-actions-list" rows="4" placeholder="Write actions..."></textarea>
       </div>
       <div class="action-buttons-block">
@@ -264,7 +292,7 @@
         <p class="step-statement edit-indicator-summary"></p>
       </div>
       <div class="step-block">
-        <h2>What is the goal?</h2>
+        <h2>What is the quarterly goal?</h2>
         <p class="step-statement edit-target-summary"></p>
       </div>
       <div class="step-block">
@@ -361,10 +389,44 @@
     // BEGIN DR. RAI LOGIC
     // ===================
 
+    const validateCustomGoal = (block, { showEmptyError = false } = {}) => {
+      const textarea = block.find('.custom-goal-input')
+      const length = textarea.val().length
+      const excess = length - parseInt(block.data('max-length'))
+      const isEmpty = textarea.val().trim() === ''
+      const isTooLong = excess > 0
+      const showEmpty = showEmptyError && isEmpty
+      const error = showEmpty ? 'Please write a goal'
+        : isTooLong ? `${excess} ${excess === 1 ? 'character' : 'characters'} too long` : ''
+
+      block.find('.current-count').text(length)
+      block.find('.custom-goal-error').text(error)
+      block.find('.custom-goal-separator').toggleClass('d-none', !isTooLong)
+      block.find('.character-count').toggleClass('d-none', showEmpty)
+      block.toggleClass('invalid', error !== '')
+      textarea.attr('aria-invalid', error !== '')
+      return !isEmpty && !isTooLong
+    }
+
+    const resizeCustomGoal = (textarea) => {
+      textarea.style.height = 'auto'
+      textarea.style.height = `${textarea.scrollHeight + textarea.offsetHeight - textarea.clientHeight}px`
+    }
+
+    const saveAndReload = (type, url, data) => $.ajax({
+      url, type, data,
+      headers: { 'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content') },
+      success: () => window.location.reload()
+    })
+
     createPanel.find('.step-block').on('step-through', (e, target, indicator) => {
       const targets = ['.active', '.inactive']
       const goalInputBlock = $(e.currentTarget).find('.goal-input-block')
-      if (goalInputBlock.length > 0 && goalInputBlock.find('input').val() === '') {
+      const isCustomGoal = goalInputBlock.hasClass('custom-goal-input-block')
+      if (isCustomGoal && !validateCustomGoal(goalInputBlock, { showEmptyError: true })) {
+        goalInputBlock.find('.custom-goal-input').trigger('focus')
+        return
+      } else if (!isCustomGoal && goalInputBlock.length > 0 && goalInputBlock.find('input').val() === '') {
         goalInputBlock.find('.missing-input-warning').removeClass('d-none')
         return
       } else {
@@ -383,7 +445,11 @@
       $('.passive-action').text(indicator.passive_action)
       $('.indicator-unit').text(indicator.unit)
       if (nextStep === 3) {
-        if (target.ui === 'custom') {
+        if (isCustomGoal) {
+          const goal = $(e.currentTarget).find('.custom-goal-input').val().trim()
+          $(e.currentTarget).find('.inactive .step-statement').text(goal)
+          $('#dr-rai--sidebar').data('statement', goal)
+        } else if (target.ui === 'custom') {
           $('#dr-rai--sidebar').data('statement', $(e.currentTarget).find('.step-statement').text())
         } else {
           $(e.currentTarget).find('.step-statement').text($(e.currentTarget).find('.activity-promise').text())
@@ -407,6 +473,7 @@
             previousPercentage = Math.round(indicator.previous_numerator / indicator.previous_denominator * 100)
           }
           $('.activity-statement .previous-percentage').text(previousPercentage)
+          $('#dr-rai--sidebar').data('baseline-percentage', previousPercentage)
           $('#step-' + nextStep + '-' + target.ui)
             .data('denominator', indicator.previous_denominator)
             .data('previous-numerator', indicator.previous_numerator)
@@ -422,6 +489,11 @@
 
     createPanel.find('.goal-input-block input').on('blur keyup', (e) => {
       $('.missing-input-warning').addClass('d-none')
+    })
+
+    createPanel.find('.custom-goal-input').on('input', (e) => {
+      validateCustomGoal($(e.currentTarget).closest('.custom-goal-input-block'))
+      resizeCustomGoal(e.currentTarget)
     })
 
     $('#step-2-numeric .goal-input-block input').on('blur keyup', (e) => {
@@ -456,15 +528,13 @@
         .text(targetValue)
       activityPromise.removeClass('d-none')
       $('#dr-rai--sidebar').data('target-value', targetValue)
+      $('#dr-rai--sidebar').data('goal-percentage', inputValue)
     })
 
     createPanel.find('.action-buttons-block .save-button').on('click', (e) => {
       createPanel.find('.action-buttons-block .save-button').prop('disabled', true)
       createPanel.find(".save-button .button-text").text("Creating...");
-      $.ajax({
-        url: `/dr_rai/action_plans`,
-        type: 'POST',
-        data: {
+      saveAndReload('POST', '/dr_rai/action_plans', {
           'dr_rai_action_plan': {
             'indicator_id': $('#dr-rai--sidebar').data('indicator-id'),
             'period': $('#dr-rai--sidebar').data('period'),
@@ -473,19 +543,13 @@
             'statement': $('#dr-rai--sidebar').data('statement'),
             'target_type': $('#dr-rai--sidebar').data('target-type'),
             'target_value': $('#dr-rai--sidebar').data('target-value'),
+            'baseline_percentage': $('#dr-rai--sidebar').data('baseline-percentage'),
+            'goal_percentage': $('#dr-rai--sidebar').data('goal-percentage'),
           }
-        },
-        headers: {
-          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: (response) => {
-          window.location.reload()
-        },
-        error: (xhr) => {
-          createPanel.find('.action-buttons-block .save-button').prop('disabled', false)
-          createPanel.find(".save-button .button-text").text("Create");
-        }
-      });
+      }).fail(() => {
+        createPanel.find('.action-buttons-block .save-button').prop('disabled', false)
+        createPanel.find(".save-button .button-text").text("Create");
+      })
 
     })
 
@@ -529,6 +593,8 @@
         'region_slug',
         'statement',
         'actions',
+        'baseline-percentage',
+        'goal-percentage',
       ])
 
       // Reset UI
@@ -537,7 +603,7 @@
       createPanel.find('.action-buttons-block .save-button').addClass('invisible')
       createPanel.find('input').val('')
       $('.active .activity-promise').addClass('d-none')
-      createPanel.find('textarea').val('')
+      createPanel.find('textarea').val('').trigger('input')
 
       // Close the offcanvas
       createPanel.find('.bs-canvas-close').trigger('click')
@@ -620,26 +686,22 @@
       saveButton.prop('disabled', true)
       saveButton.find('.button-text').text('Saving...')
 
-      $.ajax({
-        url: `/dr_rai/action_plans/${editPanel.data('action-plan-id')}`,
-        type: 'PATCH',
-        data: {
-          'dr_rai_action_plan': {
-            'actions': editPanel.find('.custom-actions-list').val()
-          }
-        },
-        headers: {
-          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: () => {
-          window.location.reload()
-        },
-        error: () => {
-          saveButton.prop('disabled', false)
-          saveButton.find('.button-text').text('Save')
-          editPanel.find('.edit-save-warning').removeClass('d-none')
+      saveAndReload('PATCH', `/dr_rai/action_plans/${editPanel.data('action-plan-id')}`, {
+        'dr_rai_action_plan': {
+          'actions': editPanel.find('.custom-actions-list').val()
         }
+      }).fail(() => {
+        saveButton.prop('disabled', false)
+        saveButton.find('.button-text').text('Save')
+        editPanel.find('.edit-save-warning').removeClass('d-none')
       })
+    })
+
+    $('.toggle-completion').on('click', (e) => {
+      const button = $(e.currentTarget)
+      button.prop('disabled', true)
+      saveAndReload('PATCH', button.data('url'), { 'completed': button.attr('data-completed') })
+        .fail(() => button.prop('disabled', false))
     })
 
     // show action delete overlay, takes several seconds to process

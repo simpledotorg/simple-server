@@ -38,6 +38,8 @@ class Dashboard::DrRaiReport < ApplicationComponent
     DrRai::Indicator
       .all
       .filter { |indicator| indicator.is_supported?(region) }
+      .partition { |indicator| !indicator.is_a?(DrRai::CustomIndicator) } # "Create my own" goes last
+      .flatten
   end
 
   def indicator_numerator(indicator, period = selected_period)

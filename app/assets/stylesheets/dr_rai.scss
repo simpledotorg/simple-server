@@ -1,6 +1,14 @@
 @import "partials/variables";
 $font-condensed: "Roboto Condensed", sans-serif;
 
+$dr-rai-text: #483d04;
+$dr-rai-progress: #d7cd06;
+$dr-rai-progress-track: #eceeb1;
+$dr-rai-step-border: #d5e6ff;
+$dr-rai-input-border: #cad0d7;
+$dr-rai-error: #d10000;
+$dr-rai-muted: rgba(0, 0, 0, 0.5);
+
 // Action plan
 .actions-block {
   display: flex;
@@ -122,8 +130,18 @@ $font-condensed: "Roboto Condensed", sans-serif;
     font-size: 20px;
     margin: 0 0 12px;
     font-weight: bold;
-    color: #483d04;
+    color: $dr-rai-text;
     font-family: $font-condensed;
+  }
+
+  h3:has(+ .goal-statement) {
+    margin-bottom: 2px;
+  }
+
+  .goal-statement {
+    font-size: 13px;
+    color: #6a6500;
+    margin-bottom: 12px;
   }
 
   ul {
@@ -150,7 +168,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
       align-items: center;
       justify-items: center;
       cursor: pointer;
-      border: 1px solid #eceeb1;
+      border: 1px solid $dr-rai-progress-track;
       border-radius: 3px;
       height: 24px;
       width: 32px;
@@ -173,7 +191,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
       }
       &.delete:hover {
         background: #feecec !important;
-        color: #d10000;
+        color: $dr-rai-error;
       }
     }
 
@@ -188,6 +206,10 @@ $font-condensed: "Roboto Condensed", sans-serif;
       padding: 0 20px 0 0;
     }
 
+    &:has(.custom-goal-status) {
+      align-self: center;
+    }
+
     & .statement {
       text-align: right;
       margin: 12px 0 6px;
@@ -199,14 +221,14 @@ $font-condensed: "Roboto Condensed", sans-serif;
     }
 
     & .bar {
-      background: #eceeb1;
+      background: $dr-rai-progress-track;
       height: 36px;
       border-radius: 0.375rem;
       overflow: hidden;
       position: relative;
 
       .bar-fill {
-        background: #d7cd06;
+        background: $dr-rai-progress;
         height: 100%;
         position: relative;
         display: block;
@@ -229,6 +251,53 @@ $font-condensed: "Roboto Condensed", sans-serif;
       .over-86-percent {
         transform: translateX(-8px);
         text-align: right;
+      }
+    }
+
+    & .custom-goal-status {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      margin: 12px 0 6px auto;
+      font-family: $font-condensed;
+
+      & .complete-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        min-width: 184px;
+        padding: 8px 20px;
+        border: 1px solid darken($dr-rai-progress-track, 8%);
+        border-radius: 0.375rem;
+        background: $dr-rai-progress-track;
+        color: $dr-rai-text;
+        font-size: 16px;
+        font-weight: 600;
+
+        &.completed {
+          background: $dr-rai-progress;
+          border-color: $dr-rai-progress;
+        }
+      }
+
+      & button.complete-button {
+        &:hover {
+          filter: brightness(0.95);
+        }
+
+        &:disabled {
+          cursor: progress;
+          opacity: 0.7;
+        }
+      }
+
+      & .completed-on {
+        margin: 0;
+        font-size: 14px;
+        color: $dr-rai-muted;
       }
     }
 
@@ -255,7 +324,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
         & .ratio-value {
           font-size: 22px;
           font-weight: 800;
-          color: #483d04;
+          color: $dr-rai-text;
         }
 
         & .arrow {
@@ -365,7 +434,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
 
   .step-block {
     background-color: #eff8ff;
-    border: 1px solid #d5e6ff !important;
+    border: 1px solid $dr-rai-step-border !important;
     padding: 16px 20px;
     border-radius: 0.375rem;
     position: relative;
@@ -400,6 +469,12 @@ $font-condensed: "Roboto Condensed", sans-serif;
 
   .step-statement {
     margin-top: 8px;
+  }
+
+  .create-my-own {
+    border-top: 1px solid $dr-rai-step-border;
+    margin-top: 8px;
+    padding-top: 8px;
   }
 
   .activity-statement {
@@ -443,7 +518,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
 
   .goal-label-block {
     display: flex;
-    border: 1px solid #cad0d7;
+    border: 1px solid $dr-rai-input-border;
     background: #fff;
     border-radius: 0.375rem;
     width: 7em;
@@ -484,8 +559,45 @@ $font-condensed: "Roboto Condensed", sans-serif;
     width: 11rem;
   }
 
+  .custom-goal-input-block {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+
+    textarea {
+      margin: 0;
+      min-height: calc(2 * 1.5em + 16px + 2px);
+      padding: 8px 12px;
+      line-height: 1.5;
+      resize: none;
+      overflow: hidden;
+    }
+  }
+
+  .goal-feedback {
+    gap: 6px;
+    margin: 0;
+    color: $dr-rai-muted;
+  }
+
+  .goal-input-block.invalid {
+    textarea,
+    .goal-label-block {
+      border-color: $dr-rai-error;
+    }
+
+    textarea:focus {
+      outline: 2px solid $dr-rai-error;
+      outline-offset: -1px;
+    }
+
+    .goal-feedback {
+      color: $dr-rai-error;
+    }
+  }
+
   .missing-input-warning {
-    color: #d10000;
+    color: $dr-rai-error;
     margin-top: 4px;
     margin-bottom: 8px;
     font-weight: 500;
@@ -513,7 +625,7 @@ $font-condensed: "Roboto Condensed", sans-serif;
     padding: 1rem;
     font-size: 1rem;
     background-color: #fff;
-    border: 1px solid #cad0d7;
+    border: 1px solid $dr-rai-input-border;
     border-radius: 0.375rem;
     width: 100%;
     min-height: 8rem;
@@ -609,6 +721,10 @@ $font-condensed: "Roboto Condensed", sans-serif;
   z-index: 1110;
   overflow-x: hidden;
   overflow-y: auto;
+}
+
+.tooltip {
+  z-index: 1120;
 }
 
 .bs-canvas-left {

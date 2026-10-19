@@ -5,7 +5,10 @@ class DrRai::ActionPlan < ApplicationRecord
   belongs_to :dr_rai_target, class_name: "DrRai::Target"
   belongs_to :region
 
+  CUSTOM_GOAL_MAX_LENGTH = 80
+
   validates :statement, presence: true, if: :target_uses_statement?
+  validates :statement, presence: true, length: {maximum: CUSTOM_GOAL_MAX_LENGTH}, if: :boolean_target?
 
   def indicator
     dr_rai_indicator
@@ -27,7 +30,7 @@ class DrRai::ActionPlan < ApplicationRecord
   end
 
   def progress
-    return 0 if unprocessible?
+    return 0 if boolean_target? || unprocessible?
     current = progress_numerator
     return 0 if current.negative?
     return 100 unless current < denominator
@@ -41,6 +44,13 @@ class DrRai::ActionPlan < ApplicationRecord
 
   def passive_action
     indicator.action_passive
+  end
+
+  def goal_statement
+    baseline, goal = target.baseline_percentage, target.goal_percentage
+    return nil if baseline.nil? || goal.nil? || indicator.goal_subject.nil?
+
+    "Goal: Increase #{indicator.goal_subject} from #{baseline}% to #{goal}%"
   end
 
   def current_ratio
@@ -80,9 +90,16 @@ class DrRai::ActionPlan < ApplicationRecord
     target.type == "DrRai::CustomTarget"
   end
 
+  def boolean_target?
+    target.is_a?(DrRai::BooleanTarget)
+  end
+
+  def completed?
+    boolean_target? && target.achieved_for?(indicator).present?
+  end
+
   private
 
-  # Uncapped, so that a drop against a target of 0 does not count as reached
   def progress_numerator
     target_period = Period.new(type: :quarter, value: target.period)
     indicator.progress_numerator(region, target_period)

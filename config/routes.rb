@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   namespace :dr_rai do
-    resources :action_plans, only: [:create, :update, :destroy]
+    resources :action_plans, only: [:create, :update, :destroy] do
+      patch :completion, on: :member
+    end
   end
   resources :home
 
