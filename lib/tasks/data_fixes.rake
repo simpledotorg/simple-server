@@ -38,16 +38,31 @@ namespace :data_fixes do
     end
   end
 
-  desc "Move a region (woreda/block or facility) from one parent to another - DRY RUN"
-  task :move_region_dry_run, [:region_slug, :new_parent_slug] => :environment do |_t, args|
+  desc "Move a region (block/woreda or facility) from one parent to another - DRY RUN"
+  task :move_region_dry_run, [:region_identifier, :new_parent_identifier] => :environment do |_t, args|
     puts "=" * 80
     puts "DRY RUN: Move Region"
     puts "=" * 80
     puts ""
 
+    # Smart lookup - accepts both slugs and names
+    region = Region.find_by(slug: args.region_identifier) ||
+             Region.find_by(name: args.region_identifier)
+
+    new_parent = Region.find_by(slug: args.new_parent_identifier) ||
+                 Region.find_by(name: args.new_parent_identifier)
+
+    raise "Region not found: #{args.region_identifier}" unless region
+    raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
+
+    puts "Found:"
+    puts "  Region: #{region.name} (#{region.region_type}, slug: #{region.slug})"
+    puts "  New parent: #{new_parent.name} (#{new_parent.region_type}, slug: #{new_parent.slug})"
+    puts ""
+
     mover = MoveRegion.new(
-      region_slug: args.region_slug,
-      new_parent_slug: args.new_parent_slug
+      region_slug: region.slug,
+      new_parent_slug: new_parent.slug
     )
 
     result = mover.move!(dry_run: true)
@@ -55,10 +70,10 @@ namespace :data_fixes do
     puts ""
     puts "=" * 80
     puts "To execute this move, run:"
-    puts "bundle exec rake data_fixes:move_region[#{args.region_slug},#{args.new_parent_slug}]"
+    puts "bundle exec rake data_fixes:move_region[\"#{args.region_identifier}\",\"#{args.new_parent_identifier}\"]"
     puts ""
     puts "Or for production via Capistrano:"
-    puts "bundle exec cap <env> deploy:rake task=data_fixes:move_region[#{args.region_slug},#{args.new_parent_slug}]"
+    puts "bundle exec cap <env> deploy:rake task=data_fixes:move_region[\"#{args.region_identifier}\",\"#{args.new_parent_identifier}\"]"
     puts "=" * 80
   rescue => e
     puts "ERROR: #{e.message}"
@@ -66,8 +81,8 @@ namespace :data_fixes do
     exit 1
   end
 
-  desc "Move a region (woreda/block or facility) from one parent to another - EXECUTE"
-  task :move_region, [:region_slug, :new_parent_slug] => :environment do |_t, args|
+  desc "Move a region (block/woreda or facility) from one parent to another - EXECUTE"
+  task :move_region, [:region_identifier, :new_parent_identifier] => :environment do |_t, args|
     puts "=" * 80
     puts "MOVE REGION"
     puts "=" * 80
@@ -75,9 +90,24 @@ namespace :data_fixes do
     puts "⚠️  WARNING: This will move the region and all its descendants!"
     puts ""
 
+    # Smart lookup - accepts both slugs and names
+    region = Region.find_by(slug: args.region_identifier) ||
+             Region.find_by(name: args.region_identifier)
+
+    new_parent = Region.find_by(slug: args.new_parent_identifier) ||
+                 Region.find_by(name: args.new_parent_identifier)
+
+    raise "Region not found: #{args.region_identifier}" unless region
+    raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
+
+    puts "Found:"
+    puts "  Region: #{region.name} (#{region.region_type}, slug: #{region.slug})"
+    puts "  New parent: #{new_parent.name} (#{new_parent.region_type}, slug: #{new_parent.slug})"
+    puts ""
+
     mover = MoveRegion.new(
-      region_slug: args.region_slug,
-      new_parent_slug: args.new_parent_slug
+      region_slug: region.slug,
+      new_parent_slug: new_parent.slug
     )
 
     # Show dry run first
@@ -121,31 +151,4 @@ namespace :data_fixes do
     exit 1
   end
 
-  desc "Move a Woreda from one Zone to another (Ethiopia specific) - DRY RUN"
-  task :move_woreda_dry_run, [:woreda_name, :new_zone_name] => :environment do |_t, args|
-    # Helper task with friendlier naming for Ethiopia
-    woreda = Region.find_by!(name: args.woreda_name, region_type: "block")
-    new_zone = Region.find_by!(name: args.new_zone_name, region_type: "district")
-
-    puts "Found:"
-    puts "  Woreda: #{woreda.name} (slug: #{woreda.slug})"
-    puts "  New Zone: #{new_zone.name} (slug: #{new_zone.slug})"
-    puts ""
-
-    Rake::Task["data_fixes:move_region_dry_run"].invoke(woreda.slug, new_zone.slug)
-  end
-
-  desc "Move a Woreda from one Zone to another (Ethiopia specific) - EXECUTE"
-  task :move_woreda, [:woreda_name, :new_zone_name] => :environment do |_t, args|
-    # Helper task with friendlier naming for Ethiopia
-    woreda = Region.find_by!(name: args.woreda_name, region_type: "block")
-    new_zone = Region.find_by!(name: args.new_zone_name, region_type: "district")
-
-    puts "Found:"
-    puts "  Woreda: #{woreda.name} (slug: #{woreda.slug})"
-    puts "  New Zone: #{new_zone.name} (slug: #{new_zone.slug})"
-    puts ""
-
-    Rake::Task["data_fixes:move_region"].invoke(woreda.slug, new_zone.slug)
-  end
 end

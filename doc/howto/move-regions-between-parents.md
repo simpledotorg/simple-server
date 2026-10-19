@@ -43,12 +43,17 @@ Users with region-based access permissions may lose or gain access to facilities
 **Always run a dry run first** to analyze the impact:
 
 ```bash
-# Local development
-bundle exec rake data_fixes:move_region_dry_run[region-slug,new-parent-slug]
+# Using region names (recommended - easier to remember)
+bundle exec rake data_fixes:move_region_dry_run["Hulla Woreda","Southern Zone"]
+
+# Or using slugs (also works)
+bundle exec rake data_fixes:move_region_dry_run[hulla-woreda,southern-zone]
 
 # Production (via Capistrano)
-bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region_dry_run[hulla-woreda,southern-zone]
+bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region_dry_run["Hulla Woreda","Southern Zone"]
 ```
+
+**Note:** The task accepts both region names (with quotes) or slugs (without quotes).
 
 **Example output:**
 ```
@@ -88,11 +93,14 @@ Their access permissions may need to be reviewed
 After reviewing the dry run, execute the move:
 
 ```bash
-# Local development
-bundle exec rake data_fixes:move_region[region-slug,new-parent-slug]
+# Using region names (recommended)
+bundle exec rake data_fixes:move_region["Hulla Woreda","Southern Zone"]
+
+# Or using slugs (also works)
+bundle exec rake data_fixes:move_region[hulla-woreda,southern-zone]
 
 # Production (via Capistrano)
-bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region[hulla-woreda,southern-zone]
+bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region["Hulla Woreda","Southern Zone"]
 ```
 
 **The task will:**
@@ -141,22 +149,25 @@ Summary:
   Integrity check: true
 ```
 
-## Ethiopia-Specific Helper Tasks
+## Flexible Input
 
-For Ethiopia deployments, we provide woreda-specific tasks with friendlier naming:
+The `move_region` tasks are smart and accept both:
+- **Region names** (e.g., "Hulla Woreda", "Southern Zone") - use quotes
+- **Region slugs** (e.g., hulla-woreda, southern-zone) - no quotes needed
 
+The task will automatically detect whether you provided a name or slug and find the correct region.
+
+**Examples:**
 ```bash
-# Dry run
-bundle exec rake data_fixes:move_woreda_dry_run["Hulla Woreda","Southern Zone"]
+# Using names (recommended for readability)
+rake data_fixes:move_region["Hulla Woreda","Southern Zone"]
 
-# Execute
-bundle exec rake data_fixes:move_woreda["Hulla Woreda","Southern Zone"]
+# Using slugs (works too)
+rake data_fixes:move_region[hulla-woreda,southern-zone]
+
+# Mixed (name and slug)
+rake data_fixes:move_region["Hulla Woreda",southern-zone]
 ```
-
-These tasks:
-- Accept region **names** instead of slugs
-- Automatically find the correct regions
-- Call the standard move tasks
 
 ## Valid Parent-Child Relationships
 
@@ -330,14 +341,14 @@ exit
 
 **2. Run dry run:**
 ```bash
-bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_woreda_dry_run["Hulla Woreda","Southern Zone"]
+bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region_dry_run["Hulla Woreda","Southern Zone"]
 ```
 
 **3. Review the output carefully**
 
 **4. Execute the move:**
 ```bash
-bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_woreda["Hulla Woreda","Southern Zone"]
+bundle exec cap ethiopia-production deploy:rake task=data_fixes:move_region["Hulla Woreda","Southern Zone"]
 ```
 
 **5. Verify the move:**
