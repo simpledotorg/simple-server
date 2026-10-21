@@ -122,18 +122,23 @@ class MoveRegion
     ActiveRecord::Base.transaction do
       Rails.logger.info "Starting move of #{region.name} from #{@old_parent&.name} to #{@new_parent.name}"
 
-      # Step 1: Update the region's parent
+      # Calculate new path first without saving
+      temp_region = region.dup
+      temp_region.reparent_to = @new_parent
+      temp_region.send(:initialize_path)
+      @new_path = temp_region.path.to_s
+
+      # Step 1: Update all descendant paths FIRST (while old path still exists)
+      descendants_count = update_descendant_paths
+      log_info "Step 1: Updated #{descendants_count} descendant paths", "✓"
+      result[:descendants_updated] = descendants_count
+
+      # Step 2: Update the region's parent
       region.reparent_to = @new_parent
       region.save!
-      @new_path = region.path.to_s
 
-      log_info "Step 1: Updated region parent", "✓"
+      log_info "Step 2: Updated region parent", "✓"
       result[:region_updated] = true
-
-      # Step 2: Update all descendant paths
-      descendants_count = update_descendant_paths
-      log_info "Step 2: Updated #{descendants_count} descendant paths", "✓"
-      result[:descendants_updated] = descendants_count
 
       # Step 3: Clear caches
       clear_caches
@@ -212,7 +217,7 @@ class MoveRegion
     end
 
     if errors.any?
-      raise ArgumentError, "Invalid move: #{errors.join(', ')}"
+      raise ArgumentError, "Invalid move: #{errors.join(", ")}"
     end
 
     true
@@ -229,7 +234,6 @@ class MoveRegion
     when "district" then "state"
     when "block" then "district"
     when "facility" then "block"
-    else nil
     end
   end
 
@@ -243,18 +247,28 @@ class MoveRegion
   end
 
   def update_descendant_paths
-    # Use raw SQL for efficiency
-    sql = <<~SQL
-      UPDATE regions
-      SET path = text2ltree(
-        replace(ltree2text(path), '#{@old_path}', '#{@new_path}')
-      )
-      WHERE path <@ '#{@old_path}'::ltree
-        AND id != '#{region.id}'
-    SQL
+    # Find all descendants (children, grandchildren, etc.)
+    # Use ActiveRecord instead of raw SQL for reliability
+    descendants = Region
+      .where("path <@ ?::ltree", @old_path)
+      .where.not(id: region.id)
 
-    result = ActiveRecord::Base.connection.execute(sql)
-    result.cmd_tuples # Returns number of rows updated
+    Rails.logger.info "Found #{descendants.count} descendants to update"
+
+    updated_count = 0
+    descendants.find_each do |descendant|
+      old_descendant_path = descendant.path.to_s
+      new_descendant_path = old_descendant_path.sub(@old_path, @new_path)
+
+      Rails.logger.info "Updating descendant #{descendant.id}: #{old_descendant_path} -> #{new_descendant_path}"
+
+      # Use update_column to bypass callbacks and validations
+      descendant.update_column(:path, new_descendant_path)
+      updated_count += 1
+    end
+
+    Rails.logger.info "Updated #{updated_count} descendant paths"
+    updated_count
   end
 
   def clear_caches
@@ -263,8 +277,16 @@ class MoveRegion
 
     # Add state regions if we're moving districts or below
     if region.region_type.in?(["district", "block", "facility"])
-      affected_regions << new_parent.state_region rescue nil
-      affected_regions << old_parent&.state_region rescue nil
+      begin
+        affected_regions << new_parent.state_region
+      rescue
+        nil
+      end
+      begin
+        affected_regions << old_parent&.state_region
+      rescue
+        nil
+      end
     end
 
     affected_regions.uniq.each do |r|
@@ -287,8 +309,16 @@ class MoveRegion
       states_to_recalculate << old_parent if old_parent&.region_type == "state"
     elsif region.region_type.in?(["block", "facility"])
       # Moving blocks/facilities affects their state populations
-      states_to_recalculate << new_parent.state_region rescue nil
-      states_to_recalculate << old_parent&.state_region rescue nil
+      begin
+        states_to_recalculate << new_parent.state_region
+      rescue
+        nil
+      end
+      begin
+        states_to_recalculate << old_parent&.state_region
+      rescue
+        nil
+      end
     end
 
     states_to_recalculate.compact.uniq.each do |state|
@@ -332,10 +362,10 @@ class MoveRegion
     # Count users who have access to regions in this hierarchy
     User.joins(:user_authentications)
       .where(user_authentications: {authenticatable_type: "PhoneNumberAuthentication"})
-      .select { |u|
+      .count { |u|
         # Check if user has access to any region in the old or new hierarchy
         u.accessible_region_ids(:manage).intersect?([old_parent&.id, new_parent.id, region.id].compact)
-      }.count
+      }
   rescue
     0 # If there's an error counting, return 0
   end
