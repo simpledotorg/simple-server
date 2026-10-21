@@ -267,6 +267,7 @@ Rails.application.routes.draw do
 
   scope :resources do
     get "/", to: "resources#index", as: "resources"
+    get "/qi_reports", to: "resources#qi_reports", as: "resources_qi_reports"
   end
 
   namespace :admin do

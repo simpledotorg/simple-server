@@ -1,0 +1,42 @@
+<h1 class="page-header">
+  QI reports
+</h1>
+<div class="mb-3">
+  <%= link_to "← Back to resources", resources_path %>
+</div>
+<% if @qi_reports.empty? %>
+  <div class="card">
+    <p>No QI reports are available yet.</p>
+  </div>
+<% else %>
+  <div class="row">
+    <div class="col-lg-3">
+      <div class="list-group mb-3">
+        <% @qi_reports.each do |name| %>
+          <%= link_to name, resources_qi_reports_path(file: name),
+                class: "list-group-item list-group-item-action #{"active" if name == @selected_report}" %>
+        <% end %>
+      </div>
+    </div>
+    <div class="col-lg-9">
+      <% report_path = "/documents/qi_reports/#{ERB::Util.url_encode(@selected_report)}" %>
+      <div class="mb-2">
+        <a href="<%= report_path %>" download class="btn btn-primary btn-sm">Download</a>
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="qi-report-print">Print</button>
+      </div>
+      <iframe id="qi-report-frame" src="<%= report_path %>" title="<%= @selected_report %>"
+              style="width: 100%; height: 80vh; border: 1px solid #ddd;"></iframe>
+    </div>
+  </div>
+  <script>
+    document.getElementById("qi-report-print").addEventListener("click", function () {
+      var frame = document.getElementById("qi-report-frame");
+      try {
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+      } catch (e) {
+        window.open(frame.src, "_blank");
+      }
+    });
+  </script>
+<% end %>
