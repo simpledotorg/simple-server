@@ -46,13 +46,8 @@ namespace :data_fixes do
     puts ""
 
     # Smart lookup - accepts both slugs and names
-    region =
-      Region.find_by(slug: args.region_identifier) ||
-      Region.find_by(name: args.region_identifier)
-
-    new_parent =
-      Region.find_by(slug: args.new_parent_identifier) ||
-      Region.find_by(name: args.new_parent_identifier)
+    region = Region.find_by(slug: args.region_identifier) || Region.find_by(name: args.region_identifier)
+    new_parent = Region.find_by(slug: args.new_parent_identifier) || Region.find_by(name: args.new_parent_identifier)
 
     raise "Region not found: #{args.region_identifier}" unless region
     raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
@@ -93,13 +88,8 @@ namespace :data_fixes do
     puts ""
 
     # Smart lookup - accepts both slugs and names
-    region =
-      Region.find_by(slug: args.region_identifier) ||
-      Region.find_by(name: args.region_identifier)
-
-    new_parent =
-      Region.find_by(slug: args.new_parent_identifier) ||
-      Region.find_by(name: args.new_parent_identifier)
+    region = Region.find_by(slug: args.region_identifier) || Region.find_by(name: args.region_identifier)
+    new_parent = Region.find_by(slug: args.new_parent_identifier) || Region.find_by(name: args.new_parent_identifier)
 
     raise "Region not found: #{args.region_identifier}" unless region
     raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
