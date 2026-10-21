@@ -106,9 +106,7 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "updates descendant facility paths" do
-      facility = create(:facility, block: block.source.name)
-      facility_region = Region.find_by(source: facility)
-
+      facility_region = create(:region, :facility, name: "Test Facility", reparent_to: block)
       old_facility_path = facility_region.path.to_s
 
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
@@ -120,11 +118,14 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "counts updated descendants" do
-      # Create facilities under the block
-      create(:region, :facility, reparent_to: block)
-      create(:region, :facility, reparent_to: block)
+      # Force block creation first
+      block_region = block
 
-      mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
+      # Create facilities under the block
+      facility1 = create(:region, :facility, reparent_to: block_region)
+      facility2 = create(:region, :facility, reparent_to: block_region)
+
+      mover = MoveRegion.new(region_slug: block_region.slug, new_parent_slug: new_district.slug)
       result = mover.move!(dry_run: false)
 
       # Should update 2 facility regions
@@ -132,10 +133,8 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "recalculates populations when moving districts" do
-      # Create district with estimated population
+      # Create district
       district_with_pop = create(:region, :district, reparent_to: state)
-      create(:estimated_population, region: district_with_pop, population: 10000)
-
       another_state = create(:region, :state, reparent_to: organization)
 
       # Mock the recalculation methods
@@ -210,13 +209,16 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "successfully moves Hulla Woreda from Northern Zone to Southern Zone" do
+      # Reload to get the freshly created instance with facilities
+      woreda = hulla_woreda.reload
+
       # Verify initial state
-      expect(hulla_woreda.district_region).to eq(northern_zone)
-      expect(hulla_woreda.facility_regions.count).to eq(3)
+      expect(woreda.district_region).to eq(northern_zone)
+      expect(woreda.facility_regions.count).to eq(3)
 
       # Perform dry run
       mover = MoveRegion.new(
-        region_slug: hulla_woreda.slug,
+        region_slug: woreda.slug,
         new_parent_slug: southern_zone.slug
       )
       dry_run_result = mover.move!(dry_run: true)
@@ -233,12 +235,12 @@ RSpec.describe MoveRegion, type: :model do
       expect(result[:descendants_updated]).to eq(3)
 
       # Verify final state
-      hulla_woreda.reload
-      expect(hulla_woreda.district_region).to eq(southern_zone)
-      expect(hulla_woreda.facility_regions.count).to eq(3)
+      woreda.reload
+      expect(woreda.district_region).to eq(southern_zone)
+      expect(woreda.facility_regions.count).to eq(3)
 
       # Verify all facility paths were updated
-      hulla_woreda.facility_regions.each do |facility_region|
+      woreda.facility_regions.each do |facility_region|
         expect(facility_region.path.to_s).to include("southern_zone")
         expect(facility_region.path.to_s).not_to include("northern_zone")
       end
