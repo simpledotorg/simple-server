@@ -245,10 +245,13 @@ RSpec.describe MoveRegion, type: :model do
       # Verify final state
       hulla_woreda.reload
       expect(hulla_woreda.district_region).to eq(southern_zone)
-      expect(hulla_woreda.facility_regions.count).to eq(3)
+
+      # Reload facility_regions association to get updated paths from DB
+      facilities = hulla_woreda.facility_regions.reload
+      expect(facilities.count).to eq(3)
 
       # Verify all facility paths were updated
-      hulla_woreda.facility_regions.each do |facility_region|
+      facilities.each do |facility_region|
         expect(facility_region.path.to_s).to include("southern_zone")
         expect(facility_region.path.to_s).not_to include("northern_zone")
       end
