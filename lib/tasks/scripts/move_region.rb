@@ -122,18 +122,23 @@ class MoveRegion
     ActiveRecord::Base.transaction do
       Rails.logger.info "Starting move of #{region.name} from #{@old_parent&.name} to #{@new_parent.name}"
 
-      # Step 1: Update the region's parent
+      # Calculate new path first without saving
+      temp_region = region.dup
+      temp_region.reparent_to = @new_parent
+      temp_region.send(:initialize_path)
+      @new_path = temp_region.path.to_s
+
+      # Step 1: Update all descendant paths FIRST (while old path still exists)
+      descendants_count = update_descendant_paths
+      log_info "Step 1: Updated #{descendants_count} descendant paths", "✓"
+      result[:descendants_updated] = descendants_count
+
+      # Step 2: Update the region's parent
       region.reparent_to = @new_parent
       region.save!
-      @new_path = region.path.to_s
 
-      log_info "Step 1: Updated region parent", "✓"
+      log_info "Step 2: Updated region parent", "✓"
       result[:region_updated] = true
-
-      # Step 2: Update all descendant paths
-      descendants_count = update_descendant_paths
-      log_info "Step 2: Updated #{descendants_count} descendant paths", "✓"
-      result[:descendants_updated] = descendants_count
 
       # Step 3: Clear caches
       clear_caches
