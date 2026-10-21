@@ -189,13 +189,20 @@ RSpec.describe MoveRegion, type: :model do
   end
 
   describe "real-world scenario: Moving Hulla Woreda" do
-    let!(:ethiopia_org) { create(:region, :organization, name: "Ethiopia MoH", reparent_to: root) }
-    let!(:sidama_state) { create(:region, :state, name: "Sidama", reparent_to: ethiopia_org) }
-    let!(:northern_zone) { create(:region, :district, name: "Northern Zone", reparent_to: sidama_state) }
-    let!(:southern_zone) { create(:region, :district, name: "Southern Zone", reparent_to: sidama_state) }
-    let!(:hulla_woreda) { create(:region, :block, name: "Hulla Woreda", reparent_to: northern_zone) }
+    let(:ethiopia_org) { create(:region, :organization, name: "Ethiopia MoH", reparent_to: root) }
+    let(:sidama_state) { create(:region, :state, name: "Sidama", reparent_to: ethiopia_org) }
+    let(:northern_zone) { create(:region, :district, name: "Northern Zone", reparent_to: sidama_state) }
+    let(:southern_zone) { create(:region, :district, name: "Southern Zone", reparent_to: sidama_state) }
+    let(:hulla_woreda) { create(:region, :block, name: "Hulla Woreda", reparent_to: northern_zone) }
 
     before do
+      # Force creation of regions
+      ethiopia_org
+      sidama_state
+      northern_zone
+      southern_zone
+      hulla_woreda
+
       # Create facilities under Hulla Woreda
       3.times do |i|
         create(:region, :facility, name: "Facility #{i + 1}", reparent_to: hulla_woreda)
