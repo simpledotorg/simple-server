@@ -121,11 +121,38 @@ class MoveRegion
 
     ActiveRecord::Base.transaction do
       Rails.logger.info "Starting move of #{region.name} from #{@old_parent&.name} to #{@new_parent.name}"
+      Rails.logger.info "=" * 80
+      Rails.logger.info "DEBUG: BEFORE saving parent"
+      Rails.logger.info "  region.path BEFORE: #{region.path}"
+      Rails.logger.info "  region.slug: #{region.slug}"
+      Rails.logger.info "  @old_path: #{@old_path}"
+
+      # Check what descendants exist BEFORE we save
+      descendants_before = Region.where("path <@ ?::ltree", @old_path).where.not(id: region.id)
+      Rails.logger.info "  Descendants BEFORE save: #{descendants_before.count}"
+      descendants_before.limit(5).each do |d|
+        Rails.logger.info "    - #{d.name} (#{d.region_type}): #{d.path}"
+      end
+      Rails.logger.info "=" * 80
 
       # Step 1: Update the region's parent FIRST
       region.reparent_to = @new_parent
       region.save!
       @new_path = region.path.to_s
+
+      Rails.logger.info "=" * 80
+      Rails.logger.info "DEBUG: AFTER saving parent"
+      Rails.logger.info "  region.path AFTER: #{region.path}"
+      Rails.logger.info "  region.slug AFTER: #{region.slug}"
+      Rails.logger.info "  @new_path: #{@new_path}"
+
+      # Check what descendants exist AFTER we save
+      descendants_after = Region.where("path <@ ?::ltree", @old_path).where.not(id: region.id)
+      Rails.logger.info "  Descendants at OLD path after save: #{descendants_after.count}"
+      descendants_after.limit(5).each do |d|
+        Rails.logger.info "    - #{d.name} (#{d.region_type}): #{d.path}"
+      end
+      Rails.logger.info "=" * 80
 
       log_info "Step 1: Updated region parent", "✓"
       result[:region_updated] = true
@@ -242,13 +269,34 @@ class MoveRegion
   end
 
   def update_descendant_paths
+    Rails.logger.info "=" * 80
+    Rails.logger.info "DEBUG: update_descendant_paths called"
+    Rails.logger.info "  @old_path: #{@old_path}"
+    Rails.logger.info "  @new_path: #{@new_path}"
+    Rails.logger.info "  region.path after save: #{region.path}"
+    Rails.logger.info "  region.slug: #{region.slug}"
+
     # Find all descendants (children, grandchildren, etc.)
     # Use ActiveRecord instead of raw SQL for reliability
     descendants = Region
       .where("path <@ ?::ltree", @old_path)
       .where.not(id: region.id)
 
-    Rails.logger.info "Found #{descendants.count} descendants to update"
+    Rails.logger.info "  Query: SELECT * FROM regions WHERE path <@ '#{@old_path}'::ltree AND id != '#{region.id}'"
+    Rails.logger.info "  Found #{descendants.count} descendants to update"
+
+    if descendants.count == 0
+      # Debug: Check if any facilities exist and what their paths are
+      all_facilities = Region.where(region_type: "facility")
+      Rails.logger.info "  DEBUG: Total facilities in DB: #{all_facilities.count}"
+      all_facilities.limit(5).each do |f|
+        Rails.logger.info "    - #{f.name} (#{f.id}): #{f.path}"
+        # Check if this facility's path contains any part of our region's slug
+        if f.path.to_s.include?(region.slug.tr("-", "_"))
+          Rails.logger.info "      ^ This facility path contains '#{region.slug.tr("-", "_")}'"
+        end
+      end
+    end
 
     updated_count = 0
     descendants.find_each do |descendant|
@@ -263,6 +311,7 @@ class MoveRegion
     end
 
     Rails.logger.info "Updated #{updated_count} descendant paths"
+    Rails.logger.info "=" * 80
     updated_count
   end
 
