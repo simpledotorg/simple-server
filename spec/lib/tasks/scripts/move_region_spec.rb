@@ -176,7 +176,7 @@ RSpec.describe MoveRegion, type: :model do
       old_path = block.path.to_s
 
       # Force an error during the move
-      allow_any_instance_of(MoveRegion).to receive(:update_descendant_paths).and_raise("Simulated error")
+      allow_any_instance_of(MoveRegion).to receive(:update_descendant_paths_by_ids).and_raise("Simulated error")
 
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
 
