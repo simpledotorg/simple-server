@@ -116,7 +116,7 @@ RSpec.describe MoveRegion, type: :model do
 
       facility_region.reload
       expect(facility_region.path.to_s).not_to eq(old_facility_path)
-      expect(facility_region.path.to_s).to include(new_district.slug.gsub(/-/, "_"))
+      expect(facility_region.path.to_s).to include(new_district.slug.tr("-", "_"))
     end
 
     it "counts updated descendants" do
