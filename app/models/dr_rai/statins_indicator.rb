@@ -13,7 +13,7 @@ module DrRai
     end
 
     def display_name
-      "Statins"
+      "Prescribe statins for diabetes patients 40y+"
     end
 
     def target_type_frontend

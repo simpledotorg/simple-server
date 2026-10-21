@@ -9,7 +9,7 @@ module DrRai
     end
 
     def display_name
-      "Titration"
+      "Titrate patients with uncontrolled BP"
     end
 
     def target_type_frontend
