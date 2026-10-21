@@ -308,7 +308,7 @@ class MoveRegion
 
           if region_index
             # Build new path: new parent path + region segment + rest of path
-            new_path_parts = @new_path.split(".") + path_parts[region_index + 1..-1]
+            new_path_parts = @new_path.split(".") + path_parts[region_index + 1..]
             new_descendant_path = new_path_parts.join(".")
             Rails.logger.info "    New path (reconstructed): #{new_descendant_path}"
             descendant.update_column(:path, new_descendant_path)
