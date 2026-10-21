@@ -46,11 +46,8 @@ namespace :data_fixes do
     puts ""
 
     # Smart lookup - accepts both slugs and names
-    region = Region.find_by(slug: args.region_identifier) ||
-             Region.find_by(name: args.region_identifier)
-
-    new_parent = Region.find_by(slug: args.new_parent_identifier) ||
-                 Region.find_by(name: args.new_parent_identifier)
+    region = Region.find_by(slug: args.region_identifier) || Region.find_by(name: args.region_identifier)
+    new_parent = Region.find_by(slug: args.new_parent_identifier) || Region.find_by(name: args.new_parent_identifier)
 
     raise "Region not found: #{args.region_identifier}" unless region
     raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
@@ -65,7 +62,7 @@ namespace :data_fixes do
       new_parent_slug: new_parent.slug
     )
 
-    result = mover.move!(dry_run: true)
+    mover.move!(dry_run: true)
 
     puts ""
     puts "=" * 80
@@ -91,11 +88,8 @@ namespace :data_fixes do
     puts ""
 
     # Smart lookup - accepts both slugs and names
-    region = Region.find_by(slug: args.region_identifier) ||
-             Region.find_by(name: args.region_identifier)
-
-    new_parent = Region.find_by(slug: args.new_parent_identifier) ||
-                 Region.find_by(name: args.new_parent_identifier)
+    region = Region.find_by(slug: args.region_identifier) || Region.find_by(name: args.region_identifier)
+    new_parent = Region.find_by(slug: args.new_parent_identifier) || Region.find_by(name: args.new_parent_identifier)
 
     raise "Region not found: #{args.region_identifier}" unless region
     raise "New parent not found: #{args.new_parent_identifier}" unless new_parent
@@ -112,15 +106,15 @@ namespace :data_fixes do
 
     # Show dry run first
     puts "Analyzing move..."
-    result = mover.move!(dry_run: true)
+    mover.move!(dry_run: true)
 
     puts ""
     puts "=" * 80
     puts "Are you sure you want to proceed? Type 'yes' to continue:"
     puts "=" * 80
 
-    if STDIN.gets.chomp.downcase == "yes"
-      puts ""
+    puts ""
+    if $stdin.gets.chomp.downcase == "yes"
       puts "Executing move..."
       result = mover.move!(dry_run: false)
 
@@ -136,12 +130,11 @@ namespace :data_fixes do
       puts "  Populations recalculated: #{result[:populations_recalculated]}"
       puts "  Reporting views refreshed: #{result[:reporting_refreshed]}"
       puts "  Integrity check: #{result[:integrity_checked]}"
-      puts ""
     else
-      puts ""
       puts "❌ Move cancelled"
       exit 0
     end
+    puts ""
   rescue => e
     puts ""
     puts "=" * 80
@@ -150,5 +143,4 @@ namespace :data_fixes do
     puts e.backtrace.join("\n") if ENV["DEBUG"]
     exit 1
   end
-
 end
