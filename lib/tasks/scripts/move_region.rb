@@ -127,15 +127,18 @@ class MoveRegion
       Rails.logger.info "  region.slug: #{region.slug}"
       Rails.logger.info "  @old_path: #{@old_path}"
 
-      # Check what descendants exist BEFORE we save
+      # CRITICAL: Find and store descendant IDs BEFORE we save the parent
+      # This ensures we can update them even if paths change during save
       descendants_before = Region.where("path <@ ?::ltree", @old_path).where.not(id: region.id)
+      descendant_ids = descendants_before.pluck(:id)
       Rails.logger.info "  Descendants BEFORE save: #{descendants_before.count}"
+      Rails.logger.info "  Stored #{descendant_ids.count} descendant IDs for later update"
       descendants_before.limit(5).each do |d|
         Rails.logger.info "    - #{d.name} (#{d.region_type}): #{d.path}"
       end
       Rails.logger.info "=" * 80
 
-      # Step 1: Update the region's parent FIRST
+      # Step 1: Update the region's parent
       region.reparent_to = @new_parent
       region.save!
       @new_path = region.path.to_s
@@ -157,8 +160,8 @@ class MoveRegion
       log_info "Step 1: Updated region parent", "✓"
       result[:region_updated] = true
 
-      # Step 2: Update all descendant paths using the ACTUAL saved parent path
-      descendants_count = update_descendant_paths
+      # Step 2: Update all descendant paths using the stored IDs
+      descendants_count = update_descendant_paths_by_ids(descendant_ids)
       log_info "Step 2: Updated #{descendants_count} descendant paths", "✓"
       result[:descendants_updated] = descendants_count
 
@@ -266,6 +269,65 @@ class MoveRegion
     region.public_send("#{parent_type}_region")
   rescue NoMethodError
     nil
+  end
+
+  def update_descendant_paths_by_ids(descendant_ids)
+    Rails.logger.info "=" * 80
+    Rails.logger.info "DEBUG: update_descendant_paths_by_ids called"
+    Rails.logger.info "  Updating #{descendant_ids.count} descendants by ID"
+    Rails.logger.info "  @old_path: #{@old_path}"
+    Rails.logger.info "  @new_path: #{@new_path}"
+
+    updated_count = 0
+    failed_count = 0
+
+    Region.where(id: descendant_ids).find_each do |descendant|
+      old_descendant_path = descendant.path.to_s
+      Rails.logger.info "  Processing descendant #{descendant.id} (#{descendant.name})"
+      Rails.logger.info "    Current path: #{old_descendant_path}"
+
+      # Try to replace the old parent path with new parent path
+      # The old path might have changed if slug changed, so we need to be flexible
+      if old_descendant_path.include?(@old_path)
+        # Direct replacement if old_path is still in there
+        new_descendant_path = old_descendant_path.sub(@old_path, @new_path)
+        Rails.logger.info "    New path (direct): #{new_descendant_path}"
+        descendant.update_column(:path, new_descendant_path)
+        updated_count += 1
+      else
+        # Old path not found - this is the problem we're trying to solve
+        Rails.logger.warn "    WARNING: old_path '#{@old_path}' not found in '#{old_descendant_path}'"
+
+        # Try to find any path segment that matches the region slug
+        region_path_segment = region.slug.tr("-", "_")
+        if old_descendant_path.include?(region_path_segment)
+          Rails.logger.info "    Found region segment '#{region_path_segment}' in path"
+          # Extract the path up to and including our region, then append the rest
+          path_parts = old_descendant_path.split(".")
+          region_index = path_parts.index { |p| p.include?(region_path_segment) }
+
+          if region_index
+            # Build new path: new parent path + region segment + rest of path
+            new_path_parts = @new_path.split(".") + path_parts[region_index + 1..-1]
+            new_descendant_path = new_path_parts.join(".")
+            Rails.logger.info "    New path (reconstructed): #{new_descendant_path}"
+            descendant.update_column(:path, new_descendant_path)
+            updated_count += 1
+          else
+            Rails.logger.error "    ERROR: Could not find region in path parts"
+            failed_count += 1
+          end
+        else
+          Rails.logger.error "    ERROR: Could not find any matching segment"
+          failed_count += 1
+        end
+      end
+    end
+
+    Rails.logger.info "  Successfully updated #{updated_count} descendants"
+    Rails.logger.info "  Failed to update #{failed_count} descendants" if failed_count > 0
+    Rails.logger.info "=" * 80
+    updated_count
   end
 
   def update_descendant_paths
