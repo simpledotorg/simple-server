@@ -130,11 +130,11 @@ namespace :data_fixes do
       puts "  Populations recalculated: #{result[:populations_recalculated]}"
       puts "  Reporting views refreshed: #{result[:reporting_refreshed]}"
       puts "  Integrity check: #{result[:integrity_checked]}"
-      puts ""
     else
       puts "❌ Move cancelled"
       exit 0
     end
+    puts ""
   rescue => e
     puts ""
     puts "=" * 80
