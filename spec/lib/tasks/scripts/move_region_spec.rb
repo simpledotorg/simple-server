@@ -246,8 +246,8 @@ RSpec.describe MoveRegion, type: :model do
       hulla_woreda.reload
       expect(hulla_woreda.district_region).to eq(southern_zone)
 
-      # Reload facility_regions association to get updated paths from DB
-      facilities = hulla_woreda.facility_regions.reload
+      # Query facilities directly from DB to bypass any caching
+      facilities = Region.where("path <@ ?", hulla_woreda.path).where(region_type: "facility")
       expect(facilities.count).to eq(3)
 
       # Verify all facility paths were updated
