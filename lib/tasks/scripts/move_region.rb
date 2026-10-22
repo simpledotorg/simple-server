@@ -237,6 +237,12 @@ class MoveRegion
       errors << "Cannot move region to itself or its own descendant"
     end
 
+    # Check if trying to move to the same parent (no-op move)
+    current_parent = find_current_parent(region)
+    if current_parent && current_parent.id == new_parent.id
+      errors << "Region is already in #{new_parent.name}. Cannot move to the same parent."
+    end
+
     # Check if region is root
     if region.region_type == "root"
       errors << "Cannot move root region"
