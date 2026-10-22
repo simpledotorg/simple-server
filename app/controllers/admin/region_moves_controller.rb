@@ -20,7 +20,7 @@ class Admin::RegionMovesController < AdminController
     # Group regions by parent for cascading dropdowns
     @regions_by_parent = {}
 
-    Region.where.not(region_type: 'root').order(:name).each do |region|
+    Region.where.not(region_type: "root").order(:name).each do |region|
       parent_slug = region.parent&.slug
       next unless parent_slug
 
