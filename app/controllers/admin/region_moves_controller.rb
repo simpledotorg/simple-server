@@ -47,7 +47,12 @@ class Admin::RegionMovesController < AdminController
       end
     rescue ArgumentError => e
       flash[:alert] = "Invalid move: #{e.message}"
-      redirect_to new_admin_region_move_path
+      redirect_to new_admin_region_move_path and return
+    rescue => e
+      Rails.logger.error "Error in region move preview: #{e.message}"
+      Rails.logger.error e.backtrace.join("\n")
+      flash[:alert] = "Error: #{e.message}"
+      redirect_to new_admin_region_move_path and return
     end
   end
 
