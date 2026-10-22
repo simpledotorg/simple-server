@@ -15,22 +15,37 @@ class Admin::RegionMovesController < AdminController
     authorize { current_admin.power_user? }
 
     # Get all regions for reference
-    @all_regions = Region.order(:name).select(:id, :slug, :name, :region_type, :path)
+    @all_regions = Region.order(:name).pluck(:slug, :name, :region_type).map { |slug, name, type|
+      {slug: slug, name: name, region_type: type}
+    }
 
-    # Group regions by parent for cascading dropdowns
+    # Build a lookup of region slug to its children
+    # This avoids N+1 queries by doing it all in Ruby
     @regions_by_parent = {}
 
-    Region.where.not(region_type: "root").order(:name).each do |region|
-      parent_slug = region.parent&.slug
-      next unless parent_slug
+    # Get all regions with their parent paths
+    all_regions_data = Region.where.not(region_type: "root")
+      .order(:name)
+      .pluck(:slug, :name, :region_type, "ltree2text(path)")
+
+    # Build parent-child relationships
+    all_regions_data.each do |slug, name, region_type, path_text|
+      path_parts = path_text.split(".")
+      next if path_parts.length < 2
+
+      # Parent is the second-to-last element in path
+      parent_slug = path_parts[-2]
 
       @regions_by_parent[parent_slug] ||= []
       @regions_by_parent[parent_slug] << {
-        slug: region.slug,
-        name: region.name,
-        region_type: region.region_type
+        slug: slug,
+        name: name,
+        region_type: region_type
       }
     end
+
+    Rails.logger.info "DEBUG: Built regions_by_parent with #{@regions_by_parent.keys.count} parent keys"
+    Rails.logger.info "DEBUG: Sample keys: #{@regions_by_parent.keys.first(5).inspect}"
   end
 
   def preview

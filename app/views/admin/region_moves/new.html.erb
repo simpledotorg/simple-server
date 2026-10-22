@@ -176,6 +176,10 @@ $(document).ready(function() {
   // Region data grouped by parent
   const regionsByParent = <%= raw @regions_by_parent.to_json %>;
 
+  // Debug: Log the data
+  console.log('Regions by parent:', regionsByParent);
+  console.log('Keys available:', Object.keys(regionsByParent));
+
   // Track selected origin region type
   let selectedOriginType = null;
 
@@ -185,6 +189,8 @@ $(document).ready(function() {
     const districtDropdown = $('#origin-district');
     const regionDropdown = $('#origin-region');
 
+    console.log('Origin state selected:', stateSlug);
+
     // Reset downstream dropdowns
     districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>').trigger('change');
     regionDropdown.prop('disabled', true).html('<option value="">Choose region to move...</option>').trigger('change');
@@ -193,10 +199,16 @@ $(document).ready(function() {
     if (stateSlug) {
       // Load districts for this state
       const districts = regionsByParent[stateSlug] || [];
+      console.log('Districts found for', stateSlug, ':', districts.length, districts);
+
       districts.forEach(district => {
         districtDropdown.append(new Option(district.name, district.slug));
       });
       districtDropdown.prop('disabled', false);
+
+      if (districts.length === 0) {
+        console.warn('No districts found for state:', stateSlug);
+      }
     }
   });
 
