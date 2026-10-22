@@ -19,6 +19,17 @@ class Admin::RegionMovesController < AdminController
   def preview
     authorize { current_admin.power_user? }
 
+    # Check if parameters are present
+    if params[:region_identifier].blank?
+      flash[:alert] = "Please select a region to move"
+      redirect_to new_admin_region_move_path and return
+    end
+
+    if params[:new_parent_identifier].blank?
+      flash[:alert] = "Please select a parent region"
+      redirect_to new_admin_region_move_path and return
+    end
+
     @region = find_region(params[:region_identifier])
     @new_parent = find_region(params[:new_parent_identifier])
 
@@ -58,6 +69,12 @@ class Admin::RegionMovesController < AdminController
 
   def create
     authorize { current_admin.power_user? }
+
+    # Check if parameters are present
+    if params[:region_identifier].blank? || params[:new_parent_identifier].blank?
+      flash[:alert] = "Please select both region and parent"
+      redirect_to new_admin_region_move_path and return
+    end
 
     @region = find_region(params[:region_identifier])
     @new_parent = find_region(params[:new_parent_identifier])
