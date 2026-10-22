@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "tasks/scripts/move_region"
+
 class Admin::RegionMovesController < AdminController
   before_action :authorize_power_user
 
