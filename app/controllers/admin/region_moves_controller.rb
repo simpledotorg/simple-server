@@ -4,6 +4,7 @@ require "tasks/scripts/move_region"
 
 class Admin::RegionMovesController < AdminController
   before_action :authorize_power_user
+  before_action :check_feature_enabled
 
   def index
     # Show history of recent moves (optional)
@@ -107,5 +108,12 @@ class Admin::RegionMovesController < AdminController
 
   def authorize_power_user
     authorize { current_admin.power_user? }
+  end
+
+  def check_feature_enabled
+    unless Flipper.enabled?(:region_moves, current_admin)
+      flash[:alert] = "This feature is not enabled for your account"
+      redirect_to root_path
+    end
   end
 end
