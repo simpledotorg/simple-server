@@ -14,9 +14,23 @@ class Admin::RegionMovesController < AdminController
   def new
     authorize { current_admin.power_user? }
 
-    # Get all regions grouped by type for easier selection
-    @regions_by_type = Region.order(:name).group_by(&:region_type)
-    @all_regions = Region.order(:name)
+    # Get all regions for reference
+    @all_regions = Region.order(:name).select(:id, :slug, :name, :region_type, :path)
+
+    # Group regions by parent for cascading dropdowns
+    @regions_by_parent = {}
+
+    Region.where.not(region_type: 'root').order(:name).each do |region|
+      parent_slug = region.parent&.slug
+      next unless parent_slug
+
+      @regions_by_parent[parent_slug] ||= []
+      @regions_by_parent[parent_slug] << {
+        slug: region.slug,
+        name: region.name,
+        region_type: region.region_type
+      }
+    end
   end
 
   def preview

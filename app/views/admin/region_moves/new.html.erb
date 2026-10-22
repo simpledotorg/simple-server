@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">Move Region</h1>
   <p class="page-description">
-    Move facilities, blocks, districts, or states to different parent regions
+    Move facilities, blocks, or districts to different parent regions
   </p>
 </div>
 
@@ -9,77 +9,104 @@
   <div class="card-body">
     <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
 
-      <!-- Step 1: Select what type of region to move -->
-      <div class="form-group">
-        <label class="d-block">What do you want to move?</label>
-        <div class="btn-group btn-group-toggle" data-toggle="buttons">
-          <label class="btn btn-outline-primary active" id="type-facility">
-            <input type="radio" name="region_type_filter" value="facility" checked> Facility
-          </label>
-          <label class="btn btn-outline-primary" id="type-block">
-            <input type="radio" name="region_type_filter" value="block"> Block/Woreda
-          </label>
-          <label class="btn btn-outline-primary" id="type-district">
-            <input type="radio" name="region_type_filter" value="district"> District/Zone
-          </label>
-          <label class="btn btn-outline-primary" id="type-state">
-            <input type="radio" name="region_type_filter" value="state"> State/Region
-          </label>
+      <div class="row">
+        <!-- LEFT SIDE: Origin (What to move) -->
+        <div class="col-md-6">
+          <div class="move-section">
+            <h5 class="section-title">
+              <i class="fas fa-map-marker-alt mr-2"></i>Origin - What to move?
+            </h5>
+
+            <!-- State Selection for Origin -->
+            <div class="form-group">
+              <label>Select State/Region</label>
+              <select class="form-control select2" id="origin-state" required>
+                <option value="">Choose state...</option>
+                <% Region.where(region_type: 'state').order(:name).each do |state| %>
+                  <option value="<%= state.slug %>"><%= state.name %></option>
+                <% end %>
+              </select>
+            </div>
+
+            <!-- District Selection for Origin -->
+            <div class="form-group">
+              <label>Select District/Zone</label>
+              <select class="form-control select2" id="origin-district" disabled required>
+                <option value="">Choose district...</option>
+              </select>
+            </div>
+
+            <!-- Block/Facility Selection for Origin -->
+            <div class="form-group">
+              <label>Select Block/Woreda or Facility</label>
+              <%= f.select :region_identifier,
+                [],
+                { prompt: "Choose region to move..." },
+                class: "form-control select2",
+                id: "origin-region",
+                disabled: true,
+                required: true %>
+              <small class="form-text text-muted">
+                <i class="fas fa-info-circle"></i>
+                Select the specific facility or block you want to move
+              </small>
+            </div>
+          </div>
         </div>
-        <small class="form-text text-muted">
-          <i class="fas fa-info-circle"></i>
-          Select the type of region you want to move
-        </small>
+
+        <!-- RIGHT SIDE: Destination (Where to move) -->
+        <div class="col-md-6">
+          <div class="move-section destination-section">
+            <h5 class="section-title">
+              <i class="fas fa-map-pin mr-2"></i>Destination - Where to move it?
+            </h5>
+
+            <!-- State Selection for Destination -->
+            <div class="form-group">
+              <label>Select State/Region</label>
+              <select class="form-control select2" id="dest-state" required>
+                <option value="">Choose state...</option>
+                <% Region.where(region_type: 'state').order(:name).each do |state| %>
+                  <option value="<%= state.slug %>"><%= state.name %></option>
+                <% end %>
+              </select>
+            </div>
+
+            <!-- District Selection for Destination -->
+            <div class="form-group">
+              <label>Select District/Zone</label>
+              <select class="form-control select2" id="dest-district" disabled required>
+                <option value="">Choose district...</option>
+              </select>
+            </div>
+
+            <!-- Block Selection for Destination -->
+            <div class="form-group">
+              <label>Select Block/Woreda</label>
+              <%= f.select :new_parent_identifier,
+                [],
+                { prompt: "Choose destination..." },
+                class: "form-control select2",
+                id: "dest-region",
+                disabled: true,
+                required: true %>
+              <small class="form-text text-muted">
+                <i class="fas fa-sitemap"></i>
+                Select where you want to move it to
+              </small>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <hr class="my-4">
-
-      <!-- Step 2: Select which region to move -->
-      <div class="form-group">
-        <%= f.label :region_identifier, "Select which region to move", class: "font-weight-bold" %>
-        <%= f.select :region_identifier,
-          grouped_options_for_select(
-            @regions_by_type.transform_keys { |k| k.capitalize }.transform_values { |regions|
-              regions.map { |r| [r.name, r.slug] }
-            }
-          ),
-          { prompt: "Search and select..." },
-          class: "form-control select2",
-          required: true,
-          id: "region-select" %>
-        <small class="form-text text-muted">
-          <i class="fas fa-search"></i>
-          <span id="region-help">Select the facility you want to move</span>
-        </small>
-      </div>
-
-      <!-- Step 3: Select where to move it -->
-      <div class="form-group">
-        <%= f.label :new_parent_identifier, "Select where to move it to", class: "font-weight-bold" %>
-        <%= f.select :new_parent_identifier,
-          grouped_options_for_select(
-            @regions_by_type.transform_keys { |k| k.capitalize }.transform_values { |regions|
-              regions.map { |r| [r.name, r.slug] }
-            }
-          ),
-          { prompt: "Search and select parent..." },
-          class: "form-control select2",
-          required: true,
-          id: "parent-select" %>
-        <small class="form-text text-muted">
-          <i class="fas fa-sitemap"></i>
-          <span id="parent-help">Select the block where you want to move this facility</span>
-        </small>
-      </div>
-
-      <div class="alert alert-warning">
+      <div class="alert alert-warning mt-4">
         <i class="fas fa-exclamation-triangle mr-2"></i>
         <strong>Note:</strong> Moving a region will also move all its descendants.
         For example, moving a block will move all facilities within it.
       </div>
 
-      <div class="form-group">
-        <%= f.submit "Preview Move", class: "btn btn-primary btn-lg" %>
+      <div class="form-group mt-4">
+        <%= f.submit "Preview Move", class: "btn btn-primary btn-lg", id: "preview-button", disabled: true %>
         <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary btn-lg" %>
       </div>
 
@@ -87,148 +114,220 @@
   </div>
 </div>
 
-<% if @regions_by_type.any? %>
-  <script>
-    // Map of region types to their valid parent types
-    const validParentTypes = {
-      'facility': ['block'],
-      'block': ['district'],
-      'district': ['state'],
-      'state': ['organization']
-    };
+<style>
+  .move-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border: 2px solid #dee2e6;
+    min-height: 400px;
+  }
 
-    // Help text for each type
-    const helpText = {
-      'facility': {
-        region: 'Select the facility you want to move',
-        parent: 'Select the block where you want to move this facility'
-      },
-      'block': {
-        region: 'Select the block/woreda you want to move',
-        parent: 'Select the district/zone where you want to move this block'
-      },
-      'district': {
-        region: 'Select the district/zone you want to move',
-        parent: 'Select the state/region where you want to move this district'
-      },
-      'state': {
-        region: 'Select the state/region you want to move',
-        parent: 'Select the organization where you want to move this state'
+  .destination-section {
+    background: #e8f4f8;
+    border-color: #0084c7;
+  }
+
+  .section-title {
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+    color: #495057;
+    font-weight: 600;
+  }
+
+  .destination-section .section-title {
+    color: #0066a1;
+  }
+
+  .form-group label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 8px;
+  }
+
+  .select2-container {
+    font-size: 14px;
+  }
+
+  .select2-container--default .select2-selection--single {
+    height: 40px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+  }
+
+  .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 38px;
+  }
+
+  .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 38px;
+  }
+</style>
+
+<script>
+$(document).ready(function() {
+  // Initialize Select2 on all dropdowns
+  $('.select2').select2({
+    allowClear: true,
+    width: '100%'
+  });
+
+  // Region data grouped by parent
+  const regionsByParent = <%= raw @regions_by_parent.to_json %>;
+
+  // Track selected origin region type
+  let selectedOriginType = null;
+
+  // ORIGIN: State changes → load districts
+  $('#origin-state').on('change', function() {
+    const stateSlug = $(this).val();
+    const districtDropdown = $('#origin-district');
+    const regionDropdown = $('#origin-region');
+
+    // Reset downstream dropdowns
+    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>').trigger('change');
+    regionDropdown.prop('disabled', true).html('<option value="">Choose region to move...</option>').trigger('change');
+    $('#preview-button').prop('disabled', true);
+
+    if (stateSlug) {
+      // Load districts for this state
+      const districts = regionsByParent[stateSlug] || [];
+      districts.forEach(district => {
+        districtDropdown.append(new Option(district.name, district.slug));
+      });
+      districtDropdown.prop('disabled', false);
+    }
+  });
+
+  // ORIGIN: District changes → load blocks/facilities
+  $('#origin-district').on('change', function() {
+    const districtSlug = $(this).val();
+    const regionDropdown = $('#origin-region');
+
+    // Reset region dropdown
+    regionDropdown.html('<option value="">Choose region to move...</option>');
+    regionDropdown.prop('disabled', true).trigger('change');
+    $('#preview-button').prop('disabled', true);
+
+    if (districtSlug) {
+      // Load blocks and facilities for this district
+      const regions = regionsByParent[districtSlug] || [];
+      const blocks = regions.filter(r => r.region_type === 'block');
+      const facilities = regions.filter(r => r.region_type === 'facility');
+
+      // Add blocks
+      if (blocks.length > 0) {
+        const blockGroup = $('<optgroup label="Blocks/Woredas">');
+        blocks.forEach(block => {
+          blockGroup.append(new Option(block.name, block.slug));
+        });
+        regionDropdown.append(blockGroup);
       }
-    };
 
-    // Region data by type (from Rails)
-    const regionsByType = <%= raw @regions_by_type.to_json %>;
-
-    $(document).ready(function() {
-      // Initialize Select2
-      const regionSelect = $('#region-select').select2({
-        allowClear: true,
-        width: '100%',
-        placeholder: 'Search and select...'
-      });
-
-      const parentSelect = $('#parent-select').select2({
-        allowClear: true,
-        width: '100%',
-        placeholder: 'Search and select parent...'
-      });
-
-      // Function to filter regions by type
-      function filterRegionsByType(selectedType) {
-        // Update help text
-        $('#region-help').text(helpText[selectedType].region);
-        $('#parent-help').text(helpText[selectedType].parent);
-
-        // Clear selections
-        regionSelect.val(null).trigger('change');
-        parentSelect.val(null).trigger('change');
-
-        // Filter first dropdown to only show selected type
-        regionSelect.find('optgroup').each(function() {
-          const groupType = $(this).attr('label').toLowerCase();
-          if (groupType === selectedType) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
+      // Add facilities
+      if (facilities.length > 0) {
+        const facilityGroup = $('<optgroup label="Facilities">');
+        facilities.forEach(facility => {
+          facilityGroup.append(new Option(facility.name, facility.slug));
         });
-
-        // Filter second dropdown to only show valid parent types
-        const validParents = validParentTypes[selectedType];
-        parentSelect.find('optgroup').each(function() {
-          const groupType = $(this).attr('label').toLowerCase();
-          if (validParents && validParents.includes(groupType)) {
-            $(this).show();
-          } else {
-            $(this).hide();
-          }
-        });
-
-        // Refresh Select2
-        regionSelect.select2('destroy').select2({
-          allowClear: true,
-          width: '100%',
-          placeholder: 'Search and select...'
-        });
-
-        parentSelect.select2('destroy').select2({
-          allowClear: true,
-          width: '100%',
-          placeholder: 'Search and select parent...'
-        });
+        regionDropdown.append(facilityGroup);
       }
 
-      // Handle region type radio button changes
-      $('input[name="region_type_filter"]').on('change', function() {
-        const selectedType = $(this).val();
-        filterRegionsByType(selectedType);
+      regionDropdown.prop('disabled', false);
+    }
+  });
+
+  // ORIGIN: Region selected → filter destination options
+  $('#origin-region').on('change', function() {
+    const selectedSlug = $(this).val();
+
+    if (selectedSlug) {
+      // Find the selected region's type
+      const allRegions = <%= raw @all_regions.to_json %>;
+      const selectedRegion = allRegions.find(r => r.slug === selectedSlug);
+      selectedOriginType = selectedRegion ? selectedRegion.region_type : null;
+
+      // Enable destination state dropdown
+      $('#dest-state').prop('disabled', false);
+      checkFormComplete();
+    } else {
+      selectedOriginType = null;
+      $('#preview-button').prop('disabled', true);
+    }
+  });
+
+  // DESTINATION: State changes → load districts
+  $('#dest-state').on('change', function() {
+    const stateSlug = $(this).val();
+    const districtDropdown = $('#dest-district');
+    const regionDropdown = $('#dest-region');
+
+    // Reset downstream dropdowns
+    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>').trigger('change');
+    regionDropdown.prop('disabled', true).html('<option value="">Choose destination...</option>').trigger('change');
+    $('#preview-button').prop('disabled', true);
+
+    if (stateSlug) {
+      // Load districts for this state
+      const districts = regionsByParent[stateSlug] || [];
+      districts.forEach(district => {
+        districtDropdown.append(new Option(district.name, district.slug));
+      });
+      districtDropdown.prop('disabled', false);
+    }
+  });
+
+  // DESTINATION: District changes → load blocks (filtered by origin type)
+  $('#dest-district').on('change', function() {
+    const districtSlug = $(this).val();
+    const regionDropdown = $('#dest-region');
+
+    // Reset region dropdown
+    regionDropdown.html('<option value="">Choose destination...</option>');
+    regionDropdown.prop('disabled', true).trigger('change');
+    $('#preview-button').prop('disabled', true);
+
+    if (districtSlug && selectedOriginType) {
+      // Determine valid parent type based on origin
+      let validParentType = null;
+      if (selectedOriginType === 'facility') validParentType = 'block';
+      else if (selectedOriginType === 'block') validParentType = 'district';
+      else if (selectedOriginType === 'district') validParentType = 'state';
+
+      // Load regions filtered by valid parent type
+      const regions = regionsByParent[districtSlug] || [];
+      const validRegions = validParentType === 'block'
+        ? regions.filter(r => r.region_type === 'block')
+        : validParentType === 'district'
+          ? [{ name: $('#dest-district option:selected').text(), slug: districtSlug, region_type: 'district' }]
+          : regions;
+
+      validRegions.forEach(region => {
+        // Don't include the same region that's being moved
+        if (region.slug !== $('#origin-region').val()) {
+          regionDropdown.append(new Option(region.name, region.slug));
+        }
       });
 
-      // Initialize with facility type (default)
-      filterRegionsByType('facility');
-
-      // Prevent selecting the same region as parent
-      regionSelect.on('change', function() {
-        const selectedRegion = $(this).val();
-
-        // Disable the selected region in parent dropdown
-        parentSelect.find('option').each(function() {
-          if ($(this).val() === selectedRegion) {
-            $(this).prop('disabled', true);
-          } else {
-            $(this).prop('disabled', false);
-          }
-        });
-
-        // Refresh parent select
-        parentSelect.select2('destroy').select2({
-          allowClear: true,
-          width: '100%',
-          placeholder: 'Search and select parent...'
-        });
-      });
-    });
-  </script>
-
-  <style>
-    .btn-group-toggle .btn {
-      padding: 10px 20px;
+      regionDropdown.prop('disabled', false);
     }
+  });
 
-    .btn-group-toggle .btn.active {
-      background-color: #007bff;
-      color: white;
-      border-color: #007bff;
-    }
+  // DESTINATION: Region selected → check if form complete
+  $('#dest-region').on('change', function() {
+    checkFormComplete();
+  });
 
-    .select2-container {
-      font-size: 14px;
-    }
+  function checkFormComplete() {
+    const originSelected = $('#origin-region').val();
+    const destSelected = $('#dest-region').val();
 
-    .form-group label.font-weight-bold {
-      font-size: 16px;
-      margin-bottom: 10px;
+    if (originSelected && destSelected) {
+      $('#preview-button').prop('disabled', false);
+    } else {
+      $('#preview-button').prop('disabled', true);
     }
-  </style>
-<% end %>
+  }
+});
+</script>
