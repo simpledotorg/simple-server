@@ -167,12 +167,6 @@
 
 <script>
 $(document).ready(function() {
-  // Initialize Select2 on all dropdowns
-  $('.select2').select2({
-    allowClear: true,
-    width: '100%'
-  });
-
   // Region data grouped by parent
   const regionsByParent = <%= raw @regions_by_parent.to_json %>;
 
@@ -183,6 +177,18 @@ $(document).ready(function() {
   // Track selected origin region type
   let selectedOriginType = null;
 
+  // Initialize Select2 AFTER setting up event handlers
+  function initSelect2(selector) {
+    $(selector).select2({
+      allowClear: true,
+      width: '100%'
+    });
+  }
+
+  // Initialize state dropdowns only (others will be initialized after data loads)
+  initSelect2('#origin-state');
+  initSelect2('#dest-state');
+
   // ORIGIN: State changes → load districts
   $('#origin-state').on('change', function() {
     const stateSlug = $(this).val();
@@ -191,9 +197,17 @@ $(document).ready(function() {
 
     console.log('Origin state selected:', stateSlug);
 
+    // Destroy Select2 on district dropdown if it exists
+    if (districtDropdown.hasClass('select2-hidden-accessible')) {
+      districtDropdown.select2('destroy');
+    }
+    if (regionDropdown.hasClass('select2-hidden-accessible')) {
+      regionDropdown.select2('destroy');
+    }
+
     // Reset downstream dropdowns
-    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>').trigger('change');
-    regionDropdown.prop('disabled', true).html('<option value="">Choose region to move...</option>').trigger('change');
+    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>');
+    regionDropdown.prop('disabled', true).html('<option value="">Choose region to move...</option>');
     $('#preview-button').prop('disabled', true);
 
     if (stateSlug) {
@@ -204,7 +218,11 @@ $(document).ready(function() {
       districts.forEach(district => {
         districtDropdown.append(new Option(district.name, district.slug));
       });
+
       districtDropdown.prop('disabled', false);
+
+      // Reinitialize Select2 on district dropdown
+      initSelect2('#origin-district');
 
       if (districts.length === 0) {
         console.warn('No districts found for state:', stateSlug);
@@ -217,9 +235,14 @@ $(document).ready(function() {
     const districtSlug = $(this).val();
     const regionDropdown = $('#origin-region');
 
+    // Destroy Select2 if exists
+    if (regionDropdown.hasClass('select2-hidden-accessible')) {
+      regionDropdown.select2('destroy');
+    }
+
     // Reset region dropdown
     regionDropdown.html('<option value="">Choose region to move...</option>');
-    regionDropdown.prop('disabled', true).trigger('change');
+    regionDropdown.prop('disabled', true);
     $('#preview-button').prop('disabled', true);
 
     if (districtSlug) {
@@ -247,6 +270,9 @@ $(document).ready(function() {
       }
 
       regionDropdown.prop('disabled', false);
+
+      // Reinitialize Select2
+      initSelect2('#origin-region');
     }
   });
 
@@ -275,9 +301,17 @@ $(document).ready(function() {
     const districtDropdown = $('#dest-district');
     const regionDropdown = $('#dest-region');
 
+    // Destroy Select2 if exists
+    if (districtDropdown.hasClass('select2-hidden-accessible')) {
+      districtDropdown.select2('destroy');
+    }
+    if (regionDropdown.hasClass('select2-hidden-accessible')) {
+      regionDropdown.select2('destroy');
+    }
+
     // Reset downstream dropdowns
-    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>').trigger('change');
-    regionDropdown.prop('disabled', true).html('<option value="">Choose destination...</option>').trigger('change');
+    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>');
+    regionDropdown.prop('disabled', true).html('<option value="">Choose destination...</option>');
     $('#preview-button').prop('disabled', true);
 
     if (stateSlug) {
@@ -287,6 +321,9 @@ $(document).ready(function() {
         districtDropdown.append(new Option(district.name, district.slug));
       });
       districtDropdown.prop('disabled', false);
+
+      // Reinitialize Select2
+      initSelect2('#dest-district');
     }
   });
 
@@ -295,9 +332,14 @@ $(document).ready(function() {
     const districtSlug = $(this).val();
     const regionDropdown = $('#dest-region');
 
+    // Destroy Select2 if exists
+    if (regionDropdown.hasClass('select2-hidden-accessible')) {
+      regionDropdown.select2('destroy');
+    }
+
     // Reset region dropdown
     regionDropdown.html('<option value="">Choose destination...</option>');
-    regionDropdown.prop('disabled', true).trigger('change');
+    regionDropdown.prop('disabled', true);
     $('#preview-button').prop('disabled', true);
 
     if (districtSlug && selectedOriginType) {
@@ -323,6 +365,9 @@ $(document).ready(function() {
       });
 
       regionDropdown.prop('disabled', false);
+
+      // Reinitialize Select2
+      initSelect2('#dest-region');
     }
   });
 
