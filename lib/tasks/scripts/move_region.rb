@@ -24,11 +24,11 @@ class MoveRegion
     validate_move!
   end
 
-  def move!(dry_run: false)
+  def move!(dry_run: false, skip_reporting_refresh: false)
     if dry_run
       perform_dry_run
     else
-      perform_move
+      perform_move(skip_reporting_refresh: skip_reporting_refresh)
     end
   end
 
@@ -116,7 +116,7 @@ class MoveRegion
     }
   end
 
-  def perform_move
+  def perform_move(skip_reporting_refresh: false)
     result = {}
 
     ActiveRecord::Base.transaction do
@@ -193,10 +193,16 @@ class MoveRegion
     end
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
-    Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
-    refresh_reporting_views
-    log_info "Step 6: Refreshed reporting views", "✓"
-    result[:reporting_refreshed] = true
+    unless skip_reporting_refresh
+      Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
+      refresh_reporting_views
+      log_info "Step 6: Refreshed reporting views", "✓"
+      result[:reporting_refreshed] = true
+    else
+      Rails.logger.info "Step 6: Skipping reporting views refresh (will be updated by scheduled jobs)"
+      log_info "Step 6: Skipped reporting views refresh", "→"
+      result[:reporting_refreshed] = false
+    end
 
     # Step 7: Run integrity check
     Rails.logger.info "Step 7: Running integrity check..."

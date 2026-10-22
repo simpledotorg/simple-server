@@ -88,9 +88,9 @@ class Admin::RegionMovesController < AdminController
 
     begin
       mover = MoveRegion.new(region_slug: @region.slug, new_parent_slug: @new_parent.slug)
-      @result = mover.move!(dry_run: false)
+      @result = mover.move!(dry_run: false, skip_reporting_refresh: true)
 
-      flash[:success] = "Successfully moved #{@region.name} to #{@new_parent.name}"
+      flash[:success] = "Successfully moved #{@region.name} to #{@new_parent.name}. Reports will be updated shortly."
       redirect_to new_admin_region_move_path
     rescue => e
       flash[:alert] = "Failed to move region: #{e.message}"
