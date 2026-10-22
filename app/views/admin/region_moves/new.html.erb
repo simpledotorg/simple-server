@@ -1,0 +1,234 @@
+<div class="page-header">
+  <h1 class="page-title">Move Region</h1>
+  <p class="page-description">
+    Move facilities, blocks, districts, or states to different parent regions
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
+
+      <!-- Step 1: Select what type of region to move -->
+      <div class="form-group">
+        <label class="d-block">What do you want to move?</label>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+          <label class="btn btn-outline-primary active" id="type-facility">
+            <input type="radio" name="region_type_filter" value="facility" checked> Facility
+          </label>
+          <label class="btn btn-outline-primary" id="type-block">
+            <input type="radio" name="region_type_filter" value="block"> Block/Woreda
+          </label>
+          <label class="btn btn-outline-primary" id="type-district">
+            <input type="radio" name="region_type_filter" value="district"> District/Zone
+          </label>
+          <label class="btn btn-outline-primary" id="type-state">
+            <input type="radio" name="region_type_filter" value="state"> State/Region
+          </label>
+        </div>
+        <small class="form-text text-muted">
+          <i class="fas fa-info-circle"></i>
+          Select the type of region you want to move
+        </small>
+      </div>
+
+      <hr class="my-4">
+
+      <!-- Step 2: Select which region to move -->
+      <div class="form-group">
+        <%= f.label :region_identifier, "Select which region to move", class: "font-weight-bold" %>
+        <%= f.select :region_identifier,
+          grouped_options_for_select(
+            @regions_by_type.transform_keys { |k| k.capitalize }.transform_values { |regions|
+              regions.map { |r| [r.name, r.slug] }
+            }
+          ),
+          { prompt: "Search and select..." },
+          class: "form-control select2",
+          required: true,
+          id: "region-select" %>
+        <small class="form-text text-muted">
+          <i class="fas fa-search"></i>
+          <span id="region-help">Select the facility you want to move</span>
+        </small>
+      </div>
+
+      <!-- Step 3: Select where to move it -->
+      <div class="form-group">
+        <%= f.label :new_parent_identifier, "Select where to move it to", class: "font-weight-bold" %>
+        <%= f.select :new_parent_identifier,
+          grouped_options_for_select(
+            @regions_by_type.transform_keys { |k| k.capitalize }.transform_values { |regions|
+              regions.map { |r| [r.name, r.slug] }
+            }
+          ),
+          { prompt: "Search and select parent..." },
+          class: "form-control select2",
+          required: true,
+          id: "parent-select" %>
+        <small class="form-text text-muted">
+          <i class="fas fa-sitemap"></i>
+          <span id="parent-help">Select the block where you want to move this facility</span>
+        </small>
+      </div>
+
+      <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle mr-2"></i>
+        <strong>Note:</strong> Moving a region will also move all its descendants.
+        For example, moving a block will move all facilities within it.
+      </div>
+
+      <div class="form-group">
+        <%= f.submit "Preview Move", class: "btn btn-primary btn-lg" %>
+        <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary btn-lg" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
+
+<% if @regions_by_type.any? %>
+  <script>
+    // Map of region types to their valid parent types
+    const validParentTypes = {
+      'facility': ['block'],
+      'block': ['district'],
+      'district': ['state'],
+      'state': ['organization']
+    };
+
+    // Help text for each type
+    const helpText = {
+      'facility': {
+        region: 'Select the facility you want to move',
+        parent: 'Select the block where you want to move this facility'
+      },
+      'block': {
+        region: 'Select the block/woreda you want to move',
+        parent: 'Select the district/zone where you want to move this block'
+      },
+      'district': {
+        region: 'Select the district/zone you want to move',
+        parent: 'Select the state/region where you want to move this district'
+      },
+      'state': {
+        region: 'Select the state/region you want to move',
+        parent: 'Select the organization where you want to move this state'
+      }
+    };
+
+    // Region data by type (from Rails)
+    const regionsByType = <%= raw @regions_by_type.to_json %>;
+
+    $(document).ready(function() {
+      // Initialize Select2
+      const regionSelect = $('#region-select').select2({
+        allowClear: true,
+        width: '100%',
+        placeholder: 'Search and select...'
+      });
+
+      const parentSelect = $('#parent-select').select2({
+        allowClear: true,
+        width: '100%',
+        placeholder: 'Search and select parent...'
+      });
+
+      // Function to filter regions by type
+      function filterRegionsByType(selectedType) {
+        // Update help text
+        $('#region-help').text(helpText[selectedType].region);
+        $('#parent-help').text(helpText[selectedType].parent);
+
+        // Clear selections
+        regionSelect.val(null).trigger('change');
+        parentSelect.val(null).trigger('change');
+
+        // Filter first dropdown to only show selected type
+        regionSelect.find('optgroup').each(function() {
+          const groupType = $(this).attr('label').toLowerCase();
+          if (groupType === selectedType) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+
+        // Filter second dropdown to only show valid parent types
+        const validParents = validParentTypes[selectedType];
+        parentSelect.find('optgroup').each(function() {
+          const groupType = $(this).attr('label').toLowerCase();
+          if (validParents && validParents.includes(groupType)) {
+            $(this).show();
+          } else {
+            $(this).hide();
+          }
+        });
+
+        // Refresh Select2
+        regionSelect.select2('destroy').select2({
+          allowClear: true,
+          width: '100%',
+          placeholder: 'Search and select...'
+        });
+
+        parentSelect.select2('destroy').select2({
+          allowClear: true,
+          width: '100%',
+          placeholder: 'Search and select parent...'
+        });
+      }
+
+      // Handle region type radio button changes
+      $('input[name="region_type_filter"]').on('change', function() {
+        const selectedType = $(this).val();
+        filterRegionsByType(selectedType);
+      });
+
+      // Initialize with facility type (default)
+      filterRegionsByType('facility');
+
+      // Prevent selecting the same region as parent
+      regionSelect.on('change', function() {
+        const selectedRegion = $(this).val();
+
+        // Disable the selected region in parent dropdown
+        parentSelect.find('option').each(function() {
+          if ($(this).val() === selectedRegion) {
+            $(this).prop('disabled', true);
+          } else {
+            $(this).prop('disabled', false);
+          }
+        });
+
+        // Refresh parent select
+        parentSelect.select2('destroy').select2({
+          allowClear: true,
+          width: '100%',
+          placeholder: 'Search and select parent...'
+        });
+      });
+    });
+  </script>
+
+  <style>
+    .btn-group-toggle .btn {
+      padding: 10px 20px;
+    }
+
+    .btn-group-toggle .btn.active {
+      background-color: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    .select2-container {
+      font-size: 14px;
+    }
+
+    .form-group label.font-weight-bold {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+  </style>
+<% end %>
