@@ -193,15 +193,15 @@ class MoveRegion
     end
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
-    unless skip_reporting_refresh
+    if skip_reporting_refresh
+      Rails.logger.info "Step 6: Skipping reporting views refresh (will be updated by scheduled jobs)"
+      log_info "Step 6: Skipped reporting views refresh", "→"
+      result[:reporting_refreshed] = false
+    else
       Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
       refresh_reporting_views
       log_info "Step 6: Refreshed reporting views", "✓"
       result[:reporting_refreshed] = true
-    else
-      Rails.logger.info "Step 6: Skipping reporting views refresh (will be updated by scheduled jobs)"
-      log_info "Step 6: Skipped reporting views refresh", "→"
-      result[:reporting_refreshed] = false
     end
 
     # Step 7: Run integrity check
