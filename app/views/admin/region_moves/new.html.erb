@@ -256,12 +256,9 @@ $(document).ready(function() {
       const blockOptions = blocks.filter(r => r.region_type === 'block');
 
       if (moveLevel === 'block') {
-        $('#d-block').prop('disabled', false).html('<option value="">Select block…</option>');
-        blockOptions.forEach(block => {
-          if (block.slug !== moveBlockSlug) {
-            $('#d-block').append(new Option(block.name, block.slug));
-          }
-        });
+        // When moving a block, it goes directly under the district
+        // No need to select a destination block
+        $('#d-block').prop('disabled', true).html('<option value="">Not needed (block will be under this district)</option>');
       } else if (moveLevel === 'facility') {
         $('#d-block').prop('disabled', false).html('<option value="">Select block…</option>');
         blockOptions.forEach(block => {
