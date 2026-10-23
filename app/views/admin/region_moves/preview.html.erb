@@ -1,0 +1,158 @@
+<div class="page-header">
+  <h1 class="page-title">Preview Region Move</h1>
+  <p class="page-description">
+    Review the impact before executing the move
+  </p>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-primary text-white">
+    <h5 class="mb-0"><i class="fas fa-exchange-alt mr-2"></i>Move Details</h5>
+  </div>
+  <div class="card-body">
+    <table class="table table-sm">
+      <tbody>
+        <tr>
+          <th width="30%">Region to Move:</th>
+          <td>
+            <strong><%= @region.name %></strong>
+            <span class="badge badge-info ml-2"><%= @region.region_type %></span>
+          </td>
+        </tr>
+        <tr>
+          <th>Current Parent:</th>
+          <td><%= @preview_result[:old_parent] || "None" %></td>
+        </tr>
+        <tr>
+          <th>New Parent:</th>
+          <td>
+            <strong class="text-success"><%= @preview_result[:new_parent] %></strong>
+          </td>
+        </tr>
+        <tr>
+          <th>Current Path:</th>
+          <td><code class="text-muted"><%= @preview_result[:old_path] %></code></td>
+        </tr>
+        <tr>
+          <th>New Path:</th>
+          <td><code class="text-success"><%= @preview_result[:new_path] %></code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-warning">
+    <h5 class="mb-0"><i class="fas fa-chart-bar mr-2"></i>Impact Analysis</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="stat-card">
+          <div class="stat-value text-primary"><%= @preview_result[:affected_regions] %></div>
+          <div class="stat-label">Total Affected Regions</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="stat-card">
+          <div class="stat-value text-info"><%= @preview_result[:affected_facilities] %></div>
+          <div class="stat-label">Affected Facilities</div>
+        </div>
+      </div>
+    </div>
+
+    <% if @affected_facilities.any? %>
+      <div class="mt-3">
+        <h6>Facilities that will move:</h6>
+        <ul class="list-unstyled">
+          <% @affected_facilities.first(10).each do |facility| %>
+            <li><i class="fas fa-hospital text-muted mr-2"></i><%= facility.name %></li>
+          <% end %>
+          <% if @affected_facilities.count > 10 %>
+            <li class="text-muted"><em>... and <%= @affected_facilities.count - 10 %> more facilities</em></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="card mb-3">
+  <div class="card-header bg-danger text-white">
+    <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i>Sync Impact</h5>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-danger mb-0">
+      <h6><strong>Mobile App Sync Changes:</strong></h6>
+      <ul class="mb-0">
+        <li>
+          <strong>Users syncing to '<%= @preview_result[:old_parent] %>'</strong> will
+          <span class="text-danger">STOP</span> receiving data from '<%= @region.name %>'
+        </li>
+        <li>
+          <strong>Users syncing to '<%= @preview_result[:new_parent] %>'</strong> will
+          <span class="text-success">START</span> receiving data from '<%= @region.name %>'
+        </li>
+        <li>
+          This will trigger a <strong>resync</strong> for affected users
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header bg-light">
+    <h5 class="mb-0"><i class="fas fa-check-circle mr-2"></i>Confirm Move</h5>
+  </div>
+  <div class="card-body">
+    <%= form_with url: admin_region_moves_path, method: :post, local: true do |f| %>
+      <%= f.hidden_field :region_identifier, value: @region.slug %>
+      <%= f.hidden_field :new_parent_identifier, value: @new_parent.slug %>
+
+      <div class="form-check mb-3">
+        <%= f.check_box :confirm, { required: true, class: "form-check-input" }, "yes", "no" %>
+        <%= f.label :confirm, class: "form-check-label" do %>
+          <strong>I understand this will move <%= @region.name %> and all its descendants to <%= @new_parent.name %></strong>
+        <% end %>
+      </div>
+
+      <div class="alert alert-info">
+        <i class="fas fa-info-circle mr-2"></i>
+        <strong>Note:</strong> The move happens in a database transaction. If anything fails, all changes will be rolled back.
+      </div>
+
+      <div class="btn-group">
+        <%= link_to new_admin_region_move_path, class: "btn btn-outline-secondary" do %>
+          <i class="fas fa-arrow-left mr-1"></i> Back
+        <% end %>
+        <%= f.submit "Execute Move", class: "btn btn-danger",
+            data: {
+              confirm: "Are you absolutely sure?\n\nThis will move:\n- #{@region.name}\n- #{@preview_result[:affected_facilities]} facilities\n\nFrom: #{@preview_result[:old_parent]}\nTo: #{@preview_result[:new_parent]}"
+            } do %>
+          <i class="fas fa-check mr-1"></i> Execute Move
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .stat-card {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+  }
+  .stat-value {
+    font-size: 2.5rem;
+    font-weight: bold;
+  }
+  .stat-label {
+    color: #6c757d;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+</style>
