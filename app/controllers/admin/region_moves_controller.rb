@@ -23,18 +23,29 @@ class Admin::RegionMovesController < AdminController
     # This avoids N+1 queries by doing it all in Ruby
     @regions_by_parent = {}
 
-    # Get all regions with their parent paths
+    # Get all regions with their parent paths and parent region
     all_regions_data = Region.where.not(region_type: "root")
       .order(:name)
       .pluck(:slug, :name, :region_type, "ltree2text(path)")
 
-    # Build parent-child relationships
+    # Build a mapping of ltree path parts to actual slugs
+    path_to_slug = {}
+    all_regions_data.each do |slug, _name, _region_type, path_text|
+      path_parts = path_text.split(".")
+      path_key = path_parts.last # Last part of path corresponds to this region
+      path_to_slug[path_key] = slug
+    end
+
+    # Build parent-child relationships using actual slugs
     all_regions_data.each do |slug, name, region_type, path_text|
       path_parts = path_text.split(".")
       next if path_parts.length < 2
 
       # Parent is the second-to-last element in path
-      parent_slug = path_parts[-2]
+      parent_path_part = path_parts[-2]
+      # Convert path part (with underscores) to actual slug (with hyphens)
+      parent_slug = path_to_slug[parent_path_part]
+      next unless parent_slug
 
       @regions_by_parent[parent_slug] ||= []
       @regions_by_parent[parent_slug] << {
