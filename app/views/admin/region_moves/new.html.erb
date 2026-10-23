@@ -1,7 +1,7 @@
 <div class="page-header">
   <h1 class="page-title">Move Region</h1>
   <p class="page-description">
-    Move facilities, blocks, or districts to different parent regions
+    Move regions in the administrative hierarchy (facilities, blocks, districts, etc.)
   </p>
 </div>
 
@@ -9,105 +9,89 @@
   <div class="card-body">
     <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
 
-      <div class="row">
-        <!-- LEFT SIDE: Origin (What to move) -->
-        <div class="col-md-6">
-          <div class="move-section">
-            <h5 class="section-title">
-              <i class="fas fa-map-marker-alt mr-2"></i>Origin - What to move?
-            </h5>
-
-            <!-- State Selection for Origin -->
-            <div class="form-group">
-              <label>Select State/Region</label>
-              <select class="form-control select2" id="origin-state" required>
-                <option value="">Choose state...</option>
-                <% Region.where(region_type: 'state').order(:name).each do |state| %>
-                  <option value="<%= state.slug %>"><%= state.name %></option>
-                <% end %>
-              </select>
-            </div>
-
-            <!-- District Selection for Origin -->
-            <div class="form-group">
-              <label>Select District/Zone</label>
-              <select class="form-control select2" id="origin-district" disabled required>
-                <option value="">Choose district...</option>
-              </select>
-            </div>
-
-            <!-- Block/Facility Selection for Origin -->
-            <div class="form-group">
-              <label>Select Block/Woreda or Facility</label>
-              <%= f.select :region_identifier,
-                [],
-                { prompt: "Choose region to move..." },
-                class: "form-control select2",
-                id: "origin-region",
-                disabled: true,
-                required: true %>
-              <small class="form-text text-muted">
-                <i class="fas fa-info-circle"></i>
-                Select the specific facility or block you want to move
-              </small>
-            </div>
-          </div>
-        </div>
-
-        <!-- RIGHT SIDE: Destination (Where to move) -->
-        <div class="col-md-6">
-          <div class="move-section destination-section">
-            <h5 class="section-title">
-              <i class="fas fa-map-pin mr-2"></i>Destination - Where to move it?
-            </h5>
-
-            <!-- State Selection for Destination -->
-            <div class="form-group">
-              <label>Select State/Region</label>
-              <select class="form-control select2" id="dest-state" required>
-                <option value="">Choose state...</option>
-                <% Region.where(region_type: 'state').order(:name).each do |state| %>
-                  <option value="<%= state.slug %>"><%= state.name %></option>
-                <% end %>
-              </select>
-            </div>
-
-            <!-- District Selection for Destination -->
-            <div class="form-group">
-              <label>Select District/Zone</label>
-              <select class="form-control select2" id="dest-district" disabled required>
-                <option value="">Choose district...</option>
-              </select>
-            </div>
-
-            <!-- Block Selection for Destination -->
-            <div class="form-group">
-              <label>Select Block/Woreda</label>
-              <%= f.select :new_parent_identifier,
-                [],
-                { prompt: "Choose destination..." },
-                class: "form-control select2",
-                id: "dest-region",
-                disabled: true,
-                required: true %>
-              <small class="form-text text-muted">
-                <i class="fas fa-sitemap"></i>
-                Select where you want to move it to
-              </small>
-            </div>
-          </div>
-        </div>
+      <div class="alert alert-info mb-4">
+        <strong>How it works:</strong> Pick a district, then narrow down. Stop at the level you want to move: choose only a district and block to move the whole block, or go down to a facility to move just that facility.
       </div>
 
-      <div class="alert alert-warning mt-4">
-        <i class="fas fa-exclamation-triangle mr-2"></i>
-        <strong>Note:</strong> Moving a region will also move all its descendants.
-        For example, moving a block will move all facilities within it.
+      <!-- SECTION 1: What to move -->
+      <section class="mb-5">
+        <h2 class="section-number-title">1. What do you want to move?</h2>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="m-district" class="form-label-bold">District</label>
+            <select class="form-control" id="m-district" required>
+              <option value="">Select district…</option>
+              <% Region.where(region_type: 'district').order(:name).each do |district| %>
+                <option value="<%= district.slug %>"><%= district.name %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="m-block" class="form-label-bold">Block</label>
+            <%= f.select :region_identifier,
+              [],
+              { prompt: "Select a district first" },
+              class: "form-control",
+              id: "m-block",
+              disabled: true %>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="m-facility" class="form-label-bold">Facility</label>
+            <select class="form-control" id="m-facility" disabled>
+              <option value="">Select a block first</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="text-muted mb-0" id="move-summary">Choose a district, then narrow down to a block or facility if you only want to move part of it.</p>
+      </section>
+
+      <!-- SECTION 2: Where to move it -->
+      <section class="mb-4" style="border-top: 1px solid #dee2e6; padding-top: 2rem;">
+        <h2 class="section-number-title">2. Where should it go?</h2>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="d-district" class="form-label-bold">New district</label>
+            <select class="form-control" id="d-district" disabled>
+              <option value="">Choose what to move first</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="d-block" class="form-label-bold">New block</label>
+            <%= f.select :new_parent_identifier,
+              [],
+              { prompt: "Select a district first" },
+              class: "form-control",
+              id: "d-block",
+              disabled: true %>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="d-facility" class="form-label-bold">New facility</label>
+            <select class="form-control" id="d-facility" disabled>
+              <option value="">Not needed for this move</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="text-muted mb-0" id="dest-hint">Choose what to move first.</p>
+        <p class="text-danger mt-2 mb-0" id="same-parent-warning" style="display: none;">
+          <strong>That's where it already is.</strong> Choose a different destination.
+        </p>
+      </section>
+
+      <div class="alert alert-warning">
+        <strong>Warning:</strong> Moving a region also moves everything inside it. For example, moving a block moves all facilities within it.
       </div>
 
       <div class="form-group mt-4">
         <%= f.submit "Preview Move", class: "btn btn-primary btn-lg", id: "preview-button", disabled: true %>
-        <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary btn-lg" %>
+        <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary btn-lg ml-2" %>
       </div>
 
     <% end %>
@@ -115,276 +99,273 @@
 </div>
 
 <style>
-  .move-section {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 2px solid #dee2e6;
-    min-height: 400px;
+  .section-number-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1f2937;
   }
 
-  .destination-section {
-    background: #e8f4f8;
-    border-color: #0084c7;
+  .form-label-bold {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 6px;
   }
 
-  .section-title {
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid #dee2e6;
-    color: #495057;
-    font-weight: 600;
-  }
-
-  .destination-section .section-title {
-    color: #0066a1;
-  }
-
-  .form-group label {
-    font-weight: 500;
-    color: #495057;
-    margin-bottom: 8px;
-  }
-
-  .select2-container {
-    font-size: 14px;
-  }
-
-  .select2-container--default .select2-selection--single {
-    height: 40px;
-    border: 1px solid #ced4da;
+  .form-control {
+    height: 48px;
+    font-size: 17px;
+    border: 1px solid #c3c9d1;
     border-radius: 4px;
   }
 
-  .select2-container--default .select2-selection--single .select2-selection__rendered {
-    line-height: 38px;
+  .form-control:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
   }
 
-  .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 38px;
+  .form-control:focus {
+    outline: 2px solid #0c3966;
+    outline-offset: 2px;
+    border-color: #0c3966;
+  }
+
+  .btn-lg {
+    min-height: 48px;
+    padding: 0 22px;
+    font-size: 18px;
+  }
+
+  .btn-primary:disabled {
+    background: #8aa9c9;
+    border-color: #8aa9c9;
+    cursor: not-allowed;
   }
 </style>
 
 <script>
 $(document).ready(function() {
-  // Region data grouped by parent
+  // Region data
   const regionsByParent = <%= raw @regions_by_parent.to_json %>;
 
-  // Debug: Log the data
-  console.log('Regions by parent:', regionsByParent);
-  console.log('Keys available:', Object.keys(regionsByParent));
+  console.log('Regions loaded:', Object.keys(regionsByParent).length, 'parents');
 
-  // Track selected origin region type
-  let selectedOriginType = null;
+  // State tracking
+  let moveLevel = ''; // 'district', 'block', or 'facility'
+  let moveDistrictSlug = '';
+  let moveBlockSlug = '';
+  let moveFacilitySlug = '';
+  let destDistrictSlug = '';
+  let destBlockSlug = '';
 
-  // Initialize Select2 AFTER setting up event handlers
-  function initSelect2(selector) {
-    $(selector).select2({
-      allowClear: true,
-      width: '100%'
-    });
-  }
-
-  // Initialize state dropdowns only (others will be initialized after data loads)
-  initSelect2('#origin-state');
-  initSelect2('#dest-state');
-
-  // ORIGIN: State changes → load districts
-  $('#origin-state').on('change', function() {
-    const stateSlug = $(this).val();
-    const districtDropdown = $('#origin-district');
-    const regionDropdown = $('#origin-region');
-
-    console.log('Origin state selected:', stateSlug);
-
-    // Destroy Select2 on district dropdown if it exists
-    if (districtDropdown.hasClass('select2-hidden-accessible')) {
-      districtDropdown.select2('destroy');
-    }
-    if (regionDropdown.hasClass('select2-hidden-accessible')) {
-      regionDropdown.select2('destroy');
-    }
+  // ORIGIN: District selection
+  $('#m-district').on('change', function() {
+    const districtSlug = $(this).val();
+    moveDistrictSlug = districtSlug;
+    moveBlockSlug = '';
+    moveFacilitySlug = '';
+    destDistrictSlug = '';
+    destBlockSlug = '';
 
     // Reset downstream dropdowns
-    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>');
-    regionDropdown.prop('disabled', true).html('<option value="">Choose region to move...</option>');
-    $('#preview-button').prop('disabled', true);
-
-    if (stateSlug) {
-      // Load districts for this state
-      const districts = regionsByParent[stateSlug] || [];
-      console.log('Districts found for', stateSlug, ':', districts.length, districts);
-
-      districts.forEach(district => {
-        districtDropdown.append(new Option(district.name, district.slug));
-      });
-
-      districtDropdown.prop('disabled', false);
-
-      // Reinitialize Select2 on district dropdown
-      initSelect2('#origin-district');
-
-      if (districts.length === 0) {
-        console.warn('No districts found for state:', stateSlug);
-      }
-    }
-  });
-
-  // ORIGIN: District changes → load blocks/facilities
-  $('#origin-district').on('change', function() {
-    const districtSlug = $(this).val();
-    const regionDropdown = $('#origin-region');
-
-    // Destroy Select2 if exists
-    if (regionDropdown.hasClass('select2-hidden-accessible')) {
-      regionDropdown.select2('destroy');
-    }
-
-    // Reset region dropdown
-    regionDropdown.html('<option value="">Choose region to move...</option>');
-    regionDropdown.prop('disabled', true);
+    $('#m-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
+    $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>').val('');
+    $('#d-district').prop('disabled', true).html('<option value="">Choose what to move first</option>').val('');
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
     $('#preview-button').prop('disabled', true);
 
     if (districtSlug) {
-      // Load blocks and facilities for this district
-      const regions = regionsByParent[districtSlug] || [];
-      const blocks = regions.filter(r => r.region_type === 'block');
-      const facilities = regions.filter(r => r.region_type === 'facility');
+      moveLevel = 'district';
 
-      // Add blocks
-      if (blocks.length > 0) {
-        const blockGroup = $('<optgroup label="Blocks/Woredas">');
-        blocks.forEach(block => {
-          blockGroup.append(new Option(block.name, block.slug));
-        });
-        regionDropdown.append(blockGroup);
-      }
+      // Load blocks for this district
+      const blocks = regionsByParent[districtSlug] || [];
+      const blockOptions = blocks.filter(r => r.region_type === 'block');
 
-      // Add facilities
-      if (facilities.length > 0) {
-        const facilityGroup = $('<optgroup label="Facilities">');
-        facilities.forEach(facility => {
-          facilityGroup.append(new Option(facility.name, facility.slug));
-        });
-        regionDropdown.append(facilityGroup);
-      }
+      $('#m-block').prop('disabled', false).html('<option value="">All blocks (move the whole district)</option>');
+      blockOptions.forEach(block => {
+        $('#m-block').append(new Option(block.name, block.slug));
+      });
 
-      regionDropdown.prop('disabled', false);
-
-      // Reinitialize Select2
-      initSelect2('#origin-region');
-    }
-  });
-
-  // ORIGIN: Region selected → filter destination options
-  $('#origin-region').on('change', function() {
-    const selectedSlug = $(this).val();
-
-    if (selectedSlug) {
-      // Find the selected region's type
-      const allRegions = <%= raw @all_regions.to_json %>;
-      const selectedRegion = allRegions.find(r => r.slug === selectedSlug);
-      selectedOriginType = selectedRegion ? selectedRegion.region_type : null;
-
-      // Enable destination state dropdown
-      $('#dest-state').prop('disabled', false);
-      checkFormComplete();
+      updateSummary();
+      enableDestination();
     } else {
-      selectedOriginType = null;
-      $('#preview-button').prop('disabled', true);
+      moveLevel = '';
+      updateSummary();
     }
   });
 
-  // DESTINATION: State changes → load districts
-  $('#dest-state').on('change', function() {
-    const stateSlug = $(this).val();
-    const districtDropdown = $('#dest-district');
-    const regionDropdown = $('#dest-region');
+  // ORIGIN: Block selection
+  $('#m-block').on('change', function() {
+    const blockSlug = $(this).val();
+    moveBlockSlug = blockSlug;
+    moveFacilitySlug = '';
+    destBlockSlug = '';
 
-    // Destroy Select2 if exists
-    if (districtDropdown.hasClass('select2-hidden-accessible')) {
-      districtDropdown.select2('destroy');
-    }
-    if (regionDropdown.hasClass('select2-hidden-accessible')) {
-      regionDropdown.select2('destroy');
-    }
-
-    // Reset downstream dropdowns
-    districtDropdown.prop('disabled', true).html('<option value="">Choose district...</option>');
-    regionDropdown.prop('disabled', true).html('<option value="">Choose destination...</option>');
+    $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>').val('');
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
     $('#preview-button').prop('disabled', true);
 
-    if (stateSlug) {
-      // Load districts for this state
-      const districts = regionsByParent[stateSlug] || [];
-      districts.forEach(district => {
-        districtDropdown.append(new Option(district.name, district.slug));
-      });
-      districtDropdown.prop('disabled', false);
+    if (blockSlug) {
+      moveLevel = 'block';
 
-      // Reinitialize Select2
-      initSelect2('#dest-district');
+      // Load facilities for this block
+      const facilities = regionsByParent[blockSlug] || [];
+      const facilityOptions = facilities.filter(r => r.region_type === 'facility');
+
+      $('#m-facility').prop('disabled', false).html('<option value="">All facilities (move the whole block)</option>');
+      facilityOptions.forEach(facility => {
+        $('#m-facility').append(new Option(facility.name, facility.slug));
+      });
+    } else {
+      moveLevel = 'district';
+      $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>');
     }
+
+    updateSummary();
+    enableDestination();
   });
 
-  // DESTINATION: District changes → load blocks (filtered by origin type)
-  $('#dest-district').on('change', function() {
+  // ORIGIN: Facility selection
+  $('#m-facility').on('change', function() {
+    const facilitySlug = $(this).val();
+    moveFacilitySlug = facilitySlug;
+
+    if (facilitySlug) {
+      moveLevel = 'facility';
+    } else {
+      moveLevel = 'block';
+    }
+
+    updateSummary();
+    enableDestination();
+  });
+
+  // DESTINATION: District selection
+  $('#d-district').on('change', function() {
     const districtSlug = $(this).val();
-    const regionDropdown = $('#dest-region');
+    destDistrictSlug = districtSlug;
+    destBlockSlug = '';
 
-    // Destroy Select2 if exists
-    if (regionDropdown.hasClass('select2-hidden-accessible')) {
-      regionDropdown.select2('destroy');
-    }
-
-    // Reset region dropdown
-    regionDropdown.html('<option value="">Choose destination...</option>');
-    regionDropdown.prop('disabled', true);
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
     $('#preview-button').prop('disabled', true);
 
-    if (districtSlug && selectedOriginType) {
-      // Determine valid parent type based on origin
-      let validParentType = null;
-      if (selectedOriginType === 'facility') validParentType = 'block';
-      else if (selectedOriginType === 'block') validParentType = 'district';
-      else if (selectedOriginType === 'district') validParentType = 'state';
+    if (districtSlug) {
+      // Load blocks for destination district
+      const blocks = regionsByParent[districtSlug] || [];
+      const blockOptions = blocks.filter(r => r.region_type === 'block');
 
-      // Load regions filtered by valid parent type
-      const regions = regionsByParent[districtSlug] || [];
-      const validRegions = validParentType === 'block'
-        ? regions.filter(r => r.region_type === 'block')
-        : validParentType === 'district'
-          ? [{ name: $('#dest-district option:selected').text(), slug: districtSlug, region_type: 'district' }]
-          : regions;
-
-      validRegions.forEach(region => {
-        // Don't include the same region that's being moved
-        if (region.slug !== $('#origin-region').val()) {
-          regionDropdown.append(new Option(region.name, region.slug));
-        }
-      });
-
-      regionDropdown.prop('disabled', false);
-
-      // Reinitialize Select2
-      initSelect2('#dest-region');
+      if (moveLevel === 'block') {
+        $('#d-block').prop('disabled', false).html('<option value="">Select block…</option>');
+        blockOptions.forEach(block => {
+          if (block.slug !== moveBlockSlug) {
+            $('#d-block').append(new Option(block.name, block.slug));
+          }
+        });
+      } else if (moveLevel === 'facility') {
+        $('#d-block').prop('disabled', false).html('<option value="">Select block…</option>');
+        blockOptions.forEach(block => {
+          $('#d-block').append(new Option(block.name, block.slug));
+        });
+      }
     }
+
+    updateDestHint();
+    checkSameParent();
+    checkFormReady();
   });
 
-  // DESTINATION: Region selected → check if form complete
-  $('#dest-region').on('change', function() {
-    checkFormComplete();
+  // DESTINATION: Block selection
+  $('#d-block').on('change', function() {
+    const blockSlug = $(this).val();
+    destBlockSlug = blockSlug;
+
+    updateDestHint();
+    checkSameParent();
+    checkFormReady();
   });
 
-  function checkFormComplete() {
-    const originSelected = $('#origin-region').val();
-    const destSelected = $('#dest-region').val();
+  function updateSummary() {
+    let summary = 'Choose a district, then narrow down to a block or facility if you only want to move part of it.';
 
-    if (originSelected && destSelected) {
-      $('#preview-button').prop('disabled', false);
+    if (moveLevel === 'district') {
+      const districtName = $('#m-district option:selected').text();
+      summary = 'You\'re moving the district "' + districtName + '" and all its blocks and facilities.';
+    } else if (moveLevel === 'block') {
+      const blockName = $('#m-block option:selected').text();
+      const facilities = regionsByParent[moveBlockSlug] || [];
+      const facilityCount = facilities.filter(r => r.region_type === 'facility').length;
+      summary = 'You\'re moving the block "' + blockName + '" and its ' + facilityCount + ' facilities.';
+    } else if (moveLevel === 'facility') {
+      const facilityName = $('#m-facility option:selected').text();
+      summary = 'You\'re moving the facility "' + facilityName + '".';
+    }
+
+    $('#move-summary').text(summary);
+  }
+
+  function enableDestination() {
+    // Enable destination dropdowns based on move level
+    $('#d-district').prop('disabled', false).html('<option value="">Select district…</option>');
+
+    // Load all districts
+    <% Region.where(region_type: 'district').order(:name).each do |district| %>
+      $('#d-district').append(new Option('<%= district.name %>', '<%= district.slug %>'));
+    <% end %>
+
+    updateDestHint();
+  }
+
+  function updateDestHint() {
+    let hint = 'Choose what to move first.';
+
+    if (moveLevel === 'facility') {
+      hint = 'Choose the district and block this facility should belong to.';
+    } else if (moveLevel === 'block') {
+      hint = 'Choose the district this block should belong to.';
+    } else if (moveLevel === 'district') {
+      hint = 'Moving a whole district needs a State dropdown here, which isn\'t available yet.';
+    }
+
+    $('#dest-hint').text(hint);
+  }
+
+  function checkSameParent() {
+    let same = false;
+
+    if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug === moveDistrictSlug) {
+      same = true;
+    } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug === moveBlockSlug) {
+      same = true;
+    }
+
+    if (same) {
+      $('#same-parent-warning').show();
     } else {
-      $('#preview-button').prop('disabled', true);
+      $('#same-parent-warning').hide();
     }
+
+    return same;
+  }
+
+  function checkFormReady() {
+    let ready = false;
+
+    if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug !== moveDistrictSlug) {
+      // Moving block to different district
+      ready = true;
+      // Set the hidden form field to the destination district slug
+      $('select[name="region_identifier"]').val(moveBlockSlug);
+      $('select[name="new_parent_identifier"]').val(destDistrictSlug);
+    } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug !== moveBlockSlug) {
+      // Moving facility to different block
+      ready = true;
+      $('select[name="region_identifier"]').val(moveFacilitySlug);
+      $('select[name="new_parent_identifier"]').val(destBlockSlug);
+    }
+
+    $('#preview-button').prop('disabled', !ready);
   }
 });
 </script>
