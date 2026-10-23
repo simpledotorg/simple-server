@@ -410,6 +410,18 @@ class MoveRegion
     affected_regions.uniq.each do |r|
       Rails.cache.delete_matched("#{r.cache_key}/*")
     end
+
+    # Clear cached_ancestors for all regions since the hierarchy changed
+    # This ensures the Reports page tree displays the updated structure
+    Rails.logger.info "Clearing cached_ancestors for all regions..."
+    Region.find_each do |r|
+      Rails.cache.delete("#{r.cache_key}/ancestors")
+    end
+
+    # Clear the power_user_region_access cache used by Reports::RegionsController
+    # This cache stores the entire region tree structure
+    Rails.logger.info "Clearing power_user_region_access cache..."
+    Rails.cache.delete("users/power_user_region_access")
   end
 
   def should_recalculate_populations?
