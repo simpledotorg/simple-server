@@ -353,20 +353,57 @@ $(document).ready(function() {
   function checkFormReady() {
     let ready = false;
 
+    console.log('checkFormReady called:', {
+      moveLevel: moveLevel,
+      moveDistrictSlug: moveDistrictSlug,
+      moveBlockSlug: moveBlockSlug,
+      moveFacilitySlug: moveFacilitySlug,
+      destDistrictSlug: destDistrictSlug,
+      destBlockSlug: destBlockSlug
+    });
+
     if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug !== moveDistrictSlug) {
       // Moving block to different district
       ready = true;
       // Set the hidden form fields
       $('#region-identifier-field').val(moveBlockSlug);
       $('#new-parent-identifier-field').val(destDistrictSlug);
+      console.log('Set hidden fields for block move:', {
+        region_identifier: moveBlockSlug,
+        new_parent_identifier: destDistrictSlug
+      });
     } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug !== moveBlockSlug) {
       // Moving facility to different block
       ready = true;
       $('#region-identifier-field').val(moveFacilitySlug);
       $('#new-parent-identifier-field').val(destBlockSlug);
+      console.log('Set hidden fields for facility move:', {
+        region_identifier: moveFacilitySlug,
+        new_parent_identifier: destBlockSlug
+      });
     }
 
     $('#preview-button').prop('disabled', !ready);
   }
+
+  // Ensure hidden fields are populated before form submission
+  $('#region-move-form').on('submit', function(e) {
+    console.log('Form submitting with:', {
+      region_identifier: $('#region-identifier-field').val(),
+      new_parent_identifier: $('#new-parent-identifier-field').val(),
+      moveLevel: moveLevel,
+      moveBlockSlug: moveBlockSlug,
+      moveFacilitySlug: moveFacilitySlug,
+      destDistrictSlug: destDistrictSlug,
+      destBlockSlug: destBlockSlug
+    });
+
+    // Double-check hidden fields are populated
+    if (!$('#region-identifier-field').val() || !$('#new-parent-identifier-field').val()) {
+      e.preventDefault();
+      alert('Please select what to move and where to move it');
+      return false;
+    }
+  });
 });
 </script>
