@@ -10,8 +10,8 @@
     <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
 
       <!-- Hidden fields for form submission -->
-      <%= f.hidden_field :region_identifier, id: "region-identifier-field" %>
-      <%= f.hidden_field :new_parent_identifier, id: "new-parent-identifier-field" %>
+      <input type="hidden" name="region_identifier" id="region-identifier-field" value="">
+      <input type="hidden" name="new_parent_identifier" id="new-parent-identifier-field" value="">
 
       <div class="alert alert-info mb-4">
         <strong>How it works:</strong> Pick a district, then narrow down. Stop at the level you want to move: choose only a district and block to move the whole block, or go down to a facility to move just that facility.
