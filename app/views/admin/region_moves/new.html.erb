@@ -9,6 +9,10 @@
   <div class="card-body">
     <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
 
+      <!-- Hidden fields for form submission -->
+      <%= f.hidden_field :region_identifier, id: "region-identifier-field" %>
+      <%= f.hidden_field :new_parent_identifier, id: "new-parent-identifier-field" %>
+
       <div class="alert alert-info mb-4">
         <strong>How it works:</strong> Pick a district, then narrow down. Stop at the level you want to move: choose only a district and block to move the whole block, or go down to a facility to move just that facility.
       </div>
@@ -30,12 +34,9 @@
 
           <div class="col-md-4 mb-3">
             <label for="m-block" class="form-label-bold">Block</label>
-            <%= f.select :region_identifier,
-              [],
-              { prompt: "Select a district first" },
-              class: "form-control",
-              id: "m-block",
-              disabled: true %>
+            <select class="form-control" id="m-block" disabled>
+              <option value="">Select a district first</option>
+            </select>
           </div>
 
           <div class="col-md-4 mb-3">
@@ -63,12 +64,9 @@
 
           <div class="col-md-4 mb-3">
             <label for="d-block" class="form-label-bold">New block</label>
-            <%= f.select :new_parent_identifier,
-              [],
-              { prompt: "Select a district first" },
-              class: "form-control",
-              id: "d-block",
-              disabled: true %>
+            <select class="form-control" id="d-block" disabled>
+              <option value="">Select a district first</option>
+            </select>
           </div>
 
           <div class="col-md-4 mb-3">
@@ -358,14 +356,14 @@ $(document).ready(function() {
     if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug !== moveDistrictSlug) {
       // Moving block to different district
       ready = true;
-      // Set the hidden form field to the destination district slug
-      $('select[name="region_identifier"]').val(moveBlockSlug);
-      $('select[name="new_parent_identifier"]').val(destDistrictSlug);
+      // Set the hidden form fields
+      $('#region-identifier-field').val(moveBlockSlug);
+      $('#new-parent-identifier-field').val(destDistrictSlug);
     } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug !== moveBlockSlug) {
       // Moving facility to different block
       ready = true;
-      $('select[name="region_identifier"]').val(moveFacilitySlug);
-      $('select[name="new_parent_identifier"]').val(destBlockSlug);
+      $('#region-identifier-field').val(moveFacilitySlug);
+      $('#new-parent-identifier-field').val(destBlockSlug);
     }
 
     $('#preview-button').prop('disabled', !ready);
