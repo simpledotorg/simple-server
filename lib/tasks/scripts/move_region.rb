@@ -411,10 +411,13 @@ class MoveRegion
       Rails.cache.delete_matched("#{r.cache_key}/*")
     end
 
-    # Clear cached_ancestors for all regions since the hierarchy changed
-    # This ensures the Reports page tree displays the updated structure
-    Rails.logger.info "Clearing cached_ancestors for all regions..."
-    Region.find_each do |r|
+    # Clear cached_ancestors only for regions whose ancestors actually changed
+    # This includes the moved region and all its descendants
+    Rails.logger.info "Clearing cached_ancestors for moved region and descendants..."
+    regions_to_clear = [region] + Region.where("path <@ ?::ltree", region.path.to_s).to_a
+    Rails.logger.info "Clearing #{regions_to_clear.count} cached_ancestors..."
+
+    regions_to_clear.each do |r|
       Rails.cache.delete("#{r.cache_key}/ancestors")
     end
 
