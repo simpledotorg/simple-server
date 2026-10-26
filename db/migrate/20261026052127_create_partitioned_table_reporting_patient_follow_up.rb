@@ -166,7 +166,7 @@ class CreatePartitionedTableReportingPatientFollowUp < ActiveRecord::Migration[6
     execute <<~SQL
       DROP FUNCTION IF EXISTS simple_reporting.reporting_patient_follow_ups_table_function(date);
     SQL
-    
+
     drop_table "simple_reporting.reporting_patient_follow_ups"
   end
 end
