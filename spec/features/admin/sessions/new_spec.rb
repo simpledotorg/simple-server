@@ -53,7 +53,7 @@ RSpec.feature "Owner Login as Admin", type: :feature do
     it "login with Invalid data" do
       visit root_path
       login_page.do_login(owner.email, "")
-      login_page.is_errormessage_present
+      expect(page).to have_css(AdminPage::Sessions::New::ERROR_MESSAGE[:css])
       login_page.click_errormessage_cross_button
     end
   end

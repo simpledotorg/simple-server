@@ -15,5 +15,9 @@ module Reports
     def self.materialized?
       true
     end
+
+    def self.partitioned?
+      true
+    end
   end
 end
