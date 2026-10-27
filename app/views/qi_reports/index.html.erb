@@ -10,10 +10,9 @@
             Reports
           </h4>
           <% @qi_reports.each do |report| %>
-            <%= link_to report.label, resources_qi_reports_path(file: report.filename),
+            <%= link_to report.label, qi_reports_path(file: report.filename),
                   class: "nav-link #{"active" if report == @selected_report}" %>
           <% end %>
-          <%= link_to "← Back to resources", resources_path, class: "nav-link" %>
         </nav>
       </div>
       <div class="col-12 col-lg-10">
@@ -25,7 +24,7 @@
             <p>No QI reports are available yet.</p>
           </div>
         <% else %>
-          <% report_path = resources_qi_report_path(file: @selected_report.filename) %>
+          <% report_path = qi_report_file_path(file: @selected_report.filename) %>
           <div class="card" id="card-qi-report">
             <h2>
               <%= @selected_report.label %>
