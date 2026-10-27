@@ -140,7 +140,8 @@ class Admin::RegionMovesController < AdminController
 
   def find_region(identifier)
     return nil if identifier.blank?
-    Region.find_by(slug: identifier) || Region.find_by(name: identifier)
+    # Only find by slug (unique) to avoid ambiguity - names are not unique
+    Region.find_by(slug: identifier)
   end
 
   def authorize_power_user

@@ -349,53 +349,6 @@ class MoveRegion
     updated_count
   end
 
-  def update_descendant_paths
-    Rails.logger.info "=" * 80
-    Rails.logger.info "DEBUG: update_descendant_paths called"
-    Rails.logger.info "  @old_path: #{@old_path}"
-    Rails.logger.info "  @new_path: #{@new_path}"
-    Rails.logger.info "  region.path after save: #{region.path}"
-    Rails.logger.info "  region.slug: #{region.slug}"
-
-    # Find all descendants (children, grandchildren, etc.)
-    # Use ActiveRecord instead of raw SQL for reliability
-    descendants = Region
-      .where("path <@ ?::ltree", @old_path)
-      .where.not(id: region.id)
-
-    Rails.logger.info "  Query: SELECT * FROM regions WHERE path <@ '#{@old_path}'::ltree AND id != '#{region.id}'"
-    Rails.logger.info "  Found #{descendants.count} descendants to update"
-
-    if descendants.count == 0
-      # Debug: Check if any facilities exist and what their paths are
-      all_facilities = Region.where(region_type: "facility")
-      Rails.logger.info "  DEBUG: Total facilities in DB: #{all_facilities.count}"
-      all_facilities.limit(5).each do |f|
-        Rails.logger.info "    - #{f.name} (#{f.id}): #{f.path}"
-        # Check if this facility's path contains any part of our region's slug
-        if f.path.to_s.include?(region.slug.tr("-", "_"))
-          Rails.logger.info "      ^ This facility path contains '#{region.slug.tr("-", "_")}'"
-        end
-      end
-    end
-
-    updated_count = 0
-    descendants.find_each do |descendant|
-      old_descendant_path = descendant.path.to_s
-      new_descendant_path = old_descendant_path.sub(@old_path, @new_path)
-
-      Rails.logger.info "Updating descendant #{descendant.id}: #{old_descendant_path} -> #{new_descendant_path}"
-
-      # Use update_column to bypass callbacks and validations
-      descendant.update_column(:path, new_descendant_path)
-      updated_count += 1
-    end
-
-    Rails.logger.info "Updated #{updated_count} descendant paths"
-    Rails.logger.info "=" * 80
-    updated_count
-  end
-
   def clear_caches
     # Clear Rails cache for affected regions
     affected_regions = [region, new_parent, old_parent].compact
@@ -475,8 +428,8 @@ class MoveRegion
   end
 
   def should_recalculate_populations?
-    # Recalculate if moving districts (affects state populations)
-    region.region_type.in?(["district", "block"])
+    # Recalculate if moving districts, blocks, or facilities (affects state populations)
+    region.region_type.in?(["district", "block", "facility"])
   end
 
   def recalculate_populations
@@ -566,13 +519,20 @@ class MoveRegion
 
   def count_affected_users
     # Count users who have access to regions in this hierarchy
+    affected_region_ids = [old_parent&.id, new_parent.id, region.id].compact
+
     User.joins(:user_authentications)
       .where(user_authentications: {authenticatable_type: "PhoneNumberAuthentication"})
       .count { |u|
         # Check if user has access to any region in the old or new hierarchy
-        u.accessible_region_ids(:manage).intersect?([old_parent&.id, new_parent.id, region.id].compact)
+        # Check across all region types since we don't know the type beforehand
+        region_types = %w[organization state district block facility]
+        region_types.any? { |type|
+          u.accessible_region_ids(type, :manage).intersect?(affected_region_ids)
+        }
       }
-  rescue
+  rescue => e
+    Rails.logger.warn "Could not count affected users: #{e.message}"
     0 # If there's an error counting, return 0
   end
 
