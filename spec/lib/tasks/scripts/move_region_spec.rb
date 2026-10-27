@@ -333,10 +333,6 @@ RSpec.describe MoveRegion, type: :model do
       allow(Reports::Month).to receive(:all).and_return([])
       allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
-      # Allow the facility update to skip the block validation since we're moving the block itself
-      # In this case, the block is being moved mid-transaction so the validation would see stale data
-      allow_any_instance_of(Facility).to receive(:valid_block).and_return(true)
-
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
