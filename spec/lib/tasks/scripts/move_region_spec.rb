@@ -389,9 +389,20 @@ RSpec.describe MoveRegion, type: :model do
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
-      facility.reload
-      # Reload facility_group association to clear cache and get fresh data
-      facility.association(:facility_group).reload if facility.facility_group_id
+      # Completely reload facility from database to clear all cached associations
+      facility = Facility.find(facility.id)
+
+      # After move, facility should be in new_district_facility_group with zone="New Block"
+      expect(facility.facility_group_id).to eq(new_district_facility_group.id)
+      expect(facility.zone).to eq(new_block.name)
+
+      # Reload the facility_group and its region association to ensure fresh data
+      new_district_facility_group.reload
+      new_district_facility_group.association(:region).reload
+
+      # Verify the association chain is correct
+      expect(new_district_facility_group.region).to eq(new_district)
+      expect(new_district_facility_group.region.block_regions.pluck(:name)).to include(new_block.name)
 
       expect {
         facility.update!(name: "Updated Facility Name")
