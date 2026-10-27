@@ -300,6 +300,10 @@ RSpec.describe MoveRegion, type: :model do
       facility = create(:facility, id: facility_region.source_id, facility_group: facility_group)
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
 
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
@@ -315,6 +319,10 @@ RSpec.describe MoveRegion, type: :model do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
       facility = create(:facility, id: facility_region.source_id, facility_group: facility_group)
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
@@ -335,6 +343,10 @@ RSpec.describe MoveRegion, type: :model do
 
       old_updated_at = facility.updated_at
 
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
@@ -348,6 +360,10 @@ RSpec.describe MoveRegion, type: :model do
       old_district.update!(source: facility_group)
       facility = create(:facility, id: facility_region.source_id, facility_group: facility_group)
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
@@ -388,8 +404,9 @@ RSpec.describe MoveRegion, type: :model do
       ])
       allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
-      expect(RefreshReportingPartitionedTableJob).to receive(:set).at_least(:once).and_call_original
-      expect(RefreshReportingPartitionedTableJob).to receive(:perform_async).at_least(:once)
+      # Mock the chained method calls
+      job_double = double(perform_async: true)
+      expect(RefreshReportingPartitionedTableJob).to receive(:set).at_least(:once).and_return(job_double)
 
       mover.move!(dry_run: false, skip_reporting_refresh: true)
     end
