@@ -1,6 +1,6 @@
 # QI reports page: handoff notes
 
-**What it does:** `/resources/qi_reports` lists district PDFs produced by `send_district_reports.py`
+**What it does:** a standalone "QI reports" tab (above Facility trends) at `/qi_reports` lists district PDFs produced by `send_district_reports.py`
 (Metabase question 997 → one PDF per district per month) with an inline viewer, Download and Print.
 
 ## How permissions work (prototype)
@@ -10,7 +10,7 @@
 - A user sees a report only if its district name matches one of
   `current_admin.accessible_district_regions(:view_reports)`. Power users see everything.
   Unmatched district names are hidden.
-- PDFs are served by `ResourcesController#qi_report` through `authorize`, so a pasted URL for another
+- PDFs are served by `QiReportsController#file` through `authorize`, so a pasted URL for another
   district's file is refused. The file param is matched against the permitted list (no path traversal).
 
 ## For the engineer to do
@@ -21,5 +21,5 @@
 4. Local Docker bakes code into the image, so rebuild after adding PDFs:
    `docker compose -f .docker/docker-compose.yml up -d --build server`.
 
-Specs: `spec/models/qi_report_spec.rb`, `spec/controllers/resources_controller_spec.rb`
+Specs: `spec/models/qi_report_spec.rb`, `spec/controllers/qi_reports_controller_spec.rb`
 (written but not yet run: the authoring environment's Ruby didn't match the Gemfile).
