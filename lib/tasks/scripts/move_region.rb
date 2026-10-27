@@ -199,10 +199,12 @@ class MoveRegion
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
     if skip_reporting_refresh
-      Rails.logger.info "Step 6: Skipping immediate reporting views refresh"
-      # Still queue historical refresh jobs (fast, runs in background)
+      Rails.logger.info "Step 6: Refreshing base materialized views only"
+      # Refresh base views (needed for facility data) but skip partitioned tables
+      refresh_base_materialized_views
+      # Queue background jobs to refresh partitioned tables historically
       refresh_partitioned_tables_historically
-      log_info "Step 6: Skipped immediate refresh, queued historical refresh jobs", "→"
+      log_info "Step 6: Refreshed base views, queued historical refresh jobs", "→"
       result[:reporting_refreshed] = false
     else
       Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
@@ -372,9 +374,9 @@ class MoveRegion
     end
 
     # Clear cached_ancestors only for regions whose ancestors actually changed
-    # This includes the moved region and all its descendants
+    # This includes the moved region and all its descendants (path <@ already includes the region itself)
     Rails.logger.info "Clearing cached_ancestors for moved region and descendants..."
-    regions_to_clear = [region] + Region.where("path <@ ?::ltree", region.path.to_s).to_a
+    regions_to_clear = Region.where("path <@ ?::ltree", region.path.to_s)
     Rails.logger.info "Clearing #{regions_to_clear.count} cached_ancestors..."
 
     regions_to_clear.each do |r|
@@ -388,9 +390,9 @@ class MoveRegion
   end
 
   def update_facility_fields
-    # Get all affected facility regions (the moved region + its descendants)
-    affected_regions = [region] + Region.where("path <@ ?::ltree", region.path.to_s).to_a
-    affected_facility_regions = affected_regions.select { |r| r.region_type == "facility" }
+    # Get all affected facility regions (path <@ already includes the region itself)
+    affected_facility_regions = Region.where("path <@ ?::ltree", region.path.to_s)
+                                      .where(region_type: "facility")
 
     Rails.logger.info "Updating facility model fields for #{affected_facility_regions.count} facilities..."
 
@@ -416,10 +418,16 @@ class MoveRegion
         updates[:facility_group_id] = facility_group&.id if facility_group
       end
 
-      # Batch update without validations/callbacks for performance
+      # Update facility fields with update! to ensure updated_at changes
+      # This is critical for mobile sync via updated_on_server_since
       if updates.any?
-        facility.update_columns(updates)
-        updated_count += 1
+        begin
+          facility.update!(updates)
+          updated_count += 1
+        rescue ActiveRecord::RecordInvalid => e
+          Rails.logger.error "Failed to update facility #{facility.name} (ID: #{facility.id}): #{e.message}"
+          raise e  # Re-raise to rollback transaction
+        end
       end
     end
 
@@ -471,23 +479,62 @@ class MoveRegion
     # Don't fail the whole operation if reporting refresh fails
   end
 
+  def refresh_base_materialized_views
+    # Refresh only the base materialized views that don't involve partitioned tables
+    # These are needed because they contain facility data that partitioned tables depend on
+    Rails.logger.info "Refreshing base materialized views (without partitioned tables)..."
+
+    base_views = [
+      "Reports::Month",
+      "Reports::Facility",
+      "Reports::PatientBloodPressure",
+      "Reports::PatientBloodSugar",
+      "Reports::OverdueCalls",
+      "Reports::PatientVisit",
+      "Reports::PatientFollowUp"
+    ]
+
+    RefreshReportingViews.call(views: base_views)
+    Rails.logger.info "Base materialized views refreshed"
+  rescue => e
+    Rails.logger.error "Failed to refresh base materialized views: #{e.message}"
+    # Don't fail the whole operation if refresh fails
+  end
+
   def refresh_partitioned_tables_historically
     Rails.logger.info "Queueing background jobs to refresh historical reporting data..."
 
     # Get all reporting months
     reporting_months = Reports::Month.all
-    reporting_tables = ["reporting_patient_blood_pressures", "reporting_patient_blood_sugars"]
+    # Only actual partitioned tables (verified from database)
+    # Note: These are the complete list of partitioned tables as of the implementation date
+    reporting_tables = [
+      "reporting_patient_states",
+      "reporting_facility_states",
+      "reporting_overdue_patients",
+      "reporting_patient_prescriptions",
+      "reporting_facility_appointment_scheduled_days",
+      "reporting_facility_monthly_follow_ups_and_registrations"
+    ]
 
+    # Queue jobs sequentially with delays to avoid overwhelming the database
+    # The order matters because results from one table are used for aggregates
     jobs_queued = 0
-    reporting_months.each do |month|
-      reporting_tables.each do |table|
-        # Queue async job (doesn't block, runs in background)
-        RefreshReportingPartitionedTableJob.perform_async(month.month_date.to_s, table)
+    reporting_months.each_with_index do |month, month_index|
+      reporting_tables.each_with_index do |table, table_index|
+        # Calculate delay: stagger jobs across time
+        # Each month gets its own time slot, and tables within a month are also staggered
+        delay_minutes = (month_index * reporting_tables.length + table_index) * 45
+
+        # Queue with delay
+        RefreshReportingPartitionedTableJob
+          .set(wait_until: Time.now + delay_minutes.minutes)
+          .perform_async(month.month_date.to_s, table)
         jobs_queued += 1
       end
     end
 
-    Rails.logger.info "Queued #{jobs_queued} background jobs to refresh partitioned tables"
+    Rails.logger.info "Queued #{jobs_queued} background jobs to refresh partitioned tables (staggered over time)"
   rescue => e
     Rails.logger.error "Failed to queue partitioned table refresh jobs: #{e.message}"
     # Don't fail the whole operation if background job queueing fails
