@@ -297,11 +297,8 @@ RSpec.describe MoveRegion, type: :model do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
 
-      # Create new_block first, then set up facility_group with new_district as source
-      # This ensures new_block is in the facility_group's region's block_regions
+      # Create new_block first - this ensures new_district has block children
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
@@ -314,17 +311,16 @@ RSpec.describe MoveRegion, type: :model do
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
       facility.reload
+      new_district.reload
       expect(facility.zone).to eq(new_block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district_facility_group.id)
+      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates facility model fields when moving a block" do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
       create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
@@ -337,20 +333,19 @@ RSpec.describe MoveRegion, type: :model do
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
       facility.reload
+      new_district.reload
       expect(facility.zone).to eq(block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district_facility_group.id)
+      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates updated_at for mobile sync" do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
 
-      # Create new_block first, then set up facility_group
+      # Create new_block first - this ensures new_district has block children
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
@@ -374,12 +369,8 @@ RSpec.describe MoveRegion, type: :model do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
 
-      # Create new_block first
+      # Create new_block first - this ensures new_district has block children
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-
-      # Use the facility_group that new_district already has (from factory)
-      # or create one that's properly associated
-      new_district_facility_group = new_district.source
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
@@ -414,12 +405,9 @@ RSpec.describe MoveRegion, type: :model do
 
   describe "historical reporting refresh" do
     it "queues background job to refresh base materialized views" do
-      # Create new_block first, then set up facility_group
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
-      facility = create(:facility, name: "Test Facility", facility_group: new_district_facility_group, zone: new_block.name, district: new_district.name, state: state.name)
+      facility = create(:facility, name: "Test Facility")
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
 
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
@@ -431,12 +419,9 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "queues background jobs to refresh partitioned tables" do
-      # Create new_block first, then set up facility_group
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
-      facility = create(:facility, name: "Test Facility", facility_group: new_district_facility_group, zone: new_block.name, district: new_district.name, state: state.name)
+      facility = create(:facility, name: "Test Facility")
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
 
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
@@ -456,12 +441,9 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "staggers jobs over time to avoid database overload" do
-      # Create new_block first, then set up facility_group
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
-      new_district_facility_group = create(:facility_group)
-      new_district.update!(source: new_district_facility_group)
 
-      facility = create(:facility, name: "Test Facility", facility_group: new_district_facility_group, zone: new_block.name, district: new_district.name, state: state.name)
+      facility = create(:facility, name: "Test Facility")
       facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
 
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
