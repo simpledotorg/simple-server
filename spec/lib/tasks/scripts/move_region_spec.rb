@@ -390,6 +390,9 @@ RSpec.describe MoveRegion, type: :model do
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
       facility.reload
+      # Reload facility_group association to clear cache and get fresh data
+      facility.association(:facility_group).reload if facility.facility_group_id
+
       expect {
         facility.update!(name: "Updated Facility Name")
       }.not_to raise_error
