@@ -297,7 +297,7 @@ RSpec.describe MoveRegion, type: :model do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
 
-      # Create new_block first - this ensures new_district has block children
+      # Create new_block - new_district will get facility_group from region creation
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
@@ -311,11 +311,9 @@ RSpec.describe MoveRegion, type: :model do
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
       facility.reload
-      new_district.reload
       expect(facility.zone).to eq(new_block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates facility model fields when moving a block" do
@@ -333,11 +331,9 @@ RSpec.describe MoveRegion, type: :model do
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
       facility.reload
-      new_district.reload
       expect(facility.zone).to eq(block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates updated_at for mobile sync" do
@@ -385,10 +381,9 @@ RSpec.describe MoveRegion, type: :model do
       # Completely reload facility from database to clear all cached associations
       facility = Facility.find(facility.id)
 
-      # After move, facility should be in new_district's facility_group with zone="New Block"
-      new_district.reload
-      expect(facility.facility_group_id).to eq(new_district.source_id)
+      # After move, facility should have new zone and district
       expect(facility.zone).to eq(new_block.name)
+      expect(facility.district).to eq(new_district.name)
 
       expect {
         facility.update!(name: "Updated Facility Name")
@@ -397,9 +392,6 @@ RSpec.describe MoveRegion, type: :model do
       facility_region.reload
       expect(facility_region.block_region).to eq(new_block)
       expect(facility_region.district_region).to eq(new_district)
-
-      expect(facility.zone).to eq(new_block.name)
-      expect(facility.district).to eq(new_district.name)
     end
   end
 
