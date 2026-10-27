@@ -324,7 +324,7 @@ RSpec.describe MoveRegion, type: :model do
       new_district.update!(source: new_district_facility_group)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
-      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+      create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
 
       # Mock background jobs
       allow(Reports::Month).to receive(:all).and_return([])
