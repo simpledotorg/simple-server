@@ -392,7 +392,7 @@ class MoveRegion
   def update_facility_fields
     # Get all affected facility regions (path <@ already includes the region itself)
     affected_facility_regions = Region.where("path <@ ?::ltree", region.path.to_s)
-                                      .where(region_type: "facility")
+      .where(region_type: "facility")
 
     Rails.logger.info "Updating facility model fields for #{affected_facility_regions.count} facilities..."
 
@@ -426,7 +426,7 @@ class MoveRegion
           updated_count += 1
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.error "Failed to update facility #{facility.name} (ID: #{facility.id}): #{e.message}"
-          raise e  # Re-raise to rollback transaction
+          raise e # Re-raise to rollback transaction
         end
       end
     end
