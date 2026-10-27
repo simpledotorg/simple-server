@@ -365,7 +365,12 @@ RSpec.describe MoveRegion, type: :model do
       facility_group = create(:facility_group)
       old_district.update!(source: facility_group)
 
-      # Create new_block first - this ensures new_district has block children
+      # Create facility_group for new_district and properly link the region association
+      new_district_facility_group = create(:facility_group)
+      # Delete the auto-created region so we can use new_district as the region
+      new_district_facility_group.region&.destroy
+      new_district.update!(source: new_district_facility_group)
+      # Now create new_block - it will be under new_district
       new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
 
       facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
@@ -381,9 +386,10 @@ RSpec.describe MoveRegion, type: :model do
       # Completely reload facility from database to clear all cached associations
       facility = Facility.find(facility.id)
 
-      # After move, facility should have new zone and district
+      # After move, facility should have new zone, district, and facility_group
       expect(facility.zone).to eq(new_block.name)
       expect(facility.district).to eq(new_district.name)
+      expect(facility.facility_group_id).to eq(new_district_facility_group.id)
 
       expect {
         facility.update!(name: "Updated Facility Name")
