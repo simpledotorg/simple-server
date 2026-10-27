@@ -367,6 +367,16 @@ RSpec.describe MoveRegion, type: :model do
   end
 
   describe "historical reporting refresh" do
+    it "queues background job to refresh base materialized views" do
+      facility_region = create(:region, :facility, reparent_to: block)
+      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_district.slug)
+
+      allow(Reports::Month).to receive(:all).and_return([])
+      expect(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
+      mover.move!(dry_run: false, skip_reporting_refresh: true)
+    end
+
     it "queues background jobs to refresh partitioned tables" do
       facility_region = create(:region, :facility, reparent_to: block)
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_district.slug)
@@ -376,6 +386,7 @@ RSpec.describe MoveRegion, type: :model do
         double(month_date: Date.new(2024, 1, 1)),
         double(month_date: Date.new(2024, 2, 1))
       ])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
       expect(RefreshReportingPartitionedTableJob).to receive(:set).at_least(:once).and_call_original
       expect(RefreshReportingPartitionedTableJob).to receive(:perform_async).at_least(:once)
@@ -392,6 +403,7 @@ RSpec.describe MoveRegion, type: :model do
         double(month_date: Date.new(2024, 1, 1)),
         double(month_date: Date.new(2024, 2, 1))
       ])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
 
       delays = []
       allow(RefreshReportingPartitionedTableJob).to receive(:set) do |options|

@@ -199,12 +199,12 @@ class MoveRegion
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
     if skip_reporting_refresh
-      Rails.logger.info "Step 6: Refreshing base materialized views only"
-      # Refresh base views (needed for facility data) but skip partitioned tables
-      refresh_base_materialized_views
+      Rails.logger.info "Step 6: Queueing background jobs for reporting refresh"
+      # Queue base views refresh in background (takes 5-15 minutes, would timeout web request)
+      RefreshBaseMaterializedViewsJob.perform_async
       # Queue background jobs to refresh partitioned tables historically
       refresh_partitioned_tables_historically
-      log_info "Step 6: Refreshed base views, queued historical refresh jobs", "→"
+      log_info "Step 6: Queued base views and historical refresh jobs in background", "→"
       result[:reporting_refreshed] = false
     else
       Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
@@ -479,6 +479,9 @@ class MoveRegion
     # Don't fail the whole operation if reporting refresh fails
   end
 
+  # NOTE: This method is no longer used in the move flow
+  # Base views are now refreshed via RefreshBaseMaterializedViewsJob in background
+  # to avoid web request timeouts. Keeping this method for manual/testing use.
   def refresh_base_materialized_views
     # Refresh only the base materialized views that don't involve partitioned tables
     # These are needed because they contain facility data that partitioned tables depend on
