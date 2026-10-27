@@ -1,0 +1,377 @@
+<div class="page-header">
+  <h1 class="page-title">Move Region</h1>
+  <p class="page-description">
+    Move regions in the administrative hierarchy (facilities, blocks, districts, etc.)
+  </p>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <%= form_with url: preview_admin_region_moves_path, method: :post, local: true, id: "region-move-form" do |f| %>
+
+      <!-- Hidden fields for form submission -->
+      <input type="hidden" name="region_identifier" id="region-identifier-field" value="">
+      <input type="hidden" name="new_parent_identifier" id="new-parent-identifier-field" value="">
+
+      <div class="alert alert-info mb-4">
+        <strong>How it works:</strong> Pick a district, then narrow down. Stop at the level you want to move: choose only a district and block to move the whole block, or go down to a facility to move just that facility.
+      </div>
+
+      <!-- SECTION 1: What to move -->
+      <section class="mb-5">
+        <h2 class="section-number-title">1. What do you want to move?</h2>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="m-district" class="form-label-bold">District</label>
+            <select class="form-control" id="m-district" required>
+              <option value="">Select district…</option>
+              <% Region.where(region_type: 'district').order(:name).each do |district| %>
+                <option value="<%= district.slug %>"><%= district.name %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="m-block" class="form-label-bold">Block</label>
+            <select class="form-control" id="m-block" disabled>
+              <option value="">Select a district first</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="m-facility" class="form-label-bold">Facility</label>
+            <select class="form-control" id="m-facility" disabled>
+              <option value="">Select a block first</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="text-muted mb-0" id="move-summary">Choose a district, then narrow down to a block or facility if you only want to move part of it.</p>
+      </section>
+
+      <!-- SECTION 2: Where to move it -->
+      <section class="mb-4" style="border-top: 1px solid #dee2e6; padding-top: 2rem;">
+        <h2 class="section-number-title">2. Where should it go?</h2>
+
+        <div class="row">
+          <div class="col-md-4 mb-3">
+            <label for="d-district" class="form-label-bold">New district</label>
+            <select class="form-control" id="d-district" disabled>
+              <option value="">Choose what to move first</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="d-block" class="form-label-bold">New block</label>
+            <select class="form-control" id="d-block" disabled>
+              <option value="">Select a district first</option>
+            </select>
+          </div>
+
+          <div class="col-md-4 mb-3">
+            <label for="d-facility" class="form-label-bold">New facility</label>
+            <select class="form-control" id="d-facility" disabled>
+              <option value="">Not needed for this move</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="text-muted mb-0" id="dest-hint">Choose what to move first.</p>
+        <p class="text-danger mt-2 mb-0" id="same-parent-warning" style="display: none;">
+          <strong>That's where it already is.</strong> Choose a different destination.
+        </p>
+      </section>
+
+      <div class="alert alert-warning">
+        <strong>Warning:</strong> Moving a region also moves everything inside it. For example, moving a block moves all facilities within it.
+      </div>
+
+      <div class="form-group mt-4">
+        <%= f.submit "Preview Move", class: "btn btn-primary btn-lg", id: "preview-button", disabled: true %>
+        <%= link_to "Cancel", root_path, class: "btn btn-outline-secondary btn-lg ml-2" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>
+
+<style>
+  .section-number-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: #1f2937;
+  }
+
+  .form-label-bold {
+    font-size: 16px;
+    font-weight: 700;
+    color: #374151;
+    margin-bottom: 6px;
+  }
+
+  .form-control {
+    height: 48px;
+    font-size: 17px;
+    border: 1px solid #c3c9d1;
+    border-radius: 4px;
+  }
+
+  .form-control:disabled {
+    background: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+  }
+
+  .form-control:focus {
+    outline: 2px solid #0c3966;
+    outline-offset: 2px;
+    border-color: #0c3966;
+  }
+
+  .btn-lg {
+    min-height: 48px;
+    padding: 0 22px;
+    font-size: 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .btn-primary:disabled {
+    background: #8aa9c9;
+    border-color: #8aa9c9;
+    cursor: not-allowed;
+  }
+</style>
+
+<script>
+$(document).ready(function() {
+  // Region data
+  const regionsByParent = <%= raw @regions_by_parent.to_json %>;
+
+  // State tracking
+  let moveLevel = ''; // 'district', 'block', or 'facility'
+  let moveDistrictSlug = '';
+  let moveBlockSlug = '';
+  let moveFacilitySlug = '';
+  let destDistrictSlug = '';
+  let destBlockSlug = '';
+
+  // ORIGIN: District selection
+  $('#m-district').on('change', function() {
+    const districtSlug = $(this).val();
+    moveDistrictSlug = districtSlug;
+    moveBlockSlug = '';
+    moveFacilitySlug = '';
+    destDistrictSlug = '';
+    destBlockSlug = '';
+
+    // Reset downstream dropdowns
+    $('#m-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
+    $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>').val('');
+    $('#d-district').prop('disabled', true).html('<option value="">Choose what to move first</option>').val('');
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
+    $('#preview-button').prop('disabled', true);
+
+    if (districtSlug) {
+      moveLevel = 'district';
+
+      // Load blocks for this district
+      const blocks = regionsByParent[districtSlug] || [];
+      const blockOptions = blocks.filter(r => r.region_type === 'block');
+
+      $('#m-block').prop('disabled', false).html('<option value="">All blocks (move the whole district)</option>');
+      blockOptions.forEach(block => {
+        $('#m-block').append(new Option(block.name, block.slug));
+      });
+
+      updateSummary();
+      enableDestination();
+    } else {
+      moveLevel = '';
+      updateSummary();
+    }
+  });
+
+  // ORIGIN: Block selection
+  $('#m-block').on('change', function() {
+    const blockSlug = $(this).val();
+    moveBlockSlug = blockSlug;
+    moveFacilitySlug = '';
+    destBlockSlug = '';
+
+    $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>').val('');
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
+    $('#preview-button').prop('disabled', true);
+
+    if (blockSlug) {
+      moveLevel = 'block';
+
+      // Load facilities for this block
+      const facilities = regionsByParent[blockSlug] || [];
+      const facilityOptions = facilities.filter(r => r.region_type === 'facility');
+
+      $('#m-facility').prop('disabled', false).html('<option value="">All facilities (move the whole block)</option>');
+      facilityOptions.forEach(facility => {
+        $('#m-facility').append(new Option(facility.name, facility.slug));
+      });
+    } else {
+      moveLevel = 'district';
+      $('#m-facility').prop('disabled', true).html('<option value="">Select a block first</option>');
+    }
+
+    updateSummary();
+    enableDestination();
+  });
+
+  // ORIGIN: Facility selection
+  $('#m-facility').on('change', function() {
+    const facilitySlug = $(this).val();
+    moveFacilitySlug = facilitySlug;
+
+    if (facilitySlug) {
+      moveLevel = 'facility';
+    } else {
+      moveLevel = 'block';
+    }
+
+    updateSummary();
+    enableDestination();
+  });
+
+  // DESTINATION: District selection
+  $('#d-district').on('change', function() {
+    const districtSlug = $(this).val();
+    destDistrictSlug = districtSlug;
+    destBlockSlug = '';
+
+    $('#d-block').prop('disabled', true).html('<option value="">Select a district first</option>').val('');
+    $('#preview-button').prop('disabled', true);
+
+    if (districtSlug) {
+      // Load blocks for destination district
+      const blocks = regionsByParent[districtSlug] || [];
+      const blockOptions = blocks.filter(r => r.region_type === 'block');
+
+      if (moveLevel === 'block') {
+        // When moving a block, it goes directly under the district
+        // No need to select a destination block
+        $('#d-block').prop('disabled', true).html('<option value="">Not needed (block will be under this district)</option>');
+      } else if (moveLevel === 'facility') {
+        $('#d-block').prop('disabled', false).html('<option value="">Select block…</option>');
+        blockOptions.forEach(block => {
+          $('#d-block').append(new Option(block.name, block.slug));
+        });
+      }
+    }
+
+    updateDestHint();
+    checkSameParent();
+    checkFormReady();
+  });
+
+  // DESTINATION: Block selection
+  $('#d-block').on('change', function() {
+    const blockSlug = $(this).val();
+    destBlockSlug = blockSlug;
+
+    updateDestHint();
+    checkSameParent();
+    checkFormReady();
+  });
+
+  function updateSummary() {
+    let summary = 'Choose a district, then narrow down to a block or facility if you only want to move part of it.';
+
+    if (moveLevel === 'district') {
+      const districtName = $('#m-district option:selected').text();
+      summary = 'You\'re moving the district "' + districtName + '" and all its blocks and facilities.';
+    } else if (moveLevel === 'block') {
+      const blockName = $('#m-block option:selected').text();
+      const facilities = regionsByParent[moveBlockSlug] || [];
+      const facilityCount = facilities.filter(r => r.region_type === 'facility').length;
+      summary = 'You\'re moving the block "' + blockName + '" and its ' + facilityCount + ' facilities.';
+    } else if (moveLevel === 'facility') {
+      const facilityName = $('#m-facility option:selected').text();
+      summary = 'You\'re moving the facility "' + facilityName + '".';
+    }
+
+    $('#move-summary').text(summary);
+  }
+
+  function enableDestination() {
+    // Enable destination dropdowns based on move level
+    $('#d-district').prop('disabled', false).html('<option value="">Select district…</option>');
+
+    // Load all districts
+    <% Region.where(region_type: 'district').order(:name).each do |district| %>
+      $('#d-district').append(new Option('<%= district.name %>', '<%= district.slug %>'));
+    <% end %>
+
+    updateDestHint();
+  }
+
+  function updateDestHint() {
+    let hint = 'Choose what to move first.';
+
+    if (moveLevel === 'facility') {
+      hint = 'Choose the district and block this facility should belong to.';
+    } else if (moveLevel === 'block') {
+      hint = 'Choose the district this block should belong to.';
+    } else if (moveLevel === 'district') {
+      hint = 'Moving a whole district needs a State dropdown here, which isn\'t available yet.';
+    }
+
+    $('#dest-hint').text(hint);
+  }
+
+  function checkSameParent() {
+    let same = false;
+
+    if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug === moveDistrictSlug) {
+      same = true;
+    } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug === moveBlockSlug) {
+      same = true;
+    }
+
+    if (same) {
+      $('#same-parent-warning').show();
+    } else {
+      $('#same-parent-warning').hide();
+    }
+
+    return same;
+  }
+
+  function checkFormReady() {
+    let ready = false;
+
+    if (moveLevel === 'block' && destDistrictSlug && destDistrictSlug !== moveDistrictSlug) {
+      // Moving block to different district
+      ready = true;
+      // Set the hidden form fields
+      $('#region-identifier-field').val(moveBlockSlug);
+      $('#new-parent-identifier-field').val(destDistrictSlug);
+    } else if (moveLevel === 'facility' && destBlockSlug && destBlockSlug !== moveBlockSlug) {
+      // Moving facility to different block
+      ready = true;
+      $('#region-identifier-field').val(moveFacilitySlug);
+      $('#new-parent-identifier-field').val(destBlockSlug);
+    }
+
+    $('#preview-button').prop('disabled', !ready);
+  }
+
+  // Ensure hidden fields are populated before form submission
+  $('#region-move-form').on('submit', function(e) {
+    // Double-check hidden fields are populated
+    if (!$('#region-identifier-field').val() || !$('#new-parent-identifier-field').val()) {
+      e.preventDefault();
+      alert('Please select what to move and where to move it');
+      return false;
+    }
+  });
+});
+</script>
