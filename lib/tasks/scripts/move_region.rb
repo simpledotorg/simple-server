@@ -475,7 +475,7 @@ class MoveRegion
     Rails.logger.info "Queueing background jobs to refresh historical reporting data..."
 
     # Get all reporting months
-    reporting_months = ReportingMonth.all
+    reporting_months = Reports::Month.all
     reporting_tables = ["reporting_patient_blood_pressures", "reporting_patient_blood_sugars"]
 
     jobs_queued = 0
