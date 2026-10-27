@@ -199,8 +199,10 @@ class MoveRegion
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
     if skip_reporting_refresh
-      Rails.logger.info "Step 6: Skipping reporting views refresh (will be updated by scheduled jobs)"
-      log_info "Step 6: Skipped reporting views refresh", "→"
+      Rails.logger.info "Step 6: Skipping immediate reporting views refresh"
+      # Still queue historical refresh jobs (fast, runs in background)
+      refresh_partitioned_tables_historically
+      log_info "Step 6: Skipped immediate refresh, queued historical refresh jobs", "→"
       result[:reporting_refreshed] = false
     else
       Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
