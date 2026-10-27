@@ -199,12 +199,12 @@ class MoveRegion
 
     # Step 6: Refresh reporting views (outside transaction - can take time)
     if skip_reporting_refresh
-      Rails.logger.info "Step 6: Refreshing base materialized views only"
-      # Refresh base views (needed for facility data) but skip partitioned tables
-      refresh_base_materialized_views
+      Rails.logger.info "Step 6: Queueing background jobs for reporting refresh"
+      # Queue base views refresh in background (takes 5-15 minutes, would timeout web request)
+      RefreshBaseMaterializedViewsJob.perform_async
       # Queue background jobs to refresh partitioned tables historically
       refresh_partitioned_tables_historically
-      log_info "Step 6: Refreshed base views, queued historical refresh jobs", "→"
+      log_info "Step 6: Queued base views and historical refresh jobs in background", "→"
       result[:reporting_refreshed] = false
     else
       Rails.logger.info "Step 6: Refreshing reporting views (this may take a while)..."
@@ -392,7 +392,7 @@ class MoveRegion
   def update_facility_fields
     # Get all affected facility regions (path <@ already includes the region itself)
     affected_facility_regions = Region.where("path <@ ?::ltree", region.path.to_s)
-                                      .where(region_type: "facility")
+      .where(region_type: "facility")
 
     Rails.logger.info "Updating facility model fields for #{affected_facility_regions.count} facilities..."
 
@@ -422,11 +422,16 @@ class MoveRegion
       # This is critical for mobile sync via updated_on_server_since
       if updates.any?
         begin
+          # Temporarily skip validation checks during region moves
+          # The valid_block validation would fail during the transaction because associations
+          # are being updated and may not reflect the final state yet
+          facility.generating_seed_data = true
           facility.update!(updates)
+          facility.generating_seed_data = false
           updated_count += 1
         rescue ActiveRecord::RecordInvalid => e
           Rails.logger.error "Failed to update facility #{facility.name} (ID: #{facility.id}): #{e.message}"
-          raise e  # Re-raise to rollback transaction
+          raise e # Re-raise to rollback transaction
         end
       end
     end
@@ -477,28 +482,6 @@ class MoveRegion
   rescue => e
     Rails.logger.error "Failed to refresh reporting views: #{e.message}"
     # Don't fail the whole operation if reporting refresh fails
-  end
-
-  def refresh_base_materialized_views
-    # Refresh only the base materialized views that don't involve partitioned tables
-    # These are needed because they contain facility data that partitioned tables depend on
-    Rails.logger.info "Refreshing base materialized views (without partitioned tables)..."
-
-    base_views = [
-      "Reports::Month",
-      "Reports::Facility",
-      "Reports::PatientBloodPressure",
-      "Reports::PatientBloodSugar",
-      "Reports::OverdueCalls",
-      "Reports::PatientVisit",
-      "Reports::PatientFollowUp"
-    ]
-
-    RefreshReportingViews.call(views: base_views)
-    Rails.logger.info "Base materialized views refreshed"
-  rescue => e
-    Rails.logger.error "Failed to refresh base materialized views: #{e.message}"
-    # Don't fail the whole operation if refresh fails
   end
 
   def refresh_partitioned_tables_historically

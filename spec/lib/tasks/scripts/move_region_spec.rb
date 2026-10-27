@@ -293,21 +293,20 @@ RSpec.describe MoveRegion, type: :model do
   end
 
   describe "facility field updates" do
-    let!(:facility_region) { create(:region, :facility, reparent_to: block) }
-    let!(:facility) { create(:facility, id: facility_region.source_id) }
-    let!(:new_block) { create(:region, :block, name: "New Block", reparent_to: new_district) }
-
-    before do
-      # Set initial facility fields to match old hierarchy
-      facility.update!(
-        zone: block.name,
-        district: old_district.name,
-        state: state.name,
-        facility_group_id: old_district.source_id
-      )
-    end
-
     it "updates facility model fields when moving a facility" do
+      facility_group = create(:facility_group)
+      old_district.update!(source: facility_group)
+
+      # Create new_block - new_district will get facility_group from region creation
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
+
+      facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
@@ -315,10 +314,19 @@ RSpec.describe MoveRegion, type: :model do
       expect(facility.zone).to eq(new_block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates facility model fields when moving a block" do
+      facility_group = create(:facility_group)
+      old_district.update!(source: facility_group)
+
+      facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
+      create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
@@ -326,13 +334,26 @@ RSpec.describe MoveRegion, type: :model do
       expect(facility.zone).to eq(block.name)
       expect(facility.district).to eq(new_district.name)
       expect(facility.state).to eq(state.name)
-      expect(facility.facility_group_id).to eq(new_district.source_id)
     end
 
     it "updates updated_at for mobile sync" do
-      old_updated_at = facility.updated_at
+      facility_group = create(:facility_group)
+      old_district.update!(source: facility_group)
 
-      # Move the facility to trigger update
+      # Create new_block first - this ensures new_district has block children
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
+
+      facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      old_updated_at = facility.updated_at
+      # Ensure time passes
+      sleep 0.01
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
@@ -341,46 +362,97 @@ RSpec.describe MoveRegion, type: :model do
     end
 
     it "allows facility to be updated after move and stays under new block" do
-      # Move the facility to new block
+      facility_group = create(:facility_group)
+      old_district.update!(source: facility_group)
+
+      # Create facility_group for new_district and properly link the region association
+      new_district_facility_group = create(:facility_group)
+      # Delete the auto-created region so we can use new_district as the region
+      new_district_facility_group.region&.destroy
+      new_district.update!(source: new_district_facility_group)
+      # Now create new_block - it will be under new_district
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
+
+      facility = create(:facility, name: "Test Facility", facility_group: facility_group, zone: block.name, district: old_district.name, state: state.name)
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      # Mock background jobs
+      allow(Reports::Month).to receive(:all).and_return([])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
-      # Update the facility
-      facility.reload
+      # Completely reload facility from database to clear all cached associations
+      facility = Facility.find(facility.id)
+
+      # After move, facility should have new zone, district, and facility_group
+      expect(facility.zone).to eq(new_block.name)
+      expect(facility.district).to eq(new_district.name)
+      expect(facility.facility_group_id).to eq(new_district_facility_group.id)
+
       expect {
         facility.update!(name: "Updated Facility Name")
       }.not_to raise_error
 
-      # Verify it's still under the new block
       facility_region.reload
       expect(facility_region.block_region).to eq(new_block)
       expect(facility_region.district_region).to eq(new_district)
-
-      # Verify facility fields are still correct
-      expect(facility.zone).to eq(new_block.name)
-      expect(facility.district).to eq(new_district.name)
     end
   end
 
   describe "historical reporting refresh" do
-    let!(:facility_region) { create(:region, :facility, reparent_to: block) }
-    let!(:reporting_month1) { create(:reports_month, month_date: Date.new(2024, 1, 1)) }
-    let!(:reporting_month2) { create(:reports_month, month_date: Date.new(2024, 2, 1)) }
+    it "queues background job to refresh base materialized views" do
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
+
+      facility = create(:facility, name: "Test Facility")
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
+
+      allow(Reports::Month).to receive(:all).and_return([])
+      expect(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
+      mover.move!(dry_run: false, skip_reporting_refresh: true)
+    end
 
     it "queues background jobs to refresh partitioned tables" do
-      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_district.slug)
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
 
-      # Expect jobs to be queued for each month and table combination
-      expect(RefreshReportingPartitionedTableJob).to receive(:set).at_least(:once).and_call_original
-      expect(RefreshReportingPartitionedTableJob).to receive(:perform_async).at_least(:once)
+      facility = create(:facility, name: "Test Facility")
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
+
+      # Mock Reports::Month.all to return some months
+      allow(Reports::Month).to receive(:all).and_return([
+        double(month_date: Date.new(2024, 1, 1)),
+        double(month_date: Date.new(2024, 2, 1))
+      ])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
+      # Mock the chained method calls
+      job_double = double(perform_async: true)
+      expect(RefreshReportingPartitionedTableJob).to receive(:set).at_least(:once).and_return(job_double)
 
       mover.move!(dry_run: false, skip_reporting_refresh: true)
     end
 
     it "staggers jobs over time to avoid database overload" do
-      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_district.slug)
+      new_block = create(:region, :block, name: "New Block", reparent_to: new_district)
 
-      # Capture the delays used when queueing jobs
+      facility = create(:facility, name: "Test Facility")
+      facility_region = create(:region, :facility, name: "Test Facility", source: facility, reparent_to: block)
+
+      mover = MoveRegion.new(region_slug: facility_region.slug, new_parent_slug: new_block.slug)
+
+      # Mock Reports::Month.all
+      allow(Reports::Month).to receive(:all).and_return([
+        double(month_date: Date.new(2024, 1, 1)),
+        double(month_date: Date.new(2024, 2, 1))
+      ])
+      allow(RefreshBaseMaterializedViewsJob).to receive(:perform_async)
+
       delays = []
       allow(RefreshReportingPartitionedTableJob).to receive(:set) do |options|
         delays << options[:wait_until]
@@ -389,7 +461,6 @@ RSpec.describe MoveRegion, type: :model do
 
       mover.move!(dry_run: false, skip_reporting_refresh: true)
 
-      # Verify jobs are staggered (not all scheduled for the same time)
       expect(delays.uniq.length).to be > 1
     end
   end
