@@ -1,6 +1,11 @@
 <h1 class="page-header">
   QI reports
 </h1>
+<nav class="nav mb-3">
+  <% @report_tabs.each do |name, label| %>
+    <%= link_to label, qi_reports_path(report: name), class: "nav-link #{"active" if name == @report_type}" %>
+  <% end %>
+</nav>
 <div id="resources">
   <div>
     <div class="row">
@@ -10,7 +15,7 @@
             Reports
           </h4>
           <% @qi_reports.each do |report| %>
-            <%= link_to report.label, qi_reports_path(file: report.filename),
+            <%= link_to report.label, qi_reports_path(report: @report_type, file: report.filename),
                   class: "nav-link #{"active" if report == @selected_report}" %>
           <% end %>
         </nav>
@@ -19,9 +24,9 @@
         <% if @qi_reports.empty? %>
           <div class="card">
             <h2>
-              QI reports
+              <%= @report_label %>
             </h2>
-            <p>No QI reports are available yet.</p>
+            <p>No <%= @report_label %> available yet.</p>
           </div>
         <% else %>
           <% report_path = qi_report_file_path(file: @selected_report.filename) %>

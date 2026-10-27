@@ -15,6 +15,35 @@ RSpec.describe QiReportsController, type: :controller do
       allow(allowed).to receive(:path).and_return(Rails.root.join("spec/fixtures/files/qi_report.pdf"))
     end
 
+    context "with Titration and Statins reports" do
+      let(:admin) { create(:admin, :power_user) }
+      let(:statins) { QiReport.parse("Statins - Kalutara - Sep 2026.pdf") }
+
+      before { allow(QiReport).to receive(:all).and_return([allowed, statins]) }
+
+      it "shows Titration reports by default" do
+        get :index
+
+        expect(response.body).to include("Titration reports", "Statins report", "Titration · Sep 2026")
+        expect(response.body).not_to include("Statins · Sep 2026")
+      end
+
+      it "shows Statins reports on the Statins tab" do
+        get :index, params: {report: "Statins"}
+
+        expect(response.body).to include("Statins · Sep 2026")
+        expect(response.body).not_to include("Titration · Sep 2026")
+      end
+
+      it "shows an empty state when a tab has no reports" do
+        allow(QiReport).to receive(:all).and_return([allowed])
+
+        get :index, params: {report: "Statins"}
+
+        expect(response.body).to include("No Statins report available yet.")
+      end
+    end
+
     context "as a manager with access to one district" do
       let(:admin) { create(:admin, :manager, :with_access, resource: facility_group) }
 
