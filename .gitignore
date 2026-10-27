@@ -49,3 +49,7 @@ yarn-debug.log*
 # OS generated files
 .DS_Store
 .DS_Store?
+
+# QI report PDFs are private; only the sample files are committed
+/storage/qi_reports/*
+!/storage/qi_reports/*Sample District*
