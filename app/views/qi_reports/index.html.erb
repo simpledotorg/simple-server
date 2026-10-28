@@ -7,66 +7,74 @@
   <% end %>
 </nav>
 <div id="resources">
-  <div>
-    <div class="row">
-      <div class="col-lg-2 pl-lg-0">
-        <nav class="secondary-nav" style="max-height: 75vh; overflow-y: auto;">
-          <h4 class="pl-2 mt-3">
-            Reports
-          </h4>
-          <% @qi_reports.each do |report| %>
-            <%= link_to report.label, qi_reports_path(report: @report_type, file: report.filename),
-                  class: "nav-link #{"active" if report == @selected_report}" %>
-          <% end %>
-        </nav>
-      </div>
-      <div class="col-12 col-lg-10">
-        <% if @qi_reports.empty? %>
-          <div class="card">
-            <h2>
-              <%= @report_label %>
-            </h2>
-            <p>No <%= @report_label %> available yet.</p>
-          </div>
-        <% else %>
-          <% report_path = qi_report_file_path(file: @selected_report.filename) %>
-          <div class="card" id="card-qi-report">
-            <h2>
-              <%= @selected_report.label %>
-            </h2>
-            <div class="resource-link resource-doc">
-              <a href="<%= report_path %>&download=1">
-                <i class="far fa-file-pdf"></i> Download PDF
-              </a>
-              <span>
-                Save this report to your computer.
-              </span>
-            </div>
-            <div class="resource-link resource-doc">
-              <a href="#" id="qi-report-print">
-                <i class="far fa-print"></i> Print
-              </a>
-              <span>
-                Print this report.
-              </span>
-            </div>
-            <iframe id="qi-report-frame" src="<%= report_path %>" title="<%= @selected_report.label %>"
-                    class="mt-3" style="width: 100%; height: 80vh; border: 1px solid #eee;"></iframe>
-          </div>
-          <script>
-            document.getElementById("qi-report-print").addEventListener("click", function (event) {
-              event.preventDefault();
-              var frame = document.getElementById("qi-report-frame");
-              try {
-                frame.contentWindow.focus();
-                frame.contentWindow.print();
-              } catch (e) {
-                window.open(frame.src, "_blank");
-              }
-            });
-          </script>
-        <% end %>
-      </div>
+  <% if !@has_reports %>
+    <div class="card">
+      <h2>
+        <%= @report_label %>
+      </h2>
+      <p>No <%= @report_label %> available yet.</p>
     </div>
-  </div>
+  <% else %>
+    <%= form_with url: qi_reports_path, method: :get, local: true, class: "d-flex flex-wrap align-items-end mb-3" do %>
+      <%= hidden_field_tag :report, @report_type, id: nil %>
+      <div class="mr-3 mb-2">
+        <label for="qi-division" class="d-block mb-1"><strong>Division</strong></label>
+        <%= select_tag :division, options_for_select(@divisions, @division), include_blank: "All divisions", id: "qi-division",
+              class: "form-control",
+              onchange: "var f = this.form; if (f.district) f.district.value = ''; if (f.file) f.file.value = ''; f.submit();" %>
+      </div>
+      <div class="mr-3 mb-2">
+        <label for="qi-district" class="d-block mb-1"><strong>District</strong></label>
+        <%= select_tag :district, options_for_select(@districts, @district), include_blank: "Select a district", id: "qi-district",
+              class: "form-control",
+              onchange: "var f = this.form; if (f.file) f.file.value = ''; f.submit();" %>
+      </div>
+      <% if @district_reports.size > 1 %>
+        <div class="mr-3 mb-2">
+          <label for="qi-file" class="d-block mb-1"><strong>Period</strong></label>
+          <%= select_tag :file, options_for_select(@district_reports.map { |r| [r.period, r.filename] }, @selected_report.filename), id: "qi-file",
+                class: "form-control", onchange: "this.form.submit();" %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <% if @selected_report.nil? %>
+      <div class="card">
+        <h2>
+          <%= @report_label %>
+        </h2>
+        <p>Select a division and district to view the report.</p>
+      </div>
+    <% else %>
+      <% report_path = qi_report_file_path(file: @selected_report.filename) %>
+      <div class="card" id="card-qi-report">
+        <div class="d-flex justify-content-between align-items-center flex-wrap mb-3">
+          <h2 class="mb-0">
+            <%= @selected_report.label %>
+          </h2>
+          <div>
+            <a href="<%= report_path %>&download=1" class="btn btn-sm btn-primary">
+              <i class="far fa-file-pdf"></i> Download PDF
+            </a>
+            <button type="button" class="btn btn-sm btn-outline-primary" id="qi-report-print">
+              <i class="far fa-print"></i> Print
+            </button>
+          </div>
+        </div>
+        <iframe id="qi-report-frame" src="<%= report_path %>" title="<%= @selected_report.label %>"
+                style="width: 100%; height: 80vh; border: 1px solid #eee;"></iframe>
+      </div>
+      <script>
+        document.getElementById("qi-report-print").addEventListener("click", function () {
+          var frame = document.getElementById("qi-report-frame");
+          try {
+            frame.contentWindow.focus();
+            frame.contentWindow.print();
+          } catch (e) {
+            window.open(frame.src, "_blank");
+          }
+        });
+      </script>
+    <% end %>
+  <% end %>
 </div>

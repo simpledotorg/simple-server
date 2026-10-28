@@ -44,6 +44,37 @@ RSpec.describe QiReportsController, type: :controller do
       end
     end
 
+    context "with reports for several districts" do
+      let(:admin) { create(:admin, :power_user) }
+
+      before do
+        create(:facility_group, name: "Kalutara", state_name: "Western")
+        create(:facility_group, name: "Galle", state_name: "Southern")
+        allow(QiReport).to receive(:all).and_return([allowed, other])
+      end
+
+      it "asks for a district instead of listing every report" do
+        get :index
+
+        expect(response.body).to include("Select a division and district")
+        expect(response.body).not_to include(allowed.label)
+      end
+
+      it "shows the chosen district's report" do
+        get :index, params: {district: "Galle"}
+
+        expect(response.body).to include(other.label)
+        expect(response.body).not_to include(allowed.label)
+      end
+
+      it "only offers districts in the chosen division" do
+        get :index, params: {division: "Western"}
+
+        expect(response.body).to include("Kalutara")
+        expect(response.body).not_to include("Galle")
+      end
+    end
+
     context "as a manager with access to one district" do
       let(:admin) { create(:admin, :manager, :with_access, resource: facility_group) }
 
