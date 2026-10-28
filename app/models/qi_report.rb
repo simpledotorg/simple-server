@@ -22,6 +22,13 @@ class QiReport
     all.select { |r| districts.include?(r.district.downcase) }
   end
 
+  # District name (downcased) => the division (state region) it belongs to, for the districts the
+  # user can view reports for.
+  def self.divisions_by_district(user)
+    regions = user.power_user? ? Region.district_regions : user.accessible_district_regions(:view_reports)
+    regions.each_with_object({}) { |region, map| map[region.name.downcase] = region.state_region&.name }
+  end
+
   def self.parse(name)
     match = FILENAME.match(name)
     new(name, match[:report], match[:district], match[:period]) if match
