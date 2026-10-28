@@ -12,17 +12,25 @@ class QiReportsController < AdminController
     visible = authorize { QiReport.visible_to(current_admin) }
     reports_by_district = visible.select { |r| r.report.casecmp?(@report_type) }.group_by(&:district)
 
-    division_of = QiReport.divisions_by_district(current_admin)
-    @district_divisions = reports_by_district.keys.to_h { |d| [d, division_of[d.downcase] || OTHER_DIVISION] }
-    @divisions = @district_divisions.values.uniq.sort
+    @settings = QiReport.settings
+    @state_level = QiReport.state_level?
+    if @state_level
+      # One report per state region: a single dropdown, no divisions
+      @divisions = []
+      @districts = reports_by_district.keys.sort
+    else
+      division_of = QiReport.divisions_by_district(current_admin)
+      @district_divisions = reports_by_district.keys.to_h { |d| [d, division_of[d.downcase] || OTHER_DIVISION] }
+      @divisions = @district_divisions.values.uniq.sort
 
-    @division = params[:division] if @divisions.include?(params[:division])
-    @division ||= @divisions.first if @divisions.one?
-    @districts = @district_divisions.select { |_, division| @division.nil? || division == @division }.keys.sort
+      @division = params[:division] if @divisions.include?(params[:division])
+      @division ||= @divisions.first if @divisions.one?
+      @districts = @district_divisions.select { |_, division| @division.nil? || division == @division }.keys.sort
+    end
 
     @district = params[:district] if @districts.include?(params[:district])
     @district ||= @districts.first if @districts.one?
-    @division ||= @district_divisions[@district] if @district
+    @division ||= @district_divisions[@district] if @district && !@state_level
 
     # Newest first, so the latest report for the district is shown by default
     @district_reports = reports_by_district.fetch(@district, []).sort_by { |r| r.sort_date.to_s }.reverse

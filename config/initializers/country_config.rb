@@ -26,6 +26,7 @@ class CountryConfig
     BD: {
       abbreviation: "BD",
       drug_stock_tracking_organization_slug: "nhf",
+      qi_reports: {level: "district", division_label: "Division", place_label: "District"},
       name: "Bangladesh",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Bangladesh"],
@@ -47,6 +48,8 @@ class CountryConfig
     },
     ET: {
       abbreviation: "ET",
+      # Ethiopia's QI reports are per region (state level), so only one dropdown is shown
+      qi_reports: {level: "state", place_label: "Region"},
       name: "Ethiopia",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Ethiopia"],
@@ -67,6 +70,7 @@ class CountryConfig
     },
     LK: {
       abbreviation: "LK",
+      qi_reports: {level: "district", division_label: "Province", place_label: "District"},
       name: "Sri Lanka",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Sri Lanka"],

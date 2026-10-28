@@ -17,15 +17,19 @@
   <% else %>
     <%= form_with url: qi_reports_path, method: :get, local: true, class: "d-flex flex-wrap align-items-end mb-3" do %>
       <%= hidden_field_tag :report, @report_type, id: nil %>
+      <% place_label = @settings[:place_label] %>
+      <% unless @state_level %>
+        <% division_label = @settings[:division_label] %>
+        <div class="mr-3 mb-2">
+          <label for="qi-division" class="d-block mb-1"><strong><%= division_label %></strong></label>
+          <%= select_tag :division, options_for_select(@divisions, @division), include_blank: "All #{division_label.downcase.pluralize}", id: "qi-division",
+                class: "form-control",
+                onchange: "var f = this.form; if (f.district) f.district.value = ''; if (f.file) f.file.value = ''; f.submit();" %>
+        </div>
+      <% end %>
       <div class="mr-3 mb-2">
-        <label for="qi-division" class="d-block mb-1"><strong>Division</strong></label>
-        <%= select_tag :division, options_for_select(@divisions, @division), include_blank: "All divisions", id: "qi-division",
-              class: "form-control",
-              onchange: "var f = this.form; if (f.district) f.district.value = ''; if (f.file) f.file.value = ''; f.submit();" %>
-      </div>
-      <div class="mr-3 mb-2">
-        <label for="qi-district" class="d-block mb-1"><strong>District</strong></label>
-        <%= select_tag :district, options_for_select(@districts, @district), include_blank: "Select a district", id: "qi-district",
+        <label for="qi-district" class="d-block mb-1"><strong><%= place_label %></strong></label>
+        <%= select_tag :district, options_for_select(@districts, @district), include_blank: "Select a #{place_label.downcase}", id: "qi-district",
               class: "form-control",
               onchange: "var f = this.form; if (f.file) f.file.value = ''; f.submit();" %>
       </div>
@@ -43,7 +47,13 @@
         <h2>
           <%= @report_label %>
         </h2>
-        <p>Select a division and district to view the report.</p>
+        <p>
+          <% if @state_level %>
+            Select a <%= @settings[:place_label].downcase %> to view the report.
+          <% else %>
+            Select a <%= @settings[:division_label].downcase %> and <%= @settings[:place_label].downcase %> to view the report.
+          <% end %>
+        </p>
       </div>
     <% else %>
       <% report_path = qi_report_file_path(file: @selected_report.filename) %>

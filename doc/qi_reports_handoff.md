@@ -44,8 +44,9 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
 | File | Purpose |
 |---|---|
 | `publish_district_reports.py` | Builds the PDFs and publishes them. Run `--help`/read the docstring for flags. |
-| `run_daily.sh.example` | Wrapper used for the daily run (copy to `run_daily.sh`). |
-| `settings.sh.example` | Names of the environment variables (`MB_URL`, `MB_KEY`). Never commit real values. |
+| `countries/<country>.json` | Per-country settings: Metabase question numbers, filter and column names, wording, footer note, excluded places, place level. Choose with `--country` or `$QI_COUNTRY` (default `bangladesh`). |
+| `run_daily.sh.example` | Wrapper used for the daily run: `./run_daily.sh <country>` (copy to `run_daily.sh`). |
+| `settings.sh.example` | Names of the environment variables (`MB_URL`, `MB_KEY`), one `settings.<country>.sh` per country. Never commit real values. |
 | `statins_all_districts.sql` | The Statins question's SQL changed to return all districts. Basis for a precomputed table. |
 
 Dependencies: `pip install requests reportlab matplotlib`.
@@ -107,6 +108,60 @@ Options, best first:
 3. Ask a Metabase admin whether question 1523 can have a **scheduled (nightly) cache**; then the script can
    call the card once and get the saved answer.
 
+## Other countries (Bangladesh, Ethiopia, Sri Lanka)
+
+Each country has its **own Metabase** (own address, API key and question numbers) and its **own app
+deployment** (own storage, own scheduled run). The page code is shared; these differ:
+
+| | Bangladesh | Ethiopia | Sri Lanka |
+|---|---|---|---|
+| Reports are per | district | **region** (state level) | not set up yet |
+| Titration question | 997 | 255 | to be created / located |
+| Place filter and column | `district_name` | `state_name` ("Select region") | ? |
+| Statins question | 1523 (all districts; 1129 per district) | 266 (per region) | ? |
+| Footer note on PDFs | NHF facilities only | RTSL facilities only | ? |
+| Metabase address | `https://metabase.bd.simple.org` | `https://simple.moh.gov.et/metabase` (note the `/metabase`) | ? |
+| Settings file | `countries/bangladesh.json` | `countries/ethiopia.json` | none yet |
+
+### What the app does per country
+
+`CountryConfig[:qi_reports]` (in `config/initializers/country_config.rb`) sets:
+- `level`: `"district"` (default) or `"state"`. At `"state"` the page matches each PDF's name against the
+  user's **state regions** (`accessible_state_regions(:view_reports)`, Simple's own rule: a user can view a
+  state if they can manage a district in it) and shows one dropdown (no Division). At `"district"` it matches
+  districts, as before. Only the configured level is matched, so a state and a district with the same name
+  (for example Sylhet) cannot expose each other's reports.
+- `division_label` / `place_label`: the dropdown labels. Bangladesh: Division / District. Ethiopia: Region.
+  Sri Lanka's labels (Province / District) are a guess and have not been checked.
+
+### Adding or changing a country's reports
+
+1. In that country's Metabase, make sure the question exists and note its number. The script fills these
+   filters: the place filter, a start date and an end date (Titration, run once per month), and expects result
+   columns for the place, month, the counted patients, the total and the percentage.
+2. Copy `countries/bangladesh.json` to `countries/<country>.json` and edit the question numbers, filter
+   names, column names, wording, `footer_note`, `exclude`, `place_noun` and the `place_list_sql` (the query
+   listing the places to build).
+3. Create `settings.<country>.sh` from `settings.sh.example` with that Metabase's address and API key, whose
+   group must be able to read the questions' collection.
+4. Test one place first: `python3 publish_district_reports.py --country <country> --district "<place>" --dry-run`.
+5. Run it on the schedule for that country's deployment and storage.
+
+### Ethiopia notes (from the screenshots of its Metabase)
+- Reports are **per region only**. Titration (255) takes `state_name` ("Select region", a title-case value like
+  `Addis Ababa`) plus start and end dates. The date filters are assumed to be called `start_date` and
+  `end_date` (same as Bangladesh); if the script says a filter was not found, it lists the real names, so
+  update `countries/ethiopia.json`.
+- Its Titration results had no "Average" row in the screenshot; the script copes without one.
+- Statins (266) takes `From Date...` and a region (a lowercase slug like `addis-ababa`) and returns a
+  `state` column plus "Average" rows. It will have the same speed question as Bangladesh's, but with about
+  a dozen regions instead of ~50 districts. A region-level CSV is needed: either download it once per
+  region and combine them, or ask for an all-regions version of the question (as was done for Bangladesh:
+  `statins_all_districts.sql` is the Bangladesh example, which also has its `'nhf'` organisation filter).
+  The CSV file name in the settings is `statins-ethiopia.csv`.
+- Wording of the Ethiopia Statins description follows the question's title (diabetes aged 40+, stroke or heart
+  attack history, or CV risk score of 10 or more).
+
 ## For the engineer
 
 1. **Storage:** replace the `storage/qi_reports/` folder with durable shared storage (S3 or ActiveStorage)
@@ -120,8 +175,14 @@ Options, best first:
 5. **Run the specs** (`bundle exec rspec spec/models/qi_report_spec.rb spec/controllers/qi_reports_controller_spec.rb`).
    They were written but never run: the authoring environment's Ruby (3.3) did not match the Gemfile (2.7.8).
 6. Decide what to do with the `*Sample District*` sample PDFs committed in `storage/qi_reports/`.
-7. The Metabase API key is only in the PM's local `settings.sh`; create a proper service account and
-   store its key as a secret.
+7. The Metabase API keys are only in the PM's local `settings.<country>.sh` files; create proper service
+   accounts and store the keys as secrets, one per country's Metabase.
+8. **Per-country rollout:** each deployment needs the app code, its own durable storage for PDFs and its own
+   scheduled run with that country's settings. For Capistrano deployments (`config/deploy/<country>`), note
+   that `storage/` is not in `linked_dirs`, so PDFs saved under the release folder are lost on the next
+   deploy; add `storage/qi_reports` to `linked_dirs` (single server) or use cloud storage (several servers),
+   and remove the committed sample PDFs first.
+9. Decide whether the QI tab should show in every deployment or only where reports exist (a feature flag).
 
 ## How to test permissions locally
 

@@ -1,9 +1,11 @@
 """
 Daily district reports -> one PDF per district per report -> the Simple dashboard's QI reports tab.
 
-Reports (see REPORTS below):
-  Titration  Metabase question 997, run per district per month.
-  Statins    Built from statins.csv, the results of Metabase question 1523 downloaded by hand. That
+Each country has its own Metabase questions, filter names, wording and place level (district or
+region) in countries/<country>.json; choose one with --country (or $QI_COUNTRY, default bangladesh).
+Typical reports:
+  Titration  A Metabase question, run once per place per month.
+  Statins    Built from a CSV of the Statins question's results downloaded by hand. In Bangladesh that
              question takes about 6 minutes in Metabase and over 25 minutes through the API, so it is
              not run from this script. See doc/qi_reports_handoff.md.
 
@@ -16,6 +18,7 @@ file per day. Reports for a finished month (--month) are kept. Statins PDFs are 
 CSV was saved, and say so on the page.
 
 Usage:
+  python publish_district_reports.py --country ethiopia  # pick the country (default: bangladesh)
   python publish_district_reports.py                  # all reports, month to date, publish
   python publish_district_reports.py --dry-run        # build PDFs into ./output, don't publish
   python publish_district_reports.py --month 2026-09  # a finished month (kept, never replaced)
@@ -26,7 +29,8 @@ Usage:
 
 Environment variables:
   MB_URL, MB_KEY      Metabase address and API key (Titration needs them; a Statins-only run does not)
-  STATINS_CSV         path to the Statins CSV (default: statins.csv in the current folder)
+  QI_COUNTRY          country settings to use (default: bangladesh)
+  STATINS_CSV         path to the Statins CSV (default: the file named in the country settings)
   QI_REPORTS_DIR      folder the app reads reports from, e.g. ~/simple-server/storage/qi_reports
   QI_COMPOSE_FILE     (local Docker only) e.g. ~/simple-server/.docker/docker-compose.yml. Also copies the
                       PDFs into the running app container so they show up without a rebuild.
@@ -37,6 +41,7 @@ import calendar
 import csv
 import glob
 import io
+import json
 import os
 import re
 import shutil
@@ -56,49 +61,19 @@ from reportlab.lib.units import cm
 from reportlab.platypus import HRFlowable, Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 # ---------------------------------------------------------------- settings
-REPORTS = [
-    {
-        "name": "Titration", "card_id": 997,
-        # Filter names on the Metabase question
-        "district_filter": "district_name", "start_filter": "start_date", "end_filter": "end_date",
-        # True: run the question once per month (it takes a start and an end date)
-        "per_month": True, "lowercase_district": False,
-        # Result columns
-        "district_col": "district_name", "month_col": "month_date",
-        "numerator_col": "titrated", "denominator_col": "uncontrolled", "percent_col": "percent_titrated",
-        # Wording on the PDF
-        "headline": "% of uncontrolled patients titrated",
-        "description": "Hypertension patients with uncontrolled BP whose treatment was intensified during the month",
-        "numerator_label": "Titrated", "denominator_label": "Uncontrolled",
-        "sentence": "{num} patients titrated<br/>of {den} patients with uncontrolled BP in {month}",
-    },
-    {
-        "name": "Statins", "csv": "statins.csv",
-        # Metabase question 1523 takes too long to run from the script, so this report is built from
-        # its results downloaded as a CSV from Metabase (see --statins-csv).
-        "district_col": "district", "month_col": "month_date",
-        "numerator_col": "statin_patients", "denominator_col": "the_eligible_patients",
-        "percent_col": "percentage_statin_patients",
-        "headline": "% of eligible patients prescribed statins",
-        "description": "Patients eligible for statins who have been prescribed a statin",
-        "numerator_label": "On statins", "denominator_label": "Eligible",
-        "sentence": "{num} patients prescribed statins<br/>of {den} eligible patients in {month}",
-    },
-]
+COUNTRIES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "countries")
 
-# How many months each report covers (the reporting month plus the months before it)
-MONTHS = 6
 
-# Where the district list comes from. Check the column name matches your table.
-DISTRICT_LIST_SQL = """
-SELECT DISTINCT district_name
-FROM reporting_facilities
-WHERE district_name IS NOT NULL
-ORDER BY 1
-"""
+def load_country(name):
+    """Each country has its own Metabase questions, filter names, wording and place level
+    (district or region): see countries/<name>.json."""
+    path = os.path.join(COUNTRIES_DIR, f"{name}.json")
+    if not os.path.isfile(path):
+        available = sorted(f[:-5] for f in os.listdir(COUNTRIES_DIR) if f.endswith(".json"))
+        sys.exit(f"No settings for country '{name}'. Available: {available}")
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
 
-# Districts to leave out of the reports (test or placeholder districts)
-EXCLUDE_DISTRICTS = ["Temp District"]
 
 MB_URL = os.environ.get("MB_URL", "").rstrip("/")
 MB_KEY = os.environ.get("MB_KEY", "").strip()
@@ -139,9 +114,9 @@ def param_value(p, value):
 
 
 def run_report(spec, card, district, start, end):
-    value = district.lower() if spec["lowercase_district"] else district
+    value = district.lower() if spec["lowercase_place"] else district
     params = [
-        param_value(find_param(card, spec["district_filter"]), value),
+        param_value(find_param(card, spec["place_filter"]), value),
         param_value(find_param(card, spec["start_filter"]), start.isoformat()),
     ]
     if spec["end_filter"]:
@@ -204,7 +179,7 @@ def load_csv(spec, path, start, end):
             sys.exit(f"{path} is empty.")
         cols = [h.strip() for h in header]
         lower = norm(cols)
-        need = ["district_col", "month_col", "numerator_col", "denominator_col", "percent_col"]
+        need = ["place_col", "month_col", "numerator_col", "denominator_col", "percent_col"]
         missing = [spec[k] for k in need if spec[k] not in lower]
         if missing:
             sys.exit(f"{path}: column(s) {missing} not found. Columns in the file: {lower}")
@@ -238,9 +213,9 @@ def fetch_report(spec, card, district, start, end):
     return cols, rows
 
 
-def list_districts(database_id):
+def list_places(database_id, sql):
     result = mb("POST", "/dataset", json={
-        "database": database_id, "type": "native", "native": {"query": DISTRICT_LIST_SQL}})
+        "database": database_id, "type": "native", "native": {"query": sql}})
     return [r[0] for r in result["data"]["rows"] if r[0]]
 
 
@@ -275,7 +250,7 @@ def metric_series(spec, cols, rows, district):
     The questions also return an "Average" row (all districts) for each month. Only the district's
     own rows feed the headline, table and chart; the Average row is shown as a comparison."""
     lower = norm(cols)
-    need = ["district_col", "month_col", "numerator_col", "denominator_col", "percent_col"]
+    need = ["place_col", "month_col", "numerator_col", "denominator_col", "percent_col"]
     missing = [spec[k] for k in need if spec[k] not in lower]
     if missing:
         sys.exit(f"{spec['name']}: column(s) {missing} not found in the results. Columns found: {lower}")
@@ -426,7 +401,7 @@ def data_table(header, rows, highlight_first=False, col_widths=None):
     return t
 
 
-def build_pdf(path, spec, district, period, series, partial_last=False, data_note=None):
+def build_pdf(path, spec, district, period, series, partial_last=False, data_note=None, footer_note=""):
     st = styles_for_pdf()
     report_name = spec["name"]
     generated = date.today().strftime("%-d %b %Y")
@@ -438,7 +413,7 @@ def build_pdf(path, spec, district, period, series, partial_last=False, data_not
         canv.setFont("Helvetica", 7.5)
         canv.setFillColor(colors.HexColor(MUTED))
         canv.drawString(MARGIN, 0.8 * cm,
-                        f"{report_name} report · {district} · Source: Simple (Metabase) · NHF facilities only")
+                        f"{report_name} report · {district} · Source: Simple (Metabase)" + (f" · {footer_note}" if footer_note else ""))
         canv.drawRightString(PAGE_W - MARGIN, 0.8 * cm, f"Generated {generated} · Page {doc.page}")
         canv.restoreState()
 
@@ -585,15 +560,24 @@ def previous_month(today):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--month", help="YYYY-MM for a finished month (default: the current month so far)")
-    ap.add_argument("--district", help="Only run for this district (for testing)")
-    ap.add_argument("--limit", type=int, help="Only the first N districts (for testing)")
+    ap.add_argument("--country", default=os.environ.get("QI_COUNTRY", "bangladesh"),
+                    help="Settings file in countries/ to use (default: $QI_COUNTRY, or bangladesh)")
+    ap.add_argument("--district", "--place", dest="district",
+                    help="Only run for this district/region (for testing)")
+    ap.add_argument("--limit", type=int, help="Only the first N districts/regions (for testing)")
     ap.add_argument("--dry-run", action="store_true", help="Build PDFs but don't publish them")
     ap.add_argument("--reports", help="Only these reports, comma-separated, e.g. Titration (default: all)")
-    ap.add_argument("--statins-csv", help="CSV of Metabase question 1523's results "
-                    "(default: $STATINS_CSV, or statins.csv in this folder)")
+    ap.add_argument("--statins-csv", help="CSV of the Statins question's results from Metabase "
+                    "(default: $STATINS_CSV, or the file named in the country settings)")
     ap.add_argument("--publish-only", action="store_true",
                     help="Don't rebuild: publish the PDFs already in ./output for this run's date")
     args = ap.parse_args()
+    country = load_country(args.country)
+    reports = country["reports"]
+    footer_note = country.get("footer_note", "")
+    noun = country.get("place_noun", "district")
+    exclude = set(country.get("exclude", []))
+    print(f"Country: {country.get('name', args.country)} (reports by {noun})")
 
     if not args.month:
         end = date.today()
@@ -606,13 +590,13 @@ def main():
         end = date(y, m, calendar.monthrange(y, m)[1])
         end_label = end.strftime("%B %Y")
         file_date = end.strftime("%b %Y")
-    start = add_months(last_month_start, -(MONTHS - 1))
+    start = add_months(last_month_start, -(country.get("months", 6) - 1))
     period = f"{start:%B %Y} to {end_label}"
 
     wanted = {n.strip().lower() for n in args.reports.split(",")} if args.reports else None
-    specs = [r for r in REPORTS if wanted is None or r["name"].lower() in wanted]
+    specs = [r for r in reports if wanted is None or r["name"].lower() in wanted]
     if not specs:
-        sys.exit(f"No report matches --reports {args.reports}. Reports: {[r['name'] for r in REPORTS]}")
+        sys.exit(f"No report matches --reports {args.reports}. Reports: {[r['name'] for r in reports]}")
 
     # Reports built from a downloaded CSV take the CSV's date (that is how fresh their data is)
     csv_paths, file_dates = {}, {}
@@ -622,7 +606,7 @@ def main():
             path = os.path.expanduser(path)
             if not os.path.isfile(path):
                 print(f"WARNING: {spec['name']} skipped: no CSV at {path} "
-                      f"(download question 1523's results from Metabase and save it there)")
+                      f"({spec.get('csv_hint', 'download the question results as CSV from Metabase and save it there')})")
                 continue
             csv_paths[spec["name"]] = path
             saved = datetime.fromtimestamp(os.path.getmtime(path))
@@ -652,16 +636,16 @@ def main():
     if args.district:
         districts = [args.district]
     elif cards:
-        districts = list_districts(cards[0][1]["database_id"])
+        districts = list_places(cards[0][1]["database_id"], country["place_list_sql"])
     else:  # CSV-only run: the districts are the ones in the file
         cols0, rows0 = next(iter(shared.values()))
         spec0 = next(s_ for s_ in specs if s_["name"] in shared)
-        di0 = norm(cols0).index(spec0["district_col"])
+        di0 = norm(cols0).index(spec0["place_col"])
         districts = sorted({str(r[di0]).strip() for r in rows0 if str(r[di0]).strip().lower() != "average"})
-    districts = [d for d in districts if d not in EXCLUDE_DISTRICTS]
+    districts = [d for d in districts if d not in exclude]
     if args.limit:
         districts = districts[:args.limit]
-    print(f"{period}: {len(districts)} district(s)")
+    print(f"{period}: {len(districts)} {noun}(s)")
 
     os.makedirs("output", exist_ok=True)
     card_by_name = {s_["name"]: c for s_, c in cards}
@@ -680,7 +664,8 @@ def main():
             series = metric_series(spec, cols, rows, district)
             safe = re.sub(r'[\\/:*?"<>|]', "-", district)
             path = os.path.join("output", f"{name} - {safe} - {file_dates.get(name, file_date)}.pdf")
-            build_pdf(path, spec, district, period, series, partial_last=not args.month, data_note=note)
+            build_pdf(path, spec, district, period, series, partial_last=not args.month, data_note=note,
+                      footer_note=footer_note)
             files.append(path)
             print(f"  built {path}")
 

@@ -1,3 +1,4 @@
-# Copy to settings.sh (never commit the real one). Used by run_daily.sh.
-export MB_URL="https://your-metabase.example.org"   # no trailing slash
-export MB_KEY="metabase-api-key"                    # API key whose group can read the Titration question's collection
+# Copy to settings.<country>.sh, for example settings.bangladesh.sh (never commit the real files).
+# Used by run_daily.sh <country>.
+export MB_URL="https://your-metabase.example.org"   # no trailing slash. Ethiopia's includes /metabase
+export MB_KEY="metabase-api-key"                    # key for THAT country's Metabase, whose group can read the questions' collection
