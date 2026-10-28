@@ -75,6 +75,56 @@ RSpec.describe QiReportsController, type: :controller do
       end
     end
 
+    context "when reports are per state region (state-level countries such as Ethiopia)" do
+      let(:western) { QiReport.parse("Titration - Western - Sep 2026.pdf") }
+      let(:southern) { QiReport.parse("Titration - Southern - Sep 2026.pdf") }
+      let(:district_named_like_region) { QiReport.parse("Titration - Kalutara - Sep 2026.pdf") }
+
+      before do
+        allow(QiReport).to receive(:settings).and_return(QiReport::DEFAULT_SETTINGS.merge(level: "state", place_label: "Region"))
+        allow(QiReport).to receive(:all).and_return([western, southern, district_named_like_region])
+        allow(western).to receive(:path).and_return(Rails.root.join("spec/fixtures/files/qi_report.pdf"))
+      end
+
+      context "as a power user" do
+        let(:admin) { create(:admin, :power_user) }
+
+        it "shows a single Region dropdown and no division dropdown" do
+          get :index
+
+          expect(response.body).to include("Region", "Select a region to view the report.")
+          expect(response.body).not_to include("Division")
+        end
+      end
+
+      context "as a manager with access to a district in the Western region" do
+        let(:facility_group) { create(:facility_group, name: "Kalutara", state_name: "Western") }
+        let(:admin) { create(:admin, :manager, :with_access, resource: facility_group) }
+
+        it "lists only their region, not other regions or a district with a different level" do
+          get :index
+
+          expect(response.body).to include("Western · Titration · Sep 2026")
+          expect(response.body).not_to include("Southern")
+          expect(response.body).not_to include("Kalutara · Titration")
+        end
+
+        it "refuses another region's file and a district-level file" do
+          get :file, params: {file: southern.filename}
+          expect(response).to redirect_to(root_path)
+
+          get :file, params: {file: district_named_like_region.filename}
+          expect(response).to redirect_to(root_path)
+        end
+
+        it "serves their region's file" do
+          get :file, params: {file: western.filename}
+
+          expect(response).to be_successful
+        end
+      end
+    end
+
     context "as a manager with access to one district" do
       let(:admin) { create(:admin, :manager, :with_access, resource: facility_group) }
 

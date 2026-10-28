@@ -7,19 +7,35 @@ class QiReport
   DIRECTORY = Rails.root.join("storage", "qi_reports")
   FILENAME = /\A(?<report>.+?) - (?<district>.+) - (?<period>[A-Za-z]{3} \d{4}|\d{4}-\d{2}-\d{2})\.pdf\z/
 
+  # Per-country settings (CountryConfig[:qi_reports]): the level the reports are written for, and the
+  # labels for the dropdowns. "district" reports sit under a division/state; "state" reports are one
+  # per state region (for example Ethiopia's regions) and are matched to state regions.
+  DEFAULT_SETTINGS = {level: "district", division_label: "Division", place_label: "District"}.freeze
+
   attr_reader :filename, :report, :district, :period
+
+  def self.settings
+    DEFAULT_SETTINGS.merge(CountryConfig.current[:qi_reports] || {})
+  end
+
+  def self.state_level?
+    settings[:level].to_s == "state"
+  end
 
   def self.all
     return [] unless DIRECTORY.directory?
     Dir.children(DIRECTORY).filter_map { |name| parse(name) }.sort_by { |r| [r.district, r.report, r.sort_date.to_s] }
   end
 
-  # Reports the user may see: the PDF's district must be one the user can view reports for.
-  # Files whose district doesn't match a known district are hidden (except for power users).
+  # Reports the user may see: the PDF's district (or state region, for state-level countries) must be
+  # one the user can view reports for. Files that match no known place are hidden (except for power
+  # users). Only the configured level is matched, so a state and a district with the same name can't
+  # expose each other's reports.
   def self.visible_to(user)
     return all if user.power_user?
-    districts = user.accessible_district_regions(:view_reports).pluck(:name).map(&:downcase).to_set
-    all.select { |r| districts.include?(r.district.downcase) }
+    regions = state_level? ? user.accessible_state_regions(:view_reports) : user.accessible_district_regions(:view_reports)
+    names = regions.pluck(:name).map(&:downcase).to_set
+    all.select { |r| names.include?(r.district.downcase) }
   end
 
   # District name (downcased) => the division (state region) it belongs to, for the districts the

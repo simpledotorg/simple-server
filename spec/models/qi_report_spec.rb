@@ -32,4 +32,17 @@ RSpec.describe QiReport do
       expect(other).to be_present
     end
   end
+
+  describe ".settings" do
+    it "defaults to district-level reports with Division and District labels" do
+      expect(described_class.settings).to include(level: "district", division_label: "Division", place_label: "District")
+    end
+
+    it "can be overridden per country" do
+      allow(CountryConfig).to receive(:current).and_return({qi_reports: {level: "state", place_label: "Region"}})
+
+      expect(described_class.state_level?).to be(true)
+      expect(described_class.settings[:place_label]).to eq("Region")
+    end
+  end
 end
