@@ -91,10 +91,7 @@ class Admin::RegionMovesController < AdminController
       @affected_facilities = if @region.region_type == "facility"
         [@region]
       else
-        Region.where("path <@ ?::ltree", @region.path.to_s)
-          .where(region_type: "facility")
-          .order(:name)
-          .limit(20)
+        descendant_facilities(@region, limit: 20)
       end
     rescue ArgumentError => e
       flash[:alert] = "Invalid move: #{e.message}"
@@ -153,5 +150,15 @@ class Admin::RegionMovesController < AdminController
       flash[:alert] = "This feature is not enabled for your account"
       redirect_to root_path
     end
+  end
+
+  # Returns facility regions that are descendants of the given region
+  # Uses PostgreSQL ltree path matching for efficient hierarchical queries
+  def descendant_facilities(region, limit: nil)
+    scope = Region.where("path <@ ?::ltree", region.path.to_s)
+      .where(region_type: "facility")
+      .order(:name)
+
+    limit ? scope.limit(limit) : scope
   end
 end
