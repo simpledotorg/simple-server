@@ -54,7 +54,7 @@ class MoveRegion
     log_info "New path would be:", @new_path
 
     # Count affected descendants
-    descendants = Region.where("path <@ ?::ltree", @old_path)
+    descendants = descendants_of(@old_path)
     log_info "Total affected regions:", descendants.count
 
     # Break down by type
@@ -129,7 +129,7 @@ class MoveRegion
 
       # CRITICAL: Find and store descendant IDs BEFORE we save the parent
       # This ensures we can update them even if paths change during save
-      descendants_before = Region.where("path <@ ?::ltree", @old_path).where.not(id: region.id)
+      descendants_before = descendants_of(@old_path).where.not(id: region.id)
       descendant_ids = descendants_before.pluck(:id)
       Rails.logger.info "  Descendants BEFORE save: #{descendants_before.count}"
       Rails.logger.info "  Stored #{descendant_ids.count} descendant IDs for later update"
@@ -150,7 +150,7 @@ class MoveRegion
       Rails.logger.info "  @new_path: #{@new_path}"
 
       # Check what descendants exist AFTER we save
-      descendants_after = Region.where("path <@ ?::ltree", @old_path).where.not(id: region.id)
+      descendants_after = descendants_of(@old_path).where.not(id: region.id)
       Rails.logger.info "  Descendants at OLD path after save: #{descendants_after.count}"
       descendants_after.limit(5).each do |d|
         Rails.logger.info "    - #{d.name} (#{d.region_type}): #{d.path}"
@@ -376,7 +376,7 @@ class MoveRegion
     # Clear cached_ancestors only for regions whose ancestors actually changed
     # This includes the moved region and all its descendants (path <@ already includes the region itself)
     Rails.logger.info "Clearing cached_ancestors for moved region and descendants..."
-    regions_to_clear = Region.where("path <@ ?::ltree", region.path.to_s)
+    regions_to_clear = descendants_of(region)
     Rails.logger.info "Clearing #{regions_to_clear.count} cached_ancestors..."
 
     regions_to_clear.each do |r|
@@ -391,7 +391,7 @@ class MoveRegion
 
   def update_facility_fields
     # Get all affected facility regions (path <@ already includes the region itself)
-    affected_facility_regions = Region.where("path <@ ?::ltree", region.path.to_s)
+    affected_facility_regions = descendants_of(region)
       .where(region_type: "facility")
 
     Rails.logger.info "Updating facility model fields for #{affected_facility_regions.count} facilities..."
@@ -573,5 +573,12 @@ class MoveRegion
 
   def log_warning(message)
     Rails.logger.warn message
+  end
+
+  # Helper method to query descendants using PostgreSQL ltree path matching
+  # Returns all regions whose path is a descendant of (or equal to) the given path
+  def descendants_of(path_or_region)
+    path = path_or_region.is_a?(String) ? path_or_region : path_or_region.path.to_s
+    Region.where("path <@ ?::ltree", path)
   end
 end

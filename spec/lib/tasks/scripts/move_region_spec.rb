@@ -12,6 +12,12 @@ RSpec.describe MoveRegion, type: :model do
   let(:block) { create(:region, :block, name: "Test Block", reparent_to: old_district) }
   let(:facility_region) { create(:region, :facility, name: "Test Facility", reparent_to: block) }
 
+  # Helper method to query descendants using ltree path matching
+  def descendants_of(region_or_path)
+    path = region_or_path.is_a?(String) ? region_or_path : region_or_path.path.to_s
+    Region.where("path <@ ?::ltree", path)
+  end
+
   describe "#initialize" do
     it "initializes successfully with valid slugs" do
       mover = MoveRegion.new(region_slug: block.slug, new_parent_slug: new_district.slug)
@@ -216,7 +222,7 @@ RSpec.describe MoveRegion, type: :model do
       expect(hulla_woreda.district_region).to eq(northern_zone)
 
       # Verify facilities exist BEFORE move
-      initial_facilities = Region.where("path <@ ?::ltree", hulla_woreda.path.to_s)
+      initial_facilities = descendants_of(hulla_woreda)
         .where(region_type: "facility")
 
       # Store old paths for comparison
@@ -250,7 +256,7 @@ RSpec.describe MoveRegion, type: :model do
       all_facilities_after = Region.where(region_type: "facility").map { |f| {name: f.name, path: f.path.to_s} }
 
       # Query facilities under new hulla path
-      facilities = Region.where("path <@ ?::ltree", hulla_woreda.path.to_s)
+      facilities = descendants_of(hulla_woreda)
         .where(region_type: "facility")
 
       # Build detailed error message
