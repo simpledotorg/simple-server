@@ -108,20 +108,24 @@ Options, best first:
 3. Ask a Metabase admin whether question 1523 can have a **scheduled (nightly) cache**; then the script can
    call the card once and get the saved answer.
 
-## Other countries (Bangladesh, Ethiopia, Sri Lanka)
+## Countries: Bangladesh and Ethiopia
 
 Each country has its **own Metabase** (own address, API key and question numbers) and its **own app
 deployment** (own storage, own scheduled run). The page code is shared; these differ:
 
-| | Bangladesh | Ethiopia | Sri Lanka |
-|---|---|---|---|
-| Reports are per | district | **region** (state level) | not set up yet |
-| Titration question | 997 | 255 | to be created / located |
-| Place filter and column | `district_name` | `state_name` ("Select region") | ? |
-| Statins question | 1523 (all districts; 1129 per district) | 266 (per region) | ? |
-| Footer note on PDFs | NHF facilities only | RTSL facilities only | ? |
-| Metabase address | `https://metabase.bd.simple.org` | `https://simple.moh.gov.et/metabase` (note the `/metabase`) | ? |
-| Settings file | `countries/bangladesh.json` | `countries/ethiopia.json` | none yet |
+| | Bangladesh | Ethiopia |
+|---|---|---|
+| Reports are per | district | **region** (state level) |
+| Titration question | 997 | 255 |
+| Place filter and column | `district_name` | `state_name` ("Select region") |
+| Statins question | 1523 (all districts; 1129 per district) | 266 (per region) |
+| Footer note on PDFs | NHF facilities only | RTSL facilities only |
+| Metabase address | `https://metabase.bd.simple.org` | `https://simple.moh.gov.et/metabase` (note the `/metabase`) |
+| Settings file | `countries/bangladesh.json` | `countries/ethiopia.json` |
+
+Only these two countries are set up. Sri Lanka and any other deployment are not covered yet: a country
+without settings uses the defaults (district-level reports, Division and District labels) and has no
+script settings file until one is added (see "Adding or changing a country's reports").
 
 ### What the app does per country
 
@@ -132,7 +136,7 @@ deployment** (own storage, own scheduled run). The page code is shared; these di
   districts, as before. Only the configured level is matched, so a state and a district with the same name
   (for example Sylhet) cannot expose each other's reports.
 - `division_label` / `place_label`: the dropdown labels. Bangladesh: Division / District. Ethiopia: Region.
-  Sri Lanka's labels (Province / District) are a guess and have not been checked.
+  Other countries fall back to Division / District.
 
 ### Adding or changing a country's reports
 

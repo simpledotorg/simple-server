@@ -70,7 +70,6 @@ class CountryConfig
     },
     LK: {
       abbreviation: "LK",
-      qi_reports: {level: "district", division_label: "Province", place_label: "District"},
       name: "Sri Lanka",
       extended_region_reports: true,
       states: COUNTRYWISE_STATES["Sri Lanka"],
