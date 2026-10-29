@@ -49,6 +49,20 @@ RSpec.describe QiReport do
     end
   end
 
+  describe "with the real country settings" do
+    it "reads Bangladesh's and Ethiopia's settings (stored with string keys) over the defaults" do
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig::CONFIGS[:BD])
+      expect(described_class.enabled?).to be(true)
+      expect(described_class.state_level?).to be(false)
+      expect(described_class.settings).to include(division_label: "Division", place_label: "District")
+
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig::CONFIGS[:ET])
+      expect(described_class.enabled?).to be(false)
+      expect(described_class.state_level?).to be(true)
+      expect(described_class.settings).to include(place_label: "Region")
+    end
+  end
+
   describe ".settings" do
     it "defaults to district-level reports with Division and District labels" do
       expect(described_class.settings).to include(enabled: false, level: "district", division_label: "Division", place_label: "District")
