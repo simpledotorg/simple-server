@@ -47,6 +47,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 from datetime import date, datetime
 
 import matplotlib
@@ -80,12 +81,23 @@ MB_KEY = os.environ.get("MB_KEY", "").strip()
 
 
 # ---------------------------------------------------------------- Metabase
-def mb(method, path, timeout=300, **kwargs):
-    resp = requests.request(
-        method, f"{MB_URL}/api{path}",
-        headers={"X-API-Key": MB_KEY, "Content-Type": "application/json"},
-        timeout=timeout, **kwargs,
-    )
+def mb(method, path, timeout=300, retries=2, **kwargs):
+    # A slow or dropped Metabase request is retried (after 30 s, then 60 s) before giving up
+    for attempt in range(retries + 1):
+        try:
+            resp = requests.request(
+                method, f"{MB_URL}/api{path}",
+                headers={"X-API-Key": MB_KEY, "Content-Type": "application/json"},
+                timeout=timeout, **kwargs,
+            )
+            break
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+            if attempt == retries:
+                raise
+            wait = 30 * (attempt + 1)
+            print(f"  Metabase did not answer ({type(e).__name__}); retrying in {wait}s "
+                  f"({attempt + 1}/{retries})", flush=True)
+            time.sleep(wait)
     if resp.status_code >= 400:
         sys.exit(f"Metabase error {resp.status_code} on {method} {path}:\n{resp.text[:1000]}")
     data = resp.json()
@@ -572,6 +584,7 @@ def main():
     ap.add_argument("--publish-only", action="store_true",
                     help="Don't rebuild: publish the PDFs already in ./output for this run's date")
     args = ap.parse_args()
+    sys.stdout.reconfigure(line_buffering=True)  # so the log shows progress while it runs
     country = load_country(args.country)
     reports = country["reports"]
     footer_note = country.get("footer_note", "")
@@ -649,7 +662,7 @@ def main():
 
     os.makedirs("output", exist_ok=True)
     card_by_name = {s_["name"]: c for s_, c in cards}
-    files = []
+    files, failed = [], []
     for spec in specs:
         name = spec["name"]
         note = None
@@ -657,10 +670,16 @@ def main():
             saved = datetime.fromtimestamp(os.path.getmtime(csv_paths[name]))
             note = f"Data from a Metabase download on {saved:%-d %b %Y}"
         for district in districts:
-            if name in shared:
-                cols, rows = shared[name]
-            else:
-                cols, rows = fetch_report(spec, card_by_name[name], district, start, end)
+            try:
+                if name in shared:
+                    cols, rows = shared[name]
+                else:
+                    cols, rows = fetch_report(spec, card_by_name[name], district, start, end)
+            except (requests.exceptions.RequestException, SystemExit) as e:
+                # One slow or failing place must not stop the others
+                print(f"  WARNING: {name} for {district} skipped: {str(e)[:200]}")
+                failed.append(f"{name} - {district}")
+                continue
             series = metric_series(spec, cols, rows, district)
             safe = re.sub(r'[\\/:*?"<>|]', "-", district)
             path = os.path.join("output", f"{name} - {safe} - {file_dates.get(name, file_date)}.pdf")
@@ -669,6 +688,10 @@ def main():
             files.append(path)
             print(f"  built {path}")
 
+    if failed:
+        print(f"WARNING: {len(failed)} report(s) were not built: {', '.join(failed)}")
+    if not files:
+        sys.exit("Nothing was built.")
     if args.dry_run:
         print("Dry run: not published. PDFs are in ./output")
         return
@@ -676,6 +699,8 @@ def main():
         print(f"Published {len(files)} PDF(s) to the QI reports page")
     else:
         sys.exit("Not published. The PDFs are in ./output")
+    if failed:
+        sys.exit(1)  # published what was built, but flag the run as incomplete
 
 
 if __name__ == "__main__":
