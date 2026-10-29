@@ -21,6 +21,15 @@
       <% end %>
 
     <!-----------------
+      QI reports
+    ----------------->
+      <% if QiReport.enabled? %>
+        <%= link_to(qi_reports_path, class: "nav-link #{active_controller?("qi_reports")}") do %>
+          <i class="fa-regular fa-file-lines main-menu-icon w-16px"></i> <span>QI reports</span>
+        <% end %>
+      <% end %>
+
+    <!-----------------
       My Facilities
     ----------------->
       <%= link_to(my_facilities_bp_controlled_path(preserve_query_params(request.query_parameters, ["zone", "size", "facility_group"])), class: "nav-link #{active_action?("bp_controlled")} #{active_action?("bp_not_controlled")} #{active_action?("missed_visits")}") do %>
