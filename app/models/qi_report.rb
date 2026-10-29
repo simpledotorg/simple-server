@@ -16,7 +16,9 @@ class QiReport
   attr_reader :filename, :report, :district, :period
 
   def self.settings
-    DEFAULT_SETTINGS.merge(CountryConfig.current[:qi_reports] || {})
+    # CountryConfig stores nested settings with string keys (it is a HashWithIndifferentAccess), so
+    # symbolize them before merging over the symbol-keyed defaults
+    DEFAULT_SETTINGS.merge((CountryConfig.current[:qi_reports] || {}).to_h.symbolize_keys)
   end
 
   def self.enabled?
