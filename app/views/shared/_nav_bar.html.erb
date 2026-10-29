@@ -126,6 +126,11 @@
             Patient import
           <% end %>
         <% end %>
+        <% if current_admin.power_user? && Flipper.enabled?(:region_moves, current_admin) %>
+          <%= link_to (new_admin_region_move_path), class: "sub-nav-link #{active_controller?("admin/region_moves")}", id: "region-moves" do %>
+            Move regions
+          <% end %>
+        <% end %>
 
         <% if current_admin.power_user? %>
         <div class="nav-divider"></div>

@@ -213,4 +213,10 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
       expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_prescription.id])
     end
   end
+
+  describe "#partitioned?" do
+    it "returns true" do
+      expect(described_class.partitioned?).to be(true)
+    end
+  end
 end
