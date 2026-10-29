@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# A QI report PDF produced by send_district_reports.py. Files live in storage/qi_reports (not
+# A QI report PDF produced by script/qi_reports/publish_district_reports.py. Files live in storage/qi_reports (not
 # public/, which is served without a login) and are named "<Report> - <District> - <Mon YYYY>.pdf"
 # (or "<Report> - <District> - YYYY-MM-DD.pdf" for month-to-date runs).
 class QiReport

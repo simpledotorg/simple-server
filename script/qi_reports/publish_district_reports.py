@@ -12,16 +12,18 @@ Typical reports:
 Each PDF is named "<Report> - <District> - <date>.pdf" (the QI page parses this name for permissions)
 and published to the QI reports page. Nothing is emailed.
 
-By default it reports the current month so far (1st of this month to today). Each run replaces the
-previous month-to-date PDFs for the same report and district, so the page doesn't fill up with one
-file per day. Reports for a finished month (--month) are kept. Statins PDFs are dated with the day the
-CSV was saved, and say so on the page.
+Production runs monthly (--monthly, on the 3rd): the report for the last full month, covering that
+month and the 5 before it (6 months). Each run replaces the older PDFs for the same report and district,
+so only the latest report is kept. Without --monthly it reports the current month so far (1st of this
+month to today), for daily use. Statins PDFs are dated with the day the CSV was saved, and say so on the
+page.
 
 Usage:
+  python publish_district_reports.py --monthly        # last full month, 6 months of data (the 3rd)
   python publish_district_reports.py --country ethiopia  # pick the country (default: bangladesh)
   python publish_district_reports.py                  # all reports, month to date, publish
   python publish_district_reports.py --dry-run        # build PDFs into ./output, don't publish
-  python publish_district_reports.py --month 2026-09  # a finished month (kept, never replaced)
+  python publish_district_reports.py --month 2026-09  # a specific finished month
   python publish_district_reports.py --reports Titration            # only some reports
   python publish_district_reports.py --district "Sylhet" --dry-run  # test one district
   python publish_district_reports.py --statins-csv path/to/file.csv # CSV from Metabase question 1523
@@ -490,34 +492,35 @@ def build_pdf(path, spec, district, period, series, partial_last=False, data_not
 
 
 # ---------------------------------------------------------------- dashboard
-DATED = re.compile(r"\A(?P<report>.+?) - (?P<district>.+) - \d{4}-\d{2}-\d{2}\.pdf\Z")
+NAMED = re.compile(r"\A(?P<report>.+?) - (?P<district>.+) - (?P<period>[A-Za-z]{3} \d{4}|\d{4}-\d{2}-\d{2})\.pdf\Z")
 
 
-def stale_month_to_date(existing, new_files):
-    """Old month-to-date PDFs (…- YYYY-MM-DD.pdf) for a report+district that has a new one."""
+def stale_reports(existing, new_files):
+    """Older PDFs to remove: any other file for a report+place that has a new PDF. Whatever the
+    period in its name (a month like 'Sep 2026' or a date), a new report replaces the old one."""
     keys = set()
     for f in new_files:
-        m = DATED.match(f)
+        m = NAMED.match(f)
         if m:
             keys.add((m["report"], m["district"]))
     stale = []
     for f in existing:
-        m = DATED.match(f)
+        m = NAMED.match(f)
         if m and (m["report"], m["district"]) in keys and f not in new_files:
             stale.append(f)
     return stale
 
 
 def publish_to_dashboard(files):
-    """Put the PDFs where the Simple dashboard's QI reports tab reads them, replacing older
-    month-to-date PDFs for the same districts.
+    """Put the PDFs where the Simple dashboard's QI reports tab reads them, replacing the older PDFs
+    for the same report and place (only the latest report is kept).
 
     The tab lists files named "<Report> - <District> - <date>.pdf" and only shows each one to
     users with access to that district, so keep the file names exactly as built above.
 
     FOR THE ENGINEER: this is the local-only version (copy into a folder, plus docker cp into the dev
     container). In production, replace the body with an upload to wherever the server reads reports
-    from (S3 / shared storage / an upload endpoint), with the same replace-old-month-to-date rule.
+    from (S3 / shared storage / an upload endpoint), with the same replace-older-reports rule.
     Keep the file names unchanged.
     """
     target = os.environ.get("QI_REPORTS_DIR", "").strip()
@@ -530,7 +533,7 @@ def publish_to_dashboard(files):
     if target:
         target = os.path.expanduser(target)
         os.makedirs(target, exist_ok=True)
-        for old in stale_month_to_date(os.listdir(target), names):
+        for old in stale_reports(os.listdir(target), names):
             os.remove(os.path.join(target, old))
         for f in files:
             shutil.copy2(f, os.path.join(target, os.path.basename(f)))
@@ -544,7 +547,7 @@ def publish_to_dashboard(files):
         if listing.returncode != 0:
             print(f"Could not reach the app container (is it running?):\n{listing.stderr.strip()[:500]}")
             return False
-        for old in stale_month_to_date(listing.stdout.splitlines(), names):
+        for old in stale_reports(listing.stdout.splitlines(), names):
             subprocess.run(base + ["exec", "-T", "server", "rm", "-f", "--",
                                    f"/opt/app/storage/qi_reports/{old}"], capture_output=True, text=True, stdin=subprocess.DEVNULL)
         for f in files:
@@ -572,6 +575,8 @@ def previous_month(today):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--month", help="YYYY-MM for a finished month (default: the current month so far)")
+    ap.add_argument("--monthly", action="store_true",
+                    help="Report the last full month (the 6 months ending last month). Use for the monthly run")
     ap.add_argument("--country", default=os.environ.get("QI_COUNTRY", "bangladesh"),
                     help="Settings file in countries/ to use (default: $QI_COUNTRY, or bangladesh)")
     ap.add_argument("--district", "--place", dest="district",
@@ -592,6 +597,11 @@ def main():
     exclude = set(country.get("exclude", []))
     print(f"Country: {country.get('name', args.country)} (reports by {noun})")
 
+    if args.monthly:
+        if args.month:
+            sys.exit("Use either --month or --monthly, not both.")
+        py, pm = previous_month(date.today())
+        args.month = f"{py}-{pm:02d}"
     if not args.month:
         end = date.today()
         last_month_start = end.replace(day=1)
