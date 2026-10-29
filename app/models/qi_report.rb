@@ -33,7 +33,8 @@ class QiReport
   # expose each other's reports.
   def self.visible_to(user)
     return all if user.power_user?
-    regions = state_level? ? user.accessible_state_regions(:view_reports) : user.accessible_district_regions(:view_reports)
+    # accessible_state_regions is only on UserAccess (User delegates the district-level methods)
+    regions = state_level? ? user.user_access.accessible_state_regions(:view_reports) : user.accessible_district_regions(:view_reports)
     names = regions.pluck(:name).map(&:downcase).to_set
     all.select { |r| names.include?(r.district.downcase) }
   end
