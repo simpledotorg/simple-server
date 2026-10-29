@@ -42,9 +42,9 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
 
     it "handles nil options without error and defaults to the current period" do
       allow(Period).to receive(:current).and_return(quarter1)
-      expect {
+      expect do
         render_inline(described_class.new(periods, region, nil))
-      }.not_to raise_error
+      end.not_to raise_error
       expect(page).to have_text("Q1 2024")
     end
   end
@@ -136,7 +136,7 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
         :action_plan,
         region: Region.find_by!(slug: region),
         statement: "Call 20 overdue patients",
-        actions: "Call patients marked \"high-risk\" & follow up",
+        actions: 'Call patients marked "high-risk" & follow up',
         dr_rai_indicator: indicator,
         dr_rai_target: create(:target, :percentage, period: q2_2024, indicator: indicator)
       )
@@ -153,7 +153,7 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
         expect(edit_control["data-target"]).to eq("#dr-rai--edit-sidebar")
         expect(edit_control["data-indicator"]).to eq("Contact overdue patients")
         expect(edit_control["data-target-statement"]).to eq("Call 20 overdue patients")
-        expect(edit_control["data-actions"]).to eq("Call patients marked \"high-risk\" & follow up")
+        expect(edit_control["data-actions"]).to eq('Call patients marked "high-risk" & follow up')
         expect(edit_control["data-target-statement"]).not_to include("&quot;")
         expect(edit_control["data-actions"]).not_to include("&amp;")
       end
@@ -161,13 +161,13 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
 
     it "preserves strings that jQuery data attributes would coerce" do
       Timecop.freeze(Time.zone.parse("April 15 2024 15:12")) do
-        action_plan.update!(statement: "null", actions: "{\"enabled\":true}")
+        action_plan.update!(statement: "null", actions: '{"enabled":true}')
 
         render_inline(described_class.new(periods, region, default_options.merge(selected_quarter: q2_2024)))
 
         edit_control = page.find(".edit-action-plan")
         expect(edit_control["data-target-statement"]).to eq("null")
-        expect(edit_control["data-actions"]).to eq("{\"enabled\":true}")
+        expect(edit_control["data-actions"]).to eq('{"enabled":true}')
         expect(page.native.to_html).to include("editControl.attr('data-indicator')")
         expect(page.native.to_html).to include("editControl.attr('data-target-statement')")
         expect(page.native.to_html).to include("editControl.attr('data-actions')")
@@ -295,9 +295,10 @@ RSpec.describe Dashboard::DrRaiReport, type: :component do
     end
 
     it "tells the creation panel which indicators set goals relative to the previous quarter" do
-      render_inline(described_class.new(periods, facility_region.slug, default_options.merge(selected_quarter: q2_2024)))
+      render_inline(described_class.new(periods, facility_region.slug,
+        default_options.merge(selected_quarter: q2_2024)))
 
-      statins = page.find("#dr-rai--sidebar button.advancer", text: "Statins")
+      statins = page.find("#dr-rai--sidebar button.advancer", text: "Prescribe statins for diabetes patients 40y+")
       contact_overdue = page.find("#dr-rai--sidebar button.advancer", text: "Contact overdue patients")
       expect(statins["data-indicator-goal-relative-to-previous"]).to eq("true")
       expect(statins["data-indicator-previous-numerator"]).to eq("27")
