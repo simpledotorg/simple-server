@@ -3,6 +3,40 @@
 A prototype built and tested locally by a PM. It works end to end on a laptop; this note says what is
 there, how it was tested, and what an engineer needs to do to run it properly on the server.
 
+## Production schedule (Bangladesh)
+
+- **When:** monthly, on the **3rd** of each month (cron entry in `config/schedule.rb`, 10:00 Dhaka time using
+  the same `local()` convention as the other jobs).
+- **What:** `script/qi_reports/run_monthly.sh bangladesh` runs `publish_district_reports.py --monthly`: the
+  report for the **last full month**, covering that month and the 5 before it, so **6 months of data** per PDF
+  (`months` in `countries/bangladesh.json`). Example: the run on 3 Nov 2026 reports May to October 2026 and
+  names the files `Titration - <District> - Oct 2026.pdf`.
+- **Overwrite:** when a new report is published, every older PDF for the same report and district is deleted
+  first, so only the latest report per district is kept. A district that fails in a run keeps its previous
+  report; the run logs which districts were skipped and exits non-zero.
+- **Off by default:** the cron entry only exists when the Flipper flag `qi_reports_monthly_job` is on and
+  the country is Bangladesh. Enable it after the setup below is done and a manual run has worked.
+
+### Setup on the server
+
+1. Python 3 with `pip install -r script/qi_reports/requirements.txt` (a virtualenv is fine; set `QI_PYTHON`
+   to its python). The script needs outbound HTTPS to the Metabase.
+2. Create the settings file `settings.bangladesh.sh` (see `settings.sh.example`) with `MB_URL` and `MB_KEY`
+   in `$QI_SETTINGS_DIR` (default `/home/deploy/apps/simple-server/shared/qi_reports/`). Keep it out of the
+   repo; the key's group must be able to read the Titration question's collection.
+3. `storage/qi_reports` is now a Capistrano `linked_dirs` entry (`config/deploy.rb`), so the PDFs live in
+   `shared/storage/qi_reports` and survive deploys. The script writes there (`QI_REPORTS_DIR`, default the
+   same path). The old sample PDFs were removed from the repo.
+4. Test by hand as the deploy user, without publishing:
+   `cd script/qi_reports && QI_REPORTS_DIR=/tmp/qi_test ./run_monthly.sh bangladesh` (it publishes into
+   `QI_REPORTS_DIR`, so point it somewhere harmless first), then run it against the shared folder.
+5. Enable the flag (`Flipper.enable(:qi_reports_monthly_job)`) and redeploy so `whenever` writes the cron entry.
+6. If the app runs on several servers, the shared folder must be shared between them, or use object storage
+   instead (see "For the engineer"). This script has no S3 support yet.
+7. **Statins** is not part of the production run: its question is too slow to run through the API and the
+   script falls back to a downloaded CSV (`statins.csv`), which does not exist on the server. The run just
+   skips Statins with a warning. See "Statins" below.
+
 ## What it is
 
 A standalone **QI reports** tab in the dashboard sidebar (above Facility trends) at `/qi_reports`.
@@ -45,21 +79,25 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
 |---|---|
 | `publish_district_reports.py` | Builds the PDFs and publishes them. Run `--help`/read the docstring for flags. |
 | `countries/<country>.json` | Per-country settings: Metabase question numbers, filter and column names, wording, footer note, excluded places, place level. Choose with `--country` or `$QI_COUNTRY` (default `bangladesh`). |
-| `run_daily.sh.example` | Wrapper used for the daily run: `./run_daily.sh <country>` (copy to `run_daily.sh`). |
+| `run_monthly.sh` | Production wrapper started by cron: `./run_monthly.sh <country>`. |
+| `run_daily.sh.example` | Local prototype wrapper for a daily month-to-date run (copy to `run_daily.sh`). |
+| `requirements.txt` | Python packages the script needs. |
 | `settings.sh.example` | Names of the environment variables (`MB_URL`, `MB_KEY`), one `settings.<country>.sh` per country. Never commit real values. |
 | `statins_all_districts.sql` | The Statins question's SQL changed to return all districts. Basis for a precomputed table. |
 
 Dependencies: `pip install requests reportlab matplotlib`.
 
 How it behaves:
-- Default run = the current month so far, for every district Metabase knows (`reporting_facilities`),
-  minus `EXCLUDE_DISTRICTS`.
-- Each run **replaces** the older month-to-date PDFs for the same report and district, so the page does
-  not collect one file per day. `--month YYYY-MM` PDFs are kept.
+- `--monthly` (production) = the last full month, 6 months of data. Without it, the run is the current month
+  so far (used by the local prototype's daily run). `--month YYYY-MM` picks a specific month.
+- Every district Metabase knows (`reporting_facilities`) minus the country's `exclude` list.
+- Each publish **replaces** every older PDF for the same report and district (whatever its period), so only
+  the latest report is kept.
 - Publishing is **local-only** in the prototype: it copies PDFs into a folder (`QI_REPORTS_DIR`) and, for
   the local Docker setup, into the running container (`QI_COMPOSE_FILE`). See "For the engineer".
 - A report that fails (for example a missing Statins CSV) is skipped with a warning; the others still run.
-- The prototype is scheduled with macOS launchd (daily 08:00). `run_daily.sh.example` is the wrapper.
+- The local prototype is scheduled with macOS launchd (daily 08:00, month to date). `run_daily.sh.example` is
+  its wrapper; production uses `run_monthly.sh` instead.
 
 ### Titration headline fix
 
@@ -178,7 +216,8 @@ script settings file until one is added (see "Adding or changing a country's rep
 4. **Statins data source:** see "Recommended: precompute Statins" above.
 5. **Run the specs** (`bundle exec rspec spec/models/qi_report_spec.rb spec/controllers/qi_reports_controller_spec.rb`).
    They were written but never run: the authoring environment's Ruby (3.3) did not match the Gemfile (2.7.8).
-6. Decide what to do with the `*Sample District*` sample PDFs committed in `storage/qi_reports/`.
+6. The sample PDFs were removed from `storage/qi_reports/`; that folder is now only a `.keep` file and is
+   a Capistrano linked directory.
 7. The Metabase API keys are only in the PM's local `settings.<country>.sh` files; create proper service
    accounts and store the keys as secrets, one per country's Metabase.
 8. **Per-country rollout:** each deployment needs the app code, its own durable storage for PDFs and its own

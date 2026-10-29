@@ -36,6 +36,8 @@ after "deploy:symlink:linked_dirs", "deploy:fix_bundler_plugin_path"
 append :linked_dirs, ".bundle"
 append :linked_files, ".env.production"
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "public/system", "public/packs", "node_modules"
+# QI report PDFs are written by script/qi_reports and must survive deploys
+append :linked_dirs, "storage/qi_reports"
 
 set :whenever_path, -> { release_path }
 set :whenever_roles, [:cron, :whitelist_phone_numbers, :sidekiq]
