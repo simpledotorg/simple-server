@@ -3,6 +3,15 @@
 A prototype built and tested locally by a PM. It works end to end on a laptop; this note says what is
 there, how it was tested, and what an engineer needs to do to run it properly on the server.
 
+## Which countries see the tab
+
+The QI reports tab, the `/qi_reports` page and the report file URLs are **off unless a country enables them**:
+`CountryConfig[:qi_reports][:enabled]` in `config/initializers/country_config.rb`. Right now only
+**Bangladesh** has `enabled: true`. Ethiopia has its settings but `enabled: false` until its report script has
+been tested against its Metabase; every other country has no `qi_reports` setting, so the tab is hidden and the
+URLs return 404. To switch a country on, set `enabled: true` there (and add its `countries/<country>.json`
+for the script). The Bangladesh monthly cron job has its own Flipper flag, `qi_reports_monthly_job`.
+
 ## Production schedule (Bangladesh)
 
 - **When:** monthly, on the **3rd** of each month (cron entry in `config/schedule.rb`, 10:00 Dhaka time using

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 class QiReportsController < AdminController
+  # The QI reports tab is only switched on for countries that set CountryConfig[:qi_reports][:enabled]
+  before_action :require_qi_reports_enabled
+
   # [report name used in the PDF filename, tab label]
   REPORT_TABS = [["Titration", "Titration reports"], ["Statins", "Statins report"]].freeze
 
@@ -44,5 +47,11 @@ class QiReportsController < AdminController
 
     send_file report.path, type: "application/pdf", filename: report.filename,
       disposition: params[:download].present? ? "attachment" : "inline"
+  end
+
+  private
+
+  def require_qi_reports_enabled
+    head :not_found unless QiReport.enabled?
   end
 end

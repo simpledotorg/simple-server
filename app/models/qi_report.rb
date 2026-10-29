@@ -7,15 +7,20 @@ class QiReport
   DIRECTORY = Rails.root.join("storage", "qi_reports")
   FILENAME = /\A(?<report>.+?) - (?<district>.+) - (?<period>[A-Za-z]{3} \d{4}|\d{4}-\d{2}-\d{2})\.pdf\z/
 
-  # Per-country settings (CountryConfig[:qi_reports]): the level the reports are written for, and the
-  # labels for the dropdowns. "district" reports sit under a division/state; "state" reports are one
+  # Per-country settings (CountryConfig[:qi_reports]): whether the QI reports tab is switched on (off
+  # unless a country sets enabled: true), the level the reports are written for, and the labels for the
+  # dropdowns. "district" reports sit under a division/state; "state" reports are one
   # per state region (for example Ethiopia's regions) and are matched to state regions.
-  DEFAULT_SETTINGS = {level: "district", division_label: "Division", place_label: "District"}.freeze
+  DEFAULT_SETTINGS = {enabled: false, level: "district", division_label: "Division", place_label: "District"}.freeze
 
   attr_reader :filename, :report, :district, :period
 
   def self.settings
     DEFAULT_SETTINGS.merge(CountryConfig.current[:qi_reports] || {})
+  end
+
+  def self.enabled?
+    settings[:enabled] == true
   end
 
   def self.state_level?
