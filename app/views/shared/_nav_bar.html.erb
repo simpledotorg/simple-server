@@ -23,8 +23,10 @@
     <!-----------------
       QI reports
     ----------------->
-      <%= link_to(qi_reports_path, class: "nav-link #{active_controller?("qi_reports")}") do %>
-        <i class="fa-regular fa-file-lines main-menu-icon w-16px"></i> <span>QI reports</span>
+      <% if QiReport.enabled? %>
+        <%= link_to(qi_reports_path, class: "nav-link #{active_controller?("qi_reports")}") do %>
+          <i class="fa-regular fa-file-lines main-menu-icon w-16px"></i> <span>QI reports</span>
+        <% end %>
       <% end %>
 
     <!-----------------

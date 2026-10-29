@@ -33,9 +33,25 @@ RSpec.describe QiReport do
     end
   end
 
+  describe ".enabled?" do
+    it "is off unless the country enables it" do
+      allow(CountryConfig).to receive(:current).and_return({})
+      expect(described_class.enabled?).to be(false)
+
+      allow(CountryConfig).to receive(:current).and_return({qi_reports: {enabled: true}})
+      expect(described_class.enabled?).to be(true)
+    end
+
+    it "is on for Bangladesh and off for Ethiopia and the other countries" do
+      expect(CountryConfig::CONFIGS[:BD][:qi_reports][:enabled]).to be(true)
+      expect(CountryConfig::CONFIGS[:ET][:qi_reports][:enabled]).to be(false)
+      expect(CountryConfig::CONFIGS[:IN][:qi_reports]).to be_nil
+    end
+  end
+
   describe ".settings" do
     it "defaults to district-level reports with Division and District labels" do
-      expect(described_class.settings).to include(level: "district", division_label: "Division", place_label: "District")
+      expect(described_class.settings).to include(enabled: false, level: "district", division_label: "Division", place_label: "District")
     end
 
     it "can be overridden per country" do

@@ -4,7 +4,11 @@ RSpec.describe QiReportsController, type: :controller do
   describe "QI reports" do
     render_views
 
-    before { sign_in(admin.email_authentication) }
+    before do
+      sign_in(admin.email_authentication)
+      # the tab is only on for countries that enable it (tests run as India, where it is off)
+      allow(QiReport).to receive(:enabled?).and_return(true)
+    end
 
     let(:facility_group) { create(:facility_group, name: "Kalutara") }
     let(:allowed) { QiReport.parse("Titration - Kalutara - Sep 2026.pdf") }
@@ -13,6 +17,20 @@ RSpec.describe QiReportsController, type: :controller do
     before do
       allow(QiReport).to receive(:all).and_return([allowed, other])
       allow(allowed).to receive(:path).and_return(Rails.root.join("spec/fixtures/files/qi_report.pdf"))
+    end
+
+    context "when the QI reports tab is not enabled for the country" do
+      let(:admin) { create(:admin, :power_user) }
+
+      before { allow(QiReport).to receive(:enabled?).and_return(false) }
+
+      it "returns not found for the page and for report files" do
+        get :index
+        expect(response).to have_http_status(:not_found)
+
+        get :file, params: {file: allowed.filename}
+        expect(response).to have_http_status(:not_found)
+      end
     end
 
     context "with Titration and Statins reports" do
