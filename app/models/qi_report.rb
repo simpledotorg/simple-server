@@ -18,7 +18,13 @@ class QiReport
   def self.settings
     # CountryConfig stores nested settings with string keys (it is a HashWithIndifferentAccess), so
     # symbolize them before merging over the symbol-keyed defaults
-    DEFAULT_SETTINGS.merge((CountryConfig.current[:qi_reports] || {}).to_h.symbolize_keys)
+    DEFAULT_SETTINGS.merge((CountryConfig.current[:qi_reports] || {}).to_h.symbolize_keys.except(:script))
+  end
+
+  # Settings for script/qi_reports/publish_district_reports.py (Metabase questions, filter names,
+  # wording, ...), written out as JSON by `rails qi_reports:settings`. nil if the country has none.
+  def self.script_settings
+    CountryConfig.current.dig(:qi_reports, :script)&.to_h
   end
 
   def self.enabled?

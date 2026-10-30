@@ -2,12 +2,13 @@
 Daily district reports -> one PDF per district per report -> the Simple dashboard's QI reports tab.
 
 Each country has its own Metabase questions, filter names, wording and place level (district or
-region) in countries/<country>.json; choose one with --country (or $QI_COUNTRY, default bangladesh).
-Typical reports:
+region). They are kept in CountryConfig[:qi_reports][:script] (config/initializers/country_config.rb)
+and written out as JSON with `bin/rails qi_reports:settings[PATH]`; pass that file with
+--settings-file (or $QI_SETTINGS_FILE). Typical reports:
   Titration  A Metabase question, run once per place per month.
   Statins    Built from a CSV of the Statins question's results downloaded by hand. In Bangladesh that
              question takes about 6 minutes in Metabase and over 25 minutes through the API, so it is
-             not run from this script. See doc/qi_reports_handoff.md.
+             not run from this script. See doc/arch/024-qi-reports.md.
 
 Each PDF is named "<Report> - <District> - <date>.pdf" (the QI page parses this name for permissions)
 and published to the QI reports page. Nothing is emailed.
@@ -20,7 +21,7 @@ page.
 
 Usage:
   python publish_district_reports.py --monthly        # last full month, 6 months of data (the 3rd)
-  python publish_district_reports.py --country ethiopia  # pick the country (default: bangladesh)
+  python publish_district_reports.py --settings-file settings.json ...   # settings from `rails qi_reports:settings`
   python publish_district_reports.py                  # all reports, month to date, publish
   python publish_district_reports.py --dry-run        # build PDFs into ./output, don't publish
   python publish_district_reports.py --month 2026-09  # a specific finished month
@@ -31,7 +32,7 @@ Usage:
 
 Environment variables:
   MB_URL, MB_KEY      Metabase address and API key (Titration needs them; a Statins-only run does not)
-  QI_COUNTRY          country settings to use (default: bangladesh)
+  QI_SETTINGS_FILE    path to the settings JSON (same as --settings-file)
   STATINS_CSV         path to the Statins CSV (default: the file named in the country settings)
   QI_REPORTS_DIR      folder the app reads reports from, e.g. ~/simple-server/storage/qi_reports
   QI_COMPOSE_FILE     (local Docker only) e.g. ~/simple-server/.docker/docker-compose.yml. Also copies the
@@ -64,16 +65,15 @@ from reportlab.lib.units import cm
 from reportlab.platypus import HRFlowable, Image, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 # ---------------------------------------------------------------- settings
-COUNTRIES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "countries")
-
-
-def load_country(name):
-    """Each country has its own Metabase questions, filter names, wording and place level
-    (district or region): see countries/<name>.json."""
-    path = os.path.join(COUNTRIES_DIR, f"{name}.json")
+def load_settings(path):
+    """Settings for one country: Metabase questions, filter names, wording and place level (district
+    or region), as JSON written by `bin/rails qi_reports:settings[PATH]`."""
+    if not path:
+        sys.exit("No settings file. Create one with `bin/rails qi_reports:settings[settings.json]` "
+                 "and pass it with --settings-file (or set QI_SETTINGS_FILE).")
+    path = os.path.expanduser(path)
     if not os.path.isfile(path):
-        available = sorted(f[:-5] for f in os.listdir(COUNTRIES_DIR) if f.endswith(".json"))
-        sys.exit(f"No settings for country '{name}'. Available: {available}")
+        sys.exit(f"Settings file not found: {path}")
     with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
@@ -511,7 +511,23 @@ def stale_reports(existing, new_files):
     return stale
 
 
-def publish_to_dashboard(files):
+def prune_old_reports(folder, days, keep):
+    """Remove report PDFs in the folder that were not refreshed for `days` days (for example for a
+    district that no longer exists). Reports are regenerated every run, so these are leftovers."""
+    cutoff = time.time() - days * 86400
+    removed = 0
+    for name in os.listdir(folder):
+        path = os.path.join(folder, name)
+        if name in keep or not NAMED.match(name) or not os.path.isfile(path):
+            continue
+        if os.path.getmtime(path) < cutoff:
+            os.remove(path)
+            removed += 1
+    if removed:
+        print(f"Removed {removed} report(s) not refreshed for {days} days from {folder}")
+
+
+def publish_to_dashboard(files, prune_days=None):
     """Put the PDFs where the Simple dashboard's QI reports tab reads them, replacing the older PDFs
     for the same report and place (only the latest report is kept).
 
@@ -537,6 +553,8 @@ def publish_to_dashboard(files):
             os.remove(os.path.join(target, old))
         for f in files:
             shutil.copy2(f, os.path.join(target, os.path.basename(f)))
+        if prune_days:
+            prune_old_reports(target, prune_days, set(names))
         print(f"Copied {len(files)} PDF(s) to {target}")
 
     if compose:
@@ -577,25 +595,27 @@ def main():
     ap.add_argument("--month", help="YYYY-MM for a finished month (default: the current month so far)")
     ap.add_argument("--monthly", action="store_true",
                     help="Report the last full month (the 6 months ending last month). Use for the monthly run")
-    ap.add_argument("--country", default=os.environ.get("QI_COUNTRY", "bangladesh"),
-                    help="Settings file in countries/ to use (default: $QI_COUNTRY, or bangladesh)")
+    ap.add_argument("--settings-file", default=os.environ.get("QI_SETTINGS_FILE"),
+                    help="JSON from `bin/rails qi_reports:settings[PATH]` (default: $QI_SETTINGS_FILE)")
     ap.add_argument("--district", "--place", dest="district",
                     help="Only run for this district/region (for testing)")
     ap.add_argument("--limit", type=int, help="Only the first N districts/regions (for testing)")
     ap.add_argument("--dry-run", action="store_true", help="Build PDFs but don't publish them")
     ap.add_argument("--reports", help="Only these reports, comma-separated, e.g. Titration (default: all)")
     ap.add_argument("--statins-csv", help="CSV of the Statins question's results from Metabase "
-                    "(default: $STATINS_CSV, or the file named in the country settings)")
+                    "(default: $STATINS_CSV, or the file named in the settings)")
+    ap.add_argument("--prune-days", type=int, default=0,
+                    help="Also remove reports in the destination folder not refreshed for this many days")
     ap.add_argument("--publish-only", action="store_true",
                     help="Don't rebuild: publish the PDFs already in ./output for this run's date")
     args = ap.parse_args()
     sys.stdout.reconfigure(line_buffering=True)  # so the log shows progress while it runs
-    country = load_country(args.country)
+    country = load_settings(args.settings_file)
     reports = country["reports"]
     footer_note = country.get("footer_note", "")
     noun = country.get("place_noun", "district")
     exclude = set(country.get("exclude", []))
-    print(f"Country: {country.get('name', args.country)} (reports by {noun})")
+    print(f"Country: {country.get('name', 'unknown')} (reports by {noun})")
 
     if args.monthly:
         if args.month:
@@ -644,7 +664,7 @@ def main():
         if not files:
             sys.exit(f"No PDFs ending in {sorted(dates)} in ./output")
         print(f"Publishing {len(files)} existing PDF(s)")
-        if not publish_to_dashboard(files):
+        if not publish_to_dashboard(files, args.prune_days):
             sys.exit("Not published.")
         print(f"Published {len(files)} PDF(s) to the QI reports page")
         return
@@ -705,7 +725,7 @@ def main():
     if args.dry_run:
         print("Dry run: not published. PDFs are in ./output")
         return
-    if publish_to_dashboard(files):
+    if publish_to_dashboard(files, args.prune_days):
         print(f"Published {len(files)} PDF(s) to the QI reports page")
     else:
         sys.exit("Not published. The PDFs are in ./output")

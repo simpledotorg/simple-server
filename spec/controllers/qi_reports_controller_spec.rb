@@ -10,13 +10,16 @@ RSpec.describe QiReportsController, type: :controller do
       allow(QiReport).to receive(:enabled?).and_return(true)
     end
 
+    let(:pdf) { Tempfile.new(["qi_report", ".pdf"]).tap { |f| f.write("%PDF-1.4\n%%EOF\n") && f.flush } }
+    after { pdf.close! }
+
     let(:facility_group) { create(:facility_group, name: "Kalutara") }
     let(:allowed) { QiReport.parse("Titration - Kalutara - Sep 2026.pdf") }
     let(:other) { QiReport.parse("Titration - Galle - Sep 2026.pdf") }
 
     before do
       allow(QiReport).to receive(:all).and_return([allowed, other])
-      allow(allowed).to receive(:path).and_return(Rails.root.join("spec/fixtures/files/qi_report.pdf"))
+      allow(allowed).to receive(:path).and_return(pdf.path)
     end
 
     context "when the QI reports tab is not enabled for the country" do
@@ -101,7 +104,7 @@ RSpec.describe QiReportsController, type: :controller do
       before do
         allow(QiReport).to receive(:settings).and_return(QiReport::DEFAULT_SETTINGS.merge(level: "state", place_label: "Region"))
         allow(QiReport).to receive(:all).and_return([western, southern, district_named_like_region])
-        allow(western).to receive(:path).and_return(Rails.root.join("spec/fixtures/files/qi_report.pdf"))
+        allow(western).to receive(:path).and_return(pdf.path)
       end
 
       context "as a power user" do
