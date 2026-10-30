@@ -167,3 +167,13 @@ end
 every 30.minutes, roles: [:cron] do
   runner "RegionsIntegrityCheck.call"
 end
+
+# QI reports (Bangladesh): on the 3rd of each month build last month's QI report PDFs (6 months of data,
+# replacing the previous ones) with script/qi_reports. Off until Flipper :qi_reports_monthly_job is
+# enabled. Needs python3 with script/qi_reports/requirements.txt and a settings file; see
+# doc/arch/024-qi-reports.md. Cron times are in the server's time zone.
+every "0 10 3 * *", roles: [:cron] do
+  if CountryConfig.current_country?("Bangladesh") && Flipper.enabled?(:qi_reports_monthly_job)
+    command "cd #{path}/script/qi_reports && ./run_monthly.sh bangladesh"
+  end
+end
