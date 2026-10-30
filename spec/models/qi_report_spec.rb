@@ -63,6 +63,38 @@ RSpec.describe QiReport do
     end
   end
 
+  describe ".script_settings" do
+    # keys publish_district_reports.py needs for every report
+    let(:report_keys) do
+      %w[name place_col month_col numerator_col denominator_col percent_col headline description
+        numerator_label denominator_label sentence]
+    end
+
+    it "has the settings the report script needs for Bangladesh and Ethiopia" do
+      {BD: "district", ET: "region"}.each do |abbreviation, noun|
+        allow(CountryConfig).to receive(:current).and_return(CountryConfig::CONFIGS[abbreviation])
+        script = described_class.script_settings
+
+        expect(script).to include("place_noun" => noun)
+        expect(script["place_list_sql"]).to be_present
+        expect(script["reports"].map { |r| r["name"] }).to eq(%w[Titration Statins])
+        script["reports"].each do |report|
+          expect(report.keys).to include(*report_keys)
+          # a report comes either from a Metabase question or from a CSV
+          expect(report["card_id"].present? || report["csv"].present?).to be(true)
+        end
+      end
+    end
+
+    it "is not part of the dashboard settings and is nil for countries without it" do
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig::CONFIGS[:BD])
+      expect(described_class.settings).not_to have_key(:script)
+
+      allow(CountryConfig).to receive(:current).and_return(CountryConfig::CONFIGS[:IN])
+      expect(described_class.script_settings).to be_nil
+    end
+  end
+
   describe ".settings" do
     it "defaults to district-level reports with Division and District labels" do
       expect(described_class.settings).to include(enabled: false, level: "district", division_label: "Division", place_label: "District")

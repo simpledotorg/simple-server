@@ -21,8 +21,10 @@ inside the dashboard, visible only to users who can see that district, and regen
    questions. It runs monthly on the 3rd (cron entry in `config/schedule.rb`, behind the Flipper flag
    `qi_reports_monthly_job`), covering the last full month and the 5 before it, and each run replaces the
    older PDFs for the same report and district. Reports not refreshed for 120 days are removed.
-1. Per-country settings for the script (Metabase questions, filter names, wording) live in
-   `script/qi_reports/countries/<country>.json`.
+1. Per-country settings for the script (Metabase questions, filter names, wording, excluded places) live with
+   the other country settings, in `CountryConfig[:qi_reports][:script]`
+   (`config/initializers/country_config.rb`). `bin/rails qi_reports:settings[PATH]` writes them out as JSON,
+   which the script reads (`--settings-file`).
 
 ## Details
 
@@ -32,8 +34,8 @@ The QI reports tab, the `/qi_reports` page and the report file URLs are **off un
 `CountryConfig[:qi_reports][:enabled]` in `config/initializers/country_config.rb`. Right now only
 **Bangladesh** has `enabled: true`. Ethiopia has its settings but `enabled: false` until its report script has
 been tested against its Metabase; every other country has no `qi_reports` setting, so the tab is hidden and the
-URLs return 404. To switch a country on, set `enabled: true` there (and add its `countries/<country>.json`
-for the script). The Bangladesh monthly cron job has its own Flipper flag, `qi_reports_monthly_job`.
+URLs return 404. To switch a country on, set `enabled: true` there (and add its `script:` settings in the
+same place). The Bangladesh monthly cron job has its own Flipper flag, `qi_reports_monthly_job`.
 
 ### Production schedule (Bangladesh)
 
@@ -41,7 +43,7 @@ for the script). The Bangladesh monthly cron job has its own Flipper flag, `qi_r
   the server's time zone).
 - **What:** `script/qi_reports/run_monthly.sh bangladesh` runs `publish_district_reports.py --monthly`: the
   report for the **last full month**, covering that month and the 5 before it, so **6 months of data** per PDF
-  (`months` in `countries/bangladesh.json`). Example: the run on 3 Nov 2026 reports May to October 2026 and
+  (`months` in the Bangladesh `script:` settings). Example: the run on 3 Nov 2026 reports May to October 2026 and
   names the files `Titration - <District> - Oct 2026.pdf`.
 - **Disk use:** each run replaces the previous report for a report and district, so the folder holds one PDF
   (about 40 KB) per report and district, roughly 5 MB for Bangladesh. Reports not refreshed for 120 days (for
@@ -113,7 +115,7 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
 | File | Purpose |
 |---|---|
 | `publish_district_reports.py` | Builds the PDFs and publishes them. Run `--help`/read the docstring for flags. |
-| `countries/<country>.json` | Per-country settings: Metabase question numbers, filter and column names, wording, footer note, excluded places, place level. Choose with `--country` or `$QI_COUNTRY` (default `bangladesh`). |
+| `--settings-file` | The per-country settings as JSON: Metabase question numbers, filter and column names, wording, footer note, excluded places, place level. They live in `CountryConfig[:qi_reports][:script]` and are written by `bin/rails qi_reports:settings[PATH]` (`run_monthly.sh` does this for you). |
 | `run_monthly.sh` | Production wrapper started by cron: `./run_monthly.sh <country>`. |
 | `requirements.txt` | Python packages the script needs. |
 | `settings.sh.example` | Names of the environment variables (`MB_URL`, `MB_KEY`), one `settings.<country>.sh` per country. Never commit real values. |
@@ -192,11 +194,11 @@ deployment** (own storage, own scheduled run). The page code is shared; these di
 | Statins question | 1523 (all districts; 1129 per district) | 266 (per region) |
 | Footer note on PDFs | NHF facilities only | RTSL facilities only |
 | Metabase address | `https://metabase.bd.simple.org` | `https://simple.moh.gov.et/metabase` (note the `/metabase`) |
-| Settings file | `countries/bangladesh.json` | `countries/ethiopia.json` |
+| Script settings | `CountryConfig` BD `qi_reports[:script]` | `CountryConfig` ET `qi_reports[:script]` |
 
 Only these two countries are set up. Sri Lanka and any other deployment are not covered yet: a country
 without settings uses the defaults (district-level reports, Division and District labels) and has no
-script settings file until one is added (see "Adding or changing a country's reports").
+script settings until some are added (see "Adding or changing a country's reports").
 
 #### What the app does per country
 
@@ -214,19 +216,21 @@ script settings file until one is added (see "Adding or changing a country's rep
 1. In that country's Metabase, make sure the question exists and note its number. The script fills these
    filters: the place filter, a start date and an end date (Titration, run once per month), and expects result
    columns for the place, month, the counted patients, the total and the percentage.
-2. Copy `countries/bangladesh.json` to `countries/<country>.json` and edit the question numbers, filter
-   names, column names, wording, `footer_note`, `exclude`, `place_noun` and the `place_list_sql` (the query
-   listing the places to build).
+2. In `config/initializers/country_config.rb`, add a `script:` hash under that country's `qi_reports` (copy
+   Bangladesh's) and edit the question numbers, filter names, column names, wording, `footer_note`,
+   `exclude`, `place_noun` and the `place_list_sql` (the query listing the places to build).
 3. Create `settings.<country>.sh` from `settings.sh.example` with that Metabase's address and API key, whose
    group must be able to read the questions' collection.
-4. Test one place first: `python3 publish_district_reports.py --country <country> --district "<place>" --dry-run`.
+4. Test one place first, with that country's Metabase credentials loaded:
+   `bin/rails qi_reports:settings[settings.json]` then
+   `python3 script/qi_reports/publish_district_reports.py --settings-file settings.json --district "<place>" --dry-run`.
 5. Run it on the schedule for that country's deployment and storage.
 
 #### Ethiopia notes (from the screenshots of its Metabase)
 - Reports are **per region only**. Titration (255) takes `state_name` ("Select region", a title-case value like
   `Addis Ababa`) plus start and end dates. The date filters are assumed to be called `start_date` and
   `end_date` (same as Bangladesh); if the script says a filter was not found, it lists the real names, so
-  update `countries/ethiopia.json`.
+  update the Ethiopia `script:` settings.
 - Its Titration results had no "Average" row in the screenshot; the script copes without one.
 - Statins (266) takes `From Date...` and a region (a lowercase slug like `addis-ababa`) and returns a
   `state` column plus "Average" rows. It will have the same speed question as Bangladesh's, but with about
