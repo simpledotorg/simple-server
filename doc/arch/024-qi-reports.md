@@ -1,9 +1,32 @@
-# QI reports: handoff notes
+# QI reports: district quality improvement PDFs in the dashboard
 
-A prototype built and tested locally by a PM. It works end to end on a laptop; this note says what is
-there, how it was tested, and what an engineer needs to do to run it properly on the server.
+## Status
 
-## Which countries see the tab
+Accepted
+
+## Context
+
+Program teams (first Bangladesh) get district-level quality improvement (QI) reports, such as the Titration
+trend, as PDFs built from Metabase questions and sent by email. We want the latest report for each district
+inside the dashboard, visible only to users who can see that district, and regenerated on a schedule.
+
+## Decision
+
+1. A standalone "QI reports" tab (`/qi_reports`) lists a district's PDFs in an inline viewer with Download
+   and Print. It is switched on per country with `CountryConfig[:qi_reports][:enabled]` (only Bangladesh).
+1. PDFs are plain files in `storage/qi_reports` (a Capistrano linked directory), named
+   `<Report> - <District> - <period>.pdf`, and are served through `authorize` so a user only gets reports for
+   districts they can view reports for. They are never served from `public/`.
+1. The PDFs are built by a Python script, `script/qi_reports/publish_district_reports.py`, from Metabase
+   questions. It runs monthly on the 3rd (cron entry in `config/schedule.rb`, behind the Flipper flag
+   `qi_reports_monthly_job`), covering the last full month and the 5 before it, and each run replaces the
+   older PDFs for the same report and district. Reports not refreshed for 120 days are removed.
+1. Per-country settings for the script (Metabase questions, filter names, wording) live in
+   `script/qi_reports/countries/<country>.json`.
+
+## Details
+
+### Which countries see the tab
 
 The QI reports tab, the `/qi_reports` page and the report file URLs are **off unless a country enables them**:
 `CountryConfig[:qi_reports][:enabled]` in `config/initializers/country_config.rb`. Right now only
@@ -12,21 +35,24 @@ been tested against its Metabase; every other country has no `qi_reports` settin
 URLs return 404. To switch a country on, set `enabled: true` there (and add its `countries/<country>.json`
 for the script). The Bangladesh monthly cron job has its own Flipper flag, `qi_reports_monthly_job`.
 
-## Production schedule (Bangladesh)
+### Production schedule (Bangladesh)
 
-- **When:** monthly, on the **3rd** of each month (cron entry in `config/schedule.rb`, 10:00 Dhaka time using
-  the same `local()` convention as the other jobs).
+- **When:** monthly, on the **3rd** of each month (cron entry `0 10 3 * *` in `config/schedule.rb`, in
+  the server's time zone).
 - **What:** `script/qi_reports/run_monthly.sh bangladesh` runs `publish_district_reports.py --monthly`: the
   report for the **last full month**, covering that month and the 5 before it, so **6 months of data** per PDF
   (`months` in `countries/bangladesh.json`). Example: the run on 3 Nov 2026 reports May to October 2026 and
   names the files `Titration - <District> - Oct 2026.pdf`.
+- **Disk use:** each run replaces the previous report for a report and district, so the folder holds one PDF
+  (about 40 KB) per report and district, roughly 5 MB for Bangladesh. Reports not refreshed for 120 days (for
+  example a district that was removed or renamed) are deleted at the end of a run (`QI_PRUNE_DAYS`, default 120).
 - **Overwrite:** when a new report is published, every older PDF for the same report and district is deleted
   first, so only the latest report per district is kept. A district that fails in a run keeps its previous
   report; the run logs which districts were skipped and exits non-zero.
 - **Off by default:** the cron entry only exists when the Flipper flag `qi_reports_monthly_job` is on and
   the country is Bangladesh. Enable it after the setup below is done and a manual run has worked.
 
-### Setup on the server
+#### Setup on the server
 
 1. Python 3 with `pip install -r script/qi_reports/requirements.txt` (a virtualenv is fine; set `QI_PYTHON`
    to its python). The script needs outbound HTTPS to the Metabase.
@@ -46,7 +72,7 @@ for the script). The Bangladesh monthly cron job has its own Flipper flag, `qi_r
    script falls back to a downloaded CSV (`statins.csv`), which does not exist on the server. The run just
    skips Statins with a warning. See "Statins" below.
 
-## What it is
+### What it is
 
 A standalone **QI reports** tab in the dashboard sidebar (above Facility trends) at `/qi_reports`.
 
@@ -58,7 +84,7 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
 - The report is shown in an inline viewer, with **Download PDF** and **Print** top right.
 - The PDFs come from a script (`script/qi_reports/`) that reads Metabase and builds one PDF per district.
 
-### Code
+#### Code
 
 | Piece | Where |
 |---|---|
@@ -70,7 +96,7 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
 | Specs | `spec/models/qi_report_spec.rb`, `spec/controllers/qi_reports_controller_spec.rb` |
 | Report script | `script/qi_reports/` |
 
-## Permissions
+### Permissions
 
 - PDFs live in `storage/qi_reports/`, **not** `public/` (files under `public/` are served without a login).
 - Filenames must look like `<Report> - <District> - <date>.pdf`, for example
@@ -82,14 +108,13 @@ A standalone **QI reports** tab in the dashboard sidebar (above Facility trends)
   the user's permitted list, so a pasted URL for another district's file is refused and path traversal
   does not work.
 
-## The report script (`script/qi_reports/`)
+### The report script (`script/qi_reports/`)
 
 | File | Purpose |
 |---|---|
 | `publish_district_reports.py` | Builds the PDFs and publishes them. Run `--help`/read the docstring for flags. |
 | `countries/<country>.json` | Per-country settings: Metabase question numbers, filter and column names, wording, footer note, excluded places, place level. Choose with `--country` or `$QI_COUNTRY` (default `bangladesh`). |
 | `run_monthly.sh` | Production wrapper started by cron: `./run_monthly.sh <country>`. |
-| `run_daily.sh.example` | Local prototype wrapper for a daily month-to-date run (copy to `run_daily.sh`). |
 | `requirements.txt` | Python packages the script needs. |
 | `settings.sh.example` | Names of the environment variables (`MB_URL`, `MB_KEY`), one `settings.<country>.sh` per country. Never commit real values. |
 | `statins_all_districts.sql` | The Statins question's SQL changed to return all districts. Basis for a precomputed table. |
@@ -105,10 +130,9 @@ How it behaves:
 - Publishing is **local-only** in the prototype: it copies PDFs into a folder (`QI_REPORTS_DIR`) and, for
   the local Docker setup, into the running container (`QI_COMPOSE_FILE`). See "For the engineer".
 - A report that fails (for example a missing Statins CSV) is skipped with a warning; the others still run.
-- The local prototype is scheduled with macOS launchd (daily 08:00, month to date). `run_daily.sh.example` is
-  its wrapper; production uses `run_monthly.sh` instead.
+- The local prototype was scheduled with macOS launchd (daily, month to date). Production uses `run_monthly.sh`.
 
-### Titration headline fix
+#### Titration headline fix
 
 The Titration question returns an **"Average" row** (all districts) next to each district's rows. The
 original script added every row for a month together, so the big headline % on each PDF mixed the
@@ -117,7 +141,7 @@ district with the national average (for one district it showed 7% when the distr
 Average separately (dashed line, an "Average of all districts" note and a column). PDFs produced before
 this fix have the wrong headline number.
 
-## Statins
+### Statins
 
 - Metabase question **1523** ("Statins by district, all districts") is the all-districts version of
   question 1129, saved in the same collection as the Titration question (997). Its date variable is
@@ -136,7 +160,7 @@ this fix have the wrong headline number.
   the question was moved into the Titration collection.
 - Statins covers NHF facilities only (the question's own filter), so it has fewer districts than Titration.
 
-### Recommended: precompute Statins
+#### Recommended: precompute Statins
 
 Question 1129/1523 recomputes everything from raw tables on every run (`cvd_risks` parsed with regular
 expressions, `prescription_drugs`, ages recalculated per patient). Titration is fast because the
@@ -155,7 +179,7 @@ Options, best first:
 3. Ask a Metabase admin whether question 1523 can have a **scheduled (nightly) cache**; then the script can
    call the card once and get the saved answer.
 
-## Countries: Bangladesh and Ethiopia
+### Countries: Bangladesh and Ethiopia
 
 Each country has its **own Metabase** (own address, API key and question numbers) and its **own app
 deployment** (own storage, own scheduled run). The page code is shared; these differ:
@@ -174,7 +198,7 @@ Only these two countries are set up. Sri Lanka and any other deployment are not 
 without settings uses the defaults (district-level reports, Division and District labels) and has no
 script settings file until one is added (see "Adding or changing a country's reports").
 
-### What the app does per country
+#### What the app does per country
 
 `CountryConfig[:qi_reports]` (in `config/initializers/country_config.rb`) sets:
 - `level`: `"district"` (default) or `"state"`. At `"state"` the page matches each PDF's name against the
@@ -185,7 +209,7 @@ script settings file until one is added (see "Adding or changing a country's rep
 - `division_label` / `place_label`: the dropdown labels. Bangladesh: Division / District. Ethiopia: Region.
   Other countries fall back to Division / District.
 
-### Adding or changing a country's reports
+#### Adding or changing a country's reports
 
 1. In that country's Metabase, make sure the question exists and note its number. The script fills these
    filters: the place filter, a start date and an end date (Titration, run once per month), and expects result
@@ -198,7 +222,7 @@ script settings file until one is added (see "Adding or changing a country's rep
 4. Test one place first: `python3 publish_district_reports.py --country <country> --district "<place>" --dry-run`.
 5. Run it on the schedule for that country's deployment and storage.
 
-### Ethiopia notes (from the screenshots of its Metabase)
+#### Ethiopia notes (from the screenshots of its Metabase)
 - Reports are **per region only**. Titration (255) takes `state_name` ("Select region", a title-case value like
   `Addis Ababa`) plus start and end dates. The date filters are assumed to be called `start_date` and
   `end_date` (same as Bangladesh); if the script says a filter was not found, it lists the real names, so
@@ -213,7 +237,7 @@ script settings file until one is added (see "Adding or changing a country's rep
 - Wording of the Ethiopia Statins description follows the question's title (diabetes aged 40+, stroke or heart
   attack history, or CV risk score of 10 or more).
 
-## For the engineer
+### For the engineer
 
 1. **Storage:** replace the `storage/qi_reports/` folder with durable shared storage (S3 or ActiveStorage)
    and change `publish_to_dashboard()` in the script to upload there. Keep the filenames and the
@@ -236,7 +260,7 @@ script settings file until one is added (see "Adding or changing a country's rep
    and remove the committed sample PDFs first.
 9. Decide whether the QI tab should show in every deployment or only where reports exist (a feature flag).
 
-## How to test permissions locally
+### How to test permissions locally
 
 1. Put some PDFs in `storage/qi_reports/` and rebuild the app image (see below).
 2. Create a limited user in the Rails console (`docker compose -f .docker/docker-compose.yml exec server bundle exec rails console`):
@@ -260,7 +284,7 @@ script settings file until one is added (see "Adding or changing a country's rep
    numbers, rename a seeded district that has data.
 6. Don't create two districts with the same name: access and the PDF matching go by name.
 
-## Local development gotchas
+### Local development gotchas
 
 - The local Docker setup **bakes the code and `storage/qi_reports/` into the image** (the compose volume does
   not mount the repo). After a pull or after adding PDFs, rebuild:

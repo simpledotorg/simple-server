@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Monthly QI reports run, started by cron on the 3rd (see config/schedule.rb): ./run_monthly.sh <country>
-# Builds last month's reports with 6 months of data, replacing the previous PDFs.
+# Builds last month's reports with 6 months of data, replacing the previous PDFs, and removes any
+# report not refreshed for QI_PRUNE_DAYS (default 120) days, so the folder cannot grow without bound.
 #
 # Needs (all outside the repo):
 #   $QI_SETTINGS_DIR/settings.<country>.sh   exports MB_URL and MB_KEY (see settings.sh.example)
@@ -28,4 +29,4 @@ trap 'rm -rf "$WORK_DIR"' EXIT
 cd "$WORK_DIR"
 
 echo "=== $(date) ($COUNTRY, monthly) ==="
-"${QI_PYTHON:-python3}" "$SCRIPT_DIR/publish_district_reports.py" --country "$COUNTRY" --monthly
+"${QI_PYTHON:-python3}" "$SCRIPT_DIR/publish_district_reports.py" --country "$COUNTRY" --monthly --prune-days "${QI_PRUNE_DAYS:-120}"

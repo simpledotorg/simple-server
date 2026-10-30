@@ -7,7 +7,7 @@ Typical reports:
   Titration  A Metabase question, run once per place per month.
   Statins    Built from a CSV of the Statins question's results downloaded by hand. In Bangladesh that
              question takes about 6 minutes in Metabase and over 25 minutes through the API, so it is
-             not run from this script. See doc/qi_reports_handoff.md.
+             not run from this script. See doc/arch/024-qi-reports.md.
 
 Each PDF is named "<Report> - <District> - <date>.pdf" (the QI page parses this name for permissions)
 and published to the QI reports page. Nothing is emailed.
@@ -511,7 +511,23 @@ def stale_reports(existing, new_files):
     return stale
 
 
-def publish_to_dashboard(files):
+def prune_old_reports(folder, days, keep):
+    """Remove report PDFs in the folder that were not refreshed for `days` days (for example for a
+    district that no longer exists). Reports are regenerated every run, so these are leftovers."""
+    cutoff = time.time() - days * 86400
+    removed = 0
+    for name in os.listdir(folder):
+        path = os.path.join(folder, name)
+        if name in keep or not NAMED.match(name) or not os.path.isfile(path):
+            continue
+        if os.path.getmtime(path) < cutoff:
+            os.remove(path)
+            removed += 1
+    if removed:
+        print(f"Removed {removed} report(s) not refreshed for {days} days from {folder}")
+
+
+def publish_to_dashboard(files, prune_days=None):
     """Put the PDFs where the Simple dashboard's QI reports tab reads them, replacing the older PDFs
     for the same report and place (only the latest report is kept).
 
@@ -537,6 +553,8 @@ def publish_to_dashboard(files):
             os.remove(os.path.join(target, old))
         for f in files:
             shutil.copy2(f, os.path.join(target, os.path.basename(f)))
+        if prune_days:
+            prune_old_reports(target, prune_days, set(names))
         print(f"Copied {len(files)} PDF(s) to {target}")
 
     if compose:
@@ -586,6 +604,8 @@ def main():
     ap.add_argument("--reports", help="Only these reports, comma-separated, e.g. Titration (default: all)")
     ap.add_argument("--statins-csv", help="CSV of the Statins question's results from Metabase "
                     "(default: $STATINS_CSV, or the file named in the country settings)")
+    ap.add_argument("--prune-days", type=int, default=0,
+                    help="Also remove reports in the destination folder not refreshed for this many days")
     ap.add_argument("--publish-only", action="store_true",
                     help="Don't rebuild: publish the PDFs already in ./output for this run's date")
     args = ap.parse_args()
@@ -644,7 +664,7 @@ def main():
         if not files:
             sys.exit(f"No PDFs ending in {sorted(dates)} in ./output")
         print(f"Publishing {len(files)} existing PDF(s)")
-        if not publish_to_dashboard(files):
+        if not publish_to_dashboard(files, args.prune_days):
             sys.exit("Not published.")
         print(f"Published {len(files)} PDF(s) to the QI reports page")
         return
@@ -705,7 +725,7 @@ def main():
     if args.dry_run:
         print("Dry run: not published. PDFs are in ./output")
         return
-    if publish_to_dashboard(files):
+    if publish_to_dashboard(files, args.prune_days):
         print(f"Published {len(files)} PDF(s) to the QI reports page")
     else:
         sys.exit("Not published. The PDFs are in ./output")

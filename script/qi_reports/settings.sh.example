@@ -1,4 +1,4 @@
 # Copy to settings.<country>.sh, for example settings.bangladesh.sh (never commit the real files).
-# Used by run_daily.sh <country>.
+# Used by run_monthly.sh <country> (from $QI_SETTINGS_DIR).
 export MB_URL="https://your-metabase.example.org"   # no trailing slash. Ethiopia's includes /metabase
 export MB_KEY="metabase-api-key"                    # key for THAT country's Metabase, whose group can read the questions' collection
