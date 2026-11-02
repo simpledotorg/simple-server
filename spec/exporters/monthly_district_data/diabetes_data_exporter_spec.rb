@@ -43,7 +43,7 @@ describe MonthlyDistrictData::DiabetesDataExporter do
     create(:appointment, facility: @facility1, scheduled_date: Date.today, device_created_at: 63.days.ago, patient: create(:patient, :diabetes, recorded_at: 1.year.ago))
 
     @months = @period.downto(5).reverse.map(&:to_s)
-    stub_get_refresh_months_for(Reports::PatientState, Reports::FacilityState, Reports::FacilityAppointmentScheduledDays)
+    stub_get_refresh_months_for(Reports::PatientState, Reports::PatientFollowUp, Reports::FacilityState, Reports::FacilityAppointmentScheduledDays)
     RefreshReportingViews.refresh_v2
   end
 
