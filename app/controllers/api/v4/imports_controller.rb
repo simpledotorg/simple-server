@@ -48,14 +48,14 @@ class Api::V4::ImportsController < ApplicationController
       :gender,
       :birthDate,
       :deceasedBoolean,
-      :telecom,
       :active,
       name: [:text],
       meta: [:lastUpdated, :createdAt],
       identifier: [:value],
       managingOrganization: [:value],
       registrationOrganization: [:value],
-      address: [:district, :city, :postalCode, line: []]
+      address: [:district, :city, :postalCode, line: []],
+      telecom: [:value, :use]
     )
   end
 
