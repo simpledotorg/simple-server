@@ -8,7 +8,7 @@ class DiscardMatViewReportingPatientFollowUps < ActiveRecord::Migration[6.1]
   end
 
   def down
-    drop_view :reporting_patient_follow_ups 
+    drop_view :reporting_patient_follow_ups
 
     execute <<~SQL
       CREATE MATERIALIZED VIEW public.reporting_patient_follow_ups AS
