@@ -117,6 +117,7 @@ describe Reports::RegionSummarySchema, type: :model do
 
         allow(Reports::FacilityAppointmentScheduledDays).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(4.month.ago.to_date, Date.today))
         allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(4.month.ago.to_date, Date.today))
+        allow(Reports::PatientFollowUp).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(4.month.ago.to_date, Date.today))
         refresh_views
 
         schema = described_class.new(Region.where(id: facility.region), periods: range)

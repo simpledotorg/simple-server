@@ -123,6 +123,7 @@ RSpec.describe Reports::FacilityProgressService, type: :model do
         end
         allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(1.year.ago.to_date, Date.today))
         allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(1.year.ago.to_date, Date.today))
+        allow(Reports::PatientFollowUp).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(1.year.ago.to_date, Date.today))
         refresh_views
         service = described_class.new(facility, Period.current)
         result = service.diabetes_reports_data
