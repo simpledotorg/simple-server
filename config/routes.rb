@@ -265,6 +265,9 @@ Rails.application.routes.draw do
     get "drug_stocks/:region_id/new", to: "drug_stocks#new", as: :drug_stock_form
   end
 
+  get "qi_reports", to: "qi_reports#index", as: :qi_reports
+  get "qi_reports/file", to: "qi_reports#file", as: :qi_report_file
+
   scope :resources do
     get "/", to: "resources#index", as: "resources"
   end
