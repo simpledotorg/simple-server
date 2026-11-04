@@ -35,6 +35,7 @@ RSpec.describe PatientBusinessIdentifier, type: :model do
       is_expected.to define_enum_for(:identifier_type)
         .with_values(simple_bp_passport: "simple_bp_passport",
           bangladesh_national_id: "bangladesh_national_id",
+          bangladesh_shr_id: "bangladesh_shr_id",
           sri_lanka_national_id: "sri_lanka_national_id",
           sri_lanka_personal_health_number: "sri_lanka_personal_health_number",
           ethiopia_medical_record: "ethiopia_medical_record",
