@@ -620,6 +620,7 @@ RSpec.describe Reports::FacilityState, {type: :model, reporting_spec: true} do
       create(:blood_pressure, patient: patient, facility: facility_1, device_created_at: 3.months.ago)
 
       allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 6.months, Date.today))
+      allow(Reports::PatientFollowUp).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.today - 6.months, Date.today))
       refresh_views
       rows = Reports::FacilityState.with_patients
       expect(rows.pluck(:facility_id, :month_date, :monthly_follow_ups))

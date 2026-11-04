@@ -13,7 +13,7 @@ module Reports
     scope :with_hypertension, -> { where(hypertension: MedicalHistory::MEDICAL_HISTORY_ANSWERS[:yes]) }
 
     def self.materialized?
-      true
+      false
     end
 
     def self.partitioned?

@@ -312,7 +312,11 @@ RSpec.shared_examples "a working sync controller updating records" do
     end
 
     it "updates deduped records if a record was merged" do
-      deduped_record = create_record_list(1).first
+      deduped_record = nil
+      Timecop.freeze do
+        deduped_record = create_record_list(1).first
+        existing_records
+      end
       deleted_record = existing_records.first
       updated_record = updated_records.first
 

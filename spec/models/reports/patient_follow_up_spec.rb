@@ -14,6 +14,12 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  def refresh_partitions_between(start_date, end_date)
+    ReportingHelpers.get_refresh_months_between_dates(start_date.to_date, end_date.to_date).each do |refresh_month|
+      described_class.partitioned_refresh(refresh_month)
+    end
+  end
+
   it "does not contain discarded patients" do
     patient = create(:patient, recorded_at: june_2021[:long_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:now])
@@ -91,6 +97,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:over_3_months_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:under_3_months_ago])
 
+    allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(june_2021[:over_3_months_ago].to_date, june_2021[:now].to_date))
     RefreshReportingViews.call
 
     expect(described_class.count).to eq(2)
@@ -169,6 +176,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
     patient = create(:patient, recorded_at: june_2021[:over_12_months_ago])
     create(:blood_pressure, patient: patient, user: user, facility: facility, recorded_at: june_2021[:under_12_months_ago])
 
+    allow(described_class).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(june_2021[:over_12_months_ago].to_date, june_2021[:now].to_date))
     RefreshReportingViews.call
 
     expect(described_class.count).to eq(1)
@@ -177,7 +185,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
   context "screening" do
     it "doesn't include screened patients" do
       screened_patient = create(:patient, :without_medical_history, diagnosed_confirmed_at: nil)
-      described_class.refresh
+      refresh_partitions_between(june_2021[:now], june_2021[:now])
       expect(described_class.where(patient_id: screened_patient.id).count).to eq(0)
     end
 
@@ -185,7 +193,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
       diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
       _old_bp = create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
       new_bp = create(:blood_pressure, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
-      described_class.refresh
+      refresh_partitions_between(june_2021[:three_months_ago], june_2021[:now])
       expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_bp.id])
     end
 
@@ -193,7 +201,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
       diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
       _old_bs = create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
       new_bs = create(:blood_sugar, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
-      described_class.refresh
+      refresh_partitions_between(june_2021[:three_months_ago], june_2021[:now])
       expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_bs.id])
     end
 
@@ -201,7 +209,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
       diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
       _old_appointment = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
       new_appointment = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
-      described_class.refresh
+      refresh_partitions_between(june_2021[:three_months_ago], june_2021[:now])
       expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_appointment.id])
     end
 
@@ -209,7 +217,7 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
       diagnosed_patient = create(:patient, :hypertension, recorded_at: june_2021[:three_months_ago], diagnosed_confirmed_at: june_2021[:two_months_ago], registration_user: user, registration_facility: facility)
       _old_prescription = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:three_months_ago])
       new_prescription = create(:appointment, patient: diagnosed_patient, user: user, facility: facility, recorded_at: june_2021[:now])
-      described_class.refresh
+      refresh_partitions_between(june_2021[:three_months_ago], june_2021[:now])
       expect(described_class.where(patient: diagnosed_patient).pluck(:visit_id)).to eq([new_prescription.id])
     end
   end
@@ -217,6 +225,12 @@ RSpec.describe Reports::PatientFollowUp, {type: :model, reporting_spec: true} do
   describe "#partitioned?" do
     it "returns true" do
       expect(described_class.partitioned?).to be(true)
+    end
+  end
+
+  describe "#materialized?" do
+    it "returns false" do
+      expect(described_class.materialized?).to be(false)
     end
   end
 end
