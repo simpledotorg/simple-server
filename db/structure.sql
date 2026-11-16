@@ -1975,6 +1975,93 @@ END;
 $_$;
 
 --
+-- Name: reporting_prescriptions; Type: TABLE; Schema: simple_reporting; Owner: -
+--
+
+CREATE TABLE IF NOT EXISTS simple_reporting.reporting_prescriptions (
+  patient_id uuid,
+  month_date date,
+  amlodipine double precision,
+  telmisartan double precision,
+  losartan double precision,
+  atenolol double precision,
+  enalapril double precision,
+  chlorthalidone double precision,
+  hydrochlorothiazide double precision,
+  other_bp_medications double precision
+)
+PARTITION BY LIST (month_date);
+
+--
+-- Name: reporting_prescriptions_table_function(date); Type: FUNCTION; Schema: simple_reporting; Owner: -
+--
+
+CREATE OR REPLACE FUNCTION simple_reporting.reporting_prescriptions_table_function(date) RETURNS SETOF simple_reporting.reporting_prescriptions
+LANGUAGE plpgsql
+AS $_$
+BEGIN
+RETURN QUERY
+  SELECT p.id AS patient_id,
+    p.month_date,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Amlodipine'::text)), (0)::double precision) AS amlodipine,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Telmisartan'::text)), (0)::double precision) AS telmisartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Losartan Potassium'::text)), (0)::double precision) AS losartan,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Atenolol'::text)), (0)::double precision) AS atenolol,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Enalapril'::text)), (0)::double precision) AS enalapril,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Chlorthalidone'::text)), (0)::double precision) AS chlorthalidone,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE ((prescriptions.clean_name)::text = 'Hydrochlorothiazide'::text)), (0)::double precision) AS hydrochlorothiazide,
+    COALESCE(max(prescriptions.clean_dosage) FILTER (WHERE (((prescriptions.clean_name)::text <> ALL (ARRAY[('Amlodipine'::character varying)::text, ('Telmisartan'::character varying)::text, ('Losartan'::character varying)::text, ('Atenolol'::character varying)::text, ('Enalapril'::character varying)::text, ('Chlorthalidone'::character varying)::text, ('Hydrochlorothiazide'::character varying)::text])) AND (prescriptions.medicine_purpose_hypertension = true))), (0)::double precision) AS other_bp_medications
+  FROM (( SELECT p_1.id,
+        p_1.full_name,
+        p_1.age,
+        p_1.gender,
+        p_1.date_of_birth,
+        p_1.status,
+        p_1.created_at,
+        p_1.updated_at,
+        p_1.address_id,
+        p_1.age_updated_at,
+        p_1.device_created_at,
+        p_1.device_updated_at,
+        p_1.test_data,
+        p_1.registration_facility_id,
+        p_1.registration_user_id,
+        p_1.deleted_at,
+        p_1.contacted_by_counsellor,
+        p_1.could_not_contact_reason,
+        p_1.recorded_at,
+        p_1.reminder_consent,
+        p_1.deleted_by_user_id,
+        p_1.deleted_reason,
+        p_1.assigned_facility_id,
+        cal.month_date,
+        cal.month,
+        cal.quarter,
+        cal.year,
+        cal.month_string,
+        cal.quarter_string
+      FROM (public.patients p_1
+        LEFT JOIN public.reporting_months cal ON ((to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('utc'::text, p_1.diagnosed_confirmed_at)), 'YYYY-MM'::text) <= cal.month_string)))
+      WHERE (p_1.deleted_at IS NULL AND p_1.diagnosed_confirmed_at IS NOT NULL)
+        AND cal.month_date = $1
+      ) p
+    LEFT JOIN LATERAL ( SELECT DISTINCT ON (clean.medicine) actual.name AS actual_name,
+        actual.dosage AS actual_dosage,
+        clean.medicine AS clean_name,
+        clean.dosage AS clean_dosage,
+        purpose.hypertension AS medicine_purpose_hypertension,
+        purpose.diabetes AS medicine_purpose_diabetes
+      FROM (((public.prescription_drugs actual
+        LEFT JOIN public.raw_to_clean_medicines raw ON (((lower(regexp_replace((raw.raw_name)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.name)::text, '\s+'::text, ''::text, 'g'::text))) AND (lower(regexp_replace((raw.raw_dosage)::text, '\s+'::text, ''::text, 'g'::text)) = lower(regexp_replace((actual.dosage)::text, '\s+'::text, ''::text, 'g'::text))))))
+        LEFT JOIN public.clean_medicine_to_dosages clean ON ((clean.rxcui = raw.rxcui)))
+        LEFT JOIN public.medicine_purposes purpose ON (((clean.medicine)::text = (purpose.name)::text)))
+      WHERE ((actual.patient_id = p.id) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_created_at)), 'YYYY-MM'::text) <= p.month_string) AND (actual.deleted_at IS NULL) AND ((actual.is_deleted = false) OR ((actual.is_deleted = true) AND (to_char(timezone(( SELECT current_setting('TIMEZONE'::text) AS current_setting), timezone('UTC'::text, actual.device_updated_at)), 'YYYY-MM'::text) > p.month_string))))
+      ORDER BY clean.medicine, actual.device_created_at DESC) prescriptions ON (true))
+  GROUP BY p.id, p.month_date;
+END;
+$_$;
+
+--
 -- Name: accesses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8938,6 +9025,12 @@ CREATE INDEX index_reporting_patient_follow_ups_on_facility_id ON simple_reporti
 CREATE UNIQUE INDEX reporting_patient_follow_ups_unique_index ON simple_reporting.reporting_patient_follow_ups USING btree (patient_id, user_id, facility_id, month_date);
 
 --
+-- Name: reporting_prescriptions_patient_month_date; Type: INDEX; Schema: simple_reporting; Owner: -
+--
+
+CREATE UNIQUE INDEX reporting_prescriptions_patient_month_date ON simple_reporting.reporting_prescriptions USING btree (patient_id, month_date);
+
+--
 -- Name: patient_phone_numbers fk_rails_0145dd0b05; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -9517,6 +9610,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20261008000000'),
 ('20261014000000'),
 ('20261026052127'),
-('20261102103717');
+('20261102103717'),
+('20261116072550');
 
 
