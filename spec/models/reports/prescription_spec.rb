@@ -165,4 +165,10 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       expect(described_class.find_by(patient: patient)).to be_nil
     end
   end
+
+  describe "#partitioned?" do
+    it "returns true" do
+      expect(described_class.partitioned?).to be(true)
+    end
+  end
 end
