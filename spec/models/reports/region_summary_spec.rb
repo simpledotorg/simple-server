@@ -242,6 +242,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
 
     allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 16.months))
     allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 10, 1), Date.new(2020, 3, 1)))
+    allow(Reports::PatientFollowUp).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(Date.new(2019, 10, 1), Date.new(2020, 3, 1)))
     refresh_views
 
     expected_facility_1_follow_ups = {
@@ -339,6 +340,7 @@ RSpec.describe Reports::RegionSummary, {type: :model, reporting_spec: true} do
       facility_2.update(enable_diabetes_management: true)
       allow(Reports::PatientState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
       allow(Reports::FacilityState).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
+      allow(Reports::PatientFollowUp).to receive(:get_refresh_months).and_return(ReportingHelpers.get_refresh_months_between_dates(jan_2019.to_date, jan_2019.to_date + 3.years))
     end
 
     it "returns the adjusted count of patients with bs <200 in a region" do
