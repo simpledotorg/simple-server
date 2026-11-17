@@ -42,7 +42,8 @@ class ApplicationController < ActionController::Base
   end
 
   # Use Prosopite to avoid adding n+1 active record queries
-  unless Rails.env.production?
+  # pg_query, which Prosopite needs on Postgres, cannot be built on Windows
+  unless Rails.env.production? || Gem.win_platform?
     around_action :n_plus_one_detection
 
     def n_plus_one_detection

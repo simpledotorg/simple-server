@@ -81,10 +81,11 @@ gem "sidekiq"
 gem "sidekiq-unique-jobs", "~> 7.1", ">= 7.1.33"
 gem "slack-notifier"
 gem "squid"
-gem "stackprof", require: false
+gem "stackprof", require: false, platforms: :ruby
 gem "terser", "~> 1.1"
 gem "timecop", "~> 0.9.0", require: false
 gem "twilio-ruby", "~> 5.62"
+gem "tzinfo-data", platforms: [:mingw, :x64_mingw, :mswin]
 gem "uuidtools", require: false
 gem "view_component"
 gem "webpacker", "6.0.0.rc.6"
@@ -122,13 +123,14 @@ end
 
 group :development, :test, :profiling do
   gem "derailed_benchmarks"
+  gem "sys-proctable", platforms: [:mingw, :x64_mingw, :mswin]
   gem "memory_profiler", require: false
   gem "prosopite"
-  gem "pg_query"
+  gem "pg_query", platforms: :ruby
 end
 
 group :development do
-  gem "flamegraph"
+  gem "flamegraph", platforms: :ruby
   gem "guard-rspec", require: false
   gem "listen"
   gem "rails-erd"

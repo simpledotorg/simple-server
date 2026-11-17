@@ -1,6 +1,10 @@
 if ENV["RACK_MINI_PROFILER"]
   Rails.logger.info "Initializing rack-mini-profiler"
-  require "stackprof"
+  begin
+    require "stackprof"
+  rescue LoadError
+    Rails.logger.info "stackprof is unavailable on this platform; flamegraphs are disabled"
+  end
   require "memory_profiler"
   require "rack-mini-profiler"
 
