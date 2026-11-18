@@ -31,12 +31,16 @@ RSpec.feature "test medication list detail page functionality", type: :feature d
 
     it "should create new medication" do
       medication_list.select_medication_list(medication_list_1.name)
+      expect(page).to have_current_path(admin_protocol_path(medication_list_1))
 
       medication_list_show.click_new_medication_button
+      expect(page).to have_current_path(new_admin_protocol_protocol_drug_path(medication_list_1))
+      expect(page).to have_field("medication_name")
+
       new_medication.add_new_medication("test_drug", "10mg", "AXDSC")
 
       # assertion
-      medication_list_show.verify_successful_message("Medication was successfully created")
+      expect(page).to have_css("div.alert-primary", text: "Medication was successfully created")
       expect(page).to have_content("test_drug")
     end
 
