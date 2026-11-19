@@ -1,5 +1,5 @@
 class Messaging::AlphaSms::Api
-  HOST = "api.sms.net.bd"
+  HOST = "api.sms.bd"
   URL_PATHS = {
     send_sms: "/sendsms",
     request_report: "/report/request",
