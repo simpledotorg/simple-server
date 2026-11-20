@@ -171,4 +171,10 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       expect(described_class.partitioned?).to be(true)
     end
   end
+
+  describe "#materialized?" do
+    it "returns false" do
+      expect(described_class.materialized?).to be(false)
+    end
+  end
 end
