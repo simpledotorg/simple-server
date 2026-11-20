@@ -28,6 +28,17 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
     freeze_time_for_reporting_specs(example)
   end
 
+  # The table function buckets dates using the session time zone, so refresh in the reporting
+  # time zone (as the old materialized view refresh did).
+  def refresh_partitions_between(start_date, end_date)
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection.execute("SET LOCAL TIME ZONE '#{Period::REPORTING_TIME_ZONE}'")
+      ReportingHelpers.get_refresh_months_between_dates(start_date.to_date, end_date.to_date).each do |refresh_month|
+        described_class.partitioned_refresh(refresh_month)
+      end
+    end
+  end
+
   describe "Cleanup and mapping" do
     it "cleans up drug names using lookup tables" do
       DrugLookup::MedicinePurpose.create(name: "Amlodipine", hypertension: true, diabetes: false)
@@ -37,7 +48,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       patient = FactoryBot.create(:patient, recorded_at: june_2021[:over_12_months_ago])
       add_drug(patient, "Amlo", "5mg", june_2021[:under_3_months_ago])
 
-      described_class.refresh
+      refresh_partitions_between(june_2021[:under_3_months_ago], june_2021[:under_3_months_ago])
       expect(described_class.find_by(patient: patient, month_date: june_2021[:under_3_months_ago]).amlodipine).to eq 5
     end
 
@@ -49,7 +60,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       patient = FactoryBot.create(:patient, recorded_at: june_2021[:over_12_months_ago])
       add_drug(patient, "Tel mi", "40od", june_2021[:under_3_months_ago])
 
-      described_class.refresh
+      refresh_partitions_between(june_2021[:under_3_months_ago], june_2021[:under_3_months_ago])
       expect(described_class.find_by(patient: patient, month_date: june_2021[:under_3_months_ago]).telmisartan).to eq 40
     end
 
@@ -65,7 +76,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       patient = FactoryBot.create(:patient, recorded_at: june_2021[:over_12_months_ago])
       add_drug(patient, "Los-H", "125mg", june_2021[:under_3_months_ago])
 
-      described_class.refresh
+      refresh_partitions_between(june_2021[:under_3_months_ago], june_2021[:under_3_months_ago])
       expect(described_class.find_by(patient: patient, month_date: june_2021[:under_3_months_ago]).losartan).to eq 100
       expect(described_class.find_by(patient: patient, month_date: june_2021[:under_3_months_ago]).hydrochlorothiazide).to eq 25
     end
@@ -84,7 +95,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       add_drug(patient, "Amlo", "5mg", june_2021[:ten_months_ago])
       add_drug(patient, "Amlo", "10mg", june_2021[:ten_months_ago] + 1.minute, do_not_delete: true)
 
-      described_class.refresh
+      refresh_partitions_between(june_2021[:ten_months_ago], june_2021[:ten_months_ago])
 
       expect(described_class.find_by(patient: patient, month_date: june_2021[:ten_months_ago]).amlodipine).to eq 10
     end
@@ -124,7 +135,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
         add_drug(patient, "Telmi", "80mg", june_2021[:one_month_ago])
         add_drug(patient, "Capto", "10mg", june_2021[:one_month_ago])
 
-        described_class.refresh
+        refresh_partitions_between(june_2021[:eleven_months_ago], june_2021[:one_month_ago])
 
         expect(described_class.find_by(patient: patient, month_date: june_2021[:eleven_months_ago]).amlodipine).to eq(0)
         expect(described_class.find_by(patient: patient, month_date: june_2021[:eleven_months_ago]).telmisartan).to eq(0)
@@ -161,7 +172,7 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
       patient = create(:patient, :without_medical_history, recorded_at: Date.new(2024, 6, 1), diagnosed_confirmed_at: nil)
       add_drug(patient, "Amlo", "5mg", Date.new(2024, 7, 1))
 
-      described_class.refresh
+      refresh_partitions_between(Date.new(2024, 6, 1), Date.new(2024, 7, 1))
       expect(described_class.find_by(patient: patient)).to be_nil
     end
   end
@@ -169,6 +180,12 @@ RSpec.describe Reports::Prescription, {type: :model, reporting_spec: true} do
   describe "#partitioned?" do
     it "returns true" do
       expect(described_class.partitioned?).to be(true)
+    end
+  end
+
+  describe "#materialized?" do
+    it "returns false" do
+      expect(described_class.materialized?).to be(false)
     end
   end
 end
