@@ -19,7 +19,7 @@ RSpec.describe Messaging::AlphaSms::Api do
       message = "Test message"
       recipient_number = "+8801885374409"
 
-      request = stub_request(:post, "https://api.sms.net.bd/sendsms")
+      request = stub_request(:post, "https://api.sms.bd/sendsms")
       described_class.new.send_sms(recipient_number: recipient_number, message: message)
       expect(request.with(body: {
         api_key: "ABCDEF",
@@ -32,7 +32,7 @@ RSpec.describe Messaging::AlphaSms::Api do
     it "raises an exception if the API sends a non-200 response" do
       stub_credentials
 
-      stub_request(:post, "https://api.sms.net.bd/sendsms").to_return(status: 401, body: "a response")
+      stub_request(:post, "https://api.sms.bd/sendsms").to_return(status: 401, body: "a response")
       expect {
         described_class.new.send_sms(recipient_number: "+8801885374409", message: "Test message")
       }.to raise_error(Messaging::AlphaSms::Error).with_message("Error while calling Alpha SMS API: API returned 401 with a response")
@@ -44,7 +44,7 @@ RSpec.describe Messaging::AlphaSms::Api do
       request_id = 123456
       stub_credentials
 
-      stub_request(:post, "https://api.sms.net.bd/report/request/#{request_id}").to_return(body: {a: :hash}.to_json)
+      stub_request(:post, "https://api.sms.bd/report/request/#{request_id}").to_return(body: {a: :hash}.to_json)
       expect(described_class.new.get_message_status_report(request_id)).to eq({"a" => "hash"})
     end
   end
@@ -53,7 +53,7 @@ RSpec.describe Messaging::AlphaSms::Api do
     it "gets the account's balance" do
       stub_credentials
 
-      stub_request(:post, "https://api.sms.net.bd/user/balance").to_return(body: {a: :hash}.to_json)
+      stub_request(:post, "https://api.sms.bd/user/balance").to_return(body: {a: :hash}.to_json)
       expect(described_class.new.get_account_balance).to eq({"a" => "hash"})
     end
   end
