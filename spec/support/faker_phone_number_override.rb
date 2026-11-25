@@ -14,20 +14,18 @@
 # This centralized fix applies to all factories that use Faker::PhoneNumber,
 # eliminating the need to change each factory individually.
 
-module Faker
-  class PhoneNumber < Base
-    class << self
-      # Override to generate numeric-only 10-digit phone numbers
-      # @return [String] A 10-digit numeric string (e.g., "5847293016")
-      def phone_number
-        rand(1_000_000_000...10_000_000_000).to_s
-      end
+Faker::PhoneNumber.class_eval do
+  class << self
+    # Override to generate numeric-only 10-digit phone numbers
+    # @return [String] A 10-digit numeric string (e.g., "5847293016")
+    def phone_number
+      rand(1_000_000_000...10_000_000_000).to_s
+    end
 
-      # Override cell_phone to match phone_number behavior
-      # @return [String] A 10-digit numeric string (e.g., "7382940156")
-      def cell_phone
-        rand(1_000_000_000...10_000_000_000).to_s
-      end
+    # Override cell_phone to match phone_number behavior
+    # @return [String] A 10-digit numeric string (e.g., "7382940156")
+    def cell_phone
+      rand(1_000_000_000...10_000_000_000).to_s
     end
   end
 end
