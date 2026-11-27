@@ -44,4 +44,9 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.log_level = :debug
+
+  # Allow all hostnames in test environment for Capybara/Selenium
+  # Fixes Chrome 158 incompatibility with Rails Host Authorization
+  # Chrome 158 rejects "*" wildcard as invalid URL
+  config.hosts.clear
 end
