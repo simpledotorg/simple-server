@@ -44,4 +44,8 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 
   config.log_level = :debug
+
+  # Allow all hostnames in test environment for Capybara/Selenium
+  # This fixes Chrome 158 rejecting "*" as invalid URL
+  config.hosts.clear
 end
