@@ -5,7 +5,7 @@ RSpec.describe AlphaSmsStatusJob, type: :job do
     it "raises an error if a detailable with the message ID doesn't exist" do
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ALPHA_SMS_API_KEY").and_return("ABCDEF")
-      stub_request(:post, "https://api.sms.net.bd//report/request/non-existent-message-id")
+      stub_request(:post, "https://api.sms.bd//report/request/non-existent-message-id")
 
       described_class.perform_async("non-existent-message-id")
       expect { described_class.drain }.to raise_error(ActiveRecord::RecordNotFound)
@@ -16,7 +16,7 @@ RSpec.describe AlphaSmsStatusJob, type: :job do
       detailable = create(:alpha_sms_delivery_detail, request_id: request_id)
       allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ALPHA_SMS_API_KEY").and_return("ABCDEF")
-      stub_request(:post, "https://api.sms.net.bd/report/request/#{request_id}")
+      stub_request(:post, "https://api.sms.bd/report/request/#{request_id}")
         .to_return(body: {
           "error" => 0,
           "msg" => "Success",
